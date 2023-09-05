@@ -1,17 +1,17 @@
 [tool.poetry]
-authors = ["long2ice <long2ice@gmail.com>"]
-description = "A fast admin dashboard based on FastAPI and TortoiseORM with tabler ui, inspired by Django admin."
-documentation = "https://fastapi-admin.github.io"
-homepage = "https://github.com/fastapi-admin/fastapi-admin-pro"
-keywords = ["admin", "dashboard", "fastapi", "tortoise-orm", "tabler"]
+authors = ["Allen Woods <allen.woods@outlook.com>"]
+description = "LLM Alignment and Safety Toolkit."
+documentation = "https://last.github.io"
+homepage = "https://github.com/last-lab/last"
+keywords = ["LLM", "Alignment", "Safety", "Toolkit"]
 license = "Apache-2.0"
-name = "fastapi-admin-pro"
+name = "last"
 packages = [
-    { include = "fastapi_admin" },
+    { include = "last" },
 ]
 readme = "README.md"
-repository = "https://github.com/fastapi-admin/fastapi-admin-pro.git"
-version = "0.1.4"
+repository = "https://github.com/last-lab/last.git"
+version = "0.0.1"
 
 [tool.poetry.dependencies]
 Babel = "*"
@@ -47,6 +47,11 @@ asyncmy = "*"
 python-dotenv = "*"
 rearq = { git = "https://github.com/long2ice/rearq.git", branch = "dev" }
 asyncpg = "*"
+
+[[tool.poetry.source]]
+name = "mirrors"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+priority = "default"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

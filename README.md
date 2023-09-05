@@ -49,7 +49,9 @@ See documentation at <https://fastapi-admin-docs.long2ice.io>.
 3. Run `docker-compose up -d --build`.
 4. Visit <http://localhost:8000/admin/init> to create first admin.
 
-## License
+## Developement Setup
 
-After you have be invited, you can read and clone and develop yourself, but please **don't distribute the source code**
-of pro version. Thanks!
+Add TUNA source
+```bash
+poetry source add --priority=default mirrors https://pypi.tuna.tsinghua.edu.cn/simple/
+```
