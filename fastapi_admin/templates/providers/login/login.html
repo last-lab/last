@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block outer_body %}
+    <body class="border-primary d-flex flex-column">
+    <div class="page page-center">
+        <div class="container-tight py-4">
+            <div class="text-center mb-4">
+                {% if login_logo_url %}
+                    <a href="../.."><img src="{{ login_logo_url }}" height="36" alt=""></a>
+                {% endif %}
+            </div>
+            {% include "components/alert_error.html" %}
+            <form class="card card-md" action="{{ request.app.admin_path }}{{ request.app.login_provider.login_path }}"
+                  method="post" autocomplete="off">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">{{ login_title }}</h2>
+                    <div class="mb-3">
+                        <label class="form-label">{{ _('username') }}</label>
+                        <input name="username" type="text" class="form-control"
+                               placeholder="{{ _('username_placeholder') }}">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">
+                            {{ _('password') }}
+                            <span class="form-label-description">
+                            </span>
+                        </label>
+                        <div class="input-group input-group-flat">
+                            <input placeholder="{{ _('password_placeholder') }}" name="password" type="password"
+                                   class="form-control" autocomplete="off">
+                            <span class="input-group-text">
+                            </span>
+                        </div>
+                    </div>
+                    {% if request.app.login_provider.enable_captcha %}
+                        <div class="mb-2">
+                            <label class="form-label">
+                                {{ _('captcha') }}
+                                <span class="form-label-description">
+                            </span>
+                            </label>
+                            <div class="mb-2">
+                                <img class="cursor-pointer" src="{{ request.app.admin_path }}/captcha?width=200" alt=""
+                                     id="captcha">
+                            </div>
+                            <input required placeholder="{{ _('captcha_placeholder') }}" name="captcha" type="text"
+                                   class="form-control" autocomplete="off">
+                        </div>
+                    {% endif %}
+                    {% with google_recaptcha = request.app.login_provider.google_recaptcha %}
+                        {% if google_recaptcha %}
+                            <script src="{{ google_recaptcha.cdn_url }}" async defer></script>
+                            <div class="mb-2">
+                                <label for="form-label"></label>
+                                <div class="g-recaptcha" data-sitekey="{{ google_recaptcha.site_key }}"></div>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                    <div class="mb-2">
+                        <label class="form-check">
+                            <input type="checkbox" name="remember_me" class="form-check-input"/>
+                            <span class="form-check-label">{{ _('remember_me') }}</span>
+                        </label>
+                    </div>
+                    <div class="form-footer">
+                        <button type="submit" class="btn btn-primary w-100">{{ _('sign_in') }}</button>
+                    </div>
+                </div>
+                {% if request.app.oauth2_providers %}
+                    <div class="hr-text">or</div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for oauth2_provider in request.app.oauth2_providers %}
+                                <div class="col"><a href="{{ oauth2_provider.get_authorize_url() }}"
+                                                    class="btn btn-white w-100">
+                                    <i class="{{ oauth2_provider.icon }} me-2"></i>
+                                    {{ oauth2_provider.label }}
+                                </a></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+    <script>
+        $('#captcha').click(img => {
+            $('#captcha').attr('src', '{{ request.app.admin_path }}/captcha?r=' + Math.random())
+        });
+        let on = Cookies.get('remember_me')
+        if (on !== '') {
+            $('input[name="remember_me"]').attr("checked", true);
+        }
+    </script>
+    </body>
+{% endblock %}

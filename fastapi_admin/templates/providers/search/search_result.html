@@ -1,0 +1,12 @@
+<div class="dropdown-menu show">
+    {% for result in results %}
+        <a class="dropdown-item" href="{{ result.url }}">
+            {{ result.label }}
+        </a>
+    {% endfor %}
+    {% if not results %}
+        <a class="dropdown-item" href="#">
+            {{ _('No results found for search text') }}&nbsp;<span class="font-weight-bold">"{{ search_text }}"</span>
+        </a>
+    {% endif %}
+</div>

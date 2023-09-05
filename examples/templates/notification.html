@@ -1,0 +1,49 @@
+{% extends layout %}
+{% block page_body %}
+    <form class="card" id="form-notification">
+        <div class="card-header">Send notification example</div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Title</label>
+                <input type="text" class="form-control" name="title" value="FastAPI-Admin"
+                       placeholder="Enter notification title">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Content</label>
+                <textarea class="form-control" name="content" rows="6" placeholder="Enter notification content">A fast admin dashboard based on FastAPI and TortoiseORM with tabler ui, inspired by Django admin.</textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Image</label>
+                <input type="text" class="form-control" name="image"
+                       value="https://avatars.githubusercontent.com/u/13377178?v=4"
+                       placeholder="Enter notification image">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Link</label>
+                <input type="text" class="form-control" name="link"
+                       value="https://fastapi-admin.github.io"
+                       placeholder="Enter notification link">
+            </div>
+        </div>
+        <div class="card-footer text-end">
+            <div class="d-flex">
+                <button type="button" onclick="send_notification()" class="btn btn-primary ms-auto">Send notification
+                </button>
+            </div>
+        </div>
+    </form>
+    <script>
+        function send_notification() {
+            let data = {};
+            $('#form-notification').serializeArray().map(function (x) {
+                data[x.name] = x.value;
+            })
+            $.ajax({
+                url: '{{ request.app.admin_path }}/notification',
+                method: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json'
+            })
+        }
+    </script>
+{% endblock %}

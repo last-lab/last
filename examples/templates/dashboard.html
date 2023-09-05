@@ -1,0 +1,49 @@
+{% extends layout %}
+{% block page_body %}
+    <div class="row">
+        <div class="col-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        Stargazers over time
+                    </div>
+                    <img src="https://starchart.cc/fastapi-admin/fastapi-admin.svg" alt="">
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title">
+                        Admin Logs
+                    </div>
+                    <div class="divide-y">
+                        {% for log in logs %}
+                            <div>
+                                <div class="row">
+                                    <div class="col-auto">
+                                    <span class="avatar"
+                                          style="background-image: url({{ log.avatar }})"></span>
+                                    </div>
+                                    <div class="col">
+                                        <div class="text-truncate">
+                                            <strong>{{ log.username }}</strong> {{ log.action }}
+                                            <strong>
+                                                {% if log.action in ['update','create'] %}
+                                                    <a href="{{ request.app.admin_path }}/{{ log.resource }}/update/{{ log.content.get('pk') }}">{{ log.resource }}#{{ log.content.get('pk') }}</a>
+                                                {% elif log.action == 'delete' %}
+                                                    {{ log.resource }}#{{ log.content.get('pk') }}
+                                                {% endif %}
+                                            </strong>
+                                        </div>
+                                        <div class="text-muted">{{ log.created_at|diff_for_humans }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

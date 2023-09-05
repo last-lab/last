@@ -1,0 +1,51 @@
+<div class="nav-item dropdown d-none d-md-flex me-3 dropdown-notification">
+    <a href="#" class="nav-link px-0" data-bs-toggle="dropdown" tabindex="-1"
+       aria-label="Show notifications">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+             viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+             stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+            <path d="M10 5a2 2 0 0 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"></path>
+            <path d="M9 17v1a3 3 0 0 0 6 0v-1"></path>
+        </svg>
+        <span class="badge badge-pill bg-red badge-notification"></span>
+    </a>
+    <div class="dropdown-menu-notification dropdown-menu dropdown-menu-end dropdown-menu-arrow dropdown-menu-card">
+        <div class="card">
+            <div class="list-group list-group-flush list-group-hoverable">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let count = 0;
+    let badge_notification = $('.badge-notification');
+    let dropdown_menu_notification = $('.dropdown-menu-notification');
+    badge_notification.hide();
+    dropdown_menu_notification.hide();
+    let ws = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "{{ request.app.admin_path }}/notification");
+    ws.onmessage = function (event) {
+        $('.dropdown-menu-notification').css('display', '');
+        count += 1;
+        badge_notification.text(count);
+        badge_notification.show();
+
+        let data = event.data;
+        $('.dropdown-menu-notification .card .list-group').append(data)
+    };
+
+    function remove_notification(elem) {
+        elem.parent().parent().parent().remove();
+        count -= 1;
+        if (count === 0) {
+            badge_notification.hide();
+            dropdown_menu_notification.hide();
+        } else {
+            badge_notification.text(count);
+        }
+    }
+
+    dropdown_menu_notification.click(function (e) {
+        e.stopPropagation();
+    })
+</script>

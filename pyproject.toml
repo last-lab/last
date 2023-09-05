@@ -1,0 +1,57 @@
+[tool.poetry]
+authors = ["long2ice <long2ice@gmail.com>"]
+description = "A fast admin dashboard based on FastAPI and TortoiseORM with tabler ui, inspired by Django admin."
+documentation = "https://fastapi-admin.github.io"
+homepage = "https://github.com/fastapi-admin/fastapi-admin-pro"
+keywords = ["admin", "dashboard", "fastapi", "tortoise-orm", "tabler"]
+license = "Apache-2.0"
+name = "fastapi-admin-pro"
+packages = [
+    { include = "fastapi_admin" },
+]
+readme = "README.md"
+repository = "https://github.com/fastapi-admin/fastapi-admin-pro.git"
+version = "0.1.4"
+
+[tool.poetry.dependencies]
+Babel = "*"
+aiobotocore = { version = "*", optional = true }
+aiofiles = "*"
+redis = "^4.2.0rc1"
+asyncoss = { version = "*", optional = true }
+bcrypt = "*"
+captcha = "*"
+fastapi = { version = "*", extras = ["all"] }
+jinja2 = "*"
+python = "^3.7"
+python-multipart = "*"
+tortoise-orm = "*"
+httpx = "*"
+pendulum = "*"
+requests = "*"
+
+[tool.poetry.dev-dependencies]
+# test
+pytest = "*"
+pytest-asyncio = "*"
+pytest-mock = "*"
+pytest-xdist = "*"
+# lint
+black = "*"
+flake8 = "*"
+isort = "*"
+mypy = "*"
+pylint = "*"
+# example
+asyncmy = "*"
+python-dotenv = "*"
+rearq = { git = "https://github.com/long2ice/rearq.git", branch = "dev" }
+asyncpg = "*"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "setuptools"]
+
+[tool.poetry.extras]
+oss = ["asyncoss"]
+s3 = ["aiobotocore"]

@@ -1,0 +1,9 @@
+version: "3"
+services:
+  app:
+    build: .
+    restart: always
+    env_file: .env
+    network_mode: host
+    image: fastapi-admin-pro
+    command: uvicorn examples.main:app_ --port 8002 --host 0.0.0.0 --proxy-headers --forwarded-allow-ips='*'

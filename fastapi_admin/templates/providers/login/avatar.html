@@ -1,0 +1,25 @@
+<div class="nav-item dropdown">
+    <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown">
+                            <span class="avatar avatar-sm">
+                                <img src="{{ request.state.admin.avatar }}" alt="">
+                            </span>
+        <div class="d-none d-xl-block ps-2">
+            <div>{{ request.state.admin.username }}</div>
+            {% if request.state.admin.role_name %}
+                {% with role_name = request.state.admin.role_name %}
+                    <div class="mt-1 small badge {% if role_name == 'superuser' %}
+                bg-purple{% if layout == 'layout.html' %}-lt{% endif %} {% else %}bg-green{% if layout == 'layout.html' %}-lt{% endif %}
+                {% endif %} " style="position: static;transform: none">{{ role_name|upper }}
+                {% endwith %}
+            </div>
+            {% endif %}
+        </div>
+    </a>
+    <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+        <a href="{{ request.app.admin_path }}/password"
+           class="dropdown-item">{{ _('update_password') }}</a>
+        <div class="dropdown-divider"></div>
+        <a href="{{ request.app.admin_path }}{{ request.app.login_provider.logout_path }}"
+           class="dropdown-item">{{ _('logout') }}</a>
+    </div>
+</div>

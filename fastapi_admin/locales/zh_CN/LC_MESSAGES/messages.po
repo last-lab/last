@@ -1,0 +1,245 @@
+# Chinese (Simplified, China) translations for PROJECT.
+# Copyright (C) 2021 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2021-05-24 21:15+0800\n"
+"PO-Revision-Date: 2021-04-16 22:46+0800\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_Hans_CN\n"
+"Language-Team: zh_Hans_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: fastapi_admin/middlewares.py:77
+#, python-format
+msgid "You can only try after %(seconds)s seconds"
+msgstr "请在%(seconds)s秒后再次尝试"
+
+#: fastapi_admin/middlewares.py:88
+#, python-format
+msgid "Login failed %(times)s times, you can try %(rest_times)s more times"
+msgstr "登录失败%(times)s次，你还可尝试%(rest_times)s次"
+
+#: fastapi_admin/resources.py:97
+msgid "create"
+msgstr "创建"
+
+#: fastapi_admin/resources.py:109
+msgid "update"
+msgstr "编辑"
+
+#: fastapi_admin/resources.py:116
+msgid "delete"
+msgstr "删除"
+
+#: fastapi_admin/resources.py:123
+msgid "delete_selected"
+msgstr "删除选中"
+
+#: fastapi_admin/providers/import_export.py:106
+#: fastapi_admin/templates/providers/import_export/import.html:6
+#: fastapi_admin/templates/providers/import_export/import.html:30
+msgid "Import"
+msgstr "导入"
+
+#: fastapi_admin/providers/import_export.py:117
+#: fastapi_admin/templates/providers/import_export/export.html:6
+#: fastapi_admin/templates/providers/import_export/export.html:23
+msgid "Export"
+msgstr "导出"
+
+#: fastapi_admin/providers/import_export.py:173
+#, python-format
+msgid "Success create %(count)s %(label)s"
+msgstr "成功创建 %(count)s %(label)s"
+
+#: fastapi_admin/providers/login.py:126
+msgid "captcha_error"
+msgstr "验证码错误"
+
+#: fastapi_admin/providers/login.py:133
+msgid "login_failed"
+msgstr "登录失败"
+
+#: fastapi_admin/providers/login.py:206
+msgid "confirm_password_different"
+msgstr "密码不一致"
+
+#: fastapi_admin/providers/login.py:241
+msgid "old_password_error"
+msgstr "旧密码错误"
+
+#: fastapi_admin/providers/login.py:243
+msgid "new_password_different"
+msgstr "新密码不相同"
+
+#: fastapi_admin/templates/create.html:15
+#: fastapi_admin/templates/update.html:17
+msgid "save"
+msgstr "保存"
+
+#: fastapi_admin/templates/create.html:17
+msgid "save_and_add_another"
+msgstr "保存并新增"
+
+#: fastapi_admin/templates/create.html:19
+#: fastapi_admin/templates/providers/import_export/export.html:25
+#: fastapi_admin/templates/providers/import_export/import.html:32
+#: fastapi_admin/templates/update.html:27
+msgid "return"
+msgstr "返回"
+
+#: fastapi_admin/templates/init.html:10
+msgid "Create first admin"
+msgstr "创建第一个管理员"
+
+#: fastapi_admin/templates/init.html:12
+#: fastapi_admin/templates/providers/login/login.html:15
+msgid "username"
+msgstr "用户名"
+
+#: fastapi_admin/templates/init.html:14
+#: fastapi_admin/templates/providers/login/login.html:17
+msgid "username_placeholder"
+msgstr "请输入用户名"
+
+#: fastapi_admin/templates/init.html:18
+#: fastapi_admin/templates/providers/login/login.html:21
+msgid "password"
+msgstr "密码"
+
+#: fastapi_admin/templates/init.html:23
+#: fastapi_admin/templates/providers/login/login.html:26
+msgid "password_placeholder"
+msgstr "请输入密码"
+
+#: fastapi_admin/templates/init.html:31
+msgid "confirm_password"
+msgstr "请确认密码"
+
+#: fastapi_admin/templates/init.html:36
+msgid "confirm_password_placeholder"
+msgstr "请再次输入密码"
+
+#: fastapi_admin/templates/init.html:43
+#: fastapi_admin/templates/providers/login/password.html:32
+msgid "submit"
+msgstr "提交"
+
+#: fastapi_admin/templates/list.html:13
+msgid "show"
+msgstr "显示"
+
+#: fastapi_admin/templates/list.html:24
+msgid "entries"
+msgstr "项"
+
+#: fastapi_admin/templates/list.html:33
+msgid "search"
+msgstr "查询"
+
+#: fastapi_admin/templates/list.html:46
+msgid "bulk_actions"
+msgstr "批量操作"
+
+#: fastapi_admin/templates/list.html:130
+msgid "actions"
+msgstr "动作"
+
+# python-format
+#: fastapi_admin/templates/list.html:161
+#, python-format
+msgid "Showing %(from)s to %(to)s of %(total)s entries"
+msgstr "显示 %(from)s 到 %(to)s 共 %(total)s 项"
+
+#: fastapi_admin/templates/list.html:172
+msgid "prev_page"
+msgstr "上一页"
+
+#: fastapi_admin/templates/list.html:193
+msgid "next_page"
+msgstr "下一页"
+
+#: fastapi_admin/templates/update.html:24
+msgid "save_and_return"
+msgstr "保存并返回"
+
+#: fastapi_admin/templates/errors/403.html:21
+#: fastapi_admin/templates/errors/404.html:21
+#: fastapi_admin/templates/errors/500.html:21
+msgid "return_home"
+msgstr "返回首页"
+
+#: fastapi_admin/templates/providers/import_export/export.html:11
+#: fastapi_admin/templates/providers/import_export/import.html:18
+msgid "Format"
+msgstr "格式"
+
+#: fastapi_admin/templates/providers/import_export/import.html:14
+msgid "File to import"
+msgstr "文件导入"
+
+#: fastapi_admin/templates/providers/login/avatar.html:20
+#: fastapi_admin/templates/providers/login/password.html:6
+msgid "update_password"
+msgstr "修改密码"
+
+#: fastapi_admin/templates/providers/login/avatar.html:23
+msgid "logout"
+msgstr "退出登录"
+
+#: fastapi_admin/templates/providers/login/login.html:35
+msgid "captcha"
+msgstr "验证码"
+
+#: fastapi_admin/templates/providers/login/login.html:43
+msgid "captcha_placeholder"
+msgstr "请输入验证码"
+
+#: fastapi_admin/templates/providers/login/login.html:50
+msgid "remember_me"
+msgstr "记住我"
+
+#: fastapi_admin/templates/providers/login/login.html:54
+msgid "sign_in"
+msgstr "登录"
+
+#: fastapi_admin/templates/providers/login/password.html:12
+msgid "old_password"
+msgstr "旧密码"
+
+#: fastapi_admin/templates/providers/login/password.html:15
+msgid "old_password_placeholder"
+msgstr "请输入旧密码"
+
+#: fastapi_admin/templates/providers/login/password.html:19
+msgid "new_password"
+msgstr "新密码"
+
+#: fastapi_admin/templates/providers/login/password.html:22
+msgid "new_password_placeholder"
+msgstr "请输入新密码"
+
+#: fastapi_admin/templates/providers/login/password.html:26
+msgid "re_new_password"
+msgstr "重复新密码"
+
+#: fastapi_admin/templates/providers/login/password.html:29
+msgid "re_new_password_placeholder"
+msgstr "请再次输入新密码"
+
+#: fastapi_admin/templates/providers/search/search.html:11
+msgid "Search in site..."
+msgstr "站点搜索..."
+
+#: fastapi_admin/templates/providers/search/search_result.html:9
+msgid "No results found for search text"
+msgstr "未搜索到内容关键字"

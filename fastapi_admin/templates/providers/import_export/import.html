@@ -1,0 +1,38 @@
+{% extends layout %}
+{% block page_body %}
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">{{ _('Import') }} {{ resource_label }}</h3>
+            </div>
+            <div class="card-body border-bottom py-3">
+                {% include "components/success.html" %}
+                {% include "components/alert_error.html" %}
+                <form method="post" action="{{ request.app.admin_path }}/{{ resource }}/import"
+                      enctype="multipart/form-data">
+                    <div class="form-group mb-3">
+                        <div class="form-label">{{ _('File to import') }}</div>
+                        <input required type="file" class="form-control" name="import_">
+                    </div>
+                    <div class="form-group mb-3">
+                        <div class="form-label">{{ _('Format') }}</div>
+                        <select class="form-select" name="format_" id="format">
+                            {% for format_option in format_options %}
+                                <option value="{{ format_option }}">{{ format_option }}</option>
+                            {% endfor %}
+                        </select>
+                        {% with id = 'format' %}
+                            {% include 'components/select.html' %}
+                        {% endwith %}
+                    </div>
+                    {% include "components/select.html" %}
+                    <div class="form-footer btn-list">
+                        <button type="submit" name="export" class="btn btn-primary">{{ _('Import') }}</button>
+                        <button type="button" class="btn btn-secondary"
+                                onclick="history.back()">{{ _('return') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
