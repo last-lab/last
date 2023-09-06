@@ -1,57 +1,44 @@
-# FastAPI Admin Pro
+# LAST
 
-As sponsor, you can make feature request [here](https://github.com/fastapi-admin/fastapi-admin-pro/discussions/3), and I
-will consider to implement it.
-
-## Introduction
-
-`fastapi-admin` is a fast admin dashboard based on [FastAPI](https://github.com/tiangolo/fastapi)
-and [TortoiseORM](https://github.com/tortoise/tortoise-orm/) with [tabler](https://github.com/tabler/tabler) ui,
-inspired by Django admin.
+LLM Alignment and Safety Toolkit
 
 ## Installation
 
-```shell
-> pip install git+https://github.com/fastapi-admin/fastapi-admin-pro.git
-```
-
-## Requirements
-
-- [Redis](https://redis.io)
-
-## Online Demo
-
-You can check a online demo [here](https://fastapi-admin-pro.long2ice.io/admin/login).
-
-- username: `admin`
-- password: `123456`
-
-## Screenshots
-
-![login](https://raw.githubusercontent.com/fastapi-admin/fastapi-admin/dev/images/login.png)
-
-![dashboard](https://raw.githubusercontent.com/fastapi-admin/fastapi-admin/dev/images/dashboard.png)
-
-## Documentation
-
-See documentation at <https://fastapi-admin-docs.long2ice.io>.
-
-## Run examples in local
-
-1. Clone repo.
-2. Create `.env` file.
-
-   ```dotenv
-   DATABASE_URL=mysql://root:123456@127.0.0.1:3306/fastapi-admin
-   REDIS_URL=redis://localhost:6379/0
-   ```
-
-3. Run `docker-compose up -d --build`.
-4. Visit <http://localhost:8000/admin/init> to create first admin.
-
-## Developement Setup
-
-Add TUNA source
 ```bash
-poetry source add --priority=default mirrors https://pypi.tuna.tsinghua.edu.cn/simple/
+not supported yet
 ```
+
+## Usage
+
+```bash
+not supported yet
+```
+
+## Pre-requisites
+
+1. [Optinal] Install [conda](https://docs.conda.io/en/latest/miniconda.html) if you want to keep your system clean. 
+Then create a conda environment.
+
+```bash
+conda create -n last python=3.8
+conda activate last
+```
+2. Install [poetry](https://python-poetry.org/docs/#installation)
+
+3. Install [redis](https://redis.io/topics/quickstart)
+
+## Run dashboard in local
+create a .env file in the root directory of the project and add the following variables
+```bash
+DATABASE_URL=sqlite://dashboard/app.sqlite3
+REDIS_URL=redis://localhost:6379/0
+```
+then go to the project directory and run the following commands
+```bash
+poetry install && make compile
+poetry run python dashboard/app.py
+```
+If this is the first time you run the dashboard, you need to create an admin user 
+by visiting http://127.0.0.1:8000/admin/init
+
+For more detail, checkout Dockfile and docker-compose.yml in case I miss something.
