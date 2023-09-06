@@ -1,6 +1,6 @@
 from starlette.requests import Request
 
-from app.models import Category
+from dashboard.models import Category
 from last.services.providers.import_export import Field, ImportExportResource
 
 

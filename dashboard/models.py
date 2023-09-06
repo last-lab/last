@@ -1,6 +1,6 @@
 from tortoise import Model, fields
 
-from app.enums import ProductType, Status
+from dashboard.enums import ProductType, Status
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,

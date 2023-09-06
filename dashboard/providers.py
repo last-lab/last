@@ -3,12 +3,12 @@ from redis.asyncio import Redis
 from starlette.requests import Request
 from tortoise import timezone
 
-from app.import_export import CategoryImportExport
-from app.models import Admin, Role
-from last.services import get_current_admin, get_redis, get_resources
+from dashboard.import_export import CategoryImportExport
+from dashboard.models import Admin, Role
+from last.services.depends import get_current_admin, get_redis, get_resources
 from last.services.models import AbstractAdmin
 from last.services.providers.import_export import ImportExportProvider
-from last.services.providers import (
+from last.services.providers.login import (
     GitHubOAuth2Provider,
     GoogleOAuth2Provider,
     UsernamePasswordProvider,

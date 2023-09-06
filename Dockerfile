@@ -13,4 +13,4 @@ WORKDIR /last
 COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 COPY --from=builder /last /last
-RUN mkdir -p /last/app/static
+RUN mkdir -p /last/dashboard/static
