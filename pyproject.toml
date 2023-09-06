@@ -23,7 +23,7 @@ bcrypt = "*"
 captcha = "*"
 fastapi = { version = "*", extras = ["all"] }
 jinja2 = "*"
-python = "^3.7"
+python = ">=3.7"
 python-multipart = "*"
 tortoise-orm = "*"
 httpx = "*"
@@ -43,10 +43,10 @@ isort = "*"
 mypy = "*"
 pylint = "*"
 # example
-asyncmy = "*"
 python-dotenv = "*"
-rearq = { git = "https://github.com/long2ice/rearq.git", branch = "dev" }
-asyncpg = "*"
+#asyncmy = "*"
+#rearq = { git = "https://github.com/long2ice/rearq.git", branch = "dev" }
+#asyncpg = "*"
 
 [[tool.poetry.source]]
 name = "mirrors"

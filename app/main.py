@@ -3,7 +3,7 @@ import os
 import redis.asyncio as redis
 import uvicorn
 from fastapi import FastAPI
-from rearq.server.app import app as rearq_server
+# from rearq.server.app import app as rearq_server
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 from starlette.staticfiles import StaticFiles
@@ -46,8 +46,8 @@ def create_app():
         StaticFiles(directory=os.path.join(BASE_DIR, "static")),
         name="static",
     )
-    app.mount("/rearq", rearq_server)
-    rearq_server.set_rearq(rearq)
+    # app.mount("/rearq", rearq_server)
+    # rearq_server.set_rearq(rearq)
 
     @app.get("/")
     async def index():
