@@ -1,7 +1,7 @@
-checkfiles = last/fastapi_admin tests/ examples/ conftest.py
+checkfiles = last/services tests/ dashboard/ conftest.py
 black_opts = -l 100 -t py38
 py_warn = PYTHONDEVMODE=1
-locales = last/fastapi_admin/locales
+locales = last/services/locales
 
 up:
 	@poetry update

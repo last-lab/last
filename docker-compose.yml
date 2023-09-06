@@ -6,4 +6,4 @@ services:
     env_file: .env
     network_mode: host
     image: last
-    command: uvicorn app.main:app_ --port 8002 --host 0.0.0.0 --proxy-headers --forwarded-allow-ips='*'
+    command: uvicorn dashboard.main:app_ --port 8002 --host 0.0.0.0 --proxy-headers --forwarded-allow-ips='*'

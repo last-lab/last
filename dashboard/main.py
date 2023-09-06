@@ -3,7 +3,7 @@ import os
 import redis.asyncio as redis
 import uvicorn
 from fastapi import FastAPI
-# from rearq.server.app import app as rearq_server
+from rearq.server.app import app as rearq_server
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 from starlette.staticfiles import StaticFiles
@@ -15,26 +15,26 @@ from starlette.status import (
 )
 from tortoise import Tortoise
 
-from app import settings
-from app.constants import BASE_DIR
-from app.models import Admin, Log, Permission, Resource
-from app.providers import (
+from dashboard import settings
+from dashboard.constants import BASE_DIR
+from dashboard.models import Admin, Log, Permission, Resource
+from dashboard.providers import (
     GitHubProvider,
     GoogleProvider,
     LoginProvider,
     import_export_provider,
 )
-from app.tasks import rearq
+from dashboard.tasks import rearq
 from last.services import enums, middlewares
-from last.services import app as admin_app
-from last.services import (
+from last.services.app import app as admin_app
+from last.services.exceptions import (
     forbidden_error_exception,
     not_found_error_exception,
     server_error_exception,
     unauthorized_error_exception,
 )
-from last.services.providers import AdminLogProvider
-from last.services.providers import NotificationProvider
+from last.services.providers.admin_log import AdminLogProvider
+from last.services.providers.notification import NotificationProvider
 from last.services.providers.permission import PermissionProvider
 from last.services.providers.search import SearchProvider
 
@@ -46,8 +46,8 @@ def create_app():
         StaticFiles(directory=os.path.join(BASE_DIR, "static")),
         name="static",
     )
-    # app.mount("/rearq", rearq_server)
-    # rearq_server.set_rearq(rearq)
+    app.mount("/rearq", rearq_server)
+    rearq_server.set_rearq(rearq)
 
     @app.get("/")
     async def index():

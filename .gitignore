@@ -143,3 +143,6 @@ cython_debug/
 .vscode
 .DS_Store
 uploads
+
+# Sqlite3
+*.sqlite3*

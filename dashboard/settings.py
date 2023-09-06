@@ -21,7 +21,7 @@ TORTOISE_ORM = {
     "connections": {"default": DATABASE_URL},
     "apps": {
         "models": {
-            "models": ["app.models"],
+            "models": ["dashboard.models"],
             "default_connection": "default",
         }
     },
