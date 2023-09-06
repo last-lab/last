@@ -14,6 +14,7 @@ repository = "https://github.com/last-lab/last.git"
 version = "0.0.1"
 
 [tool.poetry.dependencies]
+tortoise-orm = "*"
 Babel = "*"
 aiobotocore = { version = "*", optional = true }
 aiofiles = "*"
@@ -29,6 +30,7 @@ tortoise-orm = "*"
 httpx = "*"
 pendulum = "*"
 requests = "*"
+
 
 [tool.poetry.dev-dependencies]
 # test

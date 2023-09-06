@@ -25,9 +25,9 @@ class EvaluationSet:
     permissions: List[str]
     statistics: Dict[str, Union[int, float]]
 
-def create_model(e_set:EvaluationSet): -> ORMModel:
-    pass
-
-def create_dataloader(): -> torch.DataLoader:
-    pass
+# def create_model(e_set:EvaluationSet): -> ORMModel:
+#     pass
+#
+# def create_dataloader(): -> torch.DataLoader:
+#     pass
 

@@ -1,4 +1,5 @@
-from tortoise import Model, fields
+from tortoise import fields
+from tortoise.models import Model
 
 from app.enums import ProductType, Status
 from last.services.models import (

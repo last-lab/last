@@ -14,7 +14,7 @@ from app.models import Role as RoleModel
 from app.models import Sponsor
 from app.providers import import_export_provider
 from app.widgets.displays import ShowIp
-from last.services import app
+from last.services.app import app
 from last.services.enums import Method
 from last.services.file_upload import FileUpload
 from last.services import _

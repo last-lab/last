@@ -1,4 +1,4 @@
-{% extends "../../base.html" %}
+{% extends "base.html" %}
 {% block outer_body %}
     <body class="border-primary d-flex flex-column">
     <div class="page page-center">
@@ -8,7 +8,7 @@
                     <a href="../.."><img src="{{ login_logo_url }}" height="36" alt=""></a>
                 {% endif %}
             </div>
-            {% include "components/../../components/alert_error.html" %}
+            {% include "components/alert_error.html" %}
             <form class="card card-md" action="{{ request.app.admin_path }}{{ request.app.login_provider.login_path }}"
                   method="post" autocomplete="off">
                 <div class="card-body">

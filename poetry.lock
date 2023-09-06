@@ -380,6 +380,22 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "mirrors"
 
 [[package]]
+name = "atlastk"
+version = "0.13.2"
+description = "The quick and easy way to add versatile graphical interfaces and networking capabilities to your Python programs. Works even on your Android smartphone or tablet."
+optional = false
+python-versions = "*"
+files = [
+    {file = "atlastk-0.13.2-py3-none-any.whl", hash = "sha256:387c3b644a8145e6efd1cf9ff7add9226743571420ce6218cae34ca62ed9c833"},
+    {file = "atlastk-0.13.2.tar.gz", hash = "sha256:1e805658930f2546fbedddd406ff27028f772b2ceb104887cc54ba1ab34ffad8"},
+]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "mirrors"
+
+[[package]]
 name = "attrs"
 version = "23.1.0"
 description = "Classes Without Boilerplate"
@@ -2527,6 +2543,25 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 reference = "mirrors"
 
 [[package]]
+name = "tortoise"
+version = "0.1.1"
+description = "Turtle graphics on the web."
+optional = false
+python-versions = "*"
+files = [
+    {file = "tortoise-0.1.1-py3-none-any.whl", hash = "sha256:bcb58a56d6796cad0db330104450df2caf2ea9e98d844bb2906274bd15c12804"},
+    {file = "tortoise-0.1.1.tar.gz", hash = "sha256:a4ebd69b152d266174b3b0f2a22e3fb8995101eb749d3114813a98f405ab10bb"},
+]
+
+[package.dependencies]
+atlastk = "*"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+reference = "mirrors"
+
+[[package]]
 name = "tortoise-orm"
 version = "0.16.16"
 description = "Easy async ORM for python, built with relations in mind"
@@ -3133,4 +3168,4 @@ s3 = ["aiobotocore"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7"
-content-hash = "d99ad4a0ec34a7ed4c050260e4ecf6bd6c3a13ebfc0bae3caf22469d469edd45"
+content-hash = "2e6badcd15fb030305f4e84defd7cc1bb5e35f6c984ed307db63fd383077f772"

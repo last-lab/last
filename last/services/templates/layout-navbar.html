@@ -21,16 +21,16 @@
                 </h1>
                 <div class="navbar-nav flex-row order-md-last">
                     {% if request.app.search_provider %}
-                        {% include "providers/search/providers/search/search.html" %}
+                        {% include "providers/search/search.html" %}
                     {% endif %}
                     {% if request.app.language_switch %}
-                        {% include "components/components/language.html" %}
+                        {% include "components/language.html" %}
                     {% endif %}
                     {% if request.app.notification_provider %}
-                        {% include "providers/notification/providers/notification/notification.html" %}
+                        {% include "providers/notification/notification.html" %}
                     {% endif %}
                     {% if request.app.login_provider %}
-                        {% include "providers/login/providers/login/avatar.html" %}
+                        {% include "providers/login/avatar.html" %}
                     {% endif %}
                 </div>
             </div>
@@ -42,11 +42,11 @@
                         <ul class="navbar-nav">
                             {% for resource in resources %}
                                 {% if resource.type == 'link' %}
-                                    {% include 'components/components/link.html' %}
+                                    {% include 'components/link.html' %}
                                 {% elif resource.type == 'model' %}
-                                    {% include 'components/components/model.html' %}
+                                    {% include 'components/model.html' %}
                                 {% elif resource.type =='dropdown' %}
-                                    {% include 'components/components/dropdown.html' %}
+                                    {% include 'components/dropdown.html' %}
                                 {% endif %}
                             {% endfor %}
                         </ul>
@@ -77,7 +77,7 @@
                 </div>
             </div>
             {% block footer %}
-                {% include "components/components/footer.html" %}
+                {% include "components/footer.html" %}
             {% endblock %}
         </div>
     </div>

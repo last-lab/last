@@ -24,17 +24,17 @@ from app.providers import (
     LoginProvider,
     import_export_provider,
 )
-from app.tasks import rearq
+# from app.tasks import rearq
 from last.services import enums, middlewares
-from last.services import app as admin_app
-from last.services import (
+from last.services.app import app as admin_app
+from last.services.exceptions import (
     forbidden_error_exception,
     not_found_error_exception,
     server_error_exception,
     unauthorized_error_exception,
 )
-from last.services.providers import AdminLogProvider
-from last.services.providers import NotificationProvider
+from last.services.providers.admin_log import AdminLogProvider
+from last.services.providers.notification import NotificationProvider
 from last.services.providers.permission import PermissionProvider
 from last.services.providers.search import SearchProvider
 
@@ -76,7 +76,7 @@ def create_app():
 
     @app.on_event("startup")
     async def startup():
-        await rearq.startup()
+        # await rearq.startup()
         await Tortoise.init(config=settings.TORTOISE_ORM)
         await Tortoise.generate_schemas()
         r = redis.from_url(
@@ -115,7 +115,7 @@ def create_app():
             redis=r,
             default_layout=enums.Layout.layout,
         )
-        await rearq_server.start_worker(with_timer=True)
+        # await rearq_server.start_worker(with_timer=True)
 
     return app
 

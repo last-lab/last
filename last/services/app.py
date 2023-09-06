@@ -95,7 +95,8 @@ app = FastAPIAdmin(
     title="FastAdmin",
     description="A fast admin dashboard based on fastapi and tortoise-orm with tabler ui.",
 )
-app.include_router(router)
 app.add_middleware(middlewares.MaintenanceMiddleware)
 app.add_middleware(BaseHTTPMiddleware, dispatch=middlewares.language_processor)
 app.add_middleware(BaseHTTPMiddleware, dispatch=middlewares.layout_processor)
+app.include_router(router)
+
