@@ -17,6 +17,7 @@ from dashboard.widgets.displays import ShowIp
 from last.services.app import app
 from last.services.enums import Method
 from last.services.file_upload import FileUpload
+from last.services.i18n import _
 from last.services.resources import (
     Action,
     ComputeField,
@@ -26,7 +27,7 @@ from last.services.resources import (
     Model,
     ToolbarAction,
 )
-from last.services.widgets import filters, inputs, displays
+from last.services.widgets import displays, filters, inputs
 
 upload = FileUpload(uploads_dir=os.path.join(BASE_DIR, "static", "uploads"))
 

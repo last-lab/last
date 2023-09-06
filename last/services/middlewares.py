@@ -6,8 +6,7 @@ from starlette.responses import RedirectResponse
 from starlette.status import HTTP_401_UNAUTHORIZED
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from last.services import utils
-from last.services import constants, i18n
+from last.services import constants, i18n, utils
 from last.services.i18n import _
 from last.services.template import set_global_env, templates
 

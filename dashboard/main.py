@@ -57,9 +57,7 @@ def create_app():
         middlewares.LoginPasswordMaxTryMiddleware, max_times=3, after_seconds=900
     )
 
-    admin_app.add_exception_handler(
-        HTTP_500_INTERNAL_SERVER_ERROR, server_error_exception
-    )
+    admin_app.add_exception_handler(HTTP_500_INTERNAL_SERVER_ERROR, server_error_exception)
     admin_app.add_exception_handler(HTTP_404_NOT_FOUND, not_found_error_exception)
     admin_app.add_exception_handler(HTTP_403_FORBIDDEN, forbidden_error_exception)
     admin_app.add_exception_handler(HTTP_401_UNAUTHORIZED, unauthorized_error_exception)
@@ -101,9 +99,7 @@ def create_app():
                 AdminLogProvider(Log),
                 SearchProvider(),
                 NotificationProvider(),
-                GitHubProvider(
-                    Admin, settings.GITHUB_CLIENT_ID, settings.GITHUB_CLIENT_SECRET
-                ),
+                GitHubProvider(Admin, settings.GITHUB_CLIENT_ID, settings.GITHUB_CLIENT_SECRET),
                 GoogleProvider(
                     Admin,
                     settings.GOOGLE_CLIENT_ID,

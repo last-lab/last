@@ -36,6 +36,8 @@ pytest = "*"
 pytest-asyncio = "*"
 pytest-mock = "*"
 pytest-xdist = "*"
+pytest-cover = "*"
+coverage = "*"
 # lint
 black = "*"
 flake8 = "*"
@@ -55,3 +57,9 @@ requires = ["poetry-core>=1.0.0", "setuptools"]
 [tool.poetry.extras]
 oss = ["asyncoss"]
 s3 = ["aiobotocore"]
+
+[tool.coverage.paths]
+source = ["tests"]
+
+[tool.coverage.report]
+show_missing = true

@@ -42,9 +42,7 @@ class Product(Model):
 
 class Config(Model):
     label = fields.CharField(max_length=200)
-    key = fields.CharField(
-        max_length=20, unique=True, description="Unique key for config"
-    )
+    key = fields.CharField(max_length=20, unique=True, description="Unique key for config")
     value = fields.JSONField()
     status: Status = fields.IntEnumField(Status, default=Status.on)
 

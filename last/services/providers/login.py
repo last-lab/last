@@ -14,8 +14,7 @@ from starlette.responses import RedirectResponse, StreamingResponse
 from starlette.status import HTTP_303_SEE_OTHER, HTTP_401_UNAUTHORIZED, HTTP_412_PRECONDITION_FAILED
 from tortoise import signals
 
-from last.services import utils
-from last.services import constants
+from last.services import constants, utils
 from last.services.depends import get_current_admin, get_redis, get_resources
 from last.services.exceptions import ConfigurationError
 from last.services.i18n import _
