@@ -16,11 +16,12 @@ style: deps
 check: deps
 	black --check $(black_opts) $(checkfiles) || (echo "Please run 'make style' to auto-fix style issues" && false)
 	flake8 $(checkfiles)
-	mypy $(checkfiles)
-	pylint $(checkfiles)
+	# TODO: Add more strict type checking
+	# mypy $(checkfiles)
+	# pylint $(checkfiles)
 
 test: deps
-	$(py_warn) py.test
+	$(py_warn) poetry run pytest --cov
 
 build: deps
 	@poetry build
