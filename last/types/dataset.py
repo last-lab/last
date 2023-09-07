@@ -5,11 +5,6 @@ from pydantic import BaseModel
 from .base import Record, Statistics
 from .public import RiskDimension
 
-@dataclass
-class EvaluationSetDimension:
-    level: int
-    name: str
-    description: str
 
 @dataclass
 class EvaluationSet(Record):
