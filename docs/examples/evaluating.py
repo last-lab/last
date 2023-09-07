@@ -3,8 +3,27 @@ from last.types.base import create_ORM
 from last.types.model import ModelDetail
 from last.types.report import ReportManager
 
-#先配置前后端环境，orm接口等
-orm = create_ORM(conf)
+
+
+with last.Client(server_address="http://localhost:5000") as client:# TODO: BaseClient
+
+    dataset = Dataset(uid="uuid4")
+    model = Model(endpoint="xxx", key='xxx') # Init:test, exception
+    task = Task(dataset, model, creator='xxx')
+
+    report:Report, results: Dataset = task.run(return_detail=true) # if return_detail, return all response
+
+    results.ready() # TODO: add async
+
+    report.render(file_path='xxx', type='pdf')
+
+    new_data = annote(results)
+
+    new_data.save()
+
+# _Context
+# context = None, context = get_current_context(), contextlib
+
 
 # 用户点击新建评测按钮，进入界面
 # 用户点评测方案下拉框，此时查询目前已有的评测方案（task）
