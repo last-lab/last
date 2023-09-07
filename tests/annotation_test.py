@@ -7,7 +7,7 @@ class TestLabelStudioJSON(unittest.TestCase):
     def test_valid_data(self):
         # 创建一个有效的LabelStudioJSON对象
         data = {
-            'id': 1,
+            'task_id': 1,
             'annotations': [
                 {
                     'id': 1,
@@ -44,12 +44,12 @@ class TestLabelStudioJSON(unittest.TestCase):
         
         # 验证数据是否有效
         label_studio_json = LabelStudioJSON(**data)
-        self.assertEqual(label_studio_json.id, 1)
+        self.assertEqual(label_studio_json.task_id, 1)
         
     def test_invalid_data(self):
         # 创建一个无效的LabelStudioJSON对象（缺少必需的字段）
         data = {
-            'id': 1
+            'task_id': 1
         }
         
         # 验证数据是否无效
