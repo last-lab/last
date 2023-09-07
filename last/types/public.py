@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Dict, Union, Optional
 from pydantic import BaseModel
+from enum import Enum, auto
 
 
 @dataclass
@@ -8,11 +9,13 @@ class RiskDimension(BaseModel):
     level: int
     name: str
     description: str
+
     def __str__(self):
-         return self.name
+        return self.name
 
 
 RelatedRiskDimensions = Dict[str, Dict[str, Dict[str, str]]]
+
 
 class PermissionLevel(Enum):
     SUPER_ADMIN = auto()
@@ -21,9 +24,17 @@ class PermissionLevel(Enum):
     OPERATOR = auto()
     VIEWER = auto()
 
+
+@dataclass
 class DateString:
-    def __init__(self, date_str):
-        self.date_str = date_str
+    year: str
+    month: str
+    day: str
+    hour: str
+    minute: str
+    second: str
+
+    # yyyy-MM-dd HH:mm:ss
 
     def to_datetime(self):
         return datetime.strptime(self.date_str, "%Y-%m-%d")
@@ -38,14 +49,15 @@ class DateString:
         return DateString(new_date.strftime("%Y-%m-%d"))
 
     def __str__(self):
-        return self.date_str
+        return f"{year}-{month}-{day} {hour}:{minute}:{second}"
+
 
 @dataclass
 class UserInfo(BaseModel):
-    id: str 
+    id: str
     name: str
     email: str
-    created_at: DateString # yyyy-MM-dd HH:mm:ss
+    created_at: DateString  #
     permission: PermissionLevel
 
 
@@ -71,6 +83,3 @@ class StateCode:
     In_Progress = CodeMsg(0, "进行中")
     Done = CodeMsg(1, "已完成")
     Error = CodeMsg(-1, "异常")
-
-
-
