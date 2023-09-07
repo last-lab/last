@@ -1,8 +1,6 @@
 import unittest
 from pydantic import ValidationError
-from last.types.annotation import (
-    LabelStudioJSON
-)  # 请替换为实际的导入路径
+from last.types.annotation import LabelStudioJSON  # 请替换为实际的导入路径
 
 
 class TestLabelStudioJSON(unittest.TestCase):
