@@ -1,9 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any, Union
 
-# Jsonify
-
-# SQL TABLE: AnnotationResult
 
 # 定义注解结果中的值结构
 class AnnotationValue(BaseModel):
@@ -22,6 +19,8 @@ class AnnotationResult(BaseModel):
     to_name: str  # 注解目标名称
     type: str  # 注解类型
     origin: str  # 注解的来源（手动或自动）
+
+
 
 # 定义注解的数据结构
 class Annotations(BaseModel):
@@ -42,7 +41,7 @@ class Meta(BaseModel):
 
 # 定义Label Studio JSON文件的数据结构
 class LabelStudioJSON(BaseModel):
-    id: int  # JSON文件的ID
+    task_id: int  # 当前标注任务的task_id
     annotations: List[Annotations]  # 注解列表
     file_upload: str  # 上传的文件名
     data: Data  # 文本数据
@@ -59,4 +58,15 @@ class LabelStudioJSON(BaseModel):
     project: int  # 项目ID
     updated_by: int  # 最后更新的用户ID
     unique_id: Optional[str] = None  # 唯一标识符，可选
+
+
+# 当前任务的请求数据结构
+class CurrentTaskRequest(BaseModel):
+    task_id: str # 被点击的任务ID
+
+# 当前任务的响应数据结构
+class CurrentTaskResponse(BaseModel):  # 任务对应的文本内容
+    data: Data  # 文本数据内容
+    label: dict # 标签类型和内容
+
 
