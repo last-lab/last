@@ -11,6 +11,7 @@ class AnnotationValue(BaseModel):
     labels: Optional[List[str]] = None  # 标签列表，可选
     taxonomy: Optional[List[List[str]]] = None  # 分类学信息，可选
 
+
 # 定义单个注解结果的数据结构
 class AnnotationResult(BaseModel):
     value: AnnotationValue  # 注解的值
@@ -19,7 +20,6 @@ class AnnotationResult(BaseModel):
     to_name: str  # 注解目标名称
     type: str  # 注解类型
     origin: str  # 注解的来源（手动或自动）
-
 
 
 # 定义注解的数据结构
@@ -31,13 +31,16 @@ class Annotations(BaseModel):
     ground_truth: bool  # 是否为基准真值
     lead_time: Optional[float] = None  # 完成注解所需的时间（秒），可选
 
+
 # 定义文本数据的数据结构
 class Data(BaseModel):
     text: str  # 文本内容
 
+
 # 定义元数据的数据结构
 class Meta(BaseModel):
     pass  # 如果meta字段有具体的结构，请在这里添加
+
 
 # 定义Label Studio JSON文件的数据结构
 class LabelStudioJSON(BaseModel):
@@ -62,13 +65,12 @@ class LabelStudioJSON(BaseModel):
 
 # 当前任务的请求数据结构
 class CurrentTaskRequest(BaseModel):
-    task_id: str # 被点击的任务ID
+    task_id: str  # 被点击的任务ID
+
 
 # 当前任务的响应数据结构
 class CurrentTaskResponse(BaseModel):  # 任务对应的文本内容
     data_type: dict  # 数据类型
     data: Data  # 数据内容
-    label_type: dict # 标签类型
+    label_type: dict  # 标签类型
     label: dict  # 标签内容
-
-
