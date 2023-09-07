@@ -47,6 +47,10 @@ class Config(Model):
     status: Status = fields.IntEnumField(Status, default=Status.on)
 
 
+class Evaluation(Model):
+    name = fields.CharField(max_length=50)
+
+
 class Log(AbstractLog):
     class Meta:
         ordering = ["-id"]
