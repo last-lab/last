@@ -1,0 +1,18 @@
+<div>
+    <table>
+        <tr>
+            <th>姓名</th>
+            <th>年龄</th>
+            <th>城市</th>
+        </tr>
+            {% if stable_1 %}
+            {% for item in stable_1 %}
+            <tr>
+                <th >{{ item.name }}</th>
+                <th >{{ item.age }}</th>
+                <th >{{ item.city }}</th>
+            </tr>
+            {% endfor %}
+            {% endif %}
+    </table>
+</div>

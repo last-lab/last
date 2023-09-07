@@ -1,6 +1,6 @@
 from tortoise import Model, fields
 
-from dashboard.enums import ProductType, Status
+from dashboard.enums import ProductType, Status, GenderType
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -72,3 +72,18 @@ class Sponsor(Model):
 
     class Meta:
         ordering = ["-id"]
+
+
+class Cat(Model):
+    name = fields.CharField(max_length=200)
+    age = fields.IntField()
+    birth_at = fields.DatetimeField(auto_now_add=True)
+
+
+class Dog(Model):
+    name = fields.CharField(max_length=50)
+    age = fields.IntField(description="View Age")
+    gender = fields.IntEnumField(GenderType, description="Gender Type")
+    image = fields.CharField(max_length=200)
+    mark = fields.TextField(max_length=500)
+    birth_at = fields.DatetimeField(auto_now_add=True)

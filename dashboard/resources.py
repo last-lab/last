@@ -6,7 +6,7 @@ from starlette.requests import Request
 
 from dashboard import enums
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin, Category, Config, Log
+from dashboard.models import Admin, Category, Config, Log, Cat, Dog
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
@@ -314,3 +314,17 @@ class SwitchLayout(Link):
     label = "Switch Layout"
     url = "/admin/layout"
     icon = "fas fa-grip-horizontal"
+
+
+@app.register
+class SimpleTable(Link):
+    label = "Simple Table1"
+    icon = "fa-solid fa-table"
+    url = "/admin/stable1"
+
+@app.register
+class SimpleTable(Link):
+    label = "Simple Table2"
+    icon = "fa-solid fa-table"
+    url = "/admin/stable2"
+
