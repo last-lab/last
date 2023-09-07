@@ -8,7 +8,7 @@ from .public import DateString, PermissionLevel, UserInfo
 
 @dataclass
 class Record(BaseModel):
-    id: str # UUID-4
+    uid: str # UUID-4
     description: Optional[str]
     creator: UserInfo
     editor: UserInfo
@@ -44,7 +44,7 @@ class BaseManager(ABC):
         pass
 
     @staticmethod
-    def new(orm: ORMModel, conf: Record) -> str: # 返回新创建的id
+    def new(orm: ORMModel, conf: Record) -> str: # 返回新创建的uid
         pass
 
     @staticmethod

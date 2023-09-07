@@ -7,7 +7,7 @@ from .public import ReturnCode
 
 
 @dataclass
-class ModelDetail(Record):
+class ModelInfo(Record):
     name: str
     model_type: str
     version: str
@@ -24,6 +24,8 @@ class ModelDetail(Record):
     limited_token: int  # token余量
     max_access_per_hour: int # 每小时最大访问次数
     max_access_per_min: int # 每分钟最大访问次数
+
+    registration: Optional[Registration] = None
 
 @dataclass
 class Registration(Record)        :

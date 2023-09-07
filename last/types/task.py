@@ -4,17 +4,20 @@ from pydantic import BaseModel
 
 from .base import Record, Statistics
 from .public import RiskDimension, RelatedRiskDimensions
-from .dataset import Dataset
+from .dataset import DatasetInfo
 
 @dataclass
-class Task(Record):
+class TaskInfo(Record):
     """
     方案信息
     """
     name: str
-    level_1_dimensions: Dict[RiskDimension.name, str] 
-    dataset_name: List[Dataset.name] 
-    focused_risk: RelatedRiskDimensions
+    dimensions: Dict[RiskDimension.name, str]  # 填写各个一级风险维度的占比%
+    datasets: List[DatasetInfo] 
+    focused_risk: Optional[RelatedRiskDimensions]  # 新建时不填写
+
+
+
 
 @dataclass
 class RiskDataDistribution(Record):

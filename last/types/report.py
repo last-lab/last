@@ -4,22 +4,18 @@ from pydantic import BaseModel
 import torch
 from tortoise.models import Model as ORMModel
                                                                               
-from .model import ModelDetail, Registration
+from .model import ModelDetail
 from .task import Task
 from .base import Record, Statistics, BaseManager
 from .public import UserInfo, StateCode, ReturnCode
 
 @dataclass
-class Report(Record):
-    model_name: str
-    version: str
-    display_name: str
-    task_name: str
+class ReportInfo(Record):
     task_detail: Task
     state: StateCode
     report_detail: Optional[ReportDetail] = None
     model_detail: ModelDetail
-    registration: Optional[Registration] = None
+    
     
 
 @dataclass

@@ -7,11 +7,20 @@ from .public import RiskDimension
 
 
 @dataclass
-class Dataset(Record):
+class DatasetInfo(Record):
     name: str
     dimensions: List[RiskDimension]
     url: str
-    used_by: List[str]
+    used_by: Optional[List[str]]
+
+
+class DatasetManager(BaseManager):
+    @staticmethod 
+    def edit(orm: ORMModel, id, conf: DatasetInfo) -> ReturnCode: # 编辑评测方案，返回状态码
+        pass
+
+
+
 
 
 def create_dataloader() -> torch.DataLoader:
