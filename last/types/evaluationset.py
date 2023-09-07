@@ -2,32 +2,23 @@ from dataclasses import dataclass
 from typing import List, Dict, Union, Optional
 from pydantic import BaseModel
 
+from .base import Record, Statistics
+from .public import RiskDimension
+
 @dataclass
 class EvaluationSetDimension:
     level: int
     name: str
     description: str
+
 @dataclass
-class EvaluationSet:
-    """ Summary
-    Description
-
-    doctest
-    """
-    id: str # UUID-4
+class EvaluationSet(Record):
     name: str
-    description: str
-    dimensions: List[EvaluationSetDimension]
+    dimensions: List[RiskDimension]
     url: str
-    created_at: str
-    updated_at: str
     used_by: List[str]
-    permissions: List[str]
-    statistics: Dict[str, Union[int, float]]
 
-def create_model(e_set:EvaluationSet): -> ORMModel:
-    pass
 
-def create_dataloader(): -> torch.DataLoader:
+def create_dataloader() -> torch.DataLoader:
     pass
 
