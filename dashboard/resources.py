@@ -12,6 +12,7 @@ from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
 from dashboard.models import Sponsor
+from dashboard.models import Evaluation
 from dashboard.providers import import_export_provider
 from dashboard.widgets.displays import ShowIp
 from last.services.app import app
@@ -44,6 +45,53 @@ class Notification(Link):
     label = "Notification"
     icon = "far fa-bell"
     url = "/admin/notification"
+
+
+@app.register
+class Label(Link):
+    label = "Label"
+    icon = "fas fa-tag"
+    url = "/admin/label"
+
+
+@app.register
+class ModelEval(Link):
+    class RecordResource(Model):
+        label: str = "Record"
+        filters = [
+            filters.Search(
+                name="username",
+                label="Username",
+                search_mode='contains',
+                placeholder="评测模型/版本/方案",
+            ),
+        ]
+        fields = [
+            "model_name",
+            "eval_setting",
+            "submit_time",
+            "eval_status",
+            "is_superuser",
+            "is_active",
+            "created_at",
+        ]
+
+    class NewResource(Dropdown):
+        label: str = "New"
+        filters = [
+            filters.Search(
+                name="username",
+                label="Username",
+                search_mode='contains',
+                placeholder="评测模型/版本/方案",
+            ),
+        ]
+
+    label = "Model Evaluation"
+    model = Evaluation
+    icon = "fas fa-user"
+    url = '/admin/model_eval'
+    resource = [RecordResource, NewResource]
 
 
 @app.register
