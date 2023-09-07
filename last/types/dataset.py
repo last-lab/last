@@ -16,12 +16,15 @@ class DatasetInfo(Record):
 
 class DatasetManager(BaseManager):
     @staticmethod 
-    def edit(orm: ORMModel, id, conf: DatasetInfo) -> ReturnCode: # 编辑评测方案，返回状态码
+    def edit(id, conf: DatasetInfo) -> ReturnCode: # 编辑评测方案，返回状态码
         pass
 
-
-
-
+    @staticmethod 
+    def upload(content) -> str: # 返回id  
+        QA_url = get_url(content)
+        dataset_info = DatasetInfo(name="xxx", dimensions="xxxx", url=QA_url)
+        uid = DatasetManager.new(DatasetInfo)
+        return uid
 
 def create_dataloader() -> torch.DataLoader:
     pass

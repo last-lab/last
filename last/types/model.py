@@ -7,7 +7,7 @@ from .public import ReturnCode
 
 
 @dataclass
-class ModelInfo(Record):
+class APIModelInfo(Record):
     name: str
     model_type: str
     version: str
@@ -27,8 +27,11 @@ class ModelInfo(Record):
 
     registration: Optional[Registration] = None
 
+
+
+
 @dataclass
-class Registration(Record)        :
+class Registration(Record):
     context: str #二进制字符串
     
 

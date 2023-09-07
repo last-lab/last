@@ -8,6 +8,8 @@ class RiskDimension(BaseModel):
     level: int
     name: str
     description: str
+    def __str__(self):
+         return self.name
 
 
 RelatedRiskDimensions = Dict[str, Dict[str, Dict[str, str]]]

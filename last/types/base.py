@@ -36,23 +36,23 @@ class Filter(BaseModel):
 class BaseManager(ABC):
     @staticmethod
     # 所有搜索功能采用智能模糊搜索或向量搜索，不做太多定义
-    def find_records(orm: ORMModel, page_num: int, page_size:int , searched_by: Optional[str] =None, filted_by: Optional[List[Filter]] =None, sorted_by: Optional[List[str]] =None) -> List[str]: # 返回满足要求的id
+    def find_records(page_num: int, page_size:int , searched_by: Optional[str] =None, filted_by: Optional[List[Filter]] =None, sorted_by: Optional[List[str]] =None) -> List[str]: # 返回满足要求的id
         pass
 
     @staticmethod
-    def get_records(orm: ORMModel, ids:List[str]) -> List[Record]: # 根据id查记录
+    def get_records(ids:List[str]) -> List[Record]: # 根据id查记录
         pass
 
     @staticmethod
-    def new(orm: ORMModel, conf: Record) -> str: # 返回新创建的uid
+    def new(conf: Record) -> str: # 返回新创建的uid
         pass
 
     @staticmethod
-    def export(orm: ORMModel, id:str) -> str: # 文件下载地址
+    def export(id:str) -> str: # 文件下载地址
         pass
 
     @staticmethod
-    def delete(orm: ORMModel, id:str) -> ReturnCode: # 返回行为码
+    def delete(id:str) -> ReturnCode: # 返回行为码
         pass
 
 

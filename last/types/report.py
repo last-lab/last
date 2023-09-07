@@ -5,13 +5,13 @@ import torch
 from tortoise.models import Model as ORMModel
                                                                               
 from .model import ModelDetail
-from .task import Task
+from .task import TaskInfo
 from .base import Record, Statistics, BaseManager
 from .public import UserInfo, StateCode, ReturnCode
 
 @dataclass
 class ReportInfo(Record):
-    task_detail: Task
+    task: TaskInfo
     state: StateCode
     report_detail: Optional[ReportDetail] = None
     model_detail: ModelDetail
@@ -25,7 +25,7 @@ class ReportDetail(Record):
 
 class ReportManager(BaseManager):
     @staticmethod 
-    def repeat(orm: ORMModel, id, conf: Report) -> str: # 因为某些异常，需要重新提交一次评测
+    def repeat(id, conf: Report) -> str: # 因为某些异常，需要重新提交一次评测
         pass
 
     @staticmethod
@@ -39,6 +39,6 @@ class ReportManager(BaseManager):
         pass
 
     @staticmethod
-    def open_registration(orm: ORMModel, report_id, model_id) -> Registration:
+    def open_registration(report_id, model_id) -> Registration:
         # 检查状态
         pass

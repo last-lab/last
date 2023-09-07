@@ -12,7 +12,7 @@ class TaskInfo(Record):
     方案信息
     """
     name: str
-    dimensions: Dict[RiskDimension.name, str]  # 填写各个一级风险维度的占比%
+    dimensions: Optional[Dict[RiskDimension.name, str]]  # 填写各个一级风险维度的占比%
     datasets: List[DatasetInfo] 
     focused_risk: Optional[RelatedRiskDimensions]  # 新建时不填写
 
@@ -31,7 +31,7 @@ class RiskDataDistribution(Record):
 
 class TaskManager(BaseManager):
     @staticmethod 
-    def edit(orm: ORMModel, id, conf: Task) -> ReturnCode: # 编辑评测方案，返回状态码
+    def edit(id, conf: Task) -> ReturnCode: # 编辑评测方案，返回状态码
         pass
 
     @staticmethod
