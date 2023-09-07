@@ -7,11 +7,13 @@ from .base import Record, Statistics
 from .public import RiskDimension, RelatedRiskDimensions
 from .dataset import DatasetInfo
 
+
 @dataclass
 class Task(Record, BaseManager):
     """
     评测方案信息
     """
+
     name: str
     dimensions: Optional[Dict[RiskDimension.name, str]]  # 填写各个一级风险维度的占比%
     datasets: List[DatasetInfo]

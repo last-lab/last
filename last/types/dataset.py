@@ -6,7 +6,6 @@ from .base import Record, Statistics
 from .public import RiskDimension
 
 
-
 @dataclass
 class Dataset(Record, BaseManager):
     name: str
