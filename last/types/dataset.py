@@ -7,7 +7,7 @@ from .public import RiskDimension
 
 
 @dataclass
-class EvaluationSet(Record):
+class Dataset(Record):
     name: str
     dimensions: List[RiskDimension]
     url: str

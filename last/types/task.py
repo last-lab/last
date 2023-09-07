@@ -4,16 +4,16 @@ from pydantic import BaseModel
 
 from .base import Record, Statistics
 from .public import RiskDimension, RelatedRiskDimensions
-from .evaluationset import EvaluationSet
+from .dataset import Dataset
 
 @dataclass
-class TaskDetail(Record):
+class Task(Record):
     """
     方案信息
     """
     name: str
-    level_1_dimensions: Dict[RiskDimension.name, ] 
-    dataset_name: List[EvaluationSet.name] 
+    level_1_dimensions: Dict[RiskDimension.name, str] 
+    dataset_name: List[Dataset.name] 
     focused_risk: RelatedRiskDimensions
 
 @dataclass
@@ -28,7 +28,7 @@ class RiskDataDistribution(Record):
 
 class TaskManager(BaseManager):
     @staticmethod 
-    def edit(orm: ORMModel, id, conf: TaskDetail) -> ReturnCode: # 编辑评测方案，返回状态码
+    def edit(orm: ORMModel, id, conf: Task) -> ReturnCode: # 编辑评测方案，返回状态码
         pass
 
     @staticmethod

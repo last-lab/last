@@ -5,7 +5,7 @@ import torch
 from tortoise.models import Model as ORMModel
                                                                               
 from .model import ModelDetail, Registration
-from .task import TaskDetail
+from .task import Task
 from .base import Record, Statistics, BaseManager
 from .public import UserInfo, StateCode, ReturnCode
 
@@ -15,7 +15,7 @@ class Report(Record):
     version: str
     display_name: str
     task_name: str
-    task_detail: TaskDetail
+    task_detail: Task
     state: StateCode
     report_detail: Optional[ReportDetail] = None
     model_detail: ModelDetail
