@@ -42,3 +42,5 @@ If this is the first time you run the dashboard, you need to create an admin use
 by visiting http://127.0.0.1:8000/admin/init
 
 For more detail, checkout Dockfile and docker-compose.yml in case I miss something.
+
+# Test Feishu Webhook
