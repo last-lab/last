@@ -90,3 +90,11 @@ class Dog1(Model):
     gender = fields.IntEnumField(GenderType, description="Gender Type")
     image = fields.CharField(max_length=200)
     birth_at = fields.DatetimeField(auto_now_add=True)
+
+
+class EvaluationPlanManager(Model):
+    """
+    评测方案管理model
+    """
+    plan_name = fields.CharField(max_length=200)
+    plan_content = fields.CharField(max_length=500)
