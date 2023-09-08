@@ -6,13 +6,12 @@ from starlette.requests import Request
 
 from dashboard import enums
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin, Category, Config, Log
+from dashboard.models import Admin, Category, Config, Evaluation, Log
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
 from dashboard.models import Sponsor
-from dashboard.models import Evaluation
 from dashboard.providers import import_export_provider
 from dashboard.widgets.displays import ShowIp
 from last.services.app import app
@@ -67,7 +66,7 @@ class Evaluation(Dropdown):
             filters.Search(
                 name="username",
                 label="Username",
-                search_mode='contains',
+                search_mode="contains",
                 placeholder="评测模型/版本/方案",
             ),
         ]
