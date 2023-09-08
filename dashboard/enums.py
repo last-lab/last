@@ -9,3 +9,8 @@ class ProductType(IntEnum):
 class Status(IntEnum):
     on = 1
     off = 0
+
+
+class GenderType(IntEnum):
+    female = 0
+    male = 1
