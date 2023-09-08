@@ -80,10 +80,9 @@ class Cat(Model):
     birth_at = fields.DatetimeField(auto_now_add=True)
 
 
-class Dog(Model):
+class Dog1(Model):
     name = fields.CharField(max_length=50)
     age = fields.IntField(description="View Age")
     gender = fields.IntEnumField(GenderType, description="Gender Type")
     image = fields.CharField(max_length=200)
-    mark = fields.TextField(max_length=500)
     birth_at = fields.DatetimeField(auto_now_add=True)
