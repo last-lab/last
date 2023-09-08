@@ -355,3 +355,9 @@ class Animal(Dropdown):
     label = "Animal"
     icon = "fas fa-bars"
     resources = [CatResource, DogResource]
+
+# from dashboard.data_labeling.labeling import LabelPageModel
+# @app.register
+# class DataLabeling(Dropdown):
+
+#     pass
