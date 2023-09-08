@@ -324,13 +324,6 @@ class SimpleTable(Link):
 
 
 @app.register
-class SimpleTable(Link):
-    label = "Simple Table2"
-    icon = "fa-solid fa-table"
-    url = "/admin/stable2"
-
-
-@app.register
 class Animal(Dropdown):
     class CatResource(Model):
         label = "Cat"

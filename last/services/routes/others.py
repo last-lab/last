@@ -45,10 +45,3 @@ async def stable1(request: Request):
     return templates.TemplateResponse(
         "stable/stable1.html", context={"request": request, "stable_1": table_1}
     )
-
-
-@router.get("/stable2")
-async def stable2(request: Request):
-    return templates.TemplateResponse(
-        "stable/text_annotation_example.html", context={"request": request}
-    )
