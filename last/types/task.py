@@ -15,6 +15,7 @@ class Task(Record, BaseManager):
     """
 
     name: str
+    eval_type: str # 系统评分、人工评分
     dimensions: Optional[Dict[RiskDimension.name, str]]  # 填写各个一级风险维度的占比%
     datasets: List[DatasetInfo]
     focused_risk: Optional[RelatedRiskDimensions]  # 新建时不填写
