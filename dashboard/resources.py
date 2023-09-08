@@ -5,6 +5,7 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
+from last.services import enums as _enums
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Cat, Category, Config, Dog1, Log
 from dashboard.models import Permission as PermissionModel
@@ -12,6 +13,7 @@ from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
 from dashboard.models import Sponsor
+from dashboard.models import EvaluationPlanManager
 from dashboard.providers import import_export_provider
 from dashboard.widgets.displays import ShowIp
 from last.services.app import app
@@ -355,3 +357,52 @@ class Animal(Dropdown):
     label = "Animal"
     icon = "fas fa-bars"
     resources = [CatResource, DogResource]
+
+
+@app.register
+class DataManager(Dropdown):
+    class EvaluationPlanManagerResource(Model):
+        label = "评测方案管理"
+        model = EvaluationPlanManager
+        filters = [filters.Search(name="name", label="方案名称")]
+        fields = ["id",
+                  Field(name="plan_name", label="评测方案"),
+                  Field(name="plan_content", label="风险类型/数据占比/评测权重")]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return [
+                Action(
+                    label=_("update"),
+                    icon="ti ti-edit",
+                    name="update",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                ),
+                Action(
+                    label="Copy Create",
+                    icon="ti ti-toggle-left",
+                    name="copy_create",
+                    method=_enums.Method.GET,
+                ),
+                Action(
+                    label=_("delete"),
+                    icon="ti ti-trash",
+                    name="delete",
+                    method=_enums.Method.DELETE,
+                ),
+            ]
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("新建方案"),
+                    icon="fas fa-plus",
+                    name="create",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                    class_="btn-dark",
+                )
+            ]
+
+    label = "数据管理"
+    icon = "fas fa-bars"
+    resources = [EvaluationPlanManagerResource]
