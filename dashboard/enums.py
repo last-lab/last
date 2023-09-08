@@ -11,6 +11,11 @@ class Status(IntEnum):
     off = 0
 
 
+class GenderType(IntEnum):
+    female = 0
+    male = 1
+
+
 class EvalStatus(IntEnum):
     on_progress = (0,)
     error = (1,)
