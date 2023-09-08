@@ -1,6 +1,6 @@
 from tortoise import Model, fields
 
-from dashboard.enums import ProductType, Status
+from dashboard.enums import ProductType, Status, EvalStatus
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -48,7 +48,10 @@ class Config(Model):
 
 
 class Evaluation(Model):
-    name = fields.CharField(max_length=50)
+    model_name = fields.CharField(max_length=50)
+    eval_setting = fields.IntField()
+    submit_time = fields.DatetimeField()
+    eval_status = fields.IntEnumField(EvalStatus, description="Evaluation Status")
 
 
 class Log(AbstractLog):

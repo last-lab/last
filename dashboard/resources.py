@@ -55,29 +55,14 @@ class Label(Link):
 
 
 @app.register
-class ModelEval(Link):
+class Evaluation(Dropdown):
+    class ListResource(Model):
+        label: str = "New"
+        model = Evaluation
+
     class RecordResource(Model):
         label: str = "Record"
-        filters = [
-            filters.Search(
-                name="username",
-                label="Username",
-                search_mode='contains',
-                placeholder="评测模型/版本/方案",
-            ),
-        ]
-        fields = [
-            "model_name",
-            "eval_setting",
-            "submit_time",
-            "eval_status",
-            "is_superuser",
-            "is_active",
-            "created_at",
-        ]
-
-    class NewResource(Dropdown):
-        label: str = "New"
+        model = Evaluation
         filters = [
             filters.Search(
                 name="username",
@@ -88,10 +73,8 @@ class ModelEval(Link):
         ]
 
     label = "Model Evaluation"
-    model = Evaluation
     icon = "fas fa-user"
-    url = '/admin/model_eval'
-    resource = [RecordResource, NewResource]
+    resources = [ListResource, RecordResource]
 
 
 @app.register
