@@ -2,20 +2,19 @@ from dataclasses import dataclass
 from typing import List, Dict, Union, Optional
 from pydantic import BaseModel
 from abc import ABC, abstractmethod
-from tortoise.models import Model as ORMModel
 
 from .public import DateString, PermissionLevel, UserInfo
 
 
 @dataclass
 class Record(BaseModel):
-    uid: str  # UUID-4
+    uid: Optional[str]  # UUID-4
     description: Optional[str]
     creator: UserInfo
-    editor: UserInfo
-    reviewer: UserInfo
+    editor: Optional[UserInfo]
+    reviewer: Optional[UserInfo]
     created_at: DateString
-    updated_at: DateString
+    updated_at:  Optional[DateString]
     permissions: PermissionLevel
 
 
@@ -24,10 +23,6 @@ class Statistics(BaseModel):
     total_cnt: str
     updated_at: DateString
     description: Optional[str]
-
-
-def create_ORM(db_url: str, user: UserInfo) -> ORMModel:
-    pass
 
 
 @dataclass
@@ -64,3 +59,8 @@ class BaseManager(ABC):
     @staticmethod
     def delete(id: str) -> ReturnCode:  # 返回行为码
         pass
+
+
+class BaseModel(ABC):
+    """Base class for Chat models."""
+    pass
