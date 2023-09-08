@@ -1,0 +1,42 @@
+{% extends layout %}
+{% block page_body %}
+<div>
+    <table class="table">
+        <thead class="sticky-top">
+            <tr>
+                <th scope="col">评测集名称</th>
+                <th scope="col">风险类型</th>
+                <th scope="col">二级类型</th>
+                <th scope="col">更新时间</th>
+                <th scope="col">使用次数</th>
+                <th scope="col">操作</th>
+            </tr>
+        </thead>
+            <tbody>
+                {% for item in table_resources %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.type }}</td>
+                        <td>{{ item.sub_type }}</td>
+                        <td>{{ item.updateTime }}</td>
+                        <td>{{ item.useCount }}</td>
+                        <td>
+                            <a href="#" class="btn btn-ghost-primary">
+                              详情
+                            </a>
+                            <a href="#" class="btn btn-ghost-primary">
+                              编辑
+                            </a>
+                            <a href="#" class="btn btn-ghost-primary">
+                              导出
+                            </a>
+                            <a href="#" class="btn btn-ghost-danger">
+                              删除
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+    </table>
+</div>
+{% endblock %}

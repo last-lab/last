@@ -93,6 +93,11 @@ class ModelEval(Link):
     url = '/admin/model_eval'
     resource = [RecordResource, NewResource]
 
+@app.register
+class Dataset(Link):
+    label = "Dataset"
+    icon = "far fa-sticky-note"
+    url = "/admin/dataset"
 
 @app.register
 class Content(Dropdown):
