@@ -21,6 +21,7 @@ class Dataset(Record, BaseManager):
     name: str
     dimensions: List[RiskDimension]
     url: str
+    volume: str # 数据集大小
     used_by: Optional[List[str]]
     qa_list: List[QARecord]
     current_index: int
