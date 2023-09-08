@@ -1,6 +1,6 @@
 from tortoise import Model, fields
 
-from dashboard.enums import ProductType, Status, GenderType
+from dashboard.enums import GenderType, ProductType, Status
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,

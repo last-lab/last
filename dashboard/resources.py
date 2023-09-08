@@ -6,7 +6,7 @@ from starlette.requests import Request
 
 from dashboard import enums
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin, Category, Config, Log, Cat, Dog1
+from dashboard.models import Admin, Cat, Category, Config, Dog1, Log
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
@@ -322,11 +322,13 @@ class SimpleTable(Link):
     icon = "fa-solid fa-table"
     url = "/admin/stable1"
 
+
 @app.register
 class SimpleTable(Link):
     label = "Simple Table2"
     icon = "fa-solid fa-table"
     url = "/admin/stable2"
+
 
 @app.register
 class Animal(Dropdown):
@@ -348,8 +350,13 @@ class Animal(Dropdown):
             "name",
             "age",
             "gender",
-            Field(name="image", label="Image", display=displays.Image(width="40"), input_=inputs.Image(null=True, upload=upload)),
-            "birth_at"
+            Field(
+                name="image",
+                label="Image",
+                display=displays.Image(width="40"),
+                input_=inputs.Image(null=True, upload=upload),
+            ),
+            "birth_at",
         ]
 
     label = "Animal"
