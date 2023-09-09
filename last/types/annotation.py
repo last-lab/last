@@ -1,9 +1,11 @@
-from pydantic import BaseModel, Field
+from dataclasses import dataclass
+from pydantic import BaseModel
 from typing import List, Optional, Dict, Any, Union
+from .labeldata import TaskInfo
 
 
 # 定义注解结果中的值结构
-class AnnotationValue(BaseModel):
+class _AnnotationValue(BaseModel):
     start: Optional[int] = None  # 起始位置，可选
     end: Optional[int] = None  # 结束位置，可选
     text: Optional[str] = None  # 文本内容，可选
@@ -13,8 +15,8 @@ class AnnotationValue(BaseModel):
 
 
 # 定义单个注解结果的数据结构
-class AnnotationResult(BaseModel):
-    value: AnnotationValue  # 注解的值
+class _AnnotationResult(BaseModel):
+    value: _AnnotationValue  # 注解的值
     id: str  # 注解的唯一标识符
     from_name: str  # 注解来源名称
     to_name: str  # 注解目标名称
@@ -33,7 +35,7 @@ class Annotations(BaseModel):
 
 
 # 定义文本数据的数据结构
-class Data(BaseModel):
+class Text(BaseModel):
     text: str  # 文本内容
 
 
@@ -44,10 +46,10 @@ class Meta(BaseModel):
 
 # 定义Label Studio JSON文件的数据结构
 class LabelStudioJSON(BaseModel):
-    task_id: int  # 当前标注任务的task_id
+    task_id: TaskInfo.task_id  # 当前标注任务的task_id
     annotations: List[Annotations]  # 注解列表
     file_upload: str  # 上传的文件名
-    data: Data  # 文本数据
+    data: Text  # 文本数据(根据label studio定义的)
     meta: Meta  # 元数据
     created_at: str  # 创建时间
     updated_at: str  # 更新时间
