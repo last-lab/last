@@ -6,7 +6,7 @@ from starlette.requests import Request
 
 from dashboard import enums
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin, Cat, Category, Config, Dog1, LabelPage, Log, Evaluation
+from dashboard.models import Admin, Cat, Category, Config, Dog1, Evaluation, LabelPage, Log
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel

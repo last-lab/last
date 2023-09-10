@@ -1,4 +1,5 @@
 import json
+import os
 import pathlib
 from datetime import datetime
 
@@ -9,7 +10,6 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 # sqlite_addr = f"sqlite:///{db_file}"
 
-import os
 
 sqlite_addr = os.getenv("DATABASE_URL")
 
