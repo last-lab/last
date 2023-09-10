@@ -355,3 +355,27 @@ class Animal(Dropdown):
     label = "Animal"
     icon = "fas fa-bars"
     resources = [CatResource, DogResource]
+
+
+@app.register
+class Model(Model):
+    label = "Modal"
+    icon = "fas fa-bars"
+    model = Dog1
+    filters = [
+        filters.Enum(enum=enums.GenderType, name="gender", label="Gender"),
+        filters.Datetime(name="birth_at", label="Birth_At"),
+    ]
+    fields = [
+        "id",
+        "name",
+        "age",
+        "gender",
+        Field(
+            name="image",
+            label="Image",
+            display=displays.Image(width="40"),
+            input_=inputs.Image(null=True, upload=upload),
+        ),
+        "birth_at",
+    ]

@@ -4,10 +4,10 @@ from typing import Any
 from starlette.requests import Request
 from tortoise.queryset import QuerySet
 
-from last.services.widgets import Select
+from last.services.widgets.filters import Filter
 
 
-class DueSoon(Select):
+class DueSoon(Filter):
     async def get_options(self):
         ret = [("Yes", "1"), ("No", "0"), ("Invalid", "-1")]
         if self.context.get("null"):

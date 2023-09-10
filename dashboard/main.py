@@ -85,6 +85,7 @@ def create_app():
         await admin_app.configure(
             logo_url="https://preview.tabler.io/static/logo-white.svg",
             favicon_url="https://raw.githubusercontent.com/fastapi-admin/fastapi-admin/dev/images/favicon.png",
+            default_locale="zh-CN",
             template_folders=[os.path.join(BASE_DIR, "templates")],
             providers=[
                 LoginProvider(
