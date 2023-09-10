@@ -6,8 +6,8 @@
             <h3 class="card-title">新建评测方案</h3>
         </div>
         <div class="card-body border-bottom py-3">
-            <form method="post" action="{{ request.app.admin_path }}/{{ resource }}/create"
-                  enctype="{{ model_resource.enctype }}">
+            <form method="post" action="{{ request.app.admin_path }}/{{ resource }}/epm_create"
+                  enctype="application/x-www-form-urlencoded">
 
                 <div class="mb-3 row">
                     <label class="col-2 col-form-label">方案名称</label>
@@ -101,7 +101,9 @@
                                 <table class="table card-table table-vcenter text-nowrap datatable">
                                     <thead>
                                     <tr>
-                                        <th></th>
+                                        <th class="w-1"><input class="form-check-input m-0 align-middle" type="checkbox"
+                                                               aria-label="Select all invoices" id="checkbox-select-all"
+                                        ></th>
                                         <th>评测集</th>
                                         <th>风险类型</th>
                                         <th>二级类型</th>
@@ -112,11 +114,17 @@
                                     {% if datasets %}
                                     {% for ds in datasets %}
                                     <tr>
-                                        <td>{{ ds.id }}</td>
+                                        <td>
+                                            <input data-id="{{ ds.id }}" data-risk-type="{{ ds.risk_type }}"
+                                                   data-second-type="{{ ds.risk_second_type }}"
+                                                   data-third-type="{{ ds.risk_third_type }}"
+                                                   class="form-check-input m-0 align-middle checkbox-select-item"
+                                                   type="checkbox">
+                                        </td>
                                         <td>{{ ds.name }}</td>
                                         <td>{{ ds.risk_type }}</td>
-                                        <td>{{ ds.second_type }}</td>
-                                        <td>{{ ds.third_type }}</td>
+                                        <td>{{ ds.risk_second_type }}</td>
+                                        <td>{{ ds.risk_third_type }}</td>
                                     </tr>
                                     {% endfor %}
                                     {% endif %}
@@ -139,25 +147,25 @@
                                 <th scope="col">设置权重</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            <tr>
-                                <th scope="row">国家安全</th>
-                                <td>666</td>
-                                <td>66.6%</td>
-                                <td>80%</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">个人权利</th>
-                                <td>333</td>
-                                <td>33.3%</td>
-                                <td>20%</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">总计</th>
-                                <td>999</td>
-                                <td>100%</td>
-                                <td>100%</td>
-                            </tr>
+                            <tbody id="statistic_tbody">
+<!--                            <tr>-->
+<!--                                <th scope="row">国家安全</th>-->
+<!--                                <td>666</td>-->
+<!--                                <td>66.6%</td>-->
+<!--                                <td>80%</td>-->
+<!--                            </tr>-->
+<!--                            <tr>-->
+<!--                                <th scope="row">个人权利</th>-->
+<!--                                <td>333</td>-->
+<!--                                <td>33.3%</td>-->
+<!--                                <td>20%</td>-->
+<!--                            </tr>-->
+<!--                            <tr>-->
+<!--                                <th scope="row">总计</th>-->
+<!--                                <td>999</td>-->
+<!--                                <td>100%</td>-->
+<!--                                <td>100%</td>-->
+<!--                            </tr>-->
                             </tbody>
                         </table>
 
@@ -177,4 +185,79 @@
         </div>
     </div>
 </div>
+
+<script>
+        var groupedData = {};
+        function statistics() {
+             $("#statistic_tbody").empty();
+            let dss = $('.checkbox-select-item:checked').map(function () {
+                return {"id": $(this).attr('data-id'),
+                "risk_type": $(this).attr('data-risk-type'),
+                "second_type": $(this).attr('data-second-type'),
+                "third_type": $(this).attr('data-third-type'),
+                }
+            }).get();
+
+            groupedData = dss.reduce((result, item) => {
+                    const key = item.risk_type;
+                    if (!result[key]) {
+                        result[key] = [];
+                    }
+                    result[key].push(item);
+                    return result;
+                }, {});
+
+            for (const key in groupedData) {
+                if (groupedData.hasOwnProperty(key)) {
+                    const group = groupedData[key];
+                    console.log(`分组 ${key}:`);
+                    console.log(group);
+                    var tr = $("<tr></tr>");
+                    var td = $("<td scope='row'></td>").text(key);
+                    tr.append(td);
+                    for (item in group) {
+                        tr.append($("<td></td>").text(group.length));
+                        var percent = (group.length / dss.length * 100).toFixed(1) + "%";
+                        tr.append($("<td></td>").text(percent));
+                        tr.append($("<td '></td>").append($("<input class='form-control' style='width: 50px;' required />")));
+                        $("#statistic_tbody").append(tr);
+                    }
+
+                }
+            }
+
+        }
+
+        let checkbox = $('#checkbox-select-all');
+
+        checkbox.change(function () {
+            let checked = checkbox.prop('checked');
+            $('.checkbox-select-item').prop("checked", checked);
+            statistics()
+        });
+
+        $('.checkbox-select-item').change(function () {
+<!--            let length = $('.checkbox-select-item:checked').length;-->
+            statistics()
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
 {% endblock %}

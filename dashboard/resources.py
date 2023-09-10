@@ -372,6 +372,7 @@ class DataManager(Dropdown):
                   Field(
                       name="score_way",
                       label="评分方式",
+                      display=displays.InputOnly(),
                       input_=inputs.RadioEnum(enums.ScoreWayType, default=enums.ScoreWayType.system),
                   )
                   ]
@@ -381,14 +382,14 @@ class DataManager(Dropdown):
                 Action(
                     label=_("update"),
                     icon="ti ti-edit",
-                    name="update",
+                    name="epm_update",
                     method=_enums.Method.GET,
                     ajax=False,
                 ),
                 Action(
                     label=_("复制并新建"),
                     icon="ti ti-toggle-left",
-                    name="copy_create",
+                    name="epm_copy_create",
                     method=_enums.Method.GET,
                     ajax=False,
                 ),
@@ -404,7 +405,7 @@ class DataManager(Dropdown):
                 ToolbarAction(
                     label=_("新建方案"),
                     icon="fas fa-plus",
-                    name="create",
+                    name="epm_create",
                     method=_enums.Method.GET,
                     ajax=False,
                     class_="btn-dark",

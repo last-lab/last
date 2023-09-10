@@ -96,4 +96,3 @@ class EvaluationPlanManager(Model):
     plan_content = fields.CharField(max_length=500)
     score_way = fields.IntEnumField(ScoreWayType, description="Score Way", default=ScoreWayType.system)
     
-
