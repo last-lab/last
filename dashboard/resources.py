@@ -6,7 +6,7 @@ from starlette.requests import Request
 
 from dashboard import enums
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin, Cat, Category, Config, Dog1, Log
+from dashboard.models import Admin, Cat, Category, Config, Dog1, Log, Evaluation
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
@@ -44,6 +44,28 @@ class Notification(Link):
     label = "Notification"
     icon = "far fa-bell"
     url = "/admin/notification"
+
+
+@app.register
+class Label(Link):
+    label = "Label"
+    icon = "fas fa-tag"
+    url = "/admin/label"
+
+
+@app.register
+class Evaluation(Model):
+    label: str = "Evaluation"
+    icon = "fas fa-user"
+    model = Evaluation
+    filters = [
+        filters.Search(
+            name="username",
+            label="Username",
+            search_mode="contains",
+            placeholder="评测模型/版本/方案",
+        ),
+    ]
 
 
 @app.register

@@ -58,6 +58,23 @@ async def notification(
     )
 
 
+@app.get("/label")
+async def label(
+    request: Request,
+    resources=Depends(get_resources),
+):
+    return templates.TemplateResponse(
+        "label.html",
+        context={
+            "request": request,
+            "resources": resources,
+            "resource_label": "Label",
+            "page_pre_title": "BY LABEL STUDIO",
+            "page_title": "Label",
+        },
+    )
+
+
 admin_log_config_switch_status = AdminLog(action="config_status_switch")
 
 
