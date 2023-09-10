@@ -1,6 +1,6 @@
 from tortoise import Model, fields
-from dashboard.enums import GenderType, EvalStatus, ProductType, Status
 
+from dashboard.enums import EvalStatus, GenderType, ProductType, Status
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -98,5 +98,5 @@ class Dog1(Model):
 class LabelPage(Model):
     task_type = fields.CharField(max_length=50)
     labeling_method = fields.JSONField()
-    release_time  = fields.DatetimeField()
+    release_time = fields.DatetimeField()
     current_status = fields.CharField(max_length=50)

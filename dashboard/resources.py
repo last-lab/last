@@ -6,7 +6,7 @@ from starlette.requests import Request
 
 from dashboard import enums
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin, Cat, Category, Config, Dog1, Log, LabelPage
+from dashboard.models import Admin, Cat, Category, Config, Dog1, LabelPage, Log
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
@@ -378,13 +378,15 @@ class Animal(Dropdown):
     icon = "fas fa-bars"
     resources = [CatResource, DogResource]
 
+
 @app.register
 class DataManagePage(Dropdown):
     class LabelingPage(Model):
         label = "数据标注"
         model = LabelPage
-        filters = [filters.Search(name = "task_type", label="Task Type")]
+        filters = [filters.Search(name="task_type", label="Task Type")]
         fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
+
     label = "数据管理"
     icon = "fas fa-bars"
     resources = [LabelingPage]
