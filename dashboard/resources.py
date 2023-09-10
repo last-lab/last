@@ -382,11 +382,11 @@ class Animal(Dropdown):
 @app.register
 class DataManagePage(Dropdown):
     class LabelingPage(Model):
-        label = "数据标注"
+        label = "label"
         model = LabelPage
         filters = [filters.Search(name="task_type", label="Task Type")]
         fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
 
-    label = "数据管理"
+    label = "DataManage"
     icon = "fas fa-bars"
     resources = [LabelingPage]

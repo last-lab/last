@@ -5,10 +5,13 @@ from datetime import datetime
 from sqlalchemy import JSON, Column, DateTime, Integer, String, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-db_file = pathlib.Path(__file__).parent.parent / "app.sqlite3"
+# db_file = pathlib.Path(__file__).parent.parent / "app.sqlite3"
 
-sqlite_addr = f"sqlite:///{db_file}"
+# sqlite_addr = f"sqlite:///{db_file}"
 
+import os
+
+sqlite_addr = os.getenv("DATABASE_URL")
 
 Base = declarative_base()
 
