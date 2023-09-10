@@ -1,6 +1,6 @@
 from tortoise import Model, fields
-# from dashboard.data_labeling.labeling import LabelPageModel
-from dashboard.enums import GenderType, ProductType, Status
+from dashboard.enums import GenderType, EvalStatus, ProductType, Status
+
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -45,6 +45,13 @@ class Config(Model):
     key = fields.CharField(max_length=20, unique=True, description="Unique key for config")
     value = fields.JSONField()
     status: Status = fields.IntEnumField(Status, default=Status.on)
+
+
+class Evaluation(Model):
+    model_name = fields.CharField(max_length=50)
+    eval_setting = fields.IntField()
+    submit_time = fields.DatetimeField()
+    eval_status = fields.IntEnumField(EvalStatus, description="Evaluation Status")
 
 
 class Log(AbstractLog):

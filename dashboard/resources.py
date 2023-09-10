@@ -47,6 +47,28 @@ class Notification(Link):
 
 
 @app.register
+class Label(Link):
+    label = "Label"
+    icon = "fas fa-tag"
+    url = "/admin/label"
+
+
+@app.register
+class Evaluation(Model):
+    label: str = "Evaluation"
+    icon = "fas fa-user"
+    model = Evaluation
+    filters = [
+        filters.Search(
+            name="username",
+            label="Username",
+            search_mode="contains",
+            placeholder="评测模型/版本/方案",
+        ),
+    ]
+
+
+@app.register
 class Content(Dropdown):
     class CategoryResource(Model):
         label = "Category"
