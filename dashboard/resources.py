@@ -364,10 +364,17 @@ class DataManager(Dropdown):
     class EvaluationPlanManagerResource(Model):
         label = "评测方案管理"
         model = EvaluationPlanManager
-        filters = [filters.Search(name="name", label="方案名称")]
+        filters = [filters.Search(name="name", label="方案名称", placeholder="请输入")
+                   ]
         fields = ["id",
                   Field(name="plan_name", label="评测方案"),
-                  Field(name="plan_content", label="风险类型/数据占比/评测权重")]
+                  Field(name="plan_content", label="风险类型/数据占比/评测权重"),
+                  Field(
+                      name="score_way",
+                      label="评分方式",
+                      input_=inputs.RadioEnum(enums.ScoreWayType, default=enums.ScoreWayType.system),
+                  )
+                  ]
 
         async def get_actions(self, request: Request) -> List[Action]:
             return [
@@ -379,10 +386,11 @@ class DataManager(Dropdown):
                     ajax=False,
                 ),
                 Action(
-                    label="Copy Create",
+                    label=_("复制并新建"),
                     icon="ti ti-toggle-left",
                     name="copy_create",
                     method=_enums.Method.GET,
+                    ajax=False,
                 ),
                 Action(
                     label=_("delete"),

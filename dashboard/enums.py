@@ -14,3 +14,9 @@ class Status(IntEnum):
 class GenderType(IntEnum):
     female = 0
     male = 1
+
+# datamanager
+class ScoreWayType(IntEnum):
+    system = 0
+    human = 1
+# datamanager end
