@@ -25,5 +25,3 @@ async def switch_layout(request: Request):
         set_global_env("layout", str(enums.Layout.layout))
         response.set_cookie("layout", enums.Layout.layout, httponly=True)
     return response
-
-
