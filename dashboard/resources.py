@@ -15,6 +15,7 @@ from dashboard.models import Role as RoleModel
 from dashboard.models import Sponsor
 from dashboard.models import Evaluation
 from dashboard.models import EvaluationPlanManager
+from dashboard.models import EvaluationDatasetManager
 from dashboard.providers import import_export_provider
 from dashboard.widgets.displays import ShowIp
 from last.services.app import app
@@ -95,11 +96,6 @@ class ModelEval(Link):
     url = '/admin/model_eval'
     resource = [RecordResource, NewResource]
 
-@app.register
-class Dataset(Link):
-    label = "Dataset"
-    icon = "far fa-sticky-note"
-    url = "/admin/dataset"
 
 @app.register
 class Content(Dropdown):
@@ -444,6 +440,7 @@ class DataManager(Dropdown):
                     method=_enums.Method.DELETE,
                 ),
             ]
+
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return [
                 ToolbarAction(
@@ -456,6 +453,32 @@ class DataManager(Dropdown):
                 )
             ]
 
+    class EvaluationDatasetManagerResource(Model):
+        label = "评测集管理"
+        model = EvaluationDatasetManager
+        page_title = "评测集管理"
+        filters = [filters.Search(name="name", label="评测集名称"),
+                   filters.Search(name="type", label="风险类型")]
+        fields = ["id",
+                  Field(name="name", label="评测集名称"),
+                  Field(name="type", label="风险类型"),
+                  Field(name="sub_type", label="二级类型"),
+                  Field(name="updateTime", label="更新时间"),
+                  Field(name="useCount", label="使用次数")
+                  ]
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("上传数据集"),
+                    icon="fas fa-upload",
+                    name="upload_dataset",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                    class_="btn-primary",
+                )
+            ]
+
     label = "数据管理"
     icon = "fas fa-bars"
-    resources = [EvaluationPlanManagerResource]
+    resources = [EvaluationDatasetManagerResource, EvaluationPlanManagerResource]

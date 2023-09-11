@@ -14,3 +14,9 @@ class Status(IntEnum):
 class GenderType(IntEnum):
     female = 0
     male = 1
+
+class riskTypes(IntEnum):
+    safe = 0
+
+class riskSubTypes(IntEnum):
+    regime = 0

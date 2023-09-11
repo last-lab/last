@@ -1,6 +1,7 @@
 from tortoise import Model, fields
 
 from dashboard.enums import GenderType, ProductType, Status
+from dashboard.enums import riskTypes, riskSubTypes
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -98,3 +99,11 @@ class EvaluationPlanManager(Model):
     """
     plan_name = fields.CharField(max_length=200)
     plan_content = fields.CharField(max_length=500)
+
+
+class EvaluationDatasetManager(Model):
+    name = fields.CharField(max_length=200)
+    type = fields.IntEnumField(riskTypes)
+    sub_type = fields.IntEnumField(riskSubTypes)
+    updateTime = fields.DatetimeField(auto_now_add=True)
+    useCount = fields.IntField()
