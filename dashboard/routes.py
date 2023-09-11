@@ -1,17 +1,11 @@
-from fastapi import Depends
-from fastapi import HTTPException
+from fastapi import Depends, HTTPException
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
-from starlette.status import HTTP_303_SEE_OTHER
-from starlette.status import HTTP_404_NOT_FOUND
-from dashboard.biz_routers import biz_router
+from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
 
+from dashboard.biz_routers import biz_router
 from dashboard.models import Config, Log
 from last.services.app import app
-from last.services.depends import AdminLog
-from last.services.depends import (
-    get_resources,
-)
 from last.services.depends import AdminLog, get_resources
 from last.services.routes.others import router
 from last.services.template import templates
@@ -21,8 +15,8 @@ app.include_router(biz_router)
 
 @app.get("/")
 async def home(
-        request: Request,
-        resources=Depends(get_resources),
+    request: Request,
+    resources=Depends(get_resources),
 ):
     logs = (
         await Log.all()
@@ -52,8 +46,8 @@ async def home(
 
 @app.get("/notification")
 async def notification(
-        request: Request,
-        resources=Depends(get_resources),
+    request: Request,
+    resources=Depends(get_resources),
 ):
     return templates.TemplateResponse(
         "notification.html",

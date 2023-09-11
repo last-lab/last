@@ -1,7 +1,6 @@
 from tortoise import Model, fields
 
-from dashboard.enums import GenderType, ProductType, Status, ScoreWayType
-from dashboard.enums import EvalStatus, GenderType, ProductType, Status
+from dashboard.enums import EvalStatus, GenderType, ProductType, ScoreWayType, Status
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -100,10 +99,12 @@ class EvaluationPlanManager(Model):
     """
     评测方案管理model
     """
+
     plan_name = fields.CharField(max_length=200)
     plan_content = fields.CharField(max_length=500)
-    score_way = fields.IntEnumField(ScoreWayType, description="Score Way", default=ScoreWayType.system)
-
+    score_way = fields.IntEnumField(
+        ScoreWayType, description="Score Way", default=ScoreWayType.system
+    )
 
 
 class LabelPage(Model):

@@ -8,7 +8,7 @@
             <div class="card-body border-bottom py-3">
                 <form
                         method="post"
-                        action="{{ request.app.admin_path }}/{{ resource }}/update/{{ pk }}"
+                        action="{{ request.app.admin_path }}/{{ resource }}/epm_update/{{ pk }}"
                         enctype="{{ model_resource.enctype }}"
                 >
                     {% for input in inputs %} {{ input|safe }} {% endfor %}

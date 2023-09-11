@@ -1,8 +1,7 @@
 from enum import Enum
-from typing import Type
+from typing import Type, Union
 
-from fastapi import APIRouter
-from fastapi import Depends, Path
+from fastapi import APIRouter, Depends, Path
 from starlette.requests import Request
 from tortoise import Model, fields
 from tortoise.transactions import in_transaction
@@ -26,12 +25,13 @@ router = APIRouter()
 
 # datamanager
 
+
 @router.get("/{resource}/epm_create")
 async def create_view(
-        request: Request,
-        resource: str = Path(...),
-        resources=Depends(get_resources),
-        model_resource: ModelResource = Depends(get_model_resource),
+    request: Request,
+    resource: str = Path(...),
+    resources=Depends(get_resources),
+    model_resource: ModelResource = Depends(get_model_resource),
 ):
     inputs = await model_resource.get_inputs(request)
     # DataSet.create()
@@ -45,7 +45,7 @@ async def create_view(
         "model_resource": model_resource,
         "page_title": model_resource.page_title,
         "page_pre_title": model_resource.page_pre_title,
-        "datasets": datasets
+        "datasets": datasets,
     }
     return templates.TemplateResponse(
         f"evaluationplanmanager/create.html",
@@ -58,13 +58,11 @@ async def create_view(
     dependencies=[Depends(admin_log_create), Depends(create_checker)],
 )
 async def create(
-        request: Request,
-        resource: str = Path(...),
-        resources=Depends(get_resources),
-        model_resource: ModelResource = Depends(get_model_resource),
-        model: Type[Model] = Depends(get_model),
+    request: Request,
+    resource: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    model: Type[Model] = Depends(get_model),
 ):
-    inputs = await model_resource.get_inputs(request)
     form = await request.form()
     data, m2m_data = await model_resource.resolve_data(request, form)
     async with in_transaction() as conn:
@@ -73,22 +71,7 @@ async def create(
         for k, items in m2m_data.items():
             m2m_obj = getattr(obj, k)  # type:ManyToManyRelation
             await m2m_obj.add(*items, using_db=conn)
-    if "save" in form.keys():
         return redirect(request, "list_view", resource=resource)
-    context = {
-        "request": request,
-        "resources": resources,
-        "resource_label": model_resource.label,
-        "resource": resource,
-        "inputs": inputs,
-        "model_resource": model_resource,
-        "page_title": model_resource.page_title,
-        "page_pre_title": model_resource.page_pre_title,
-    }
-    return templates.TemplateResponse(
-        f"{resource}/create.html",
-        context=context,
-    )
 
 
 @router.post(
@@ -96,12 +79,12 @@ async def create(
     dependencies=[Depends(admin_log_update), Depends(update_checker)],
 )
 async def update(
-        request: Request,
-        resource: str = Path(...),
-        pk: str = Path(...),
-        model_resource: ModelResource = Depends(get_model_resource),
-        resources=Depends(get_resources),
-        model: Type[Model] = Depends(get_model),
+    request: Request,
+    resource: str = Path(...),
+    pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
 ):
     form = await request.form()
     data, m2m_data = await model_resource.resolve_data(request, form)
@@ -148,12 +131,12 @@ async def update(
 
 @router.get("/{resource}/epm_update/{pk}", dependencies=[Depends(read_checker)])
 async def update_view(
-        request: Request,
-        resource: str = Path(...),
-        pk: str = Path(...),
-        model_resource: ModelResource = Depends(get_model_resource),
-        resources=Depends(get_resources),
-        model: Type[Model] = Depends(get_model),
+    request: Request,
+    resource: str = Path(...),
+    pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
 ):
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
@@ -176,14 +159,13 @@ async def update_view(
 
 @router.get("/{resource}/epm_copy_create/{pk}")
 async def copy_create_view(
-        request: Request,
-        resource: str = Path(...),
-        pk: str = Path(...),
-        model_resource: ModelResource = Depends(get_model_resource),
-        resources=Depends(get_resources),
-        model: Type[Model] = Depends(get_model)
+    request: Request,
+    resource: str = Path(...),
+    pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
 ):
-    dataset_ids = model.dataset
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
     context = {
@@ -208,12 +190,12 @@ async def copy_create_view(
     dependencies=[Depends(admin_log_update), Depends(update_checker)],
 )
 async def copy_create(
-        request: Request,
-        resource: str = Path(...),
-        pk: str = Path(...),
-        model_resource: ModelResource = Depends(get_model_resource),
-        resources=Depends(get_resources),
-        model: Type[Model] = Depends(get_model),
+    request: Request,
+    resource: str = Path(...),
+    pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
 ):
     form = await request.form()
     data, m2m_data = await model_resource.resolve_data(request, form)
@@ -257,7 +239,23 @@ async def copy_create(
     return redirect(request, "list_view", resource=resource)
 
 
+@router.post("/{resource}/epm_ds_query", dependencies=[Depends(read_checker)])
+async def epm_ds_query(
+    request: Request, ds_name: Union[str, None] = None, ds_content: Union[str, None] = None
+):
+    """
+    数据集查询
+    """
+    datasets = []
+    if ds_name is not None:
+        datasets = await DataSet.all().filter(name=ds_name).order_by("id").limit(10)
+    if ds_content is not None:
+        datasets = await DataSet.all().filter(name=ds_content).order_by("id").limit(10)
+    return datasets
+
+
 # datamanager end
+
 
 class RiskType(Enum):
     national_security = 0, "国家安全"
@@ -280,6 +278,7 @@ class DataSet(Model):
     """
     评测方案管理model
     """
+
     name = fields.CharField(max_length=200)
     risk_type = fields.CharField(max_length=500)
     risk_second_type = fields.CharField(max_length=500)
