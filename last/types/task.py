@@ -5,7 +5,7 @@ import contextlib
 
 from .base import Record, Statistics
 from .public import RiskDimension, RelatedRiskDimensions
-from .dataset import DatasetInfo
+from .dataset import Dataset, Message, Conversation
 
 
 @dataclass
@@ -17,8 +17,9 @@ class Task(Record, BaseManager):
     name: str
     eval_type: str # 系统评分、人工评分
     dimensions: Optional[Dict[RiskDimension.name, str]]  # 填写各个一级风险维度的占比%
-    datasets: List[DatasetInfo]
+    datasets: List[Dataset]
     focused_risk: Optional[RelatedRiskDimensions]  # 新建时不填写
+    current_index: int
 
     def __post_init__(self):
         # 将新建的Task对象同步到DB中
@@ -31,6 +32,19 @@ class Task(Record, BaseManager):
     @staticmethod
     def fork(id) -> str:  # 返回新的方案id
         pass
+
+
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> Message:
+        if self.current_index >= len(self.datasets):
+            raise StopIteration
+        dataset = self.datasets[self.current_index]
+        self.current_index += 1
+        yield dataset # 
+
 
 
 @dataclass

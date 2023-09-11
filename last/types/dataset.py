@@ -7,7 +7,7 @@ from .public import RiskDimension
 
 @dataclass
 class Message(Record):
-    related_uid: str # 上一条Message记录的id
+    related_uid: str # 关联上下文上一条Message记录的id
     role: str 
     content: str
 
@@ -23,7 +23,7 @@ class Dataset(Record, BaseManager):
     url: str
     volume: str # 数据集大小
     used_by: Optional[List[str]]
-    qa_list: List[QARecord]
+    qa_list: List[Message]
     current_index: int
 
     def __post_init__(self):
@@ -70,7 +70,7 @@ class Dataset(Record, BaseManager):
     def __iter__(self):
         return self
 
-    def __next__(self) -> QARecord:
+    def __next__(self) -> Message:
         if self.current_index >= len(self.qa_list):
             raise StopIteration
 
