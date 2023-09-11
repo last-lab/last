@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from typing import List, Optional
 
-from last.types.object_id import PyObjectId
 from fastapi import APIRouter, Body, Depends, HTTPException
 
 from last.config import settings
@@ -23,7 +22,7 @@ from last.services.system.results_service import (
 )
 from last.services.system.selectors import get_user_and_org_id
 from last.types.db_models import EvaluationDB, EvaluationScenarioDB
-from last.types.evaluation_model import (
+from last.types.evaluation import (
     DeleteEvaluation,
     Evaluation,
     EvaluationScenario,

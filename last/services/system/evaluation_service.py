@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Dict
 
-from last.types.object_id import PyObjectId
 from fastapi import HTTPException
 from langchain.chains import LLMChain
 from langchain.llms import OpenAI
@@ -16,7 +15,7 @@ from last.types.db_models import (
     EvaluationTypeSettings,
     TestSetDB,
 )
-from last.types.evaluation_model import (
+from last.types.evaluation import (
     Evaluation,
     EvaluationScenario,
     EvaluationScenarioUpdate,

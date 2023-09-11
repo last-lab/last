@@ -3,7 +3,7 @@ from typing import List, Dict, Union, Optional
 from pydantic import BaseModel
 import contextlib
 
-from .base import Record, Statistics
+from .base import Record, Statistics, BaseManager
 from .public import RiskDimension, RelatedRiskDimensions
 from .dataset import DatasetInfo
 

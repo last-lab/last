@@ -14,6 +14,8 @@ class EvaluationType(str, Enum):
     auto_ai_critique = "auto_ai_critique"
     human_a_b_testing = "human_a_b_testing"
     human_scoring = "human_scoring"
+    human_ranking = "human_ranking"
+    human_boxing = "human_boxing"
 
 
 class EvaluationStatusEnum(str, Enum):
@@ -34,31 +36,31 @@ class Evaluation(BaseModel):
     evaluation_type_settings: Optional[EvaluationTypeSettings] = None
     llm_app_prompt_template: Optional[str] = None
     variants: Optional[List[str]] = None
-    app_name: str
+    app_name: str 
     testset: Dict[str, str] = Field(...)
     created_at: datetime
     updated_at: datetime
 
 
 class EvaluationScenarioInput(BaseModel):
-    input_name: str
-    input_value: str
+    input_name: str # 输入的问题
+    input_value: str # 正确的回答
 
 
 class EvaluationScenarioOutput(BaseModel):
-    variant_name: str
-    variant_output: str
+    variant_name: str # 作答的LLM名称
+    variant_output: str # 该LLM的回答
 
 
 class EvaluationScenario(BaseModel):
     evaluation_id: str
     inputs: List[EvaluationScenarioInput]
     outputs: List[EvaluationScenarioOutput]
-    vote: Optional[str] = None
-    score: Optional[str] = None
-    evaluation: Optional[str] = None
+    vote: Optional[str] = None # 01 判断好坏
+    score: Optional[str] = None # 0-10 得分
+    evaluation: Optional[str] = None # Evaluation Class
     correct_answer: Optional[str] = None
-    id: Optional[str] = None
+    id: Optional[str] = None 
 
 
 class EvaluationScenarioUpdate(BaseModel):
@@ -66,13 +68,13 @@ class EvaluationScenarioUpdate(BaseModel):
     score: Optional[str] = None
     outputs: List[EvaluationScenarioOutput]
     evaluation_prompt_template: Optional[str] = None
-    open_ai_key: Optional[str] = None
+    open_ai_key: Optional[str] = None 
 
 
 class NewEvaluation(BaseModel):
     evaluation_type: EvaluationType
     evaluation_type_settings: Optional[EvaluationTypeSettings] = None
-    app_name: str
+    app_name: str 
     variants: List[str]
     inputs: List[str]
     testset: Dict[str, str] = Field(...)
