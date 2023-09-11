@@ -6,6 +6,7 @@ from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
 from dashboard.models import Config, Log
 from last.services.app import app
 from last.services.depends import AdminLog, get_resources
+from last.services.routes.others import router
 from last.services.template import templates
 
 
@@ -85,3 +86,23 @@ async def switch_config_status(request: Request, pk: str):
     config.status = not config.status
     await config.save(update_fields=["status"])
     return RedirectResponse(url=request.headers.get("referer"), status_code=HTTP_303_SEE_OTHER)
+
+
+@router.get("/stable1")
+async def stable1(request: Request):
+    table_1 = [
+        {"name": "Alice", "age": 25, "city": "New York"},
+        {"name": "Bob", "age": 30, "city": "London"},
+        {"name": "Charlie", "age": 28, "city": "Paris"},
+        {"name": "David", "age": 35, "city": "Tokyo"},
+        {"name": "Emily", "age": 29, "city": "Sydney"},
+        {"name": "Frank", "age": 33, "city": "Berlin"},
+        {"name": "Grace", "age": 27, "city": "Toronto"},
+        {"name": "Henry", "age": 31, "city": "Moscow"},
+        {"name": "Isabella", "age": 26, "city": "Rome"},
+        {"name": "Jack", "age": 32, "city": "Seoul"},
+    ]
+
+    return templates.TemplateResponse(
+        "stable/stable1.html", context={"request": request, "stable_1": table_1}
+    )

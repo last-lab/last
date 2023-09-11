@@ -29,7 +29,7 @@ class FastAPIAdmin(FastAPI):
         self,
         redis: Redis,
         logo_url: Optional[str] = None,
-        default_locale: str = "en_US",
+        default_locale: str = "zh_CN",
         language_switch: bool = True,
         admin_path: str = "/admin",
         template_folders: Optional[List[str]] = None,
@@ -92,8 +92,8 @@ class FastAPIAdmin(FastAPI):
 
 
 app = FastAPIAdmin(
-    title="FastAdmin",
-    description="A fast admin dashboard based on fastapi and tortoise-orm with tabler ui.",
+    title="L.A.S.T.",
+    description="LLM Alignment and Safety Toolkit.",
 )
 app.include_router(router)
 app.add_middleware(middlewares.MaintenanceMiddleware)

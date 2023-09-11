@@ -1,6 +1,8 @@
-import os
+# import os
+from pathlib import Path
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = f"{Path(__file__).parent.resolve()}"
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # time format of pendulum
 DATETIME_FORMAT = "DD MMMM YYYY HH:mm:ss A"
