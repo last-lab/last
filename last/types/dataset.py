@@ -7,14 +7,10 @@ from .public import RiskDimension
 
 @dataclass
 class Message(Record):
-    related_uid: str # 关联上下文上一条Message记录的id
+    predecessor_uid: Optional[str] = None # 关联上一条Message记录的id
+    successor_uid: Optional[str] = None # 关联上一条Message记录的id
     role: str 
     content: str
-
-@dataclass
-class Conversation(Record):
-    length: int
-    messages: List[Message]
 
 @dataclass
 class Dataset(Record, BaseManager):
@@ -23,8 +19,7 @@ class Dataset(Record, BaseManager):
     url: str
     volume: str # 数据集大小
     used_by: Optional[List[str]]
-    qa_list: List[Conversation]
-    current_index: int
+    qa_record: Dict[str, Message]  # Message的唯一id
 
     def __post_init__(self):
         # 将新建的Dataset对象同步到DB中
@@ -71,11 +66,6 @@ class Dataset(Record, BaseManager):
         return self
 
     def __next__(self) -> Message:
-        if self.current_index >= len(self.qa_list):
-            raise StopIteration
-
-        record = self.qa_list[self.current_index]
-        self.current_index += 1
-        return record
+        pass
 
 
