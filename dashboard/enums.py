@@ -16,11 +16,12 @@ class GenderType(IntEnum):
     male = 1
 
 
-class riskTypes(IntEnum):
+class RiskTypes(IntEnum):
     safe = 0
+    unsafe = 1
 
 
-class riskSubTypes(IntEnum):
+class RiskSubTypes(IntEnum):
     regime = 0
 
 

@@ -382,7 +382,6 @@ class Animal(Dropdown):
     icon = "fas fa-bars"
     resources = [CatResource, DogResource]
 
-
 @app.register
 class DataManager(Dropdown):
     class EvaluationPlanManagerResource(Model):
@@ -451,6 +450,30 @@ class DataManager(Dropdown):
                     method=_enums.Method.GET,
                     ajax=False,
                     class_="btn-primary",
+                )
+            ]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return [
+                Action(
+                    label=_("详细信息"),
+                    icon="ti ti-edit",
+                    name="update",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                ),
+                Action(
+                    label=_("导出"),
+                    icon="ti ti-edit",
+                    name="update",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                ),
+                Action(
+                    label=_("删除"),
+                    icon="ti ti-trash",
+                    name="delete",
+                    method=_enums.Method.DELETE,
                 )
             ]
 

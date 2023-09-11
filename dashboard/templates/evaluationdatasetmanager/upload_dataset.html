@@ -1,4 +1,64 @@
 {% extends layout %}
 {% block page_body %}
-<div>1123</div>
+    <div id="init">
+        <span style="margin-right: 80px">选择文件</span>
+        <input type="file" id="fileInput" style="display:none;" accept="application/json">
+        <button onclick="openFileSelector()" id="btn">打开文件</button>
+    </div>
+    <div id="more" style="display: none; width: 500px">
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">评测集名称</label>
+            <div class="col">
+                <input class="form-control" placeholder="请输入">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">风险类型</label>
+            <div class="col" id="type"></div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">风险详情</label>
+            <div class="col"></div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">数据条数</label>
+            <div class="col" id="dataCount"></div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">语料字数</label>
+            <div class="col" id="number"></div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">评测集大小</label>
+            <div class="col" id="size"></div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">上传进度</label>
+            <div class="col" id="process"></div>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="uploadSubmit()">完成上传</button>
+    </div>
+    <script>
+        function openFileSelector() {
+            const inputObj = document.getElementById('fileInput');
+            inputObj.onchange = (event) => {
+                if (window.FileReader) {
+                    const file = inputObj.files[0];
+                    const reader = new FileReader();
+                    reader.readAsText(file, 'UTF-8');
+                    reader.onload = function (event) {
+                        const fileData = event.target.result;
+                        console.log(JSON.parse(fileData));
+                        document.getElementById("init").style.display = 'none';
+                        document.getElementById("more").style.display = 'block';
+                    }
+                    reader.readAsText(file);
+                }
+            }
+            inputObj.click();
+        }
+        function uploadSubmit () {
+            history.back();
+        }
+    </script>
 {% endblock %}

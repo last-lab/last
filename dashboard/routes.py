@@ -28,7 +28,6 @@ from last.services.resources import Model as ModelResource
 from last.services.responses import redirect
 from last.services.template import templates
 
-
 @app.get("/")
 async def home(
     request: Request,
@@ -283,8 +282,10 @@ async def upload_dataset(
     context = {
         "request": request,
         "resource": resource,
+        "resource_label": model_resource.label,
         "resources": resources,
         "model_resource": model_resource,
+        "page_title": '上传评测集',
     }
     try:
         return templates.TemplateResponse(
