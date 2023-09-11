@@ -20,3 +20,9 @@ class ScoreWayType(IntEnum):
     system = 0
     human = 1
 # datamanager end
+
+class EvalStatus(IntEnum):
+    on_progress = 0
+    error = 1
+    un_labeled = 2
+    finish = 3

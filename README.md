@@ -42,3 +42,12 @@ If this is the first time you run the dashboard, you need to create an admin use
 by visiting http://127.0.0.1:8000/admin/init
 
 For more detail, checkout Dockfile and docker-compose.yml in case I miss something.
+
+# Locales
+当需要使用中文时，使用`from last.services.i18n import _`代替`_`，并在需要翻译的字符串前加上`_`，例如：
+```python
+from last.services.i18n import _
+label = _('label')
+```
+之后，使用`make babel`提取需要翻译的字符串，文件存储在`last/services/locales/zh_CN/LC_MESSAGES/messages.po`。
+修改完成后，使用`make compile`编译翻译文件。

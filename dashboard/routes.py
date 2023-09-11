@@ -12,6 +12,8 @@ from last.services.depends import AdminLog
 from last.services.depends import (
     get_resources,
 )
+from last.services.depends import AdminLog, get_resources
+from last.services.routes.others import router
 from last.services.template import templates
 
 app.include_router(biz_router)
@@ -65,6 +67,23 @@ async def notification(
     )
 
 
+@app.get("/label")
+async def label(
+    request: Request,
+    resources=Depends(get_resources),
+):
+    return templates.TemplateResponse(
+        "label.html",
+        context={
+            "request": request,
+            "resources": resources,
+            "resource_label": "Label",
+            "page_pre_title": "BY LABEL STUDIO",
+            "page_title": "Label",
+        },
+    )
+
+
 admin_log_config_switch_status = AdminLog(action="config_status_switch")
 
 
@@ -76,3 +95,23 @@ async def switch_config_status(request: Request, pk: str):
     config.status = not config.status
     await config.save(update_fields=["status"])
     return RedirectResponse(url=request.headers.get("referer"), status_code=HTTP_303_SEE_OTHER)
+
+
+@router.get("/stable1")
+async def stable1(request: Request):
+    table_1 = [
+        {"name": "Alice", "age": 25, "city": "New York"},
+        {"name": "Bob", "age": 30, "city": "London"},
+        {"name": "Charlie", "age": 28, "city": "Paris"},
+        {"name": "David", "age": 35, "city": "Tokyo"},
+        {"name": "Emily", "age": 29, "city": "Sydney"},
+        {"name": "Frank", "age": 33, "city": "Berlin"},
+        {"name": "Grace", "age": 27, "city": "Toronto"},
+        {"name": "Henry", "age": 31, "city": "Moscow"},
+        {"name": "Isabella", "age": 26, "city": "Rome"},
+        {"name": "Jack", "age": 32, "city": "Seoul"},
+    ]
+
+    return templates.TemplateResponse(
+        "stable/stable1.html", context={"request": request, "stable_1": table_1}
+    )
