@@ -1,7 +1,9 @@
 from tortoise import Model, fields
 
+
 from dashboard.enums import GenderType, ProductType, Status
 from dashboard.enums import riskTypes, riskSubTypes
+from dashboard.enums import EvalStatus, GenderType, ProductType, Status
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -49,7 +51,10 @@ class Config(Model):
 
 
 class Evaluation(Model):
-    name = fields.CharField(max_length=50)
+    model_name = fields.CharField(max_length=50)
+    eval_setting = fields.IntField()
+    submit_time = fields.DatetimeField()
+    eval_status = fields.IntEnumField(EvalStatus, description="Evaluation Status")
 
 
 class Log(AbstractLog):
@@ -107,3 +112,10 @@ class EvaluationDatasetManager(Model):
     sub_type = fields.IntEnumField(riskSubTypes)
     updateTime = fields.DatetimeField(auto_now_add=True)
     useCount = fields.IntField()
+
+class LabelPage(Model):
+    task_type = fields.CharField(max_length=50)
+    labeling_method = fields.JSONField()
+    release_time = fields.DatetimeField()
+    current_status = fields.CharField(max_length=50)
+

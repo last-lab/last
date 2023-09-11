@@ -7,7 +7,7 @@ from starlette.requests import Request
 from dashboard import enums
 from last.services import enums as _enums
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin, Cat, Category, Config, Dog1, Log
+from dashboard.models import Admin, Cat, Category, Config, Dog1, Evaluation, LabelPage, Log
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
@@ -58,43 +58,18 @@ class Label(Link):
 
 
 @app.register
-class ModelEval(Link):
-    class RecordResource(Model):
-        label: str = "Record"
-        filters = [
-            filters.Search(
-                name="username",
-                label="Username",
-                search_mode='contains',
-                placeholder="评测模型/版本/方案",
-            ),
-        ]
-        fields = [
-            "model_name",
-            "eval_setting",
-            "submit_time",
-            "eval_status",
-            "is_superuser",
-            "is_active",
-            "created_at",
-        ]
-
-    class NewResource(Dropdown):
-        label: str = "New"
-        filters = [
-            filters.Search(
-                name="username",
-                label="Username",
-                search_mode='contains',
-                placeholder="评测模型/版本/方案",
-            ),
-        ]
-
-    label = "Model Evaluation"
-    model = Evaluation
+class Evaluation(Model):
+    label: str = "Evaluation"
     icon = "fas fa-user"
-    url = '/admin/model_eval'
-    resource = [RecordResource, NewResource]
+    model = Evaluation
+    filters = [
+        filters.Search(
+            name="username",
+            label="Username",
+            search_mode="contains",
+            placeholder="评测模型/版本/方案",
+        ),
+    ]
 
 
 @app.register
@@ -482,3 +457,15 @@ class DataManager(Dropdown):
     label = "数据管理"
     icon = "fas fa-bars"
     resources = [EvaluationDatasetManagerResource, EvaluationPlanManagerResource]
+
+class DataManagePage(Dropdown):
+    class LabelingPage(Model):
+        label = "Labeling"
+        model = LabelPage
+        filters = [filters.Search(name="task_type", label="Task Type")]
+        fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
+
+    label = "DataSet"
+    icon = "fas fa-bars"
+    resources = [LabelingPage]
+

@@ -31,8 +31,8 @@ from last.services.template import templates
 
 @app.get("/")
 async def home(
-        request: Request,
-        resources=Depends(get_resources),
+    request: Request,
+    resources=Depends(get_resources),
 ):
     logs = (
         await Log.all()
@@ -62,8 +62,8 @@ async def home(
 
 @app.get("/notification")
 async def notification(
-        request: Request,
-        resources=Depends(get_resources),
+    request: Request,
+    resources=Depends(get_resources),
 ):
     return templates.TemplateResponse(
         "notification.html",
@@ -79,8 +79,8 @@ async def notification(
 
 @app.get("/label")
 async def label(
-        request: Request,
-        resources=Depends(get_resources),
+    request: Request,
+    resources=Depends(get_resources),
 ):
     return templates.TemplateResponse(
         "label.html",

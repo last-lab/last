@@ -146,3 +146,5 @@ uploads
 
 # Sqlite3
 *.sqlite3*
+
+*.rdb
