@@ -17,7 +17,7 @@ class GenderType(IntEnum):
 
 
 class EvalStatus(IntEnum):
-    on_progress = (0,)
-    error = (1,)
-    un_labeled = (2,)
+    on_progress = 0
+    error = 1
+    un_labeled = 2
     finish = 3

@@ -47,11 +47,11 @@ class Config(Model):
     status: Status = fields.IntEnumField(Status, default=Status.on)
 
 
-class Evaluation(Model):
+class Record(Model):
     model_name = fields.CharField(max_length=50)
-    eval_setting = fields.IntField()
-    submit_time = fields.DatetimeField()
-    eval_status = fields.IntEnumField(EvalStatus, description="Evaluation Status")
+    eval_pan = fields.IntField()
+    created_at = fields.DatetimeField(auto_now_add=True)
+    status: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress, description="Evaluation Status")
 
 
 class Log(AbstractLog):
