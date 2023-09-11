@@ -107,8 +107,6 @@ async def stable1(request: Request):
         "stable/stable1.html", context={"request": request, "stable_1": table_1}
     )
 
-
-
     # try:
     #     return templates.TemplateResponse(
     #         f"{resource}/update.html",

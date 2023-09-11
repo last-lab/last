@@ -1,5 +1,7 @@
 from enum import IntEnum
+
 from last.services.enums import Method
+
 
 class ProductType(IntEnum):
     article = 1

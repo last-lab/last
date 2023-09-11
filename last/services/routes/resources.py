@@ -279,8 +279,7 @@ async def bulk_delete(request: Request, ids: str, model: Model = Depends(get_mod
     return RedirectResponse(url=request.headers.get("referer"), status_code=HTTP_303_SEE_OTHER)
 
 
-
-@router.post("/{resource}/labeling/{pk}")
+@router.get("/{resource}/labeling/{pk}")
 async def labeling_view(
     request: Request,
     resource: str = Path(...),
@@ -292,8 +291,7 @@ async def labeling_view(
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
 
-    # TODO, @xiaomin, 这个请求进来了希望能够跳转到label.html
-    # 后续，就是将这个请求里面的参数传递给label.html，从而生成不同的标注页面形式
+    # TODO, @xiaomin, 将这个请求里面的参数传递给label.html，从而生成不同的标注页面形式
     context = {
         "request": request,
         "resources": resources,
