@@ -67,6 +67,8 @@ class Action(BaseModel):
     method: enums.Method = enums.Method.POST
     ajax: bool = True
 
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator("ajax")
     def ajax_validate(cls, v: bool, values: dict, **kwargs):
         if not v and values["method"] != enums.Method.GET:
@@ -74,7 +76,7 @@ class Action(BaseModel):
 
 
 class ToolbarAction(Action):
-    class_: Optional[str]
+    class_: Optional[str] = None
 
 
 class Model(Resource):

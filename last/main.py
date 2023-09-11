@@ -2,26 +2,26 @@ import os
 import json
 from fastapi import FastAPI
 
-from agenta_backend.config import settings
-from agenta_backend.routers import app_variant
-from agenta_backend.routers import testset_router
+from last.config import settings
+from last.services.routes import app_variant
+from last.services.routes import testset_router
 from fastapi.middleware.cors import CORSMiddleware
-from agenta_backend.routers import container_router
-from agenta_backend.routers import evaluation_router
-from agenta_backend.services.db_manager import (
+from last.services.routes import container_router
+from last.services.routes import evaluation_router
+from last.services.system.db_manager import (
     add_template,
     remove_old_template_from_db,
 )
-from agenta_backend.services.container_manager import (
+from last.services.system.container_manager import (
     pull_image_from_docker_hub,
 )
-from agenta_backend.services.cache_manager import (
+from last.services.system.cache_manager import (
     retrieve_templates_from_dockerhub_cached,
     retrieve_templates_info_from_dockerhub_cached,
 )
 
 from contextlib import asynccontextmanager
-from agenta_backend.config import settings
+from last.config import settings
 
 
 origins = [
@@ -92,10 +92,6 @@ app.include_router(container_router.router, prefix="/containers")
 
 allow_headers = ["Content-Type"]
 
-if os.environ["FEATURE_FLAG"] in ["cloud", "ee", "demo"]:
-    import agenta_backend.ee.main as ee
-
-    app, allow_headers = ee.extend_main(app)
 # this is the prefix in which we are reverse proxying the api
 #
 app.add_middleware(

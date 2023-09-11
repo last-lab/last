@@ -21,7 +21,7 @@ class Dataset(Record, BaseManager):
     name: str
     dimensions: List[RiskDimension]
     url: str
-    used_by: Optional[List[str]]
+    used_by: Optional[List[str]] = None
     qa_list: List[QARecord]
     current_index: int
 

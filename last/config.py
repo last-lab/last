@@ -1,11 +1,11 @@
-from pydantic import BaseSettings
 
+from pydantic_settings import BaseSettings
 import os
 import toml
 from typing import Optional
 
 # Load the settings from the .toml file
-toml_config = toml.load("agenta_backend/config.toml")
+toml_config = toml.load("last/config.toml")
 
 # Set the environment variables from the TOML configurations
 os.environ["DOCKER_REGISTRY_URL"] = toml_config["docker_registry_url"]

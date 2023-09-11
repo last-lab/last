@@ -8,13 +8,13 @@ from .public import DateString, PermissionLevel, UserInfo
 
 @dataclass
 class Record(BaseModel):
-    uid: Optional[str]  # UUID-4
-    description: Optional[str]
+    uid: Optional[str] = None  # UUID-4
+    description: Optional[str] = None
     creator: UserInfo
-    editor: Optional[UserInfo]
-    reviewer: Optional[UserInfo]
+    editor: Optional[UserInfo] = None
+    reviewer: Optional[UserInfo] = None
     created_at: DateString
-    updated_at:  Optional[DateString]
+    updated_at:  Optional[DateString] = None
     permissions: PermissionLevel
 
 
@@ -22,7 +22,7 @@ class Record(BaseModel):
 class Statistics(BaseModel):
     total_cnt: str
     updated_at: DateString
-    description: Optional[str]
+    description: Optional[str] = None
 
 
 @dataclass

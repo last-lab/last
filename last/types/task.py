@@ -15,9 +15,9 @@ class Task(Record, BaseManager):
     """
 
     name: str
-    dimensions: Optional[Dict[RiskDimension.name, str]]  # 填写各个一级风险维度的占比%
+    dimensions: Optional[Dict[RiskDimension.name, str]] = None  # 填写各个一级风险维度的占比%
     datasets: List[DatasetInfo]
-    focused_risk: Optional[RelatedRiskDimensions]  # 新建时不填写
+    focused_risk: Optional[RelatedRiskDimensions] = None  # 新建时不填写
 
     def __post_init__(self):
         # 将新建的Task对象同步到DB中
