@@ -90,7 +90,7 @@
                                         <th>三级类型</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="ds_tbody">
                                     {% if datasets %}
                                     {% for ds in datasets %}
                                     <tr>
@@ -189,8 +189,6 @@
             for (const key in groupedData) {
                 if (groupedData.hasOwnProperty(key)) {
                     const group = groupedData[key];
-                    console.log(`分组 ${key}:`);
-                    console.log(group);
                     var tr = $("<tr></tr>");
                     var risk_td = $("<td scope='row'></td>").text(key);
                     tr.append(risk_td);
@@ -201,7 +199,6 @@
                               "<input type='number' min='0' max='100' class='epm-weight form-control text-end pe-0' style='width: 50px;' value='0' autocomplete='off' required>" +
                               "<span class='input-group-text'>%</span>" +
                               "</div>")));
-                   // tr.append($("<td></td>").append($("<input type='number' class='form-control epm-weight' value=0 style='width: 70px;' required />")));
                     $("#statistic_tbody").append(tr);
                 }
             }
@@ -282,10 +279,13 @@
                 var dsName = $('#ds_name_search').val();
                 if (dsName) {
                     $.ajax({
-                        url: '/admin/evaluationplanmanager/epm_ds_query',
+                        url: '/admin/evaluationplanmanager/epm_ds_query?ds_name=' + dsName,
                         method: 'POST',
-                        success: function () {
-                            location.reload();
+                        success: function (data) {
+                            if (data && data.length > 0) {
+                                console.log(data)
+                                generateDsTable(data)
+                            }
                         },
                 });
                 }
@@ -295,18 +295,39 @@
              var dsContent = $('#ds_content_search').val();
                 if (dsContent) {
                     $.ajax({
-                        url: '/admin/evaluationplanmanager/epm_ds_query',
+                        url: '/admin/evaluationplanmanager/epm_ds_query?ds_content=' + dsContent,
                         method: 'POST',
                         success: function (data) {
-                            console.log(data)
+                            if (data && data.length > 0) {
+                                console.log(data)
+                                generateDsTable(data)
+                            }
                         },
                 });
              }
         }
 
+        function generateDsTable(data) {
+            var tbody = document.getElementById('ds_tbody');
+            if (tbody) {
+                tbody.innerHTML = "";
+                statistics()
+                data.forEach(function(item) {
+                    var tr = $("<tr></tr>");
+                    tr.append($("<td></td>").append("<input data-id=`${item.id}' data-risk-type=`${item.risk_type}`" +
+                                                   "data-second-type=`${item.risk_second_type}`" +
+                                                   "data-third-type=`${item.risk_third_type}`" +
+                                                   "class='form-check-input m-0 align-middle checkbox-select-item'" +
+                                                   "type='checkbox'>"));
+                    tr.append($("<td></td>").text(item.name));
+                    tr.append($("<td></td>").text(item.risk_type));
+                    tr.append($("<td></td>").text(item.risk_second_type));
+                    tr.append($("<td></td>").text(item.risk_third_type));
+                    $("#ds_tbody").append(tr);
+                });
 
-
-
+            }
+        }
 
 
 

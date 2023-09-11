@@ -48,7 +48,7 @@ async def create_view(
         "datasets": datasets,
     }
     return templates.TemplateResponse(
-        f"evaluationplanmanager/create.html",
+        f"{resource}/create.html",
         context=context,
     )
 
@@ -69,7 +69,7 @@ async def create(
         obj = await model.create(**data, using_db=conn)
         request.state.pk = obj.pk
         for k, items in m2m_data.items():
-            m2m_obj = getattr(obj, k)  # type:ManyToManyRelation
+            m2m_obj = getattr(obj, k)
             await m2m_obj.add(*items, using_db=conn)
         return redirect(request, "list_view", resource=resource)
 
@@ -180,7 +180,7 @@ async def copy_create_view(
         "page_pre_title": model_resource.page_pre_title,
     }
     return templates.TemplateResponse(
-        f"evaluationplanmanager/copy_create.html",
+        f"{resource}/copy_create.html",
         context=context,
     )
 
