@@ -82,6 +82,20 @@ class Dataset(Dropdown):
         filters = [filters.Search(name="task_type", label="Task Type")]
         fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
 
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return [
+                Action(
+                    label = _("labeling"),
+                    icon = "ti ti-edit",
+                    name = "labeling"
+                )
+            ]
+
+
+        async def get_bulk_actions(self, request: Request) -> List[Action]:
+            return []
+
     class Labeling(Link):
         """Label Studio Embedding"""
 

@@ -106,3 +106,16 @@ async def stable1(request: Request):
     return templates.TemplateResponse(
         "stable/stable1.html", context={"request": request, "stable_1": table_1}
     )
+
+
+
+    # try:
+    #     return templates.TemplateResponse(
+    #         f"{resource}/update.html",
+    #         context=context,
+    #     )
+    # except TemplateNotFound:
+    #     return templates.TemplateResponse(
+    #         "update.html",
+    #         context=context,
+    #     )
