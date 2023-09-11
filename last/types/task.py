@@ -5,7 +5,7 @@ import contextlib
 
 from .base import Record, Statistics
 from .public import RiskDimension, RelatedRiskDimensions
-from .dataset import Dataset, Message, Conversation
+from .dataset import Dataset, Message
 
 
 @dataclass
