@@ -1,5 +1,5 @@
-from pathlib import Path
 from datetime import date
+from pathlib import Path
 from typing import List
 
 from starlette.requests import Request
@@ -11,7 +11,8 @@ from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
-from dashboard.models import Sponsor
+
+# from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
 from dashboard.widgets.displays import ShowIp
 from last.services.app import app
@@ -35,6 +36,7 @@ upload = FileUpload(uploads_dir=f"{(Path(BASE_DIR)/'static'/'uploads').resolve()
 @app.register
 class Administartor(Dropdown):
     """安全监管"""
+
     class Dashboard(Link):
         label = _("Dashboard")
         icon = "fas fa-home"
@@ -53,6 +55,7 @@ class Administartor(Dropdown):
 @app.register
 class Evaluation(Dropdown):
     """模型评测"""
+
     class EvaluationRecord(Model):
         label: str = _("Evaluation Record")
         icon = "fas fa-user"
@@ -70,6 +73,7 @@ class Evaluation(Dropdown):
     icon = "fas fa-user"
     resources = [EvaluationRecord]
 
+
 @app.register
 class Dataset(Dropdown):
     class LabelingRecord(Model):
@@ -80,6 +84,7 @@ class Dataset(Dropdown):
 
     class Labeling(Link):
         """Label Studio Embedding"""
+
         label = _("Labeling")
         icon = "fas fa-tag"
         url = "/admin/label"
@@ -126,6 +131,7 @@ class Content(Dropdown):
     icon = "fas fa-bars"
     resources = [ProductResource, CategoryResource]
 
+
 @app.register
 class ConfigResource(Model):
     label = "Config"
@@ -166,6 +172,7 @@ class ConfigResource(Model):
         )
         actions.append(switch_status)
         return actions
+
 
 @app.register
 class LogResource(Model):
@@ -213,6 +220,7 @@ class LogResource(Model):
 
     async def get_bulk_actions(self, request: Request) -> List[Action]:
         return []
+
 
 @app.register
 class Auth(Dropdown):
@@ -283,6 +291,7 @@ class Auth(Dropdown):
     icon = "fas fa-users"
     resources = [AdminResource, Resource, Permission, Role]
 
+
 @app.register
 class Animal(Dropdown):
     class CatResource(Model):
@@ -316,6 +325,7 @@ class Animal(Dropdown):
     icon = "fas fa-bars"
     resources = [CatResource, DogResource]
 
+
 @app.register
 class SimpleTable(Link):
     label = "Simple Table1"
@@ -334,6 +344,7 @@ class Amount(ComputeField):
     async def get_value(self, request: Request, obj: dict):
         v = await super(Amount, self).get_value(request, obj)
         return f'{obj.get("currency")}{v}'
+
 
 # TODO: SponsorResource是一个从外部地址获取信息的例子
 # class SponsorUsernameDisplay(displays.Display):
@@ -392,9 +403,3 @@ class SwitchLayout(Link):
     label = "Switch Layout"
     url = "/admin/layout"
     icon = "fas fa-grip-horizontal"
-
-
-
-
-
-

@@ -1,5 +1,6 @@
 # import os
 from pathlib import Path
+
 import redis.asyncio as redis
 import uvicorn
 from fastapi import FastAPI
@@ -18,9 +19,7 @@ from tortoise import Tortoise
 from dashboard import settings
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Log, Permission, Resource
-from dashboard.providers import (
-    GitHubProvider,
-    GoogleProvider,
+from dashboard.providers import (  # GitHubProvider,; GoogleProvider,
     LoginProvider,
     import_export_provider,
 )
@@ -39,6 +38,7 @@ from last.services.providers.permission import PermissionProvider
 from last.services.providers.search import SearchProvider
 
 BASE_DIR = Path(BASE_DIR)
+
 
 def create_app():
     app = FastAPI()
@@ -84,14 +84,14 @@ def create_app():
             encoding="utf8",
         )
         await admin_app.configure(
-            logo_url='/static/assets/logo.png',
+            logo_url="/static/assets/logo.png",
             favicon_url="https://raw.githubusercontent.com/fastapi-admin/fastapi-admin/dev/images/favicon.png",
             default_locale="zh_CN",
             template_folders=[f"{(BASE_DIR/'templates').resolve()}"],
             providers=[
                 LoginProvider(
                     admin_model=Admin,
-                    login_logo_url='/static/assets/logo.png',
+                    login_logo_url="/static/assets/logo.png",
                 ),
                 PermissionProvider(
                     Admin,
