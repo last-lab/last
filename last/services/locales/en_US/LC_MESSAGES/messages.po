@@ -7,16 +7,94 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-05-24 21:15+0800\n"
+"POT-Creation-Date: 2023-09-11 10:25+0800\n"
 "PO-Revision-Date: 2021-04-16 22:46+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en_US\n"
 "Language-Team: en_US <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: dashboard/resources.py:39
+msgid "Dashboard"
+msgstr ""
+
+#: dashboard/resources.py:44
+msgid "Notification"
+msgstr ""
+
+#: dashboard/resources.py:48
+msgid "Administartor"
+msgstr ""
+
+#: dashboard/resources.py:57
+msgid "Evaluation Record"
+msgstr "Evaluation Record"
+
+#: dashboard/resources.py:69
+msgid "Evaluation"
+msgstr ""
+
+#: dashboard/resources.py:76
+msgid "Labeling Record"
+msgstr ""
+
+#: dashboard/resources.py:83
+msgid "Labeling"
+msgstr ""
+
+#: dashboard/resources.py:87
+msgid "Dataset"
+msgstr ""
+
+#: dashboard/resources.py:289
+msgid "Cat"
+msgstr ""
+
+#: dashboard/templates/providers/login/password.html:6
+#: last/services/templates/providers/login/avatar.html:20
+#: last/services/templates/providers/login/password.html:6
+msgid "update_password"
+msgstr "Update password"
+
+#: dashboard/templates/providers/login/password.html:13
+#: last/services/templates/providers/login/password.html:12
+msgid "old_password"
+msgstr "Old password"
+
+#: dashboard/templates/providers/login/password.html:16
+#: last/services/templates/providers/login/password.html:15
+msgid "old_password_placeholder"
+msgstr "Enter old password"
+
+#: dashboard/templates/providers/login/password.html:20
+#: last/services/templates/providers/login/password.html:19
+msgid "new_password"
+msgstr "New password"
+
+#: dashboard/templates/providers/login/password.html:23
+#: last/services/templates/providers/login/password.html:22
+msgid "new_password_placeholder"
+msgstr "Enter new password"
+
+#: dashboard/templates/providers/login/password.html:27
+#: last/services/templates/providers/login/password.html:26
+msgid "re_new_password"
+msgstr "New password again"
+
+#: dashboard/templates/providers/login/password.html:30
+#: last/services/templates/providers/login/password.html:29
+msgid "re_new_password_placeholder"
+msgstr "Enter new password again"
+
+#: dashboard/templates/providers/login/password.html:33
+#: last/services/templates/init.html:43
+#: last/services/templates/providers/login/password.html:32
+msgid "submit"
+msgstr "Submit"
 
 #: last/services/middlewares.py:77
 #, python-format
@@ -28,21 +106,21 @@ msgstr ""
 msgid "Login failed %(times)s times, you can try %(rest_times)s more times"
 msgstr ""
 
-#: last/services/resources.py:97
+#: last/services/resources.py:115
 msgid "create"
-msgstr "Create"
+msgstr ""
 
-#: last/services/resources.py:109
+#: last/services/resources.py:127
 msgid "update"
-msgstr "Update"
+msgstr ""
 
-#: last/services/resources.py:116
+#: last/services/resources.py:134
 msgid "delete"
-msgstr "Delete"
+msgstr ""
 
-#: last/services/resources.py:123
+#: last/services/resources.py:144
 msgid "delete_selected"
-msgstr "Delete Selected"
+msgstr ""
 
 #: last/services/providers/import_export.py:106
 #: last/services/templates/providers/import_export/import.html:6
@@ -56,87 +134,95 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-#: last/services/providers/import_export.py:173
+#: last/services/providers/import_export.py:176
 #, python-format
 msgid "Success create %(count)s %(label)s"
 msgstr ""
 
-#: last/services/providers/login.py:126
+#: last/services/providers/login.py:136
+#, fuzzy
 msgid "captcha_error"
-msgstr "Captcha error, place try again"
+msgstr "Enter old password"
 
-#: last/services/providers/login.py:133
+#: last/services/providers/login.py:153
+msgid "Google recaptcha verify failed"
+msgstr ""
+
+#: last/services/providers/login.py:160
 msgid "login_failed"
-msgstr "Login to your account failed"
+msgstr ""
 
-#: last/services/providers/login.py:206
+#: last/services/providers/login.py:234
+#, fuzzy
 msgid "confirm_password_different"
-msgstr "Password is different"
+msgstr "Old password"
 
-#: last/services/providers/login.py:241
+#: last/services/providers/login.py:269
+#, fuzzy
 msgid "old_password_error"
-msgstr "Old password error"
+msgstr "Old password"
 
-#: last/services/providers/login.py:243
+#: last/services/providers/login.py:271
+#, fuzzy
 msgid "new_password_different"
-msgstr "New password is different"
+msgstr "New password"
 
 #: last/services/templates/create.html:15
 #: last/services/templates/update.html:17
 msgid "save"
-msgstr "Save"
+msgstr ""
 
 #: last/services/templates/create.html:17
 msgid "save_and_add_another"
-msgstr "Save and add another"
+msgstr ""
 
 #: last/services/templates/create.html:19
 #: last/services/templates/providers/import_export/export.html:25
 #: last/services/templates/providers/import_export/import.html:32
 #: last/services/templates/update.html:27
 msgid "return"
-msgstr "Return"
+msgstr ""
 
 #: last/services/templates/init.html:10
 msgid "Create first admin"
 msgstr ""
 
 #: last/services/templates/init.html:12
-#: last/services/templates/providers/login/login.html:15
+#: last/services/templates/providers/login/login.html:17
 msgid "username"
-msgstr "Username"
+msgstr ""
 
 #: last/services/templates/init.html:14
-#: last/services/templates/providers/login/login.html:17
+#: last/services/templates/providers/login/login.html:19
+#, fuzzy
 msgid "username_placeholder"
-msgstr "Enter username"
+msgstr "Enter new password"
 
 #: last/services/templates/init.html:18
-#: last/services/templates/providers/login/login.html:21
+#: last/services/templates/providers/login/login.html:23
+#, fuzzy
 msgid "password"
-msgstr "Password"
+msgstr "Old password"
 
 #: last/services/templates/init.html:23
-#: last/services/templates/providers/login/login.html:26
+#: last/services/templates/providers/login/login.html:28
+#, fuzzy
 msgid "password_placeholder"
-msgstr "Enter password"
+msgstr "Enter old password"
 
 #: last/services/templates/init.html:31
+#, fuzzy
 msgid "confirm_password"
-msgstr "Enter password again"
+msgstr "Old password"
 
 #: last/services/templates/init.html:36
+#, fuzzy
 msgid "confirm_password_placeholder"
-msgstr "Enter password again"
-
-#: last/services/templates/init.html:43
-#: last/services/templates/providers/login/password.html:32
-msgid "submit"
-msgstr "Submit"
+msgstr "Enter old password"
 
 #: last/services/templates/list.html:13
 msgid "show"
-msgstr "Show"
+msgstr ""
 
 #: last/services/templates/list.html:24
 msgid "entries"
@@ -144,38 +230,39 @@ msgstr ""
 
 #: last/services/templates/list.html:33
 msgid "search"
-msgstr "Search"
+msgstr ""
 
 #: last/services/templates/list.html:46
 msgid "bulk_actions"
-msgstr "Bulk Actions"
+msgstr ""
 
-#: last/services/templates/list.html:130
+#: last/services/templates/list.html:127
 msgid "actions"
-msgstr "Actions"
+msgstr ""
 
-#: last/services/templates/list.html:161
+#: last/services/templates/list.html:158
 #, python-format
 msgid "Showing %(from)s to %(to)s of %(total)s entries"
 msgstr ""
 
-#: last/services/templates/list.html:172
+#: last/services/templates/list.html:169
 msgid "prev_page"
-msgstr "Prev"
+msgstr ""
 
-#: last/services/templates/list.html:193
+#: last/services/templates/list.html:190
 msgid "next_page"
-msgstr "Next"
+msgstr ""
 
 #: last/services/templates/update.html:24
 msgid "save_and_return"
-msgstr "Save and return"
+msgstr ""
 
+#: last/services/templates/errors/401.html:21
 #: last/services/templates/errors/403.html:21
 #: last/services/templates/errors/404.html:21
 #: last/services/templates/errors/500.html:21
 msgid "return_home"
-msgstr "Take me home"
+msgstr ""
 
 #: last/services/templates/providers/import_export/export.html:11
 #: last/services/templates/providers/import_export/import.html:18
@@ -186,54 +273,26 @@ msgstr ""
 msgid "File to import"
 msgstr ""
 
-#: last/services/templates/providers/login/avatar.html:20
-#: last/services/templates/providers/login/password.html:6
-msgid "update_password"
-msgstr "Update password"
-
 #: last/services/templates/providers/login/avatar.html:23
 msgid "logout"
-msgstr "Logout"
+msgstr ""
 
-#: last/services/templates/providers/login/login.html:35
+#: last/services/templates/providers/login/login.html:37
 msgid "captcha"
-msgstr "Captcha"
+msgstr ""
 
-#: last/services/templates/providers/login/login.html:43
+#: last/services/templates/providers/login/login.html:45
+#, fuzzy
 msgid "captcha_placeholder"
-msgstr "Enter captcha"
-
-#: last/services/templates/providers/login/login.html:50
-msgid "remember_me"
-msgstr "Remember me"
-
-#: last/services/templates/providers/login/login.html:54
-msgid "sign_in"
-msgstr "Sign in"
-
-#: last/services/templates/providers/login/password.html:12
-msgid "old_password"
-msgstr "Old password"
-
-#: last/services/templates/providers/login/password.html:15
-msgid "old_password_placeholder"
 msgstr "Enter old password"
 
-#: last/services/templates/providers/login/password.html:19
-msgid "new_password"
-msgstr "New password"
+#: last/services/templates/providers/login/login.html:61
+msgid "remember_me"
+msgstr ""
 
-#: last/services/templates/providers/login/password.html:22
-msgid "new_password_placeholder"
-msgstr "Enter new password"
-
-#: last/services/templates/providers/login/password.html:26
-msgid "re_new_password"
-msgstr "New password again"
-
-#: last/services/templates/providers/login/password.html:29
-msgid "re_new_password_placeholder"
-msgstr "Enter new password again"
+#: last/services/templates/providers/login/login.html:65
+msgid "sign_in"
+msgstr ""
 
 #: last/services/templates/providers/search/search.html:11
 msgid "Search in site..."
@@ -242,3 +301,145 @@ msgstr ""
 #: last/services/templates/providers/search/search_result.html:9
 msgid "No results found for search text"
 msgstr ""
+
+#~ msgid "You can only try after %(seconds)s seconds"
+#~ msgstr ""
+
+#~ msgid "Login failed %(times)s times, you can try %(rest_times)s more times"
+#~ msgstr ""
+
+#~ msgid "create"
+#~ msgstr "Create"
+
+#~ msgid "delete"
+#~ msgstr "Delete"
+
+#~ msgid "delete_selected"
+#~ msgstr "Delete Selected"
+
+#~ msgid "Import"
+#~ msgstr ""
+
+#~ msgid "Export"
+#~ msgstr ""
+
+#~ msgid "Success create %(count)s %(label)s"
+#~ msgstr ""
+
+#~ msgid "captcha_error"
+#~ msgstr "Captcha error, place try again"
+
+#~ msgid "login_failed"
+#~ msgstr "Login to your account failed"
+
+#~ msgid "confirm_password_different"
+#~ msgstr "Password is different"
+
+#~ msgid "old_password_error"
+#~ msgstr "Old password error"
+
+#~ msgid "new_password_different"
+#~ msgstr "New password is different"
+
+#~ msgid "save"
+#~ msgstr "Save"
+
+#~ msgid "save_and_add_another"
+#~ msgstr "Save and add another"
+
+#~ msgid "return"
+#~ msgstr "Return"
+
+#~ msgid "Create first admin"
+#~ msgstr ""
+
+#~ msgid "username"
+#~ msgstr "Username"
+
+#~ msgid "username_placeholder"
+#~ msgstr "Enter username"
+
+#~ msgid "password"
+#~ msgstr "Password"
+
+#~ msgid "password_placeholder"
+#~ msgstr "Enter password"
+
+#~ msgid "confirm_password"
+#~ msgstr "Enter password again"
+
+#~ msgid "confirm_password_placeholder"
+#~ msgstr "Enter password again"
+
+#~ msgid "show"
+#~ msgstr "Show"
+
+#~ msgid "entries"
+#~ msgstr ""
+
+#~ msgid "search"
+#~ msgstr "Search"
+
+#~ msgid "bulk_actions"
+#~ msgstr "Bulk Actions"
+
+#~ msgid "actions"
+#~ msgstr "Actions"
+
+#~ msgid "Showing %(from)s to %(to)s of %(total)s entries"
+#~ msgstr ""
+
+#~ msgid "prev_page"
+#~ msgstr "Prev"
+
+#~ msgid "next_page"
+#~ msgstr "Next"
+
+#~ msgid "save_and_return"
+#~ msgstr "Save and return"
+
+#~ msgid "return_home"
+#~ msgstr "Take me home"
+
+#~ msgid "Format"
+#~ msgstr ""
+
+#~ msgid "File to import"
+#~ msgstr ""
+
+#~ msgid "logout"
+#~ msgstr "Logout"
+
+#~ msgid "captcha"
+#~ msgstr "Captcha"
+
+#~ msgid "captcha_placeholder"
+#~ msgstr "Enter captcha"
+
+#~ msgid "remember_me"
+#~ msgstr "Remember me"
+
+#~ msgid "sign_in"
+#~ msgstr "Sign in"
+
+#~ msgid "Search in site..."
+#~ msgstr ""
+
+#~ msgid "No results found for search text"
+#~ msgstr ""
+
+#~ msgid "Dashboard"
+#~ msgstr ""
+
+#~ msgid "Notification"
+#~ msgstr ""
+
+#~ msgid "Dataset"
+#~ msgstr "Update"
+
+#~ msgid "Dog"
+#~ msgstr ""
+
+#~ msgid "Animal"
+#~ msgstr ""
+

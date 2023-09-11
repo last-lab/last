@@ -1,4 +1,5 @@
-import os
+# import os
+from pathlib import Path
 
 import redis.asyncio as redis
 import uvicorn
@@ -18,9 +19,7 @@ from tortoise import Tortoise
 from dashboard import settings
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Log, Permission, Resource
-from dashboard.providers import (
-    GitHubProvider,
-    GoogleProvider,
+from dashboard.providers import (  # GitHubProvider,; GoogleProvider,
     LoginProvider,
     import_export_provider,
 )
@@ -38,12 +37,14 @@ from last.services.providers.notification import NotificationProvider
 from last.services.providers.permission import PermissionProvider
 from last.services.providers.search import SearchProvider
 
+BASE_DIR = Path(BASE_DIR)
+
 
 def create_app():
     app = FastAPI()
     app.mount(
         "/static",
-        StaticFiles(directory=os.path.join(BASE_DIR, "static")),
+        StaticFiles(directory=f"{(BASE_DIR/'static').resolve()}"),
         name="static",
     )
     app.mount("/rearq", rearq_server)
@@ -83,13 +84,14 @@ def create_app():
             encoding="utf8",
         )
         await admin_app.configure(
-            logo_url="https://preview.tabler.io/static/logo-white.svg",
+            logo_url="/static/assets/logo.png",
             favicon_url="https://raw.githubusercontent.com/fastapi-admin/fastapi-admin/dev/images/favicon.png",
-            template_folders=[os.path.join(BASE_DIR, "templates")],
+            default_locale="zh_CN",
+            template_folders=[f"{(BASE_DIR/'templates').resolve()}"],
             providers=[
                 LoginProvider(
                     admin_model=Admin,
-                    login_logo_url="https://preview.tabler.io/static/logo.svg",
+                    login_logo_url="/static/assets/logo.png",
                 ),
                 PermissionProvider(
                     Admin,
@@ -99,13 +101,13 @@ def create_app():
                 AdminLogProvider(Log),
                 SearchProvider(),
                 NotificationProvider(),
-                GitHubProvider(Admin, settings.GITHUB_CLIENT_ID, settings.GITHUB_CLIENT_SECRET),
-                GoogleProvider(
-                    Admin,
-                    settings.GOOGLE_CLIENT_ID,
-                    settings.GOOGLE_CLIENT_SECRET,
-                    redirect_uri="https://fastapi-admin-pro.long2ice.io/admin/oauth2/google_oauth2_provider",
-                ),
+                # GitHubProvider(Admin, settings.GITHUB_CLIENT_ID, settings.GITHUB_CLIENT_SECRET),
+                # GoogleProvider(
+                #     Admin,
+                #     settings.GOOGLE_CLIENT_ID,
+                #     settings.GOOGLE_CLIENT_SECRET,
+                #     redirect_uri="https://fastapi-admin-pro.long2ice.io/admin/oauth2/google_oauth2_provider",
+                # ),
                 import_export_provider,
             ],  # type: ignore
             redis=r,

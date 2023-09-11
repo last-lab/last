@@ -7,42 +7,121 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-05-24 21:15+0800\n"
+"POT-Creation-Date: 2023-09-11 10:25+0800\n"
 "PO-Revision-Date: 2021-04-16 22:46+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans_CN\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: dashboard/resources.py:39
+msgid "Dashboard"
+msgstr "监控台"
+
+#: dashboard/resources.py:44
+msgid "Notification"
+msgstr "通知"
+
+#: dashboard/resources.py:48
+msgid "Administartor"
+msgstr "安全监管"
+
+#: dashboard/resources.py:57
+#, fuzzy
+msgid "Evaluation Record"
+msgstr "评测记录"
+
+#: dashboard/resources.py:69
+msgid "Evaluation"
+msgstr "模型评测"
+
+#: dashboard/resources.py:76
+msgid "Labeling Record"
+msgstr "标注记录"
+
+#: dashboard/resources.py:83
+msgid "Labeling"
+msgstr "标注工具"
+
+#: dashboard/resources.py:87
+msgid "Dataset"
+msgstr "数据集"
+
+#: dashboard/resources.py:289
+msgid "Cat"
+msgstr "猫"
+
+#: dashboard/templates/providers/login/password.html:6
+#: last/services/templates/providers/login/avatar.html:20
+#: last/services/templates/providers/login/password.html:6
+msgid "update_password"
+msgstr "修改密码"
+
+#: dashboard/templates/providers/login/password.html:13
+#: last/services/templates/providers/login/password.html:12
+msgid "old_password"
+msgstr "旧密码"
+
+#: dashboard/templates/providers/login/password.html:16
+#: last/services/templates/providers/login/password.html:15
+msgid "old_password_placeholder"
+msgstr "请输入旧密码"
+
+#: dashboard/templates/providers/login/password.html:20
+#: last/services/templates/providers/login/password.html:19
+msgid "new_password"
+msgstr "新密码"
+
+#: dashboard/templates/providers/login/password.html:23
+#: last/services/templates/providers/login/password.html:22
+msgid "new_password_placeholder"
+msgstr "请输入新密码"
+
+#: dashboard/templates/providers/login/password.html:27
+#: last/services/templates/providers/login/password.html:26
+msgid "re_new_password"
+msgstr "重复新密码"
+
+#: dashboard/templates/providers/login/password.html:30
+#: last/services/templates/providers/login/password.html:29
+msgid "re_new_password_placeholder"
+msgstr "请再次输入新密码"
+
+#: dashboard/templates/providers/login/password.html:33
+#: last/services/templates/init.html:43
+#: last/services/templates/providers/login/password.html:32
+msgid "submit"
+msgstr "提交"
 
 #: last/services/middlewares.py:77
 #, python-format
 msgid "You can only try after %(seconds)s seconds"
-msgstr "请在%(seconds)s秒后再次尝试"
+msgstr ""
 
 #: last/services/middlewares.py:88
 #, python-format
 msgid "Login failed %(times)s times, you can try %(rest_times)s more times"
-msgstr "登录失败%(times)s次，你还可尝试%(rest_times)s次"
+msgstr ""
 
-#: last/services/resources.py:97
+#: last/services/resources.py:115
 msgid "create"
-msgstr "创建"
+msgstr ""
 
-#: last/services/resources.py:109
+#: last/services/resources.py:127
 msgid "update"
-msgstr "编辑"
+msgstr ""
 
-#: last/services/resources.py:116
+#: last/services/resources.py:134
 msgid "delete"
-msgstr "删除"
+msgstr ""
 
-#: last/services/resources.py:123
+#: last/services/resources.py:144
 msgid "delete_selected"
-msgstr "删除选中"
+msgstr ""
 
 #: last/services/providers/import_export.py:106
 #: last/services/templates/providers/import_export/import.html:6
@@ -56,30 +135,38 @@ msgstr "导入"
 msgid "Export"
 msgstr "导出"
 
-#: last/services/providers/import_export.py:173
+#: last/services/providers/import_export.py:176
 #, python-format
 msgid "Success create %(count)s %(label)s"
-msgstr "成功创建 %(count)s %(label)s"
+msgstr ""
 
-#: last/services/providers/login.py:126
+#: last/services/providers/login.py:136
+#, fuzzy
 msgid "captcha_error"
-msgstr "验证码错误"
+msgstr "请输入旧密码"
 
-#: last/services/providers/login.py:133
+#: last/services/providers/login.py:153
+msgid "Google recaptcha verify failed"
+msgstr ""
+
+#: last/services/providers/login.py:160
 msgid "login_failed"
-msgstr "登录失败"
+msgstr "登陆失败"
 
-#: last/services/providers/login.py:206
+#: last/services/providers/login.py:234
+#, fuzzy
 msgid "confirm_password_different"
-msgstr "密码不一致"
+msgstr "旧密码"
 
-#: last/services/providers/login.py:241
+#: last/services/providers/login.py:269
+#, fuzzy
 msgid "old_password_error"
-msgstr "旧密码错误"
+msgstr "旧密码"
 
-#: last/services/providers/login.py:243
+#: last/services/providers/login.py:271
+#, fuzzy
 msgid "new_password_different"
-msgstr "新密码不相同"
+msgstr "新密码"
 
 #: last/services/templates/create.html:15
 #: last/services/templates/update.html:17
@@ -88,158 +175,182 @@ msgstr "保存"
 
 #: last/services/templates/create.html:17
 msgid "save_and_add_another"
-msgstr "保存并新增"
+msgstr "保存并添加下一个"
 
 #: last/services/templates/create.html:19
 #: last/services/templates/providers/import_export/export.html:25
 #: last/services/templates/providers/import_export/import.html:32
 #: last/services/templates/update.html:27
 msgid "return"
-msgstr "返回"
+msgstr ""
 
 #: last/services/templates/init.html:10
 msgid "Create first admin"
-msgstr "创建第一个管理员"
+msgstr ""
 
 #: last/services/templates/init.html:12
-#: last/services/templates/providers/login/login.html:15
+#: last/services/templates/providers/login/login.html:17
 msgid "username"
-msgstr "用户名"
+msgstr ""
 
 #: last/services/templates/init.html:14
-#: last/services/templates/providers/login/login.html:17
+#: last/services/templates/providers/login/login.html:19
+#, fuzzy
 msgid "username_placeholder"
-msgstr "请输入用户名"
+msgstr "请输入新密码"
 
 #: last/services/templates/init.html:18
-#: last/services/templates/providers/login/login.html:21
+#: last/services/templates/providers/login/login.html:23
+#, fuzzy
 msgid "password"
-msgstr "密码"
+msgstr "旧密码"
 
 #: last/services/templates/init.html:23
-#: last/services/templates/providers/login/login.html:26
+#: last/services/templates/providers/login/login.html:28
+#, fuzzy
 msgid "password_placeholder"
-msgstr "请输入密码"
+msgstr "请输入旧密码"
 
 #: last/services/templates/init.html:31
+#, fuzzy
 msgid "confirm_password"
-msgstr "请确认密码"
+msgstr "旧密码"
 
 #: last/services/templates/init.html:36
+#, fuzzy
 msgid "confirm_password_placeholder"
-msgstr "请再次输入密码"
-
-#: last/services/templates/init.html:43
-#: last/services/templates/providers/login/password.html:32
-msgid "submit"
-msgstr "提交"
+msgstr "请输入旧密码"
 
 #: last/services/templates/list.html:13
 msgid "show"
-msgstr "显示"
+msgstr ""
 
 #: last/services/templates/list.html:24
 msgid "entries"
-msgstr "项"
+msgstr ""
 
 #: last/services/templates/list.html:33
 msgid "search"
-msgstr "查询"
+msgstr ""
 
 #: last/services/templates/list.html:46
 msgid "bulk_actions"
-msgstr "批量操作"
+msgstr ""
 
-#: last/services/templates/list.html:130
+#: last/services/templates/list.html:127
 msgid "actions"
-msgstr "动作"
+msgstr ""
 
-# python-format
-#: last/services/templates/list.html:161
+#: last/services/templates/list.html:158
 #, python-format
 msgid "Showing %(from)s to %(to)s of %(total)s entries"
-msgstr "显示 %(from)s 到 %(to)s 共 %(total)s 项"
+msgstr ""
 
-#: last/services/templates/list.html:172
+#: last/services/templates/list.html:169
 msgid "prev_page"
-msgstr "上一页"
+msgstr ""
 
-#: last/services/templates/list.html:193
+#: last/services/templates/list.html:190
 msgid "next_page"
-msgstr "下一页"
+msgstr ""
 
 #: last/services/templates/update.html:24
 msgid "save_and_return"
-msgstr "保存并返回"
+msgstr ""
 
+#: last/services/templates/errors/401.html:21
 #: last/services/templates/errors/403.html:21
 #: last/services/templates/errors/404.html:21
 #: last/services/templates/errors/500.html:21
 msgid "return_home"
-msgstr "返回首页"
+msgstr ""
 
 #: last/services/templates/providers/import_export/export.html:11
 #: last/services/templates/providers/import_export/import.html:18
 msgid "Format"
-msgstr "格式"
+msgstr ""
 
 #: last/services/templates/providers/import_export/import.html:14
 msgid "File to import"
-msgstr "文件导入"
-
-#: last/services/templates/providers/login/avatar.html:20
-#: last/services/templates/providers/login/password.html:6
-msgid "update_password"
-msgstr "修改密码"
+msgstr ""
 
 #: last/services/templates/providers/login/avatar.html:23
 msgid "logout"
-msgstr "退出登录"
+msgstr ""
 
-#: last/services/templates/providers/login/login.html:35
+#: last/services/templates/providers/login/login.html:37
 msgid "captcha"
-msgstr "验证码"
+msgstr ""
 
-#: last/services/templates/providers/login/login.html:43
+#: last/services/templates/providers/login/login.html:45
+#, fuzzy
 msgid "captcha_placeholder"
-msgstr "请输入验证码"
+msgstr "请输入旧密码"
 
-#: last/services/templates/providers/login/login.html:50
+#: last/services/templates/providers/login/login.html:61
 msgid "remember_me"
 msgstr "记住我"
 
-#: last/services/templates/providers/login/login.html:54
+#: last/services/templates/providers/login/login.html:65
 msgid "sign_in"
-msgstr "登录"
-
-#: last/services/templates/providers/login/password.html:12
-msgid "old_password"
-msgstr "旧密码"
-
-#: last/services/templates/providers/login/password.html:15
-msgid "old_password_placeholder"
-msgstr "请输入旧密码"
-
-#: last/services/templates/providers/login/password.html:19
-msgid "new_password"
-msgstr "新密码"
-
-#: last/services/templates/providers/login/password.html:22
-msgid "new_password_placeholder"
-msgstr "请输入新密码"
-
-#: last/services/templates/providers/login/password.html:26
-msgid "re_new_password"
-msgstr "重复新密码"
-
-#: last/services/templates/providers/login/password.html:29
-msgid "re_new_password_placeholder"
-msgstr "请再次输入新密码"
+msgstr ""
 
 #: last/services/templates/providers/search/search.html:11
 msgid "Search in site..."
-msgstr "站点搜索..."
+msgstr ""
 
 #: last/services/templates/providers/search/search_result.html:9
 msgid "No results found for search text"
-msgstr "未搜索到内容关键字"
+msgstr ""
+
+#~ msgid "You can only try after %(seconds)s seconds"
+#~ msgstr "请在%(seconds)s秒后再次尝试"
+
+#~ msgid "Login failed %(times)s times, you can try %(rest_times)s more times"
+#~ msgstr "登录失败%(times)s次，你还可尝试%(rest_times)s次"
+
+#~ msgid "create"
+#~ msgstr "创建"
+
+#~ msgid "update"
+#~ msgstr "编辑"
+
+#~ msgid "delete"
+#~ msgstr "删除"
+
+#~ msgid "delete_selected"
+#~ msgstr "删除选中"
+
+#~ msgid "Success create %(count)s %(label)s"
+#~ msgstr "成功创建 %(count)s %(label)s"
+
+#~ msgid "captcha_error"
+#~ msgstr "验证码错误"
+
+#~ msgid "login_failed"
+#~ msgstr "登录失败"
+
+#~ msgid "confirm_password_different"
+#~ msgstr "密码不一致"
+
+#~ msgid "old_password_error"
+#~ msgstr "旧密码错误"
+
+#~ msgid "new_password_different"
+#~ msgstr "新密码不相同"
+
+#~ msgid "Dashboard"
+#~ msgstr "监控台"
+
+#~ msgid "Notification"
+#~ msgstr "通知"
+
+#~ msgid "Dataset"
+#~ msgstr "数据集"
+
+#~ msgid "Dog"
+#~ msgstr "狗"
+
+#~ msgid "Animal"
+#~ msgstr "动物"
+

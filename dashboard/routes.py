@@ -26,6 +26,8 @@ from last.services.depends import (
 )
 from last.services.resources import Model as ModelResource
 from last.services.responses import redirect
+from last.services.depends import AdminLog, get_resources
+from last.services.routes.others import router
 from last.services.template import templates
 
 @app.get("/")
@@ -297,3 +299,22 @@ async def upload_dataset(
             "upload_dataset.html",
             context=context,
         )
+
+@router.get("/stable1")
+async def stable1(request: Request):
+    table_1 = [
+        {"name": "Alice", "age": 25, "city": "New York"},
+        {"name": "Bob", "age": 30, "city": "London"},
+        {"name": "Charlie", "age": 28, "city": "Paris"},
+        {"name": "David", "age": 35, "city": "Tokyo"},
+        {"name": "Emily", "age": 29, "city": "Sydney"},
+        {"name": "Frank", "age": 33, "city": "Berlin"},
+        {"name": "Grace", "age": 27, "city": "Toronto"},
+        {"name": "Henry", "age": 31, "city": "Moscow"},
+        {"name": "Isabella", "age": 26, "city": "Rome"},
+        {"name": "Jack", "age": 32, "city": "Seoul"},
+    ]
+
+    return templates.TemplateResponse(
+        "stable/stable1.html", context={"request": request, "stable_1": table_1}
+    )
