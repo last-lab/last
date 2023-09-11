@@ -8,7 +8,7 @@ from .public import RiskDimension
 @dataclass
 class Message(Record):
     predecessor_uid: Optional[str] = None # 关联上一条Message记录的id
-    successor_uid: Optional[str] = None # 关联上一条Message记录的id
+    successor_uid: Optional[str] = None # 关联下一条Message记录的id
     role: str 
     content: str
 
