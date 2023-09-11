@@ -13,7 +13,7 @@ from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
 from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
-from dashboard.widgets.displays import ShowIp
+from dashboard.widgets.displays import ShowIp, ShowStatus, ShowPopover
 from last.services.app import app
 from last.services.enums import Method
 from last.services.file_upload import FileUpload
@@ -71,11 +71,29 @@ class Evaluation(Dropdown):
             filters.Enum(enum=enums.EvalStatus, name="status", label="评测状态"),
         ]
         fields = [
-            Field(name="model_name", label="模型名称"),
+            Field(name="model_name", label="模型名称", display=ShowPopover()),
             Field(name="eval_pan", label="评测方案"),
             Field(name="created_at", label="提交时间"),
-            Field(name="status", label="评测状态"),
+            Field(name="status", label="评测状态", display=ShowStatus()),
         ]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            actions = await super().get_actions(request)
+            model_detail = Action(
+                label="模型详情",
+                icon="ti ti-toggle-left",
+                name="model_detail",
+                method=Method.PUT,
+            )
+            record_file = Action(
+                label="备案文件",
+                icon="ti ti-toggle-left",
+                name="record_file",
+                method=Method.PUT,
+            )
+            actions.append(model_detail)
+            actions.append(record_file)
+            return actions
 
     label = "模型评测"
     icon = "fas fa-user"

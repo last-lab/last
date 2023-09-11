@@ -49,9 +49,9 @@ class Config(Model):
 
 class Record(Model):
     model_name = fields.CharField(max_length=50)
-    eval_pan = fields.IntField()
+    eval_pan = fields.IntField(description="Choose evaluation plan")
     created_at = fields.DatetimeField(auto_now_add=True)
-    status: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress, description="Evaluation Status")
+    status: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress)
 
 
 class Log(AbstractLog):
