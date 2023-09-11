@@ -11,7 +11,7 @@ TRANSLATIONS = {
     "en_US": Translations.load(os.path.join(BASE_DIR, "locales"), locales=["en_US"]),
 }
 
-translations = TRANSLATIONS.get("en_US")
+translations = TRANSLATIONS.get("zh_CN")
 
 
 def set_locale(locale: str):

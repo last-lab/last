@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 from datetime import date
 from typing import List
 
@@ -29,43 +29,64 @@ from last.services.resources import (
 )
 from last.services.widgets import displays, filters, inputs
 
-upload = FileUpload(uploads_dir=os.path.join(BASE_DIR, "static", "uploads"))
+upload = FileUpload(uploads_dir=f"{(Path(BASE_DIR)/'static'/'uploads').resolve()}")
 
 
 @app.register
-class Dashboard(Link):
-    label = "Dashboard"
-    icon = "fas fa-home"
-    url = "/admin"
+class Administartor(Dropdown):
+    """安全监管"""
+    class Dashboard(Link):
+        label = _("Dashboard")
+        icon = "fas fa-home"
+        url = "/admin"
+
+    class Notification(Link):
+        label = _("Notification")  # Note: use i18n._() to translate
+        icon = "far fa-bell"
+        url = "/admin/notification"
+
+    label = _("Administartor")
+    icon = "fas fa-bars"
+    resources = [Dashboard, Notification]
 
 
 @app.register
-class Notification(Link):
-    label = "Notification"
-    icon = "far fa-bell"
-    url = "/admin/notification"
+class Evaluation(Dropdown):
+    """模型评测"""
+    class EvaluationRecord(Model):
+        label: str = _("Evaluation Record")
+        icon = "fas fa-user"
+        model = Evaluation
+        filters = [
+            filters.Search(
+                name="username",
+                label="Username",
+                search_mode="contains",
+                placeholder="评测模型/版本/方案",
+            ),
+        ]
 
-
-@app.register
-class Label(Link):
-    label = "Label"
-    icon = "fas fa-tag"
-    url = "/admin/label"
-
-
-@app.register
-class Evaluation(Model):
-    label: str = "Evaluation"
+    label: str = _("Evaluation")
     icon = "fas fa-user"
-    model = Evaluation
-    filters = [
-        filters.Search(
-            name="username",
-            label="Username",
-            search_mode="contains",
-            placeholder="评测模型/版本/方案",
-        ),
-    ]
+    resources = [EvaluationRecord]
+
+@app.register
+class Dataset(Dropdown):
+    class LabelingRecord(Model):
+        label = _("Labeling Record")
+        model = LabelPage
+        filters = [filters.Search(name="task_type", label="Task Type")]
+        fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
+
+    class Labeling(Link):
+        """Label Studio Embedding"""
+        label = _("Labeling")
+        icon = "fas fa-tag"
+        url = "/admin/label"
+
+    label = _("Dataset")
+    icon = "fas fa-bars"
+    resources = [LabelingRecord, Labeling]
 
 
 @app.register
@@ -104,7 +125,6 @@ class Content(Dropdown):
     label = "Content"
     icon = "fas fa-bars"
     resources = [ProductResource, CategoryResource]
-
 
 @app.register
 class ConfigResource(Model):
@@ -146,7 +166,6 @@ class ConfigResource(Model):
         )
         actions.append(switch_status)
         return actions
-
 
 @app.register
 class LogResource(Model):
@@ -194,7 +213,6 @@ class LogResource(Model):
 
     async def get_bulk_actions(self, request: Request) -> List[Action]:
         return []
-
 
 @app.register
 class Auth(Dropdown):
@@ -265,90 +283,10 @@ class Auth(Dropdown):
     icon = "fas fa-users"
     resources = [AdminResource, Resource, Permission, Role]
 
-
-class SponsorUsernameDisplay(displays.Display):
-    template = "sponsor_username.html"
-
-
-class RestDays(ComputeField):
-    async def get_value(self, request: Request, obj: dict):
-        v = await super(RestDays, self).get_value(request, obj)
-        days = (v - date.today()).days
-        return days if days >= 0 else 0
-
-
-class Amount(ComputeField):
-    async def get_value(self, request: Request, obj: dict):
-        v = await super(Amount, self).get_value(request, obj)
-        return f'{obj.get("currency")}{v}'
-
-
-@app.register
-class SponsorResource(Model):
-    label = "Sponsor"
-    model = Sponsor
-    page_pre_title = "Sponsor"
-    page_title = "Thanks for all the sponsors!"
-    icon = "far fa-heart"
-    filters = ["username", filters.Date("sponsor_date", label="Sponsor Date")]
-    fields = [
-        "id",
-        Field(name="username", label="username", display=SponsorUsernameDisplay()),
-        "sponsor_date",
-        Field(name="amount", display=displays.InputOnly()),
-        Field(name="currency", display=displays.InputOnly()),
-        Amount(name="amount", label="Amount"),
-    ]
-
-    async def get_actions(self, request: Request) -> List[Action]:
-        return [
-            Action(
-                label=_("update"),
-                icon="ti ti-edit",
-                name="update",
-                method=Method.GET,
-                ajax=False,
-            ),
-        ]
-
-    async def get_bulk_actions(self, request: Request) -> List[Action]:
-        return []
-
-
-@app.register
-class GithubLink(Link):
-    label = "Github"
-    url = "https://github.com/fastapi-admin/fastapi-admin"
-    icon = "fab fa-github"
-    target = "_blank"
-
-
-@app.register
-class DocumentationLink(Link):
-    label = "Documentation"
-    url = "https://fastapi-admin-docs.long2ice.io"
-    icon = "fas fa-file-code"
-    target = "_blank"
-
-
-@app.register
-class SwitchLayout(Link):
-    label = "Switch Layout"
-    url = "/admin/layout"
-    icon = "fas fa-grip-horizontal"
-
-
-@app.register
-class SimpleTable(Link):
-    label = "Simple Table1"
-    icon = "fa-solid fa-table"
-    url = "/admin/stable1"
-
-
 @app.register
 class Animal(Dropdown):
     class CatResource(Model):
-        label = "Cat"
+        label = _("Cat")
         model = Cat
         filters = [filters.Search(name="name", label="Name")]
         fields = ["id", "name", "age", "birth_at"]
@@ -378,15 +316,85 @@ class Animal(Dropdown):
     icon = "fas fa-bars"
     resources = [CatResource, DogResource]
 
+@app.register
+class SimpleTable(Link):
+    label = "Simple Table1"
+    icon = "fa-solid fa-table"
+    url = "/admin/stable1"
+
+
+class RestDays(ComputeField):
+    async def get_value(self, request: Request, obj: dict):
+        v = await super(RestDays, self).get_value(request, obj)
+        days = (v - date.today()).days
+        return days if days >= 0 else 0
+
+
+class Amount(ComputeField):
+    async def get_value(self, request: Request, obj: dict):
+        v = await super(Amount, self).get_value(request, obj)
+        return f'{obj.get("currency")}{v}'
+
+# TODO: SponsorResource是一个从外部地址获取信息的例子
+# class SponsorUsernameDisplay(displays.Display):
+#     template = "sponsor_username.html"
+
+# @app.register
+# class SponsorResource(Model):
+#     label = "Sponsor"
+#     model = Sponsor
+#     page_pre_title = "Sponsor"
+#     page_title = "Thanks for all the sponsors!"
+#     icon = "far fa-heart"
+#     filters = ["username", filters.Date("sponsor_date", label="Sponsor Date")]
+#     fields = [
+#         "id",
+#         Field(name="username", label="username", display=SponsorUsernameDisplay()),
+#         "sponsor_date",
+#         Field(name="amount", display=displays.InputOnly()),
+#         Field(name="currency", display=displays.InputOnly()),
+#         Amount(name="amount", label="Amount"),
+#     ]
+#
+#     async def get_actions(self, request: Request) -> List[Action]:
+#         return [
+#             Action(
+#                 label=_("update"),
+#                 icon="ti ti-edit",
+#                 name="update",
+#                 method=Method.GET,
+#                 ajax=False,
+#             ),
+#         ]
+#
+#     async def get_bulk_actions(self, request: Request) -> List[Action]:
+#         return []
+
+
+# @app.register
+# class GithubLink(Link):
+#     label = "Github"
+#     url = "https://github.com/fastapi-admin/fastapi-admin"
+#     icon = "fab fa-github"
+#     target = "_blank"
+
+
+# @app.register
+# class DocumentationLink(Link):
+#     label = "Documentation"
+#     url = "https://fastapi-admin-docs.long2ice.io"
+#     icon = "fas fa-file-code"
+#     target = "_blank"
+
 
 @app.register
-class DataManagePage(Dropdown):
-    class LabelingPage(Model):
-        label = "Labeling"
-        model = LabelPage
-        filters = [filters.Search(name="task_type", label="Task Type")]
-        fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
+class SwitchLayout(Link):
+    label = "Switch Layout"
+    url = "/admin/layout"
+    icon = "fas fa-grip-horizontal"
 
-    label = "DataSet"
-    icon = "fas fa-bars"
-    resources = [LabelingPage]
+
+
+
+
+
