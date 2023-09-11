@@ -32,7 +32,7 @@ msgstr ""
 
 #: dashboard/resources.py:57
 msgid "Evaluation Record"
-msgstr ""
+msgstr "Evaluation Record"
 
 #: dashboard/resources.py:69
 msgid "Evaluation"

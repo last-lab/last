@@ -1,7 +1,7 @@
 from starlette.requests import Request
 
 from dashboard.enums import EvalStatus
-from last.services.widgets.displays import Display, Status, Popover
+from last.services.widgets.displays import Display, Popover, Status
 
 
 class ShowIp(Display):
@@ -13,7 +13,6 @@ class ShowIp(Display):
 
 
 class ShowStatus(Status):
-
     async def render(self, request: Request, value: str):
         color = ""
         text = ""
@@ -34,8 +33,6 @@ class ShowStatus(Status):
 
 class ShowPopover(Popover):
     async def render(self, request: Request, value: str):
-        return await super().render(request, {
-            'content': value,
-            'popover': value,
-            'title': 'Detail'
-        })
+        return await super().render(
+            request, {"content": value, "popover": value, "title": "Detail"}
+        )

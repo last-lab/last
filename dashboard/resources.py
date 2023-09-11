@@ -6,15 +6,15 @@ from starlette.requests import Request
 
 from dashboard import enums
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin, Cat, Category, Config, Dog1, Record, LabelPage, Log
+from dashboard.models import Admin, Cat, Category, Config, Dog1, LabelPage, Log
 from dashboard.models import Permission as PermissionModel
-from dashboard.models import Product
+from dashboard.models import Product, Record
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
 
 # from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
-from dashboard.widgets.displays import ShowIp, ShowStatus, ShowPopover
+from dashboard.widgets.displays import ShowIp, ShowPopover, ShowStatus
 from last.services.app import app
 from last.services.enums import Method
 from last.services.file_upload import FileUpload
@@ -57,8 +57,8 @@ class Evaluation(Dropdown):
     """模型评测"""
 
     class Record(Model):
-        page_title = '评测记录'
-        page_pre_title = '模型评测记录'
+        page_title = "评测记录"
+        page_pre_title = "模型评测记录"
         label: str = _("Evaluation Record")
         model = Record
         filters = [
