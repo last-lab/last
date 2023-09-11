@@ -23,7 +23,7 @@ class Dataset(Record, BaseManager):
     url: str
     volume: str # 数据集大小
     used_by: Optional[List[str]]
-    qa_list: List[Message]
+    qa_list: List[Conversation]
     current_index: int
 
     def __post_init__(self):
