@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from .base import Record, Statistics, BaseModel
 from .public import ReturnCode
+from .dataset import Message
 
 
 @dataclass
@@ -46,6 +47,10 @@ class Model(ModelInfo, BaseModel):
     """Number of chat completions to generate for each prompt."""
     max_tokens: Optional[int] = None
     """Maximum number of tokens to generate."""
+
+
+    def call(self, msg:Message) -> Message:
+        return Message(related_uid = "xxcadasdad", role="assistant", content="大模型标准回答")
 
 
 @dataclass

@@ -2,25 +2,25 @@ from dataclasses import dataclass
 from typing import List, Dict, Union, Optional
 from pydantic import BaseModel
 
-from .model import APIModelInfo
-from .task import TaskInfo
+from .model import Model
+from .task import Task
 from .base import Record, Statistics, BaseManager
 from .public import UserInfo, StateCode, ReturnCode
 
 
 @dataclass
 class Report(Record, BaseManager):
-    task: TaskInfo
+    task: Task
     state: StateCode
     report_detail: Optional[ReportDetail] = None
-    model_detail: APIModelInfo
+    model_detail: Model
 
     @staticmethod
     def repeat(id, conf: Report) -> str:  # 因为某些异常，需要重新提交一次评测
         pass
 
     @staticmethod
-    def load_model_api(model: APIModelInfo) -> ReturnCode:
+    def load_model_api(model: Model) -> ReturnCode:
         # 通过输入test prompt进行模型测试
         pass
 

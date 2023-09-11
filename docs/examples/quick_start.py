@@ -6,7 +6,7 @@ clients'admin served at services.
 """
 
 from last.types.task import Task
-from last.types.model import APIModelInfo
+from last.types.model import Model
 from last.types.report import Report
 from last.types.dataset import Dataset
 
@@ -19,10 +19,9 @@ with last.Client(name='puan', server_address="http://localhost:5000") as client:
     task = Task(name="xxx", datasets=[dataset])
 
     # 配置评测模型API TODO 初始化test 异常捕捉 
-    model = APIModelInfo(endpoint="xxx", access_key='xxx', secret_key='xxx') 
+    model = Model(endpoint="xxx", access_key='xxx', secret_key='xxx') 
 
     # 执行一次评测任务, 返回评测结果 
-    
     report, QAs = Report(task, model, verbose=True)  # if return_detail, return all response
 
     # 保存评测报告到本地
