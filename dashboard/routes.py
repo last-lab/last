@@ -8,6 +8,7 @@ from last.services.app import app
 from last.services.depends import AdminLog, get_resources
 from last.services.routes.others import router
 from last.services.template import templates
+from last.services.i18n import _
 
 
 @app.get("/")
@@ -71,6 +72,37 @@ async def label(
             "resource_label": "Label",
             "page_pre_title": "BY LABEL STUDIO",
             "page_title": "Label",
+        },
+    )
+
+
+@app.get("/record/add")
+async def create_eval(
+    request: Request,
+    resources=Depends(get_resources),
+):
+    return templates.TemplateResponse(
+        "create_eval.html",
+        context={
+            "request": request,
+            "resources": resources,
+            "resource_label": "Label",
+            "page_pre_title": "BY LABEL STUDIO",
+            "page_title": _("Create Evaluation"),
+            "eval_plans": [
+                {
+                    'plan_name': 'Plan 1',
+                    'plan_content': 'Plan 1 content',
+                },
+                {
+                    'plan_name': 'Plan 2',
+                    'plan_content': 'Plan 2 content',
+                },
+                {
+                    'plan_name': 'Plan 3',
+                    'plan_content': 'Plan 3 content',
+                },
+            ]
         },
     )
 

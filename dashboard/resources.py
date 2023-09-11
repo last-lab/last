@@ -57,6 +57,7 @@ class Evaluation(Dropdown):
     """模型评测"""
 
     class Record(Model):
+        """评测记录"""
         page_title = "评测记录"
         page_pre_title = "模型评测记录"
         label: str = _("Evaluation Record")
@@ -77,6 +78,18 @@ class Evaluation(Dropdown):
             Field(name="status", label="评测状态", display=ShowStatus()),
         ]
 
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("create"),
+                    icon="fas fa-plus",
+                    name="add",
+                    method=Method.GET,
+                    ajax=False,
+                    class_="btn-dark",
+                )
+            ]
+
         async def get_actions(self, request: Request) -> List[Action]:
             actions = await super().get_actions(request)
             model_detail = Action(
@@ -95,9 +108,14 @@ class Evaluation(Dropdown):
             actions.append(record_file)
             return actions
 
+    class Create(Link):
+        """创建评测"""
+        label = _("Create Evaluation")
+        url = "/admin/record/add"
+
     label: str = _("Evaluation")
     icon = "fas fa-user"
-    resources = [Record]
+    resources = [Record, Create]
 
 
 @app.register

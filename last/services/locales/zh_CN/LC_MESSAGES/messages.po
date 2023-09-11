@@ -35,6 +35,26 @@ msgstr "安全监管"
 msgid "Evaluation Record"
 msgstr "评测记录"
 
+#: dashboard/resources.py:57
+#, fuzzy
+msgid "Create Evaluation"
+msgstr "新建评测"
+
+#: dashboard/resources.py:57
+#, fuzzy
+msgid "Evaluation Plan"
+msgstr "评测方案"
+
+#: dashboard/resources.py:57
+#, fuzzy
+msgid "Evaluation Model"
+msgstr "评测模型"
+
+#: dashboard/resources.py:57
+#, fuzzy
+msgid "Add Model"
+msgstr "添加模型"
+
 #: dashboard/resources.py:69
 msgid "Evaluation"
 msgstr "模型评测"

@@ -34,6 +34,26 @@ msgstr ""
 msgid "Evaluation Record"
 msgstr "Evaluation Record"
 
+#: dashboard/resources.py:57
+#, fuzzy
+msgid "Create Evaluation"
+msgstr "Create Evaluation"
+
+#: dashboard/resources.py:57
+#, fuzzy
+msgid "Evaluation Plan"
+msgstr "Evaluation Plan"
+
+#: dashboard/resources.py:57
+#, fuzzy
+msgid "Evaluation Model"
+msgstr "Evaluation Model"
+
+#: dashboard/resources.py:57
+#, fuzzy
+msgid "Add Model"
+msgstr "Add Model"
+
 #: dashboard/resources.py:69
 msgid "Evaluation"
 msgstr ""
