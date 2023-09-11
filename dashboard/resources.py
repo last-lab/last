@@ -5,9 +5,19 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
-from last.services import enums as _enums
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Cat, Category, Config, Dog1, LabelPage, Log
+from dashboard.models import (
+    Admin,
+    Cat,
+    Category,
+    Config,
+    Dog1,
+    # Evaluation,
+    EvaluationPlanManager,
+    LabelPage,
+    Log,
+)
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product, Record
 from dashboard.models import Resource as ResourceModel
@@ -19,6 +29,9 @@ from dashboard.models import EvaluationDatasetManager
 # from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
 from dashboard.widgets.displays import ShowIp, ShowPopover, ShowStatus
+from dashboard.providers import import_export_provider
+from dashboard.widgets.displays import ShowIp
+from last.services import enums as _enums
 from last.services.app import app
 from last.services.enums import Method
 from last.services.file_upload import FileUpload
@@ -360,25 +373,34 @@ class DataManager(Dropdown):
     class EvaluationPlanManagerResource(Model):
         label = "评测方案管理"
         model = EvaluationPlanManager
-        filters = [filters.Search(name="name", label="方案名称")]
-        fields = ["id",
-                  Field(name="plan_name", label="评测方案"),
-                  Field(name="plan_content", label="风险类型/数据占比/评测权重")]
+        filters = [filters.Search(name="name", label="方案名称", placeholder="请输入")]
+        fields = [
+            "id",
+            Field(name="plan_name", label="评测方案"),
+            Field(name="plan_content", label="风险类型/数据占比/评测权重"),
+            Field(
+                name="score_way",
+                label="评分方式",
+                display=displays.InputOnly(),
+                input_=inputs.RadioEnum(enums.ScoreWayType, default=enums.ScoreWayType.system),
+            ),
+        ]
 
         async def get_actions(self, request: Request) -> List[Action]:
             return [
                 Action(
                     label=_("update"),
                     icon="ti ti-edit",
-                    name="update",
+                    name="epm_update",
                     method=_enums.Method.GET,
                     ajax=False,
                 ),
                 Action(
-                    label="Copy Create",
+                    label=_("复制并新建"),
                     icon="ti ti-toggle-left",
-                    name="copy_create",
+                    name="epm_copy_create",
                     method=_enums.Method.GET,
+                    ajax=False,
                 ),
                 Action(
                     label=_("delete"),
@@ -393,7 +415,7 @@ class DataManager(Dropdown):
                 ToolbarAction(
                     label=_("新建方案"),
                     icon="fas fa-plus",
-                    name="create",
+                    name="epm_create",
                     method=_enums.Method.GET,
                     ajax=False,
                     class_="btn-dark",
@@ -465,6 +487,10 @@ class DataManagePage(Dropdown):
     icon = "fas fa-bars"
     resources = [LabelingPage]
 
+    # resources = [EvaluationPlanManagerResource]
+
+
+@app.register
 class SimpleTable(Link):
     label = "Simple Table1"
     icon = "fa-solid fa-table"

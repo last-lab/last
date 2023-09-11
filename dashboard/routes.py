@@ -1,16 +1,9 @@
-from typing import Type
-
-from fastapi import Depends, Path
-from fastapi import HTTPException
-from jinja2 import TemplateNotFound
+from fastapi import Depends, HTTPException, Path
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
-from starlette.status import HTTP_303_SEE_OTHER
-from starlette.status import HTTP_404_NOT_FOUND
-from tortoise import Model
-from tortoise.fields import ManyToManyRelation
-from tortoise.transactions import in_transaction
-
+from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
+from typing import Type
+from dashboard.biz_routers import biz_router
 from dashboard.models import Config, Log
 from last.services.app import app
 from last.services.depends import AdminLog
@@ -29,6 +22,11 @@ from last.services.responses import redirect
 from last.services.depends import AdminLog, get_resources
 from last.services.routes.others import router
 from last.services.template import templates
+from jinja2 import TemplateNotFound
+from tortoise import Model
+from tortoise.transactions import in_transaction
+app.include_router(biz_router)
+
 
 @app.get("/")
 async def home(

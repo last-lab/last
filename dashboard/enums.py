@@ -24,6 +24,14 @@ class RiskTypes(IntEnum):
 class RiskSubTypes(IntEnum):
     regime = 0
 
+# datamanager
+class ScoreWayType(IntEnum):
+    system = 0
+    human = 1
+
+
+# datamanager end
+
 
 class EvalStatus(IntEnum):
     on_progress = 0

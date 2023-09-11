@@ -9,7 +9,7 @@
                 <form
                         method="post"
                         action="{{ request.app.admin_path }}/{{ resource }}/copy_create/{{ pk }}"
-                        enctype="{{ model_resource.enctype }}"
+                        enctype="application/x-www-form-urlencoded"
                 >
                     {% for input in inputs %} {{ input|safe }} {% endfor %}
                     <div class="form-footer">
