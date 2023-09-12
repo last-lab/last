@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from enum import Enum, auto
 from datetime import datetime
 import uuid
+from enum import Enum
 
 
 class RiskDimension(BaseModel):
@@ -54,27 +55,30 @@ class UserInfo(BaseModel):
 
 
 class CodeMsg(BaseModel):
-    def __init__(self, code, message):
-        self.code = code
-        self.message = message
+    code: int
+    message: str
 
     def __str__(self):
         return f"Error {self.code}: {self.message}"
 
+class ReturnCode(Enum):
+    NOT_FOUND = CodeMsg(code=404, message="Not found")
+    UNAUTHORIZED = CodeMsg(code=401, message="Unauthorized")
+    FORBIDDEN = CodeMsg(code=403, message="Forbidden")
+    SUCCESS = CodeMsg(code=10000, message="Success")
+    BAD_REQUEST = CodeMsg(code=400, message="Bad Request")
+    INVALID_INPUT = CodeMsg(code=422, message="Invalid Input")
 
-class ReturnCode(BaseModel):
-    NOT_FOUND = CodeMsg(404, "Not found")
-    UNAUTHORIZED = CodeMsg(401, "Unauthorized")
-    FORBIDDEN = CodeMsg(403, "Forbidden")
-    SUCCESS = CodeMsg(10000, "Success")
-    BAD_REQUEST = CodeMsg(400, "Bad Request")
-    INVALID_INPUT = CodeMsg(422, "Invalid Input")
+    def __str__(self):
+        return str(self.value)
 
+class StateCode(Enum):
+    In_Progress = CodeMsg(code=0, message="进行中")
+    Done = CodeMsg(code=1, message="已完成")
+    Error = CodeMsg(code=-1, message="异常")
 
-class StateCode:
-    In_Progress = CodeMsg(0, "进行中")
-    Done = CodeMsg(1, "已完成")
-    Error = CodeMsg(-1, "异常")
+    def __str__(self):
+        return str(self.value)
 
 
 class ID:
