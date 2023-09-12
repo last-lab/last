@@ -8,34 +8,27 @@ from dashboard import enums
 from dashboard.constants import BASE_DIR
 
 # from dashboard.models import Evaluation
+from dashboard.models import Config  # Evaluation,
+from dashboard.models import Sponsor  # Evaluation,
 from dashboard.models import (
     Admin,
-    Cat,
+    Cat,  # EvaluationPlan,; Evaluation,
     Category,
-    Config,  # Evaluation,
     Dog1,
     EvaluationDatasetManager,
     EvaluationPlanManager,
-    # EvaluationPlan,
     EvaluationRecord,
     LabelPage,
     Log,
 )
-from dashboard.models import Admin, Cat, Category, Config, Dog1, LabelPage, Log
-
 from dashboard.models import Permission as PermissionModel
-from dashboard.models import Product, Record  # Evaluation,
+from dashboard.models import Product, Record  # EvaluationPlan,; Evaluation,
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
-from dashboard.models import Sponsor  # Evaluation,
 
 # from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
-
-from dashboard.widgets.displays import ShowIp, ShowPopover, ShowStatus
-
-from dashboard.widgets.displays import ShowIp, ShowOperation, ShowPopover, ShowStatus, ShowAction
-
+from dashboard.widgets.displays import ShowAction, ShowIp, ShowOperation, ShowPopover, ShowStatus
 from last.services import enums as _enums
 from last.services.app import app
 from last.services.enums import Method
@@ -86,6 +79,7 @@ class Evaluation(Dropdown):
 
         label: str = _("Evaluation Record")
         model = Record
+
     class EvaluationRecord(Model):
         label: str = _("EvaluationRecord Record")
         icon = "fas fa-user"
@@ -111,7 +105,6 @@ class Evaluation(Dropdown):
             Field(name="operations", label="操作", display=ShowOperation()),
         ]
 
-
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return [
                 ToolbarAction(
@@ -124,7 +117,6 @@ class Evaluation(Dropdown):
                 )
             ]
 
-
         async def get_actions(self, request: Request) -> List[Action]:
             return []
 
@@ -133,7 +125,6 @@ class Evaluation(Dropdown):
 
         label = _("Create Evaluation")
         url = "/admin/record/add"
-
 
     label: str = _("Evaluation")
 
@@ -478,7 +469,7 @@ class DataManager(Dropdown):
             Field(name="sub_type", label="二级类型"),
             Field(name="updateTime", label="更新时间"),
             Field(name="useCount", label="使用次数"),
-            Field(name="dataset_action", label="操作", display=ShowAction())
+            Field(name="dataset_action", label="操作", display=ShowAction()),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:

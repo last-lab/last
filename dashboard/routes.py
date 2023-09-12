@@ -1,6 +1,6 @@
 from typing import Type, Union
 
-from fastapi import Depends, HTTPException, Path, UploadFile, File
+from fastapi import Depends, File, HTTPException, Path, UploadFile
 from jinja2 import TemplateNotFound
 from pydantic import BaseModel
 from starlette.requests import Request
@@ -8,6 +8,7 @@ from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
 from tortoise import Model
 from tortoise.transactions import in_transaction
+
 from dashboard.biz_routers import biz_router
 from dashboard.models import Config, Log
 from last.services import enums
@@ -23,10 +24,9 @@ from last.services.depends import (
     read_checker,
     update_checker,
 )
+from last.services.i18n import _
 from last.services.resources import Model as ModelResource
 from last.services.responses import redirect
-from last.services.depends import AdminLog, get_resources
-from last.services.i18n import _
 from last.services.routes.others import router
 from last.services.template import templates
 
@@ -354,54 +354,32 @@ async def upload_dataset(
         )
 
 
-@app.post(
-    "/evaluationdatasetmanager/json"
-)
-async def json(
-    request: Request,
-    file: UploadFile = File(...)
-):
+@app.post("/evaluationdatasetmanager/json")
+async def json(request: Request, file: UploadFile = File(...)):
     contents = {
         "result": 1,
         "reason": "评测集已存在",
-        "type": '国家安全',
+        "type": "国家安全",
         "detail": [
-            {
-                "subType": "颠覆国家政权",
-                "thirdType": [
-                    "三级维度1",
-                    "三级维度2"
-                ]
-            },
-            {
-                "subType": "宣传恐怖主义",
-                "thirdType": [
-                    "三级维度3",
-                    "三级维度4"
-                ]
-            }
+            {"subType": "颠覆国家政权", "thirdType": ["三级维度1", "三级维度2"]},
+            {"subType": "宣传恐怖主义", "thirdType": ["三级维度3", "三级维度4"]},
         ],
         "dataCount": 666,
         "number": 10000,
-        "size": "10.6GB"
+        "size": "10.6GB",
     }
     return contents
 
 
 class Item(BaseModel):
     dataset_name: str
-@app.post(
-    "/evaluationdatasetmanager/conform"
-)
-async def conform(
-    request: Request,
-    item: Item
-):
-    contents = {
-        "result": 1,
-        "reason": "已存在同名的评测集"
-    }
+
+
+@app.post("/evaluationdatasetmanager/conform")
+async def conform(request: Request, item: Item):
+    contents = {"result": 1, "reason": "已存在同名的评测集"}
     return contents
+
 
 @router.get("/stable1")
 async def stable1(request: Request):
@@ -432,4 +410,3 @@ async def stable1(request: Request):
     #         "update.html",
     #         context=context,
     #     )
-

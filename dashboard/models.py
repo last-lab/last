@@ -1,12 +1,6 @@
 from tortoise import Model, fields
 
-from dashboard.enums import (
-    EvalStatus,
-    GenderType,
-    ProductType,
-    ScoreWayType,
-    Status,
-)
+from dashboard.enums import EvalStatus, GenderType, ProductType, ScoreWayType, Status
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -76,12 +70,12 @@ class Record(Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     status: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress)
 
+
 class EvaluationRecord(Model):
     model_name = fields.CharField(max_length=50)
     eval_setting = fields.IntField()
     submit_time = fields.DatetimeField()
     eval_status = fields.IntEnumField(EvalStatus, description="EvaluationRecord Status")
-
 
 
 class Log(AbstractLog):

@@ -308,7 +308,7 @@ async def epm_ds_query(
     """
     datasets = []
     if ds_name is not None:
-        datasets = await DataSet.all().filter(name= ds_name).order_by("id").limit(10)
+        datasets = await DataSet.all().filter(name=ds_name).order_by("id").limit(10)
     if ds_content is not None:
         datasets = await DataSet.all().filter(name=ds_content).order_by("id").limit(10)
     if not datasets:
