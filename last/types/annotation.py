@@ -65,5 +65,3 @@ class LabelStudioJSON(BaseModel):
     project: int  # 项目ID
     updated_by: int  # 最后更新的用户ID
     unique_id: Optional[str] = None  # 唯一标识符，可选
-
-
