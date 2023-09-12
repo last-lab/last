@@ -14,7 +14,7 @@ from dashboard.models import Role as RoleModel
 
 # from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
-from dashboard.widgets.displays import ShowIp, ShowPopover, ShowStatus
+from dashboard.widgets.displays import ShowIp, ShowOperation, ShowPopover, ShowStatus
 from last.services.app import app
 from last.services.enums import Method
 from last.services.file_upload import FileUpload
@@ -73,10 +73,11 @@ class Evaluation(Dropdown):
             filters.Enum(enum=enums.EvalStatus, name="status", label="评测状态"),
         ]
         fields = [
-            Field(name="model_name", label="模型名称", display=ShowPopover()),
+            Field(name="model_name", label="评测模型", display=ShowPopover()),
             Field(name="eval_pan", label="评测方案"),
             Field(name="created_at", label="提交时间"),
             Field(name="status", label="评测状态", display=ShowStatus()),
+            Field(name="operations", label="操作", display=ShowOperation()),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
@@ -92,22 +93,7 @@ class Evaluation(Dropdown):
             ]
 
         async def get_actions(self, request: Request) -> List[Action]:
-            actions = await super().get_actions(request)
-            model_detail = Action(
-                label="模型详情",
-                icon="ti ti-toggle-left",
-                name="model_detail",
-                method=Method.PUT,
-            )
-            record_file = Action(
-                label="备案文件",
-                icon="ti ti-toggle-left",
-                name="record_file",
-                method=Method.PUT,
-            )
-            actions.append(model_detail)
-            actions.append(record_file)
-            return actions
+            return []
 
     class Create(Link):
         """创建评测"""

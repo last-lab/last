@@ -24,26 +24,31 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">{{ _('Evaluation Model') }}</label>
-          <input type="text" class="form-control" name="example-text-input" placeholder="请输入模型路径" />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Access Key</label>
-          <input type="text" class="form-control" name="example-text-input" placeholder="请输入模型 Access Key" />
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Secret Key</label>
-          <input type="text" class="form-control" name="example-text-input" placeholder="请输入模型 Secret Key" />
-        </div>
-      </div>
-      <div class="modal-footer">
-        <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
-          Cancel
-        </a>
-        <a href="#" class="btn btn-primary ms-auto" data-bs-dismiss="modal">
-          {{ _('Create new report')}}
-        </a>
+        <form method="post" action="{{ request.app.admin_path }}/record/add">
+          <div class="mb-3">
+            <label class="form-label required">{{ _('Evaluation Model') }}</label>
+            <input required class="form-control" list="datalistOptions" name="model_name" placeholder="Type to search..."/>
+              <datalist id="datalistOptions">
+                {% for item in eval_models %}
+                  <option value="{{ item.name }}" />
+                {% endfor %}
+              </datalist>
+          </div>
+          <div class="mb-3">
+            <label class="form-label required">Access Key</label>
+            <input required type="text" class="form-control" name="model_ak" placeholder="请输入模型 Access Key" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label required">Secret Key</label>
+            <input required type="text" class="form-control" name="model_sk" placeholder="请输入模型 Secret Key" />
+          </div>
+          <div class="form-footer">
+            <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+              Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">{{ _('Create new report')}}</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

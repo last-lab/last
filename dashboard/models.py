@@ -10,6 +10,22 @@ from last.services.models import (
 )
 
 
+# 这个类里面的东西是专门用来display的
+class ModelInfo(Model):
+    name: str
+    model_type: str
+    version: str
+    base_model: str
+    parameter_volume: str
+    pretraining_info: str
+    finetuning_info: str
+    alignment_info: str
+
+    endpoint: str
+    access_key: str
+    secret_key: str
+
+
 class Admin(AbstractAdmin):
     email = fields.CharField(max_length=200, default="")
     last_login = fields.DatetimeField(description="Last Login", null=True)
@@ -48,7 +64,8 @@ class Config(Model):
 
 
 class Record(Model):
-    model_name = fields.CharField(max_length=50)
+    eval_models = fields.ManyToManyField("models.ModelInfo")
+    model_name = fields.CharField(max_length=200)
     eval_pan = fields.IntField(description="Choose evaluation plan")
     created_at = fields.DatetimeField(auto_now_add=True)
     status: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress)

@@ -103,6 +103,28 @@ async def create_eval(
                     "plan_content": "Plan 3 content",
                 },
             ],
+            "eval_models": [
+                {
+                    "name": "Model 1",
+                    "model_content": "Model 1 content",
+                    "uid": "1",
+                },
+                {
+                    "name": "Model 2",
+                    "model_content": "Model 2 content",
+                    "uid": "2",
+                },
+                {
+                    "name": "Model 3",
+                    "model_content": "Model 3 content",
+                    "uid": "3",
+                },
+                {
+                    "name": "Model 4",
+                    "model_content": "Model 4 content",
+                    "uid": "4",
+                },
+            ],
         },
     )
 
