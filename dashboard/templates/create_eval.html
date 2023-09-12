@@ -24,7 +24,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form method="post" action="{{ request.app.admin_path }}/record/add">
+        <form method="post" action="{{ request.app.admin_path }}/model/add">
           <div class="mb-3">
             <label class="form-label required">{{ _('Evaluation Model') }}</label>
             <input required class="form-control" list="datalistOptions" name="model_name" placeholder="Type to search..."/>
