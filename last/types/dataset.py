@@ -22,6 +22,35 @@ class Dataset(Record, BaseManager):
     volume: str # 数据集大小
     used_by: Optional[List[str]]
     qa_record: Dict[str, Message]  # Message的唯一id
+    conversation_start_id: List[str] # 每段对话的起始Message id
+
+    @property
+    def length(self):
+        return len(self.qa_record)
+    
+    def __iter__(self):
+        self.current_conversation_index = 0
+        self.current_message_id = self.conversation_start_id[0]
+        return self
+
+    def __next__(self) -> Message:
+        # 每次迭代时，只输出一条Messsage消息，
+        # 第一次迭代的时候，输出第一个conversation里面的第一条消息
+        # 下次迭代时，输出第二条消息
+        # 如果当前conversation已经迭代完毕（即successor_uid为None），则输出第二个conversation里面的第一条消息
+        # 直到所有的conversation输出完毕
+        if self.current_conversation_index >= len(self.qa_record):
+            raise StopIteration
+
+        message = self.qa_record[self.current_message_id]
+
+        if message.successor_uid is None:
+            self.current_conversation_index += 1
+            if self.current_conversation_index < len(self.conversation_start_id):
+                self.current_message_id = self.conversation_start_id[self.current_conversation_index]
+        else:
+            self.current_message_id = message.successor_uid
+        return message
 
     def __post_init__(self):
         # 将新建的Dataset对象同步到DB中
@@ -64,10 +93,6 @@ class Dataset(Record, BaseManager):
         pass
 
 
-    def __iter__(self):
-        return self
 
-    def __next__(self) -> Message:
-        pass
 
 

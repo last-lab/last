@@ -4,12 +4,17 @@ from pydantic import BaseModel
 from .base import Record, Statistics, BaseModel
 from .public import ReturnCode
 from .dataset import Message
-from langchain.prompts import PromptTemplate
+from enum import Enum
+
+class LLMType(str, Enum):
+    critic = "critic"
+    normal = "normal"
+    attacker = "attacker"
 
 # 这个类里面的东西是专门用来display的
 class LLMInfo(Record):
     name: str
-    model_type: str
+    model_type: LLMType
     version: str
     base_model: str
     parameter_volume: str
@@ -26,8 +31,6 @@ class Registration(Record):
 
 
 class LLM(LLMInfo, BaseModel):
-    prompt_template: Optional[str] = None
-
     registration: Optional[Registration] = None
 
     """Model name to use."""
@@ -51,16 +54,19 @@ class LLM(LLMInfo, BaseModel):
     max_access_per_min: int  # 每分钟最大访问次数
 
 
-    def __call__(self, msg:Message) -> Message:
-        content = msg.content
-        prompt = self.gen_prompt(content)
+    def __call__(self, *msgs:Message) -> Message:
         # 先mock一下
-        return Message(related_uid = "xxcadasdad", role="assistant", content="大模型标准回答")
+        if self.model_type is LLMType.critic:
+            prompt = self.gen_similarity_prompt(*msgs)
+        return_msg = self.generate(prompt)
+        return return_msg
 
-    def gen_prompt(self, content):
-        prompt = PromptTemplate(
-        input_variables=["content"],
-        template=self.prompt_template,
-        )
+    def generate(self, msg:Message) -> Message:
+        # TODO SystemMessage的支持
+        return_msg = Message(predecessor_uid="83fba5b4-5c6d-4f88-a7d3-9e3d2c1f6b02", successor_uid="d8b1e6d7-9a0b-4c2f-8e3d-1f0e9b8c7a6d", role="assistant", content="大模型标准回答")
+        return return_msg
+
+    def gen_similarity_prompt(self, responce:Message, correct_ans:Message) -> str:
+        prompt = f"请根据语义的相似度比较实际答案和标准答案之间的差异，评分范围0.0~10.0。实际答案：{responce.content}；标准答案：{correct_ans.content}"
         return prompt
 
