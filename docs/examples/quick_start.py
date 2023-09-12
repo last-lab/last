@@ -26,7 +26,7 @@ with Client(name='puan', server_address="http://localhost:5020") as client:
 
     if eval_type == EvaluationType.auto_ai_critique:
         # 配置评分模型API
-        critic_model = LLM(endpoint="xxx", access_key='xxx', secret_key='xxx', prompt_template="") 
+        critic_model = LLM(endpoint="xxx", access_key='xxx', secret_key='xxx', prompt_template="请根据语义的相似度比较以下，评分范围0.0~10.0：{}")   # TODO SystemMessage的支持
     # else:
     #     critic_model = Annotation()
 
@@ -35,8 +35,8 @@ with Client(name='puan', server_address="http://localhost:5020") as client:
     responces = []
     for question, correct_ans in plan:
         responce = llm_model(question)
-        score = critic_model(responce, correct_ans)
         responces.append(responce)
+        score = critic_model(responce, correct_ans)
         scores.append(score)
 
 
