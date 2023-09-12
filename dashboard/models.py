@@ -1,6 +1,6 @@
 from tortoise import Model, fields
 
-from dashboard.enums import EvalStatus, GenderType, ProductType, Status
+from dashboard.enums import EvalStatus, GenderType, ProductType, ScoreWayType, Status
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -47,11 +47,11 @@ class Config(Model):
     status: Status = fields.IntEnumField(Status, default=Status.on)
 
 
-class Evaluation(Model):
+class EvaluationRecord(Model):
     model_name = fields.CharField(max_length=50)
     eval_setting = fields.IntField()
     submit_time = fields.DatetimeField()
-    eval_status = fields.IntEnumField(EvalStatus, description="Evaluation Status")
+    eval_status = fields.IntEnumField(EvalStatus, description="EvaluationRecord Status")
 
 
 class Log(AbstractLog):
@@ -93,6 +93,19 @@ class Dog1(Model):
     gender = fields.IntEnumField(GenderType, description="Gender Type")
     image = fields.CharField(max_length=200)
     birth_at = fields.DatetimeField(auto_now_add=True)
+
+
+class EvaluationPlan(Model):
+    """
+    评测方案管理model
+    """
+
+    plan_name = fields.CharField(max_length=200)
+    plan_content = fields.CharField(max_length=500)
+    datasets = fields.CharField(max_length=200)
+    score_way = fields.IntEnumField(
+        ScoreWayType, description="Score Way", default=ScoreWayType.system
+    )
 
 
 class LabelPage(Model):
