@@ -25,6 +25,7 @@ from last.services.template import templates
 from jinja2 import TemplateNotFound
 from tortoise import Model
 from tortoise.transactions import in_transaction
+from last.services import enums
 app.include_router(biz_router)
 
 
@@ -295,6 +296,37 @@ async def upload_dataset(
     except TemplateNotFound:
         return templates.TemplateResponse(
             "upload_dataset.html",
+            context=context,
+        )
+
+@app.get(
+    "/{resource}/export_dataset/{pk}"
+)
+async def export_dataset(
+    request: Request,
+    resources=Depends(get_resources),
+    resource: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    pk: str = Path(...),
+):
+    context = {
+        "query": request.query_params,
+        "request": request,
+        "resource": resource,
+        "resources": resources,
+        "resource_label": model_resource.label,
+        "model_resource": model_resource,
+        "format_options": enums.ExportFormat,
+        "pk": pk
+    }
+    try:
+        return templates.TemplateResponse(
+            f"{resource}/export_dataset.html",
+            context=context,
+        )
+    except TemplateNotFound:
+        return templates.TemplateResponse(
+            "providers/import_export/export.html",
             context=context,
         )
 

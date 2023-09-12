@@ -453,14 +453,14 @@ class DataManager(Dropdown):
                 Action(
                     label=_("详细信息"),
                     icon="ti ti-edit",
-                    name="update",
+                    name="dataset_detail",
                     method=_enums.Method.GET,
                     ajax=False,
                 ),
                 Action(
                     label=_("导出"),
                     icon="ti ti-edit",
-                    name="update",
+                    name="export_dataset",
                     method=_enums.Method.GET,
                     ajax=False,
                 ),
