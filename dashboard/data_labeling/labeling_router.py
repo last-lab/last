@@ -1,10 +1,11 @@
 from enum import Enum
-from fastapi import APIRouter, Depends, Path
+from typing import Type
 
+from fastapi import APIRouter, Depends, Path
+from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model, fields
 from tortoise.transactions import in_transaction
-from typing import Type
 
 from last.services.depends import (
     admin_log_create,
@@ -21,7 +22,7 @@ from last.services.depends import (
 from last.services.resources import Model as ModelResource
 from last.services.responses import redirect
 from last.services.template import templates
-from jinja2 import TemplateNotFound
+
 router = APIRouter()
 
 
@@ -62,12 +63,8 @@ async def labeling_view(
         )
 
 
-@router.get("/{resource}/labeling/get_config")
-async def get_config_from_db(
-    request: Request,
-    resource: str
-):
-
+@router.post("/{resource}/labeling/get_config")
+async def get_config_from_db(request: Request, resource: str):
     """_summary_
     # 需要返回 id，支持数据库的搜索
 
@@ -75,17 +72,13 @@ async def get_config_from_db(
         request (Request): _description_
         resource (str): _description_
     """
-
+    # TODO, 根据request中的参数查找数据库，生成如下形式的数据返回给前端
     mock_data = {
-        "tag": [{
-                        "value": 'Person',
-                        "background": 'red'
-                    },
-                    {
-                        "value": 'Organization',
-                        "background": 'darkorange'
-                    }],
-        "text": "这是一段测试文本"
+        "tags": [
+            {"value": "Person", "background": "red"},
+            {"value": "Organization", "background": "darkorange"},
+        ],
+        "text": "这是一段测试文本",
     }
-
+    # return "test"
     return mock_data

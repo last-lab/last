@@ -88,7 +88,7 @@ class Dataset(Dropdown):
                     label=_("labeling"),
                     icon="ti ti-edit",
                     name="labeling",
-                    method= Method.GET,
+                    method=Method.GET,
                     ajax=False,
                 )
             ]

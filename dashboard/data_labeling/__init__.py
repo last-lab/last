@@ -1,7 +1,8 @@
 from fastapi import APIRouter
 
-from .labeling_router import router
 from last.services.app import app
+
+from .labeling_router import router
 
 labeling_router = APIRouter()
 labeling_router.include_router(router)

@@ -12,6 +12,7 @@ from last.services.template import templates
 
 app.include_router(labeling_router)
 
+
 @app.get("/")
 async def home(
     request: Request,
