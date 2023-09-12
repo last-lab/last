@@ -6,23 +6,13 @@ from starlette.requests import Request
 
 from dashboard import enums
 from dashboard.constants import BASE_DIR
-from dashboard.models import (
-    Admin,
-    Cat,
-    Category,
-    Config,
-    Dog1,
-    EvaluationPlan,
-    EvaluationRecord,
-    LabelPage,
-    Log,
-)
+from dashboard.models import Admin, Cat, Category, Config, Dog1, EvaluationPlan, LabelPage, Log
 from dashboard.models import Permission as PermissionModel
-from dashboard.models import Product
+from dashboard.models import Product, Record
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
 from dashboard.providers import import_export_provider
-from dashboard.widgets.displays import ShowIp
+from dashboard.widgets.displays import ShowIp, ShowOperation, ShowPopover, ShowStatus
 from last.services import enums as _enums
 from last.services.app import app
 from last.services.enums import Method
@@ -65,22 +55,54 @@ class Administartor(Dropdown):
 class Evaluation(Dropdown):
     """模型评测"""
 
-    class EvaluationRecord(Model):
+    class Record(Model):
+        """评测记录"""
+
+        page_title = "评测记录"
+        page_pre_title = "模型评测记录"
         label: str = _("EvaluationRecord Record")
-        icon = "fas fa-user"
-        model = EvaluationRecord
+        model = Record
         filters = [
             filters.Search(
-                name="username",
-                label="Username",
+                name="model_name",
+                label="Search",
                 search_mode="contains",
                 placeholder="评测模型/版本/方案",
             ),
+            filters.Enum(enum=enums.EvalStatus, name="status", label="评测状态"),
         ]
+        fields = [
+            Field(name="model_name", label="评测模型", display=ShowPopover()),
+            Field(name="eval_pan", label="评测方案"),
+            Field(name="created_at", label="提交时间"),
+            Field(name="status", label="评测状态", display=ShowStatus()),
+            Field(name="operations", label="操作", display=ShowOperation()),
+        ]
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("create"),
+                    icon="fas fa-plus",
+                    name="add",
+                    method=Method.GET,
+                    ajax=False,
+                    class_="btn-dark",
+                )
+            ]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return []
+
+    class Create(Link):
+        """创建评测"""
+
+        label = _("Create Evaluation")
+        url = "/admin/record/add"
 
     label: str = _("EvaluationRecord")
     icon = "fas fa-user"
-    resources = [EvaluationRecord]
+    resources = [Record, Create]
 
 
 @app.register

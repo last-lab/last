@@ -50,6 +50,14 @@ class Boolean(Display):
     template = "widgets/displays/boolean.html"
 
 
+class Status(Display):
+    template = "widgets/displays/status.html"
+
+
+class Popover(Display):
+    template = "widgets/displays/popover.html"
+
+
 class Image(Display):
     template = "widgets/displays/image.html"
 
