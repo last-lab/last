@@ -6,25 +6,18 @@
             <h3 class="card-title">新建评测方案</h3>
         </div>
         <div class="card-body border-bottom py-3">
-            <form method="post" action="{{ request.app.admin_path }}/{{ resource }}/epm_create"
+            <form method="post" action="{{ request.app.admin_path }}/{{ resource }}/epm_update/{{ pk }}"
                   enctype="application/x-www-form-urlencoded">
-
+                <input hidden="hidden" name="datasets" id="input-datasets" />
+                <input hidden="hidden" plan="{{obj.plan_content}}" name="plan_content" id="input-plan-content"/>
                 <div class="mb-3 row">
                     <label class="col-2 col-form-label">方案名称</label>
                     <div class="col-3">
                         <input required type="" class="form-control" name="plan_name"
-                               placeholder="请输入" value="">
+                               placeholder="请输入" value="{{obj.plan_name}}">
                     </div>
 
                 </div>
-                <!--                <div class="mb-3 row">-->
-                <!--                    <label class="form-label">评分方式</label>-->
-                <!--                    <div class="col-3">-->
-                <!--                        <input required type="" class="form-control" name="plan_content"-->
-                <!--                               placeholder="" value="">-->
-                <!--                    </div>-->
-                <!--                </div>-->
-
                 <div class="mb-3 row">
                     <div class="col-2 col-form-label">评分方式</div>
                     <div class="col-3">
@@ -99,7 +92,7 @@
                                                    data-second-type="{{ ds.risk_second_type }}"
                                                    data-third-type="{{ ds.risk_third_type }}"
                                                    class="form-check-input m-0 align-middle checkbox-select-item"
-                                                   type="checkbox">
+                                                   type="checkbox" checked>
                                         </td>
                                         <td>{{ ds.name }}</td>
                                         <td>{{ ds.risk_type }}</td>
@@ -128,24 +121,6 @@
                             </tr>
                             </thead>
                             <tbody id="statistic_tbody">
-                            <!--                            <tr>-->
-                            <!--                                <th scope="row">国家安全</th>-->
-                            <!--                                <td>666</td>-->
-                            <!--                                <td>66.6%</td>-->
-                            <!--                                <td>80%</td>-->
-                            <!--                            </tr>-->
-                            <!--                            <tr>-->
-                            <!--                                <th scope="row">个人权利</th>-->
-                            <!--                                <td>333</td>-->
-                            <!--                                <td>33.3%</td>-->
-                            <!--                                <td>20%</td>-->
-                            <!--                            </tr>-->
-                            <!--                            <tr>-->
-                            <!--                                <th scope="row">总计</th>-->
-                            <!--                                <td>999</td>-->
-                            <!--                                <td>100%</td>-->
-                            <!--                                <td>100%</td>-->
-                            <!--                            </tr>-->
                             </tbody>
                         </table>
 
@@ -153,10 +128,9 @@
                 </div>
 
                 <div class="form-footer">
-                    <button type="submit" name="save" class="btn btn-primary">{{ _('save') }}</button>
-                    <!--                    <button type="submit" name="save_and_add_another"-->
-                    <!--                            class="btn btn-info mx-2">{{ _('save_and_add_another') }}-->
-                    <!--                    </button>-->
+                    <button type="submit" name="save" class="btn btn-primary">
+                        {{ _('save') }}
+                    </button>
                     <button type="button" class="btn btn-secondary"
                             onclick="history.back()">{{ _('return') }}
                     </button>
@@ -167,16 +141,22 @@
 </div>
 
 <script>
+        statistics()
         var groupedData = {};
+
         function statistics() {
              $("#statistic_tbody").empty();
+            let ids = [];
             let dss = $('.checkbox-select-item:checked').map(function () {
+                ids.push($(this).attr('data-id'));
                 return {"id": $(this).attr('data-id'),
                 "risk_type": $(this).attr('data-risk-type'),
                 "second_type": $(this).attr('data-second-type'),
                 "third_type": $(this).attr('data-third-type'),
                 }
             }).get();
+
+            $("#input-datasets").val(ids.join(","))
 
             groupedData = dss.reduce((result, item) => {
                     const key = item.risk_type;
@@ -186,6 +166,15 @@
                     result[key].push(item);
                     return result;
                 }, {});
+
+            let plans = [];
+            oldPlanContentList = []
+            oldPlanContent = $("#input-plan-content").attr('plan');
+            if (oldPlanContent) {
+                oldPlanContentList = oldPlanContent.split(',');
+                $("#input-plan-content").removeAttr('plan');
+            }
+
             for (const key in groupedData) {
                 if (groupedData.hasOwnProperty(key)) {
                     const group = groupedData[key];
@@ -194,9 +183,21 @@
                     tr.append(risk_td);
                     tr.append($("<td></td>").text(group.length));
                     var percent = (group.length / dss.length * 100).toFixed(1) + "%";
+                    var plan = key + "/" + percent
                     tr.append($("<td></td>").text(percent));
+
+                    let weightValue = 0;
+                    let regex = /\/(\d+\.?\d*)%$/;
+                    oldPlanContentList.forEach(function(oldPlanItem) {
+                        if (oldPlanItem.startsWith(plan)) {
+                            var match = oldPlanItem.match(regex);
+                            if (match && match.length > 1) {
+                              weightValue = match[1]
+                            }
+                        }
+                    });
                     tr.append($("<td></td>").append($("<div class='input-group input-group-flat'>" +
-                              "<input type='number' min='0' max='100' class='epm-weight form-control text-end pe-0' style='width: 50px;' value='0' autocomplete='off' required>" +
+                              "<input plan="+ plan +" type='number' min='0' max='100' class='epm-weight form-control text-end pe-0' style='width: 50px;' value="+ weightValue +" autocomplete='off' required>" +
                               "<span class='input-group-text'>%</span>" +
                               "</div>")));
                     $("#statistic_tbody").append(tr);
@@ -225,16 +226,22 @@
             function calculateTotalWeight() {
               let totalWeight = 0;
 
+              let plans = [];
               for (let i = 0; i < inputElements.length; i++) {
                 const value = parseFloat(inputElements[i].value);
+                var plan = inputElements[i].getAttribute('plan') + "/" + value.toFixed(1) + "%";
+                plans.push(plan)
 
                 if (!isNaN(value)) {
                   totalWeight += value;
                 }
               }
-
+              $("#input-plan-content").val(plans.join(","));
               totalWeightElement.textContent = totalWeight.toFixed(1);
+
             }
+
+            calculateTotalWeight();
         }
 
 
@@ -277,9 +284,8 @@
 
         document.getElementById('ds_name_search_btn').onclick = function () {
                 var dsName = $('#ds_name_search').val();
-                if (dsName) {
                     $.ajax({
-                        url: '/admin/evaluationplanmanager/epm_ds_query?ds_name=' + dsName,
+                        url: '/admin/evaluationplan/epm_ds_query?ds_name=' + dsName,
                         method: 'POST',
                         success: function (data) {
                             if (data && data.length > 0) {
@@ -288,14 +294,12 @@
                             }
                         },
                 });
-                }
             }
 
         document.getElementById('ds_content_search_btn').onclick = function () {
              var dsContent = $('#ds_content_search').val();
-                if (dsContent) {
                     $.ajax({
-                        url: '/admin/evaluationplanmanager/epm_ds_query?ds_content=' + dsContent,
+                        url: '/admin/evaluationplan/epm_ds_query?ds_content=' + dsContent,
                         method: 'POST',
                         success: function (data) {
                             if (data && data.length > 0) {
@@ -304,7 +308,6 @@
                             }
                         },
                 });
-             }
         }
 
         function generateDsTable(data) {
@@ -314,11 +317,18 @@
                 statistics()
                 data.forEach(function(item) {
                     var tr = $("<tr></tr>");
-                    tr.append($("<td></td>").append("<input data-id=`${item.id}' data-risk-type=`${item.risk_type}`" +
-                                                   "data-second-type=`${item.risk_second_type}`" +
-                                                   "data-third-type=`${item.risk_third_type}`" +
-                                                   "class='form-check-input m-0 align-middle checkbox-select-item'" +
-                                                   "type='checkbox'>"));
+                    tr.append(
+                          $("<td></td>").append(
+                            $("<input>").attr({
+                              "data-id": `${item.id}`,
+                              "data-risk-type": `${item.risk_type}`,
+                              "data-second-type": `${item.risk_second_type}`,
+                              "data-third-type": `${item.risk_third_type}`,
+                              "class": "form-check-input m-0 align-middle checkbox-select-item",
+                              "type": "checkbox"
+                            })
+                          )
+                        );
                     tr.append($("<td></td>").text(item.name));
                     tr.append($("<td></td>").text(item.risk_type));
                     tr.append($("<td></td>").text(item.risk_second_type));
@@ -327,6 +337,9 @@
                 });
 
             }
+            $('.checkbox-select-item').change(function () {
+                statistics()
+                });
         }
 
 

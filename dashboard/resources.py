@@ -12,8 +12,8 @@ from dashboard.models import (
     Category,
     Config,
     Dog1,
-    Evaluation,
-    EvaluationPlanManager,
+    EvaluationRecord,
+    EvaluationPlan,
     LabelPage,
     Log,
 )
@@ -66,9 +66,9 @@ class Evaluation(Dropdown):
     """模型评测"""
 
     class EvaluationRecord(Model):
-        label: str = _("Evaluation Record")
+        label: str = _("EvaluationRecord Record")
         icon = "fas fa-user"
-        model = Evaluation
+        model = EvaluationRecord
         filters = [
             filters.Search(
                 name="username",
@@ -78,7 +78,7 @@ class Evaluation(Dropdown):
             ),
         ]
 
-    label: str = _("Evaluation")
+    label: str = _("EvaluationRecord")
     icon = "fas fa-user"
     resources = [EvaluationRecord]
 
@@ -337,14 +337,15 @@ class Animal(Dropdown):
 
 @app.register
 class DataManager(Dropdown):
-    class EvaluationPlanManagerResource(Model):
+    class EvaluationPlanResource(Model):
         label = "评测方案管理"
-        model = EvaluationPlanManager
+        model = EvaluationPlan
         filters = [filters.Search(name="name", label="方案名称", placeholder="请输入")]
         fields = [
             "id",
             Field(name="plan_name", label="评测方案"),
             Field(name="plan_content", label="风险类型/数据占比/评测权重"),
+            Field(name="datasets", label="风险类型/数据占比/评测权重", display=displays.InputOnly()),
             Field(
                 name="score_way",
                 label="评分方式",
@@ -391,7 +392,7 @@ class DataManager(Dropdown):
 
     label = "数据管理"
     icon = "fas fa-bars"
-    resources = [EvaluationPlanManagerResource]
+    resources = [EvaluationPlanResource]
 
 
 @app.register

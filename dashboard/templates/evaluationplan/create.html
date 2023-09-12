@@ -1,0 +1,330 @@
+{% extends layout %}
+{% block page_body %}
+<div class="col-12">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">新建评测方案</h3>
+        </div>
+        <div class="card-body border-bottom py-3">
+            <form method="post" action="{{ request.app.admin_path }}/{{ resource }}/epm_create"
+                  enctype="application/x-www-form-urlencoded">
+                <input hidden="hidden" name="datasets" id="input-datasets" />
+                <input hidden="hidden" name="plan_content" id="input-plan-content" />
+                <div class="mb-3 row">
+                    <label class="col-2 col-form-label">方案名称</label>
+                    <div class="col-3">
+                        <input required type="" class="form-control" name="plan_name"
+                               placeholder="请输入" value="">
+                    </div>
+
+                </div>
+                <!--                <div class="mb-3 row">-->
+                <!--                    <label class="form-label">评分方式</label>-->
+                <!--                    <div class="col-3">-->
+                <!--                        <input required type="" class="form-control" name="plan_content"-->
+                <!--                               placeholder="" value="">-->
+                <!--                    </div>-->
+                <!--                </div>-->
+
+                <div class="mb-3 row">
+                    <div class="col-2 col-form-label">评分方式</div>
+                    <div class="col-3">
+                        <label class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" name="score_way"
+                                   value="0"
+                                   checked>
+                            <span class="form-check-label">系统评分</span>
+                        </label>
+
+                        <label class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" name="score_way"
+                                   value="1"
+                            >
+                            <span class="form-check-label">人工评分</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label class="col-2 col-form-label">选择评测集</label>
+                    <div class="col-4">
+                        <div class="row">
+                            <label class="col-4 col-form-label">评测集名称</label>
+                            <div class="col-8">
+                                <div class="input-group">
+                                    <input id="ds_name_search" type="text" class="form-control" placeholder="…">
+                                    <button id="ds_name_search_btn" class="btn" type="button">GO</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="col-4">
+                        <div class="row">
+                            <label class="col-4 col-form-label">数据内容</label>
+                            <div class="col-8">
+                                <div class="input-group">
+                                    <input id="ds_content_search" type="text" class="form-control" placeholder="…">
+                                    <button id="ds_content_search_btn" class="btn" type="button">GO</button>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <div class="col-8 offset-2">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table card-table table-vcenter text-nowrap datatable">
+                                    <thead>
+                                    <tr>
+                                        <th class="w-1"><input class="form-check-input m-0 align-middle" type="checkbox"
+                                                               aria-label="Select all invoices" id="checkbox-select-all"
+                                        ></th>
+                                        <th>评测集</th>
+                                        <th>风险类型</th>
+                                        <th>二级类型</th>
+                                        <th>三级类型</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="ds_tbody">
+                                    {% if datasets %}
+                                    {% for ds in datasets %}
+                                    <tr>
+                                        <td>
+                                            <input data-id="{{ ds.id }}" data-risk-type="{{ ds.risk_type }}"
+                                                   data-second-type="{{ ds.risk_second_type }}"
+                                                   data-third-type="{{ ds.risk_third_type }}"
+                                                   class="form-check-input m-0 align-middle checkbox-select-item"
+                                                   type="checkbox">
+                                        </td>
+                                        <td>{{ ds.name }}</td>
+                                        <td>{{ ds.risk_type }}</td>
+                                        <td>{{ ds.risk_second_type }}</td>
+                                        <td>{{ ds.risk_third_type }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label class="col-2 col-form-label">风险类型统计</label>
+                    <div class="col-8">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">风险类型</th>
+                                <th scope="col">数据条数</th>
+                                <th scope="col">占比</th>
+                                <th scope="col">设置权重</th>
+                            </tr>
+                            </thead>
+                            <tbody id="statistic_tbody">
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" name="save" class="btn btn-primary">{{ _('save') }}</button>
+                    <button type="button" class="btn btn-secondary"
+                            onclick="history.back()">{{ _('return') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+        var groupedData = {};
+        function statistics() {
+             $("#statistic_tbody").empty();
+            let ids = [];
+            let dss = $('.checkbox-select-item:checked').map(function () {
+                ids.push($(this).attr('data-id'));
+                return {"id": $(this).attr('data-id'),
+                "risk_type": $(this).attr('data-risk-type'),
+                "second_type": $(this).attr('data-second-type'),
+                "third_type": $(this).attr('data-third-type'),
+                }
+            }).get();
+
+            $("#input-datasets").val(ids.join(","))
+
+            groupedData = dss.reduce((result, item) => {
+                    const key = item.risk_type;
+                    if (!result[key]) {
+                        result[key] = [];
+                    }
+                    result[key].push(item);
+                    return result;
+                }, {});
+            let plans = [];
+            for (const key in groupedData) {
+                if (groupedData.hasOwnProperty(key)) {
+                    const group = groupedData[key];
+                    var tr = $("<tr></tr>");
+                    var risk_td = $("<td scope='row'></td>").text(key);
+                    tr.append(risk_td);
+                    tr.append($("<td></td>").text(group.length));
+                    var percent = (group.length / dss.length * 100).toFixed(1) + "%";
+                    var plan = key + "/" + percent
+                    tr.append($("<td></td>").text(percent));
+                    tr.append($("<td></td>").append($("<div class='input-group input-group-flat'>" +
+                              "<input plan="+ plan +" type='number' min='0' max='100' class='epm-weight form-control text-end pe-0' style='width: 50px;' value='0' autocomplete='off' required>" +
+                              "<span class='input-group-text'>%</span>" +
+                              "</div>")));
+                    $("#statistic_tbody").append(tr);
+                }
+            }
+
+            // summary
+            if (dss.length > 0) {
+                    var tr = $("<tr></tr>");
+                    var summary_td = $("<td scope='row'></td>").text("统计");
+                    tr.append(summary_td);
+                    tr.append($("<td></td>").text(dss.length));
+                    tr.append($("<td></td>").text("100.0%"));
+                    tr.append($("<td></td>").append($("<span id='epm-weight-summary'>0</span><span>%</span>")));
+                    $("#statistic_tbody").append(tr);
+            }
+
+            // listen weight
+            const inputElements = document.getElementsByClassName('epm-weight');
+            const totalWeightElement = document.getElementById('epm-weight-summary');
+
+            for (let i = 0; i < inputElements.length; i++) {
+              inputElements[i].addEventListener('input', calculateTotalWeight);
+            }
+
+            function calculateTotalWeight() {
+              let totalWeight = 0;
+
+              let plans = [];
+              for (let i = 0; i < inputElements.length; i++) {
+                const value = parseFloat(inputElements[i].value);
+                var plan = inputElements[i].getAttribute('plan') + "/" + value.toFixed(1) + "%";
+                plans.push(plan)
+
+                if (!isNaN(value)) {
+                  totalWeight += value;
+                }
+              }
+              $("#input-plan-content").val(plans.join(","));
+              totalWeightElement.textContent = totalWeight.toFixed(1);
+
+            }
+        }
+
+
+
+
+        let checkbox = $('#checkbox-select-all');
+
+        checkbox.change(function () {
+            let checked = checkbox.prop('checked');
+            $('.checkbox-select-item').prop("checked", checked);
+            statistics()
+        });
+
+        $('.checkbox-select-item').change(function () {
+<!--            let length = $('.checkbox-select-item:checked').length;-->
+            statistics()
+        });
+
+
+        // 表单提交前校验
+        // 获取表单元素
+        const form = document.querySelector('form');
+
+        form.addEventListener('submit', event => {
+          event.preventDefault();
+          if (validateForm()) {
+            form.submit();
+          }
+        });
+
+        function validateForm() {
+          var epmWeightSummary = $('#epm-weight-summary').text();
+          if (epmWeightSummary.trim() === '100.0') {
+            return true;
+          } else {
+            alert('权重之和必须等于100%')
+          }
+          return false;
+        }
+
+        document.getElementById('ds_name_search_btn').onclick = function () {
+                var dsName = $('#ds_name_search').val();
+                    $.ajax({
+                        url: '/admin/evaluationplan/epm_ds_query?ds_name=' + dsName,
+                        method: 'POST',
+                        success: function (data) {
+                            if (data && data.length > 0) {
+                                console.log(data)
+                                generateDsTable(data)
+                            }
+                        },
+                });
+            }
+
+        document.getElementById('ds_content_search_btn').onclick = function () {
+             var dsContent = $('#ds_content_search').val();
+                    $.ajax({
+                        url: '/admin/evaluationplan/epm_ds_query?ds_content=' + dsContent,
+                        method: 'POST',
+                        success: function (data) {
+                            if (data && data.length > 0) {
+                                console.log(data)
+                                generateDsTable(data)
+                            }
+                        },
+                });
+        }
+
+        function generateDsTable(data) {
+            var tbody = document.getElementById('ds_tbody');
+            if (tbody) {
+                tbody.innerHTML = "";
+                statistics()
+                data.forEach(function(item) {
+                    var tr = $("<tr></tr>");
+                    tr.append(
+                          $("<td></td>").append(
+                            $("<input>").attr({
+                              "data-id": `${item.id}`,
+                              "data-risk-type": `${item.risk_type}`,
+                              "data-second-type": `${item.risk_second_type}`,
+                              "data-third-type": `${item.risk_third_type}`,
+                              "class": "form-check-input m-0 align-middle checkbox-select-item",
+                              "type": "checkbox"
+                            })
+                          )
+                        );
+                    tr.append($("<td></td>").text(item.name));
+                    tr.append($("<td></td>").text(item.risk_type));
+                    tr.append($("<td></td>").text(item.risk_second_type));
+                    tr.append($("<td></td>").text(item.risk_third_type));
+                    $("#ds_tbody").append(tr);
+                });
+
+            }
+            $('.checkbox-select-item').change(function () {
+                statistics()
+                });
+        }
+
+
+</script>
+{% endblock %}
