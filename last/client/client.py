@@ -1,7 +1,7 @@
-import contextlib
-from contextlib import ContextDecorator, contextmanager
 
-class Client(ContextDecorator):
+from contextlib import contextmanager
+
+class Client:
     def __init__(self, name, server_address):
         self.name = name
         self.server_address = server_address
@@ -20,3 +20,13 @@ class Client(ContextDecorator):
 
     def disconnect(self):
         print(f"Disconnected from {self.name}")
+
+
+
+@contextmanager
+def client_wrapper(name, server_address):
+    client = Client(name=name, server_address=server_address)
+    try:
+        yield client
+    finally:
+        client.disconnect()

@@ -5,14 +5,14 @@ clients'admin served at services.
 
 """
 
-from last.client import Client
+from last.client import client_wrapper
 from last.types.plan import Plan, EvaluationType
 from last.types.llm import LLM, LLMType
 from last.types.task import Task
 from last.types.dataset import Dataset
 
 # Main Flow
-with Client(name='puan', server_address="http://localhost:5020") as client:
+with client_wrapper(name='puan', server_address="http://localhost:5020") as client:
     # 如果需要加载新数据集, 则提供DatasetInfo，内含数据集访问链接，返回dataset uid="uuid4"
     dataset1 = Dataset(name="test1", dimensions="国家安全", file='docs/examples/testset.csv')
     # 上传第二份数据集
