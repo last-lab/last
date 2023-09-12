@@ -74,6 +74,6 @@ class CurrentTaskRequest(BaseModel):
 # 当前任务的响应数据结构
 class CurrentTaskResponse(BaseModel):  # 任务对应的文本内容
     data_type: dict  # 数据类型
-    data: Data  # 数据内容
+    data: Text  # 数据内容
     label_type: dict  # 标签类型
     label: dict  # 标签内容
