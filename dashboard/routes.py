@@ -403,7 +403,6 @@ async def conform(
     }
     return contents
 
-
 @router.get("/stable1")
 async def stable1(request: Request):
     table_1 = [

@@ -61,3 +61,45 @@ class ShowOperation(Display):
                 "record_file": ["书生·浦语 1.3.0", "送评模型1 1.0", "送评模型1 1.4"],
             },
         )
+
+
+class ShowAction(Display):
+    template = "evaluationdatasetmanager/action_dataset.html"
+
+    async def render(self, request: Request, value: str):
+        return await super().render(
+            request,
+            {
+                "detail": {
+                    "id": "4",
+                    "name": "评测集1",
+                    "type": "国家安全",
+                    "moreType": [
+                        {
+                            "subType": "颠覆国家政权",
+                            "thirdType": [
+                                "三级维度1",
+                                "三级维度2"
+                            ]
+                        },
+                        {
+                            "subType": "宣传恐怖主义",
+                            "thirdType": [
+                                "三级维度3",
+                                "三级维度4"
+                            ]
+                        }
+                    ],
+                    "url": "C://Users/fanhao/Desktop/large-language-all-table.json",
+                    "dataCount": 666,
+                    "number": 10000,
+                    "size": "10.6GB",
+                    "updateTime": '2022-11-08 19:00:00',
+                    "useCount": 100
+                },
+                "dataset_file": {
+                    "content": "content",
+                    "word": 'word'
+                },
+            },
+        )

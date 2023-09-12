@@ -34,7 +34,7 @@ from dashboard.providers import import_export_provider
 
 from dashboard.widgets.displays import ShowIp, ShowPopover, ShowStatus
 
-from dashboard.widgets.displays import ShowIp, ShowOperation, ShowPopover, ShowStatus
+from dashboard.widgets.displays import ShowIp, ShowOperation, ShowPopover, ShowStatus, ShowAction
 
 from last.services import enums as _enums
 from last.services.app import app
@@ -478,6 +478,7 @@ class DataManager(Dropdown):
             Field(name="sub_type", label="二级类型"),
             Field(name="updateTime", label="更新时间"),
             Field(name="useCount", label="使用次数"),
+            Field(name="dataset_action", label="操作", display=ShowAction())
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
@@ -493,28 +494,7 @@ class DataManager(Dropdown):
             ]
 
         async def get_actions(self, request: Request) -> List[Action]:
-            return [
-                Action(
-                    label=_("详细信息"),
-                    icon="ti ti-edit",
-                    name="dataset_detail",
-                    method=_enums.Method.GET,
-                    ajax=False,
-                ),
-                Action(
-                    label=_("导出"),
-                    icon="ti ti-edit",
-                    name="export_dataset",
-                    method=_enums.Method.GET,
-                    ajax=False,
-                ),
-                Action(
-                    label=_("删除"),
-                    icon="ti ti-trash",
-                    name="delete",
-                    method=_enums.Method.DELETE,
-                ),
-            ]
+            return []
 
     label = "数据管理"
     icon = "fas fa-bars"
