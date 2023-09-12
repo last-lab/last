@@ -58,6 +58,7 @@ class Evaluation(Dropdown):
 
     class Record(Model):
         """评测记录"""
+
         page_title = "评测记录"
         page_pre_title = "模型评测记录"
         label: str = _("Evaluation Record")
@@ -110,6 +111,7 @@ class Evaluation(Dropdown):
 
     class Create(Link):
         """创建评测"""
+
         label = _("Create Evaluation")
         url = "/admin/record/add"
 
