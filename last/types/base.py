@@ -3,10 +3,10 @@ from typing import List, Dict, Union, Optional
 from pydantic import BaseModel
 from abc import ABC, abstractmethod
 
-from .public import DateString, PermissionLevel, UserInfo
+from .public import DateString, PermissionLevel, UserInfo, ReturnCode
 
 
-@dataclass
+
 class Record(BaseModel):
     uid: Optional[str]  # UUID-4
     description: Optional[str]
@@ -18,14 +18,14 @@ class Record(BaseModel):
     permissions: PermissionLevel
 
 
-@dataclass
+
 class Statistics(BaseModel):
     total_cnt: str
     updated_at: DateString
     description: Optional[str]
 
 
-@dataclass
+
 class Filter(BaseModel):
     field: str  # 要筛选的字段
     operator: str  # 筛选操作符，如果是"between"则代表是可比较大小的筛选，如果是“equal”则是匹配筛选
@@ -59,8 +59,3 @@ class BaseManager(ABC):
     @staticmethod
     def delete(id: str) -> ReturnCode:  # 返回行为码
         pass
-
-
-class BaseModel(ABC):
-    """Base class for Chat models."""
-    pass

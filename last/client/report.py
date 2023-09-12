@@ -25,7 +25,7 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-data = Report()
+data = Task()
 
 session.add(data)
 session.commit()
