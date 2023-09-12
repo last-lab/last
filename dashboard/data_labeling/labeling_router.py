@@ -5,23 +5,15 @@ from fastapi import APIRouter, Depends, Path
 from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model, fields
-from tortoise.transactions import in_transaction
 
-from last.services.depends import (
-    admin_log_create,
-    admin_log_delete,
-    admin_log_update,
-    create_checker,
-    delete_checker,
-    get_model,
-    get_model_resource,
-    get_resources,
-    read_checker,
-    update_checker,
-)
+from last.services.depends import get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
-from last.services.responses import redirect
+
+# from last.services.responses import redirect
 from last.services.template import templates
+
+# from tortoise.transactions import in_transaction
+
 
 router = APIRouter()
 
