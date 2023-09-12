@@ -2,6 +2,8 @@ from typing import List, Dict, Union, Optional
 from pydantic import BaseModel
 from enum import Enum, auto
 from datetime import datetime
+import uuid
+
 
 class RiskDimension(BaseModel):
     level: int
@@ -73,3 +75,8 @@ class StateCode:
     In_Progress = CodeMsg(0, "进行中")
     Done = CodeMsg(1, "已完成")
     Error = CodeMsg(-1, "异常")
+
+
+class ID:
+    def __init__(self):
+        self.id = str(uuid.uuid4())

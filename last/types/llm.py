@@ -1,6 +1,4 @@
 from typing import List, Dict, Union, Optional, Tuple
-from pydantic import BaseModel
-
 from .base import Record, Statistics, BaseModel
 from .public import ReturnCode
 from .dataset import Message
@@ -30,7 +28,7 @@ class Registration(Record):
     context: str  # 二进制字符串
 
 
-class LLM(LLMInfo, BaseModel):
+class LLM(LLMInfo):
     registration: Optional[Registration] = None
 
     """Model name to use."""

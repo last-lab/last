@@ -1,25 +1,35 @@
-from typing import List, Dict, Union, Optional, TypeVar
-from pydantic import BaseModel
+from typing import List, Dict, Union, Optional, TypeVar, Tuple
 
 from .base import Record, Statistics, BaseManager
-from .public import RiskDimension, ReturnCode
+from .public import RiskDimension, ReturnCode, ID
 from datetime import datetime
-
+from pathlib import Path
+from pydantic import HttpUrl
+import csv
+from enum import Enum
 
 T = TypeVar('T', bound='Dataset')
+
+class MessageRole(str, Enum):
+    System = "System"
+    AI = "AI"
+    Human = "Human"
+    Chat = "Chat"
 
 class Message(Record):
     predecessor_uid: Optional[str] = None # 关联上一条Message记录的id
     successor_uid: Optional[str] = None # 关联下一条Message记录的id
-    role: str 
+    role: MessageRole 
     content: str
-    
+
+
 
 class Dataset(Record, BaseManager):
     name: str
     dimensions: List[RiskDimension]
-    url: str
-    volume: str # 数据集大小
+    url: Optional[HttpUrl] # 文件url
+    file: Optional[Path] # 文件本地path
+    volume: Optional[str] # 数据集大小
     used_by: Optional[List[str]]
     qa_record: Dict[str, Message]  # Message的唯一id
     conversation_start_id: List[str] # 每段对话的起始Message id
@@ -53,9 +63,15 @@ class Dataset(Record, BaseManager):
         return message
 
     def __post_init__(self):
+        # 根据传入的url或者file path，新建Dataset对象
+        if self.file is not None:
+            self.qa_record, self.conversation_start_id = Dataset.upload(Dataset)
+        elif self.url is not None:
+            self.qa_record, self.conversation_start_id = Dataset.fetch(Dataset)
+        else:
+            raise ValueError("Input parameter cannot be empty")
         # 将新建的Dataset对象同步到DB中
         Dataset.new(Dataset)
-        self.current_index = 0
 
     @staticmethod
     def edit(uid, conf: T) -> ReturnCode:  # 编辑数据集信息，返回状态码
@@ -76,21 +92,27 @@ class Dataset(Record, BaseManager):
         return ReturnCode.SUCCESS
 
     @staticmethod
-    def update_record(record: Record):
-        # 根据record的uid将其更新到数据库中
-        # 通过ORM实现数据库更新的逻辑
+    def fetch(url: HttpUrl):
+        # 通过访问url创建数据集
         pass
 
 
     @staticmethod
-    def upload(content) -> str:  # 上传一份数据集，返回数据集id
-        qa_url = Dataset.get_url(content)
-        dataset = Dataset(name="xxx", dimensions="xxxx", url=qa_url)
-        return dataset.uid
+    def upload(file_path: Path) -> Tuple[Dict[str, Message], List[str]]:  
+        # 通过上传文件创建数据集
+        qa_record = {}
+        with open(file_path, "r") as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                question_id = ID()
+                correct_ans_id = ID()
+                question = Message(successor_uid=correct_ans_id, role=MessageRole.Human, content=row["question"])
+                qa_record[question_id] = question
+                correct_ans = Message(predecessor_uid=question_id, role=MessageRole.AI, content=row["correct_ans"])
+                qa_record[correct_ans_id] = correct_ans
+            conversation_start_id = list(qa_record.keys())
 
-    @staticmethod
-    def get_url(content) -> str:  # 上传一些文本content，返回url
-        pass
+        return qa_record, conversation_start_id
 
 
 

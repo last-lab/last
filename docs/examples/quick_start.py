@@ -14,9 +14,9 @@ from last.types.dataset import Dataset
 # Main Flow
 with Client(name='puan', server_address="http://localhost:5020") as client:
     # 如果需要加载新数据集, 则提供DatasetInfo，内含数据集访问链接，返回dataset uid="uuid4"
-    dataset1 = Dataset(name="xxx", dimensions="国家安全", url='http://xxxxxx')
+    dataset1 = Dataset(name="xxx", dimensions="国家安全", file='http://xxxxxx')
     # 上传第二份数据集
-    dataset2 = Dataset(name="xxx", dimensions="个人隐私", url='http://xxxxxx')
+    dataset2 = Dataset(name="xxx", dimensions="个人隐私", file='http://xxxxxx')
     # 明确评测方案，即使用哪些数据集进行评测
     plan = Plan(name="xxx", eval_type=EvaluationType.auto_ai_critique, datasets=[dataset1,dataset2])
 

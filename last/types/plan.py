@@ -1,5 +1,4 @@
 from typing import List, Dict, Union, Optional, TypeVar
-from pydantic import BaseModel
 from enum import Enum
 
 from .base import Record, Statistics, BaseManager
@@ -30,7 +29,22 @@ class Plan(Record, BaseManager):
     dimensions: Optional[Dict[RiskDimension.name, str]]  # 填写各个一级风险维度的占比%
     datasets: List[Dataset]
     focused_risk: Optional[RelatedRiskDimensions]  # 新建时不填写
-    current_index: int
+
+    def __iter__(self):
+        self.current_dataset_index = 0
+        self.current_dataset_iter = iter(self.datasets[self.current_dataset_index])
+        return self
+
+    def __next__(self) -> Message:
+        try:
+            return next(self.current_dataset_iter)
+        except StopIteration:
+            self.current_dataset_index += 1
+            if self.current_dataset_index < len(self.datasets):
+                self.current_dataset_iter = iter(self.datasets[self.current_dataset_index])
+                return next(self.current_dataset_iter)
+            else:
+                raise StopIteration
 
     def __post_init__(self):
         # 将新建的Plan对象同步到DB中
@@ -43,20 +57,6 @@ class Plan(Record, BaseManager):
     @staticmethod
     def fork(id) -> str:  # 返回新的方案id
         pass
-
-
-
-    def __iter__(self):
-        return self
-
-    def __next__(self) -> Message:
-        pass
-        # if self.current_index >= len(self.datasets):
-        #     raise StopIteration
-        # dataset = self.datasets[self.current_index]
-        # self.current_index += 1
-        # yield dataset # 
-
 
 
 class RiskDataDistribution(Record):
