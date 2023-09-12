@@ -12,8 +12,8 @@ from dashboard.models import (
     Category,
     Config,
     Dog1,
-    EvaluationRecord,
     EvaluationPlan,
+    EvaluationRecord,
     LabelPage,
     Log,
 )
