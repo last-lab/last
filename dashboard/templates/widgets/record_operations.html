@@ -1,0 +1,74 @@
+<button type="button" class="btn btn-ghost-primary">
+  评测报告
+</button>
+<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#modelDetail">
+  模型详情
+</button>
+<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#recordFile">
+  备案文件
+</button>
+
+<div class="modal" id="modelDetail" tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">模型详情</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="datagrid">
+          <div class="datagrid-item">
+            <div class="datagrid-title">模型名称</div>
+            <div class="datagrid-content">{{ value.model_detail.name }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">模型类型</div>
+            <div class="datagrid-content">{{ value.model_detail.model_type }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">模型版本</div>
+            <div class="datagrid-content">{{ value.model_detail.version }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">基模型</div>
+            <div class="datagrid-content">{{ value.model_detail.base_model }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">模型参数</div>
+            <div class="datagrid-content">{{ value.model_detail.parameter_volume }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">预训练信息</div>
+            <div class="datagrid-content">{{ value.model_detail.pretraining_info }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">微调信息</div>
+            <div class="datagrid-content">{{ value.model_detail.finetuning_info }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">对齐信息</div>
+            <div class="datagrid-content">{{ value.model_detail.alignment_info }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="recordFile" tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">备案文件</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="list-group list-group-flush">
+          {% for item in value.record_file %}
+            <a class="list-group-item list-group-item-action">{{ item }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

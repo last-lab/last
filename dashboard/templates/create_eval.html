@@ -1,0 +1,57 @@
+{% extends layout %}
+{% block page_body %}
+<fieldset class="form-fieldset" style="width: 100%; margin-left: 12px; max-width: 800px">
+  <div class="mb-3">
+  <label class="form-label">{{ _('Evaluation Plan') }}</label>
+  <select class="form-select">
+    {% for item in eval_plans %}
+      <option value="{{ item.plan_name }}">{{ item.plan_name }}</option>
+    {% endfor %}
+  </select>
+</div>
+<div class="mb-3">
+  <label class="form-label">{{ _('Evaluation Model') }}</label>
+  <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#modelModal">
+     {{ _('Add Model')}}
+  </button>
+</div>
+</fieldset>
+<div class="modal" id="modelModal" tabindex="-1">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Model</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{{ request.app.admin_path }}/record/add">
+          <div class="mb-3">
+            <label class="form-label required">{{ _('Evaluation Model') }}</label>
+            <input required class="form-control" list="datalistOptions" name="model_name" placeholder="Type to search..."/>
+              <datalist id="datalistOptions">
+                {% for item in eval_models %}
+                  <option value="{{ item.name }}" />
+                {% endfor %}
+              </datalist>
+          </div>
+          <div class="mb-3">
+            <label class="form-label required">Access Key</label>
+            <input required type="text" class="form-control" name="model_ak" placeholder="请输入模型 Access Key" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label required">Secret Key</label>
+            <input required type="text" class="form-control" name="model_sk" placeholder="请输入模型 Secret Key" />
+          </div>
+          <div class="form-footer">
+            <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+              Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">{{ _('Create new report')}}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

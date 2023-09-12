@@ -21,6 +21,8 @@ from dashboard.models import (
     LabelPage,
     Log,
 )
+from dashboard.models import Admin, Cat, Category, Config, Dog1, LabelPage, Log
+
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product, Record  # Evaluation,
 from dashboard.models import Resource as ResourceModel
@@ -29,7 +31,11 @@ from dashboard.models import Sponsor  # Evaluation,
 
 # from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
+
 from dashboard.widgets.displays import ShowIp, ShowPopover, ShowStatus
+
+from dashboard.widgets.displays import ShowIp, ShowOperation, ShowPopover, ShowStatus
+
 from last.services import enums as _enums
 from last.services.app import app
 from last.services.enums import Method
@@ -73,14 +79,21 @@ class Evaluation(Dropdown):
     """模型评测"""
 
     class Record(Model):
+        """评测记录"""
+
         page_title = "评测记录"
         page_pre_title = "模型评测记录"
+
         label: str = _("Evaluation Record")
         model = Record
     class EvaluationRecord(Model):
         label: str = _("EvaluationRecord Record")
         icon = "fas fa-user"
         model = EvaluationRecord
+
+        label: str = _("EvaluationRecord Record")
+        model = Record
+
         filters = [
             filters.Search(
                 name="model_name",
@@ -91,34 +104,42 @@ class Evaluation(Dropdown):
             filters.Enum(enum=enums.EvalStatus, name="status", label="评测状态"),
         ]
         fields = [
-            Field(name="model_name", label="模型名称", display=ShowPopover()),
+            Field(name="model_name", label="评测模型", display=ShowPopover()),
             Field(name="eval_pan", label="评测方案"),
             Field(name="created_at", label="提交时间"),
             Field(name="status", label="评测状态", display=ShowStatus()),
+            Field(name="operations", label="操作", display=ShowOperation()),
         ]
 
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("create"),
+                    icon="fas fa-plus",
+                    name="add",
+                    method=Method.GET,
+                    ajax=False,
+                    class_="btn-dark",
+                )
+            ]
+
+
         async def get_actions(self, request: Request) -> List[Action]:
-            actions = await super().get_actions(request)
-            model_detail = Action(
-                label="模型详情",
-                icon="ti ti-toggle-left",
-                name="model_detail",
-                method=Method.PUT,
-            )
-            record_file = Action(
-                label="备案文件",
-                icon="ti ti-toggle-left",
-                name="record_file",
-                method=Method.PUT,
-            )
-            actions.append(model_detail)
-            actions.append(record_file)
-            return actions
+            return []
+
+    class Create(Link):
+        """创建评测"""
+
+        label = _("Create Evaluation")
+        url = "/admin/record/add"
+
 
     label: str = _("Evaluation")
+
     label: str = _("EvaluationRecord")
     icon = "fas fa-user"
-    resources = [Record]
+    resources = [Record, Create]
 
 
 @app.register
