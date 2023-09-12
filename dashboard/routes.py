@@ -4,7 +4,7 @@ from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
 
 from dashboard.biz_routers import biz_router
-from dashboard.models import Config, Log
+from dashboard.models import Config, Log, EvaluationPlan, ModelInfo
 from last.services.app import app
 from last.services.depends import AdminLog, get_resources
 from last.services.i18n import _
@@ -84,6 +84,10 @@ async def create_eval(
     request: Request,
     resources=Depends(get_resources),
 ):
+    evalation_plan = await EvaluationPlan.all().limit(10)
+    models = await ModelInfo.all().limit(10)
+    for model in models:
+        print(model.name)
     return templates.TemplateResponse(
         "create_eval.html",
         context={
@@ -92,42 +96,8 @@ async def create_eval(
             "resource_label": "Label",
             "page_pre_title": "BY LABEL STUDIO",
             "page_title": _("Create Evaluation"),
-            "eval_plans": [
-                {
-                    "plan_name": "Plan 1",
-                    "plan_content": "Plan 1 content",
-                },
-                {
-                    "plan_name": "Plan 2",
-                    "plan_content": "Plan 2 content",
-                },
-                {
-                    "plan_name": "Plan 3",
-                    "plan_content": "Plan 3 content",
-                },
-            ],
-            "eval_models": [
-                {
-                    "name": "Model 1",
-                    "model_content": "Model 1 content",
-                    "uid": "1",
-                },
-                {
-                    "name": "Model 2",
-                    "model_content": "Model 2 content",
-                    "uid": "2",
-                },
-                {
-                    "name": "Model 3",
-                    "model_content": "Model 3 content",
-                    "uid": "3",
-                },
-                {
-                    "name": "Model 4",
-                    "model_content": "Model 4 content",
-                    "uid": "4",
-                },
-            ],
+            "eval_plans": evalation_plan,
+            "eval_models": models,
         },
     )
 
