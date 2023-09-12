@@ -277,3 +277,40 @@ async def delete_view(request: Request, pk: str, model: Model = Depends(get_mode
 async def bulk_delete(request: Request, ids: str, model: Model = Depends(get_model)):
     await model.filter(pk__in=ids.split(",")).delete()
     return RedirectResponse(url=request.headers.get("referer"), status_code=HTTP_303_SEE_OTHER)
+
+
+@router.get("/{resource}/labeling/{pk}")
+async def labeling_view(
+    request: Request,
+    resource: str = Path(...),
+    pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
+):
+    obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
+    inputs = await model_resource.get_inputs(request, obj)
+
+    # TODO, @xiaomin, 将这个请求里面的参数传递给label.html，从而生成不同的标注页面形式
+    context = {
+        "request": request,
+        "resources": resources,
+        "resource_label": model_resource.label,
+        "resource": resource,
+        "inputs": inputs,
+        "pk": pk,
+        "model_resource": model_resource,
+        "page_title": model_resource.page_title,
+        "page_pre_title": model_resource.page_pre_title,
+    }
+    print(context)
+    try:
+        return templates.TemplateResponse(
+            f"{resource}/label.html",
+            context=context,
+        )
+    except TemplateNotFound:
+        return templates.TemplateResponse(
+            "label.html",
+            context=context,
+        )

@@ -16,6 +16,8 @@ from dashboard.models import (
     Dog1,
     EvaluationDatasetManager,
     EvaluationPlanManager,
+    # EvaluationPlan,
+    EvaluationRecord,
     LabelPage,
     Log,
 )
@@ -75,6 +77,10 @@ class Evaluation(Dropdown):
         page_pre_title = "模型评测记录"
         label: str = _("Evaluation Record")
         model = Record
+    class EvaluationRecord(Model):
+        label: str = _("EvaluationRecord Record")
+        icon = "fas fa-user"
+        model = EvaluationRecord
         filters = [
             filters.Search(
                 name="model_name",
@@ -110,6 +116,7 @@ class Evaluation(Dropdown):
             return actions
 
     label: str = _("Evaluation")
+    label: str = _("EvaluationRecord")
     icon = "fas fa-user"
     resources = [Record]
 
@@ -121,6 +128,20 @@ class Dataset(Dropdown):
         model = LabelPage
         filters = [filters.Search(name="task_type", label="Task Type")]
         fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return [
+                Action(
+                    label=_("labeling"),
+                    icon="ti ti-edit",
+                    name="labeling",
+                    method=enums.Method.GET,
+                    ajax=False,
+                )
+            ]
+
+        async def get_bulk_actions(self, request: Request) -> List[Action]:
+            return []
 
     class Labeling(Link):
         """Label Studio Embedding"""
@@ -376,6 +397,7 @@ class DataManager(Dropdown):
             "id",
             Field(name="plan_name", label="评测方案"),
             Field(name="plan_content", label="风险类型/数据占比/评测权重"),
+            Field(name="datasets", label="风险类型/数据占比/评测权重", display=displays.InputOnly()),
             Field(
                 name="score_way",
                 label="评分方式",
@@ -490,6 +512,7 @@ class DataManagePage(Dropdown):
     resources = [LabelingPage]
 
     # resources = [EvaluationPlanManagerResource]
+    # resources = [EvaluationPlanResource]
 
 
 @app.register

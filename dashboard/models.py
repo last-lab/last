@@ -58,6 +58,11 @@ class Record(Model):
     eval_pan = fields.IntField(description="Choose evaluation plan")
     created_at = fields.DatetimeField(auto_now_add=True)
     status: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress)
+class EvaluationRecord(Model):
+    model_name = fields.CharField(max_length=50)
+    eval_setting = fields.IntField()
+    submit_time = fields.DatetimeField()
+    eval_status = fields.IntEnumField(EvalStatus, description="EvaluationRecord Status")
 
 
 class Log(AbstractLog):
@@ -108,6 +113,7 @@ class EvaluationPlanManager(Model):
 
     plan_name = fields.CharField(max_length=200)
     plan_content = fields.CharField(max_length=500)
+    datasets = fields.CharField(max_length=200)
     score_way = fields.IntEnumField(
         ScoreWayType, description="Score Way", default=ScoreWayType.system
     )
@@ -123,6 +129,6 @@ class EvaluationDatasetManager(Model):
 
 class LabelPage(Model):
     task_type = fields.CharField(max_length=50)
-    labeling_method = fields.JSONField()
+    labeling_method = fields.CharField(max_length=255)
     release_time = fields.DatetimeField()
     current_status = fields.CharField(max_length=50)

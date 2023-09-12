@@ -33,8 +33,14 @@ async def create_view(
     resources=Depends(get_resources),
     model_resource: ModelResource = Depends(get_model_resource),
 ):
+    """
+    page location: create button on the evaluation plan management page
+    upstream dependency: evaluation plan management page
+    downstream dependency: evaluation model, dataset model
+    input example: GET /{resource}/epm_create
+    output example: {resource}/create.html
+    """
     inputs = await model_resource.get_inputs(request)
-    # DataSet.create()
     datasets = await DataSet.all().order_by("id").limit(10)
     context = {
         "request": request,
@@ -48,7 +54,7 @@ async def create_view(
         "datasets": datasets,
     }
     return templates.TemplateResponse(
-        f"evaluationplanmanager/create.html",
+        f"{resource}/create.html",
         context=context,
     )
 
@@ -63,13 +69,27 @@ async def create(
     model_resource: ModelResource = Depends(get_model_resource),
     model: Type[Model] = Depends(get_model),
 ):
+    """
+    page location: save button on the evaluation plan create page
+    upstream dependency: evaluation plan create page
+    downstream dependency: evaluation model, dataset model
+    input example:
+        POST /{resource}/epm_create
+        {
+          "plan_name": "test",
+          "plan_content": "国家安全/50.0%/50.0%,个人权利/50.0%/50.0%",
+          "score_way": 0,
+          "datasets": "1,2",
+        }
+    output example: {resource}/list.html
+    """
     form = await request.form()
     data, m2m_data = await model_resource.resolve_data(request, form)
     async with in_transaction() as conn:
         obj = await model.create(**data, using_db=conn)
         request.state.pk = obj.pk
         for k, items in m2m_data.items():
-            m2m_obj = getattr(obj, k)  # type:ManyToManyRelation
+            m2m_obj = getattr(obj, k)
             await m2m_obj.add(*items, using_db=conn)
         return redirect(request, "list_view", resource=resource)
 
@@ -83,9 +103,22 @@ async def update(
     resource: str = Path(...),
     pk: str = Path(...),
     model_resource: ModelResource = Depends(get_model_resource),
-    resources=Depends(get_resources),
     model: Type[Model] = Depends(get_model),
 ):
+    """
+    page location: save button on the evaluation plan create page
+    upstream dependency: evaluation plan update page
+    downstream dependency: evaluation model, dataset model
+    input example:
+        POST /{resource}/epm_create/1
+        {
+          "plan_name": "test",
+          "plan_content": "国家安全/50.0%/50.0%,个人权利/50.0%/50.0%",
+          "score_way": 0,
+          "datasets": "1,2",
+        }
+    output example: {resource}/list.html
+    """
     form = await request.form()
     data, m2m_data = await model_resource.resolve_data(request, form)
     async with in_transaction() as conn:
@@ -102,30 +135,6 @@ async def update(
             await m2m_obj.clear()
             if items:
                 await m2m_obj.add(*items)
-        obj = (
-            await model.filter(pk=pk)
-            .using_db(conn)
-            .get()
-            .prefetch_related(*model_resource.get_m2m_field())
-        )
-    inputs = await model_resource.get_inputs(request, obj)
-    if "save" in form.keys():
-        context = {
-            "request": request,
-            "resources": resources,
-            "resource_label": model_resource.label,
-            "resource": resource,
-            "model_resource": model_resource,
-            "inputs": inputs,
-            "pk": pk,
-            "page_title": model_resource.page_title,
-            "page_pre_title": model_resource.page_pre_title,
-        }
-        return templates.TemplateResponse(
-            f"{resource}/update.html",
-            context=context,
-        )
-
     return redirect(request, "list_view", resource=resource)
 
 
@@ -138,8 +147,16 @@ async def update_view(
     resources=Depends(get_resources),
     model: Type[Model] = Depends(get_model),
 ):
+    """
+    page location: edit button on the evaluation plan management page
+    upstream dependency: evaluation plan edit page
+    downstream dependency: evaluation model, dataset model
+    input example: GET /{resource}/epm_create/1
+    output example: {resource}/update.html
+    """
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
+    datasets = await DataSet.filter(id__in=obj.datasets.split(",")).order_by("id").limit(10)
     context = {
         "request": request,
         "resources": resources,
@@ -148,6 +165,8 @@ async def update_view(
         "inputs": inputs,
         "pk": pk,
         "model_resource": model_resource,
+        "datasets": datasets,
+        "obj": obj,
         "page_title": model_resource.page_title,
         " page_pre_title": model_resource.page_pre_title,
     }
@@ -166,6 +185,13 @@ async def copy_create_view(
     resources=Depends(get_resources),
     model: Type[Model] = Depends(get_model),
 ):
+    """
+    page location: copy create button on the evaluation plan management page
+    upstream dependency: evaluation plan copy create page
+    downstream dependency: evaluation model, dataset model
+    input example: GET /{resource}/epm_create/1
+    output example: {resource}/copy_create.html
+    """
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
     context = {
@@ -180,7 +206,7 @@ async def copy_create_view(
         "page_pre_title": model_resource.page_pre_title,
     }
     return templates.TemplateResponse(
-        f"evaluationplanmanager/copy_create.html",
+        f"{resource}/copy_create.html",
         context=context,
     )
 
@@ -197,6 +223,20 @@ async def copy_create(
     resources=Depends(get_resources),
     model: Type[Model] = Depends(get_model),
 ):
+    """
+    page location: save button on the copy create page
+    upstream dependency: evaluation plan copy create page
+    downstream dependency: evaluation model, dataset model
+    input example:
+        POST /{resource}/epm_copy_create/1
+        {
+          "plan_name": "test",
+          "plan_content": "国家安全/50.0%/50.0%,个人权利/50.0%/50.0%",
+          "score_way": 0,
+          "datasets": "1,2",
+        }
+    output example: {resource}/list.html
+    """
     form = await request.form()
     data, m2m_data = await model_resource.resolve_data(request, form)
     async with in_transaction() as conn:
@@ -244,13 +284,35 @@ async def epm_ds_query(
     request: Request, ds_name: Union[str, None] = None, ds_content: Union[str, None] = None
 ):
     """
-    数据集查询
+    page location: datasets search btn on evaluation plan create page、update page and copy create page
+    upstream dependency: evaluation plan create page、update page and copy create page
+    downstream dependency: evaluation model, dataset model
+    input example:
+        POST /{resource}/epm_copy_create/1
+        {
+          "plan_name": "test",
+          "plan_content": "国家安全/50.0%/50.0%,个人权利/50.0%/50.0%",
+          "score_way": 0,
+          "datasets": "1,2",
+        }
+    output example:
+        [
+            {
+                "risk_type": "国家安全",
+                "risk_third_type": "个人信息保护",
+                "name": "11",
+                "risk_second_type": "颠覆国家政权",
+                "id": 1
+            }
+        ]
     """
     datasets = []
     if ds_name is not None:
         datasets = await DataSet.all().filter(name= ds_name).order_by("id").limit(10)
     if ds_content is not None:
         datasets = await DataSet.all().filter(name=ds_content).order_by("id").limit(10)
+    if not datasets:
+        datasets = await DataSet.all().order_by("id").limit(10)
     return datasets
 
 
