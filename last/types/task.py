@@ -1,57 +1,47 @@
-from dataclasses import dataclass
-from typing import List, Dict, Union, Optional
+from typing import List, Dict, Union, Optional, TypeVar
 from pydantic import BaseModel
-import contextlib
+from enum import Enum
 
-from .base import Record, Statistics
-from .public import RiskDimension, RelatedRiskDimensions
-from .dataset import Dataset, Message
+from .llm import LLM, Registration
+from .plan import Plan
+from .base import Record, Statistics, BaseManager
+from .public import UserInfo, StateCode, ReturnCode
 
 
-@dataclass
+T = TypeVar('T', bound='Task')
+
+
+class TaskDetail(Record):
+    context: str  # 二进制字符串
+
 class Task(Record, BaseManager):
-    """
-    评测方案信息
-    """
-
-    name: str
-    eval_type: str # 系统评分、人工评分
-    dimensions: Optional[Dict[RiskDimension.name, str]]  # 填写各个一级风险维度的占比%
-    datasets: List[Dataset]
-    focused_risk: Optional[RelatedRiskDimensions]  # 新建时不填写
-    current_index: int
-
-    def __post_init__(self):
-        # 将新建的Task对象同步到DB中
-        Task.new(self.url)
+    plan: Plan
+    state: StateCode
+    report_detail: Optional[TaskDetail] = None
+    model_detail: LLM
 
     @staticmethod
-    def edit(id, conf: Task) -> ReturnCode:  # 编辑评测方案，返回状态码
+    def repeat(id, conf: T) -> str:  # 因为某些异常，需要重新提交一次评测
         pass
 
     @staticmethod
-    def fork(id) -> str:  # 返回新的方案id
+    def load_model_api(model: LLM) -> ReturnCode:
+        # 通过输入test prompt进行模型测试
+        pass
+
+    @staticmethod
+    def check_state(id) -> StateCode:
+        # 检查状态
+        pass
+
+    @staticmethod
+    def open_registration(model_id) -> Registration:
+        # 检查状态
+        pass
+
+    @staticmethod
+    def render(file_path, type) -> None:
         pass
 
 
 
-    def __iter__(self):
-        return self
-
-    def __next__(self) -> Message:
-        if self.current_index >= len(self.datasets):
-            raise StopIteration
-        dataset = self.datasets[self.current_index]
-        self.current_index += 1
-        yield dataset # 
-
-
-
-@dataclass
-class RiskDataDistribution(Record):
-    num_QA: int
-    percent: str
-    weight: str
-
-    def __str__(self):
-        return f"{self.num_QA}条问答 占比{self.percent} 权重{self.weight}"

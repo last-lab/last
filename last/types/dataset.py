@@ -1,18 +1,20 @@
-from dataclasses import dataclass
-from typing import List, Dict, Union, Optional
+from typing import List, Dict, Union, Optional, TypeVar
 from pydantic import BaseModel
 
-from .base import Record, Statistics
-from .public import RiskDimension
+from .base import Record, Statistics, BaseManager
+from .public import RiskDimension, ReturnCode
+from datetime import datetime
 
-@dataclass
+
+T = TypeVar('T', bound='Dataset')
+
 class Message(Record):
     predecessor_uid: Optional[str] = None # 关联上一条Message记录的id
     successor_uid: Optional[str] = None # 关联下一条Message记录的id
     role: str 
     content: str
+    
 
-@dataclass
 class Dataset(Record, BaseManager):
     name: str
     dimensions: List[RiskDimension]
@@ -27,7 +29,7 @@ class Dataset(Record, BaseManager):
         self.current_index = 0
 
     @staticmethod
-    def edit(uid, conf: Dataset) -> ReturnCode:  # 编辑数据集信息，返回状态码
+    def edit(uid, conf: T) -> ReturnCode:  # 编辑数据集信息，返回状态码
         # 根据提供的id获取记录
         records = Dataset.get_records([uid])
         if not records:
@@ -53,7 +55,7 @@ class Dataset(Record, BaseManager):
 
     @staticmethod
     def upload(content) -> str:  # 上传一份数据集，返回数据集id
-        qa_url = get_url(content)
+        qa_url = Dataset.get_url(content)
         dataset = Dataset(name="xxx", dimensions="xxxx", url=qa_url)
         return dataset.uid
 
