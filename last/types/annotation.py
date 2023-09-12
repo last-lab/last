@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any, Union
 from .base import Record
 from .labeldata import TaskInfo
+from .public import UserInfo, StateCode, ReturnCode
 
 
 # 定义注解结果中的值结构
@@ -18,7 +19,7 @@ class AnnotationValue(BaseModel):
 # 定义单个注解结果的数据结构
 class AnnotationResult(BaseModel):
     value: AnnotationValue  # 注解的值
-    id: str  # 注解的唯一标识符
+    id = UserInfo.id  # 注解的标注人id
     from_name: str  # 注解来源名称
     to_name: str  # 注解目标名称
     type: str  # 注解类型
@@ -26,7 +27,7 @@ class AnnotationResult(BaseModel):
 
 
 # 定义注解的数据结构
-class Annotations(BaseModel,Record):
+class Annotations(BaseModel):
     id: int  # 注解的ID
     completed_by: int  # 完成注解的用户ID
     result: List[AnnotationResult]  # 注解结果列表
@@ -66,14 +67,3 @@ class LabelStudioJSON(BaseModel):
     unique_id: Optional[str] = None  # 唯一标识符，可选
 
 
-# 当前任务的请求数据结构
-class CurrentTaskRequest(BaseModel):
-    task_id: str  # 被点击的任务ID
-
-
-# 当前任务的响应数据结构
-class CurrentTaskResponse(BaseModel):  # 任务对应的文本内容
-    data_type: dict  # 数据类型
-    data: Text  # 数据内容
-    label_type: dict  # 标签类型
-    label: dict  # 标签内容
