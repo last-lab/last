@@ -1,1 +1,1 @@
-from .client import client_wrapper
+from .client import Client, client_wrapper

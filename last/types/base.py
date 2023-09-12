@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import List, Dict, Union, Optional
 from pydantic import BaseModel
 from abc import ABC, abstractmethod
+from last.client import Client
 
 from .public import DateString, PermissionLevel, UserInfo, ReturnCode
 
@@ -16,7 +17,8 @@ class Record(BaseModel):
     created_at: DateString
     updated_at:  Optional[DateString]
     permissions: PermissionLevel
-
+    
+    client: Client # 等实现全局上下文之后，这个东西就要消失掉
 
 
 class Statistics(BaseModel):
