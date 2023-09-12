@@ -1,10 +1,12 @@
 from tortoise import Model, fields
 
-
-from dashboard.enums import GenderType, ProductType, Status
-from dashboard.enums import RiskTypes, RiskSubTypes
-from dashboard.enums import EvalStatus, GenderType, ProductType, Status
-from dashboard.enums import EvalStatus, GenderType, ProductType, ScoreWayType, Status
+from dashboard.enums import (
+    EvalStatus,
+    GenderType,
+    ProductType,
+    ScoreWayType,
+    Status,
+)
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -110,16 +112,17 @@ class EvaluationPlanManager(Model):
         ScoreWayType, description="Score Way", default=ScoreWayType.system
     )
 
+
 class EvaluationDatasetManager(Model):
     name = fields.CharField(max_length=200)
-    type = fields.IntEnumField(RiskTypes)
-    sub_type = fields.IntEnumField(RiskSubTypes)
+    type = fields.CharField(max_length=200)
+    sub_type = fields.CharField(max_length=200)
     updateTime = fields.CharField(max_length=200)
     useCount = fields.IntField()
+
 
 class LabelPage(Model):
     task_type = fields.CharField(max_length=50)
     labeling_method = fields.JSONField()
     release_time = fields.DatetimeField()
     current_status = fields.CharField(max_length=50)
-

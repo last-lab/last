@@ -8,7 +8,7 @@ from dashboard import settings
 from dashboard.models import Sponsor
 
 rearq = ReArq(
-    db_url=settings.DATABASE_URL,
+    # db_url=settings.DATABASE_URL,
     redis_url=settings.REDIS_URL,
     keep_job_days=7,
 )

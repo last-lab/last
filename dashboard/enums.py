@@ -16,14 +16,6 @@ class GenderType(IntEnum):
     male = 1
 
 
-class RiskTypes(IntEnum):
-    safe = 0
-    unsafe = 1
-
-
-class RiskSubTypes(IntEnum):
-    regime = 0
-
 # datamanager
 class ScoreWayType(IntEnum):
     system = 0
@@ -38,4 +30,3 @@ class EvalStatus(IntEnum):
     error = 1
     un_labeled = 2
     finish = 3
-

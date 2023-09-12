@@ -6,31 +6,28 @@ from starlette.requests import Request
 
 from dashboard import enums
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin, Cat, Category, Config, Dog1, LabelPage, Log
+
+# from dashboard.models import Evaluation
 from dashboard.models import (
     Admin,
     Cat,
     Category,
-    Config,
+    Config,  # Evaluation,
     Dog1,
-    # Evaluation,
+    EvaluationDatasetManager,
     EvaluationPlanManager,
     LabelPage,
     Log,
 )
 from dashboard.models import Permission as PermissionModel
-from dashboard.models import Product, Record
+from dashboard.models import Product, Record  # Evaluation,
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
-from dashboard.models import Sponsor
-# from dashboard.models import Evaluation
-from dashboard.models import EvaluationPlanManager
-from dashboard.models import EvaluationDatasetManager
+from dashboard.models import Sponsor  # Evaluation,
+
 # from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
 from dashboard.widgets.displays import ShowIp, ShowPopover, ShowStatus
-from dashboard.providers import import_export_provider
-from dashboard.widgets.displays import ShowIp
 from last.services import enums as _enums
 from last.services.app import app
 from last.services.enums import Method
@@ -368,6 +365,7 @@ class Animal(Dropdown):
     icon = "fas fa-bars"
     resources = [CatResource, DogResource]
 
+
 @app.register
 class DataManager(Dropdown):
     class EvaluationPlanManagerResource(Model):
@@ -426,15 +424,18 @@ class DataManager(Dropdown):
         label = "评测集管理"
         model = EvaluationDatasetManager
         page_title = "评测集管理"
-        filters = [filters.Search(name="name", label="评测集名称"),
-                   filters.Search(name="type", label="风险类型")]
-        fields = ["id",
-                  Field(name="name", label="评测集名称"),
-                  Field(name="type", label="风险类型"),
-                  Field(name="sub_type", label="二级类型"),
-                  Field(name="updateTime", label="更新时间"),
-                  Field(name="useCount", label="使用次数")
-                  ]
+        filters = [
+            filters.Search(name="name", label="评测集名称"),
+            filters.Search(name="type", label="风险类型"),
+        ]
+        fields = [
+            "id",
+            Field(name="name", label="评测集名称"),
+            Field(name="type", label="风险类型"),
+            Field(name="sub_type", label="二级类型"),
+            Field(name="updateTime", label="更新时间"),
+            Field(name="useCount", label="使用次数"),
+        ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return [
@@ -469,12 +470,13 @@ class DataManager(Dropdown):
                     icon="ti ti-trash",
                     name="delete",
                     method=_enums.Method.DELETE,
-                )
+                ),
             ]
 
     label = "数据管理"
     icon = "fas fa-bars"
     resources = [EvaluationDatasetManagerResource, EvaluationPlanManagerResource]
+
 
 class DataManagePage(Dropdown):
     class LabelingPage(Model):

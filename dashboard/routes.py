@@ -1,13 +1,19 @@
-from fastapi import Depends, HTTPException, Path
+from typing import Type, Union
+
+from fastapi import Depends, HTTPException, Path, UploadFile, File
+from jinja2 import TemplateNotFound
+from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
-from typing import Type
+from tortoise import Model
+from tortoise.transactions import in_transaction
 from dashboard.biz_routers import biz_router
 from dashboard.models import Config, Log
+from last.services import enums
 from last.services.app import app
-from last.services.depends import AdminLog
 from last.services.depends import (
+    AdminLog,
     admin_log_create,
     admin_log_update,
     create_checker,
@@ -19,13 +25,9 @@ from last.services.depends import (
 )
 from last.services.resources import Model as ModelResource
 from last.services.responses import redirect
-from last.services.depends import AdminLog, get_resources
 from last.services.routes.others import router
 from last.services.template import templates
-from jinja2 import TemplateNotFound
-from tortoise import Model
-from tortoise.transactions import in_transaction
-from last.services import enums
+
 app.include_router(biz_router)
 
 
@@ -110,12 +112,12 @@ async def switch_config_status(request: Request, pk: str):
 # datamanager
 @app.get("/{resource}/copy_create/{pk}", dependencies=[Depends(read_checker)])
 async def copy_create_view(
-        request: Request,
-        resource: str = Path(...),
-        pk: str = Path(...),
-        model_resource: ModelResource = Depends(get_model_resource),
-        resources=Depends(get_resources),
-        model: Type[Model] = Depends(get_model),
+    request: Request,
+    resource: str = Path(...),
+    pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
 ):
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
@@ -142,18 +144,17 @@ async def copy_create_view(
         )
 
 
-
 @app.post(
     "/{resource}/copy_create/{pk}",
     dependencies=[Depends(admin_log_update), Depends(update_checker)],
 )
 async def copy_create(
-        request: Request,
-        resource: str = Path(...),
-        pk: str = Path(...),
-        model_resource: ModelResource = Depends(get_model_resource),
-        resources=Depends(get_resources),
-        model: Type[Model] = Depends(get_model),
+    request: Request,
+    resource: str = Path(...),
+    pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
 ):
     form = await request.form()
     data, m2m_data = await model_resource.resolve_data(request, form)
@@ -270,15 +271,13 @@ async def copy_create(
 #             context=context,
 #         )
 
-@app.get(
-    "/{resource}/upload_dataset",
-    dependencies=[Depends(create_checker)]
-)
+
+@app.get("/{resource}/upload_dataset", dependencies=[Depends(create_checker)])
 async def upload_dataset(
-        request: Request,
-        resource: str = Path(...),
-        resources=Depends(get_resources),
-        model_resource: ModelResource = Depends(get_model_resource),
+    request: Request,
+    resource: str = Path(...),
+    resources=Depends(get_resources),
+    model_resource: ModelResource = Depends(get_model_resource),
 ):
     context = {
         "request": request,
@@ -286,7 +285,7 @@ async def upload_dataset(
         "resource_label": model_resource.label,
         "resources": resources,
         "model_resource": model_resource,
-        "page_title": '上传评测集',
+        "page_title": "上传评测集",
     }
     try:
         return templates.TemplateResponse(
@@ -299,36 +298,56 @@ async def upload_dataset(
             context=context,
         )
 
-@app.get(
-    "/{resource}/export_dataset/{pk}"
+
+@app.post(
+    "/evaluationdatasetmanager/json"
 )
-async def export_dataset(
+async def json(
     request: Request,
-    resources=Depends(get_resources),
-    resource: str = Path(...),
-    model_resource: ModelResource = Depends(get_model_resource),
-    pk: str = Path(...),
+    file: UploadFile = File(...)
 ):
-    context = {
-        "query": request.query_params,
-        "request": request,
-        "resource": resource,
-        "resources": resources,
-        "resource_label": model_resource.label,
-        "model_resource": model_resource,
-        "format_options": enums.ExportFormat,
-        "pk": pk
+    contents = {
+        "result": 1,
+        "reason": "评测集已存在",
+        "type": '国家安全',
+        "detail": [
+            {
+                "subType": "颠覆国家政权",
+                "thirdType": [
+                    "三级维度1",
+                    "三级维度2"
+                ]
+            },
+            {
+                "subType": "宣传恐怖主义",
+                "thirdType": [
+                    "三级维度3",
+                    "三级维度4"
+                ]
+            }
+        ],
+        "dataCount": 666,
+        "number": 10000,
+        "size": "10.6GB"
     }
-    try:
-        return templates.TemplateResponse(
-            f"{resource}/export_dataset.html",
-            context=context,
-        )
-    except TemplateNotFound:
-        return templates.TemplateResponse(
-            "providers/import_export/export.html",
-            context=context,
-        )
+    return contents
+
+
+class Item(BaseModel):
+    dataset_name: str
+@app.post(
+    "/evaluationdatasetmanager/conform"
+)
+async def conform(
+    request: Request,
+    item: Item
+):
+    contents = {
+        "result": 1,
+        "reason": "已存在同名的评测集"
+    }
+    return contents
+
 
 @router.get("/stable1")
 async def stable1(request: Request):
@@ -348,3 +367,5 @@ async def stable1(request: Request):
     return templates.TemplateResponse(
         "stable/stable1.html", context={"request": request, "stable_1": table_1}
     )
+
+
