@@ -6,7 +6,7 @@ from .labeldata import TaskInfo
 
 
 # 定义注解结果中的值结构
-class _AnnotationValue(BaseModel):
+class AnnotationValue(BaseModel):
     start: Optional[int] = None  # 起始位置，可选
     end: Optional[int] = None  # 结束位置，可选
     text: Optional[str] = None  # 文本内容，可选
@@ -16,8 +16,8 @@ class _AnnotationValue(BaseModel):
 
 
 # 定义单个注解结果的数据结构
-class _AnnotationResult(BaseModel):
-    value: _AnnotationValue  # 注解的值
+class AnnotationResult(BaseModel):
+    value: AnnotationValue  # 注解的值
     id: str  # 注解的唯一标识符
     from_name: str  # 注解来源名称
     to_name: str  # 注解目标名称
@@ -29,7 +29,7 @@ class _AnnotationResult(BaseModel):
 class Annotations(BaseModel,Record):
     id: int  # 注解的ID
     completed_by: int  # 完成注解的用户ID
-    result: List[_AnnotationResult]  # 注解结果列表
+    result: List[AnnotationResult]  # 注解结果列表
     was_cancelled: bool  # 注解是否被取消
     ground_truth: bool  # 是否为基准真值
     lead_time: Optional[float] = None  # 完成注解所需的时间（秒），可选
