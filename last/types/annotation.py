@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any, Union
+from .base import Record
 from .labeldata import TaskInfo
 
 
@@ -25,10 +26,10 @@ class _AnnotationResult(BaseModel):
 
 
 # 定义注解的数据结构
-class Annotations(BaseModel):
+class Annotations(BaseModel,Record):
     id: int  # 注解的ID
     completed_by: int  # 完成注解的用户ID
-    result: List[AnnotationResult]  # 注解结果列表
+    result: List[_AnnotationResult]  # 注解结果列表
     was_cancelled: bool  # 注解是否被取消
     ground_truth: bool  # 是否为基准真值
     lead_time: Optional[float] = None  # 完成注解所需的时间（秒），可选

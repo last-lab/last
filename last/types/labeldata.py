@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pydantic import BaseModel
-from typing import Optional, Any
+from typing import Optional, Dict, Any
 from .base import Record
 from .annotation import Annotations
 
@@ -29,17 +29,17 @@ class _TaskInfo(BaseModel):
 class AnnotationTask(_TaskInfo, _LabelData, Annotations):
     annotation_method: _AnnotationMethod
 
-    # 这里我们可以使用pass代替具体功能
+    # TODO 调用label studio
     def annotate(self):
         pass
 
-    def review(self):
+    def review(task_id: str) -> Dict :
         pass
 
-    def view_results(self):
+    def view_results(task_id: str) -> Dict:
         pass
 
-    def export_data(self):
+    def export_data(task_id: str) -> Dict:
         pass
 
 
