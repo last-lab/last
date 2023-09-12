@@ -16,6 +16,15 @@ class GenderType(IntEnum):
     male = 1
 
 
+# datamanager
+class ScoreWayType(IntEnum):
+    system = 0
+    human = 1
+
+
+# datamanager end
+
+
 class EvalStatus(IntEnum):
     on_progress = 0
     error = 1

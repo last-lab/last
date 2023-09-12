@@ -31,7 +31,7 @@ msgid "Administartor"
 msgstr ""
 
 #: dashboard/resources.py:57
-msgid "Evaluation Record"
+msgid "EvaluationRecord Record"
 msgstr "Evaluation Record"
 
 #: dashboard/resources.py:57
@@ -55,7 +55,7 @@ msgid "Add Model"
 msgstr "Add Model"
 
 #: dashboard/resources.py:69
-msgid "Evaluation"
+msgid "EvaluationRecord"
 msgstr ""
 
 #: dashboard/resources.py:76
