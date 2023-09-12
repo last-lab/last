@@ -1,10 +1,9 @@
-from enum import Enum
 from typing import Type
 
 from fastapi import APIRouter, Depends, Path
 from jinja2 import TemplateNotFound
 from starlette.requests import Request
-from tortoise import Model, fields
+from tortoise import Model
 
 from last.services.depends import get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
