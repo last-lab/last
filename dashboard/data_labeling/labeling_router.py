@@ -62,7 +62,7 @@ async def labeling_view(
         )
 
 
-@router.post("/{resource}/labeling/get_config")
+@router.get("/{resource}/labeling/get_config")
 async def get_config_from_db(
     request: Request,
     resource: str
