@@ -52,16 +52,15 @@ class LLM(LLMInfo, BaseModel):
 
 
     def __call__(self, msg:Message) -> Message:
-
-        self.gen_prompt()
+        content = msg.content
+        prompt = self.gen_prompt(content)
         # 先mock一下
         return Message(related_uid = "xxcadasdad", role="assistant", content="大模型标准回答")
 
-    def gen_prompt(self, msg):
+    def gen_prompt(self, content):
         prompt = PromptTemplate(
-        input_variables=["product"],
+        input_variables=["content"],
         template=self.prompt_template,
         )
-        
         return prompt
 
