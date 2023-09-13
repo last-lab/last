@@ -70,9 +70,9 @@ class Dataset(Record, BaseManager):
     def __post_init__(self):
         # 根据传入的url或者file path，新建Dataset对象
         if self.file is not None:
-            self.qa_record, self.conversation_start_id = Dataset.upload(Dataset)
+            self.qa_record, self.conversation_start_id = Dataset.upload(self.file)
         elif self.url is not None:
-            self.qa_record, self.conversation_start_id = Dataset.fetch(Dataset)
+            self.qa_record, self.conversation_start_id = Dataset.fetch(self.url)
         else:
             raise ValueError("Input parameter cannot be empty")
         # 将新建的Dataset对象同步到DB中
