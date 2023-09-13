@@ -14,7 +14,7 @@ from dashboard.models import Category  # EvaluationPlan,; Evaluation,
 from dashboard.models import Config  # Evaluation,
 from dashboard.models import Dog1  # EvaluationPlan,; Evaluation,
 from dashboard.models import (  # EvaluationPlan,; Evaluation,
-    EvaluationDatasetManager,
+    DataSet,
     EvaluationPlan,
     EvaluationRecord,
     LabelPage,
@@ -455,7 +455,7 @@ class DataManager(Dropdown):
 
     class EvaluationDatasetManagerResource(Model):
         label = "评测集管理"
-        model = EvaluationDatasetManager
+        model = DataSet
         page_title = "评测集管理"
         filters = [
             filters.Search(name="name", label="评测集名称"),

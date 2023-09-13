@@ -3,9 +3,10 @@ from typing import Type, Union
 
 from fastapi import APIRouter, Depends, Path
 from starlette.requests import Request
-from tortoise import Model, fields
+from tortoise import Model
 from tortoise.transactions import in_transaction
 
+from dashboard.models import DataSet
 from last.services.depends import (
     admin_log_create,
     admin_log_update,
@@ -306,12 +307,12 @@ class RiskType(Enum):
         return self._code
 
 
-class DataSet(Model):
-    """
-    评测方案管理model
-    """
-
-    name = fields.CharField(max_length=200)
-    risk_type = fields.CharField(max_length=500)
-    risk_second_type = fields.CharField(max_length=500)
-    risk_third_type = fields.CharField(max_length=500)
+# class DataSet(Model):
+#     """
+#     评测方案管理model
+#     """
+#
+#     name = fields.CharField(max_length=200)
+#     risk_type = fields.CharField(max_length=500)
+#     risk_second_type = fields.CharField(max_length=500)
+#     risk_third_type = fields.CharField(max_length=500)
