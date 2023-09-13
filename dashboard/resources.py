@@ -15,7 +15,7 @@ from dashboard.models import Config  # Evaluation,
 from dashboard.models import Dog1  # EvaluationPlan,; Evaluation,
 from dashboard.models import (  # EvaluationPlan,; Evaluation,
     EvaluationDatasetManager,
-    EvaluationPlanManager,
+    EvaluationPlan,
     EvaluationRecord,
     LabelPage,
     Log,
@@ -400,9 +400,9 @@ class Animal(Dropdown):
 
 @app.register
 class DataManager(Dropdown):
-    class EvaluationPlanManagerResource(Model):
+    class EvaluationPlanResource(Model):
         label = "评测方案管理"
-        model = EvaluationPlanManager
+        model = EvaluationPlan
         filters = [filters.Search(name="name", label="方案名称", placeholder="请输入")]
         fields = [
             "id",
@@ -488,7 +488,7 @@ class DataManager(Dropdown):
 
     label = "数据管理"
     icon = "fas fa-bars"
-    resources = [EvaluationDatasetManagerResource, EvaluationPlanManagerResource]
+    resources = [EvaluationDatasetManagerResource, EvaluationPlanResource]
 
 
 class DataManagePage(Dropdown):

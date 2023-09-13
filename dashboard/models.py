@@ -119,7 +119,7 @@ class Dog1(Model):
     birth_at = fields.DatetimeField(auto_now_add=True)
 
 
-class EvaluationPlanManager(Model):
+class EvaluationPlan(Model):
     """
     评测方案管理model
     """
