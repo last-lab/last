@@ -8,13 +8,12 @@ from dashboard import enums
 from dashboard.constants import BASE_DIR
 
 # from dashboard.models import Evaluation
+from dashboard.models import Admin  # EvaluationPlan,; Evaluation,
+from dashboard.models import Cat  # EvaluationPlan,; Evaluation,
+from dashboard.models import Category  # EvaluationPlan,; Evaluation,
 from dashboard.models import Config  # Evaluation,
-from dashboard.models import Sponsor  # Evaluation,
-from dashboard.models import (
-    Admin,
-    Cat,  # EvaluationPlan,; Evaluation,
-    Category,
-    Dog1,
+from dashboard.models import Dog1  # EvaluationPlan,; Evaluation,
+from dashboard.models import (  # EvaluationPlan,; Evaluation,
     EvaluationDatasetManager,
     EvaluationPlanManager,
     EvaluationRecord,

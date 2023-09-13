@@ -1,4 +1,4 @@
-from typing import Type, Union
+from typing import Type
 
 from fastapi import Depends, File, HTTPException, Path, UploadFile
 from jinja2 import TemplateNotFound
@@ -11,11 +11,9 @@ from tortoise.transactions import in_transaction
 
 from dashboard.biz_routers import biz_router
 from dashboard.models import Config, Log
-from last.services import enums
 from last.services.app import app
 from last.services.depends import (
     AdminLog,
-    admin_log_create,
     admin_log_update,
     create_checker,
     get_model,
