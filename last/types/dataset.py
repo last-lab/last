@@ -116,7 +116,6 @@ class Dataset(Record, BaseManager):
                 correct_ans = Message(predecessor_uid=question_id, role=MessageRole.AI, content=row["correct_ans"])
                 qa_record[correct_ans_id] = correct_ans
             conversation_start_id = list(qa_record.keys())
-
         return qa_record, conversation_start_id
 
 

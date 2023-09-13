@@ -81,6 +81,6 @@ class StateCode(Enum):
         return str(self.value)
 
 
-class ID:
-    def __init__(self):
-        self.id = str(uuid.uuid4())
+class ID(str):
+    def __new__(cls):
+        return super().__new__(cls, uuid.uuid4())
