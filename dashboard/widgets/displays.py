@@ -61,3 +61,15 @@ class ShowOperation(Display):
                 "record_file": ["书生·浦语 1.3.0", "送评模型1 1.0", "送评模型1 1.4"],
             },
         )
+
+
+class ShowModelCard(Display):
+    template = "widgets/model_card.html"
+
+    async def render(self, request: Request, value: str):
+        return await super().render(
+            request,
+            {
+                "model_detail": value,
+            },
+        )

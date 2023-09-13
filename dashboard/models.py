@@ -12,11 +12,10 @@ from last.services.models import (
 
 # 这个类里面的东西是专门用来display的
 class ModelInfo(Model):
-    name = fields.CharField(max_length=200, null=True)
+    name = fields.CharField(max_length=200)
     model_type = fields.CharField(max_length=200, null=True)
     version = fields.CharField(max_length=200, null=True)
     base_model = fields.CharField(max_length=200, null=True)
-    version = fields.CharField(max_length=200, null=True)
     parameter_volume = fields.CharField(max_length=200, null=True)
     pretraining_info = fields.CharField(max_length=200, null=True)
     finetuning_info = fields.CharField(max_length=200, null=True)

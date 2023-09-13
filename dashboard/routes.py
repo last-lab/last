@@ -5,6 +5,7 @@ from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
 
 from dashboard.biz_routers import biz_router
 from dashboard.models import Config, Log, EvaluationPlan, ModelInfo
+from dashboard.widgets.displays import ShowModelCard
 from last.services.app import app
 from last.services.depends import AdminLog, get_resources
 from last.services.i18n import _
@@ -84,10 +85,13 @@ async def create_eval(
     request: Request,
     resources=Depends(get_resources),
 ):
-    evalation_plan = await EvaluationPlan.all().limit(10)
-    models = await ModelInfo.all().limit(10)
-    for model in models:
-        print(model.name)
+    eval_plans = await EvaluationPlan.all().limit(10)
+    model_list = await ModelInfo.all().limit(10)
+    model_cards = []
+    for model_detail in model_list:
+        card = await ShowModelCard().render(request, model_detail)
+        model_cards.append(card)
+
     return templates.TemplateResponse(
         "create_eval.html",
         context={
@@ -96,8 +100,8 @@ async def create_eval(
             "resource_label": "Label",
             "page_pre_title": "BY LABEL STUDIO",
             "page_title": _("Create Evaluation"),
-            "eval_plans": evalation_plan,
-            "eval_models": models,
+            "eval_plans": eval_plans,
+            "model_cards": model_cards,
         },
     )
 
@@ -134,13 +138,3 @@ async def stable1(request: Request):
         "stable/stable1.html", context={"request": request, "stable_1": table_1}
     )
 
-    # try:
-    #     return templates.TemplateResponse(
-    #         f"{resource}/update.html",
-    #         context=context,
-    #     )
-    # except TemplateNotFound:
-    #     return templates.TemplateResponse(
-    #         "update.html",
-    #         context=context,
-    #     )
