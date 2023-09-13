@@ -66,11 +66,10 @@ class ShowOperation(Display):
 class ShowAction(Display):
     template = "evaluationdatasetmanager/action_dataset.html"
 
-    async def render(self, request: Request, value: int):
+    async def render(self, request: Request, value: any):
         return await super().render(
             request,
             {
-                "content": value,
                 "detail": {
                     "id": "1",
                     "name": "评测集1",
