@@ -32,9 +32,9 @@ class Plan(Record, BaseManager):
     current_dataset_index: Optional[int] = Field(init=False)
     current_dataset_iter: Optional[Any] = Field(init=False)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.__post_init__()  # 调用 __post_init__ 方法
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.__post_init__()  # 调用 __post_init__ 方法
 
     def __iter__(self):
         self.current_dataset_index = 0
@@ -52,9 +52,9 @@ class Plan(Record, BaseManager):
             else:
                 raise
 
-    def __post_init__(self):
-        # 将新建的Plan对象同步到DB中
-        Plan.new(self.url)
+    # def __post_init__(self):
+    #     # 将新建的Plan对象同步到DB中
+    #     Plan.new(self.url)
 
     @staticmethod
     def edit(id, conf: T) -> ReturnCode:  # 编辑评测方案，返回状态码

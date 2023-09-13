@@ -34,7 +34,8 @@ with client_wrapper(name='puan', server_address="http://localhost:5020") as clie
 
     scores = []
     responces = []
-    for question, correct_ans in plan:
+    for qa_record in plan: # 
+        question, correct_ans = qa_record.question, qa_record.answer
         responce = llm_model(question)
         responces.append(responce)
         score = critic_model(responce, correct_ans)

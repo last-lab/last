@@ -17,10 +17,14 @@ class MessageRole(str, Enum):
     Chat = "Chat"
 
 class Message(Record):
-    predecessor_uid: Optional[str] = None # 关联上一条Message记录的id
-    successor_uid: Optional[str] = None # 关联下一条Message记录的id
     role: MessageRole
     content: str
+
+class QARecord(Record):
+    predecessor_uid: Optional[str] = None # 关联上一条Message记录的id
+    successor_uid: Optional[str] = None # 关联下一条Message记录的id
+    question: Message
+    answer: Optional[Message]
 
 
 class Dataset(Record, BaseManager):
@@ -30,7 +34,7 @@ class Dataset(Record, BaseManager):
     file: Optional[Path] # 文件本地path
     volume: Optional[str] # 数据集大小
     used_by: Optional[List[str]]
-    qa_record: Optional[Dict[str, Message]]  # Message的唯一id
+    qa_record: Optional[Dict[str, QARecord]]  # Message的唯一id
     conversation_start_id: Optional[List[str]] # 每段对话的起始Message id
     current_conversation_index: Optional[int] = Field(init=False)
     current_message_id: Optional[int] = Field(init=False)
@@ -48,7 +52,7 @@ class Dataset(Record, BaseManager):
         self.current_message_id = self.conversation_start_id[0]
         return self
 
-    def __next__(self) -> Message:
+    def __next__(self) -> QARecord:
         # 每次迭代时，只输出一条Messsage消息，
         # 第一次迭代的时候，输出第一个conversation里面的第一条消息
         # 下次迭代时，输出第二条消息
@@ -103,18 +107,19 @@ class Dataset(Record, BaseManager):
 
 
     @staticmethod
-    def upload(file_path: Path) -> Tuple[Dict[str, Message], List[str]]:  
+    def upload(file_path: Path) -> Tuple[Dict[str, QARecord], List[str]]:  
         # 通过上传文件创建数据集
         qa_record = {}
+        predecessor_uid = None # 关联上一条Message记录的id
         with open(file_path, "r") as file:
             reader = csv.DictReader(file)
             for row in reader:
-                question_id = ID()
-                correct_ans_id = ID()
-                question = Message(successor_uid=correct_ans_id, role=MessageRole.Human, content=row["question"])
-                qa_record[question_id] = question
-                correct_ans = Message(predecessor_uid=question_id, role=MessageRole.AI, content=row["correct_ans"])
-                qa_record[correct_ans_id] = correct_ans
+                self_uid = ID()
+                question = Message(role=MessageRole.Human, content=row["question"])
+                correct_ans = Message(role=MessageRole.AI, content=row["correct_ans"])
+                successor_uid = ID() # 提前安排好下一条数据的ID
+                qa_record[self_uid] = QARecord(predecessor_uid=predecessor_uid, successor_uid=successor_uid, question=question, answer=correct_ans)
+                predecessor_uid = self_uid 
             conversation_start_id = list(qa_record.keys())
         return qa_record, conversation_start_id
 
