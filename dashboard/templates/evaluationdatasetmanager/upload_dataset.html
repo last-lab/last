@@ -1,0 +1,115 @@
+{% extends layout %}
+{% block page_body %}
+    <div id="init">
+        <span style="margin-right: 80px">选择文件</span>
+        <input type="file" id="fileInput" style="display:none;" accept="application/json">
+        <button onclick="openFileSelector()" id="btn">打开文件</button>
+        <div style="display:none; margin-top: 10px" id="processing">上传评测集中，请勿关闭此页面</div>
+        <div style="display:none; margin-top: 10px" id="error">上传失败，请重试</div>
+        <div style="margin-top: 20px">
+            <button type="button" class="btn btn-primary" onclick="history.back();">返回</button>
+        </div>
+    </div>
+    <div id="more" style="display: none; width: 500px">
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">评测集名称</label>
+            <div class="col">
+                <input class="form-control" placeholder="请输入" id="name">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">上传进度</label>
+            <div class="col col-form-label">上传已完成</div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">风险类型</label>
+            <div class="col col-form-label" id="type"></div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">风险详情</label>
+            <div class="col col-form-label" id="detail"></div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">数据条数</label>
+            <div class="col col-form-label" id="dataCount"></div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">语料字数</label>
+            <div class="col col-form-label" id="number"></div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-3 col-form-label">评测集大小</label>
+            <div class="col col-form-label" id="size"></div>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="uploadSubmit()">完成上传</button>
+    </div>
+    <script>
+        function openFileSelector() {
+            const inputObj = document.getElementById('fileInput');
+            inputObj.onchange = (event) => {
+                if (window.FileReader) {
+                    const formData = new FormData();
+                    const file =  $('#fileInput')[0].files[0];
+                    formData.append("file", file);
+                    document.getElementById("processing").style.display = 'block';
+                    $.ajax({
+                        url: '/admin/evaluationdatasetmanager/json',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (value) {
+                            if(!value.result) {
+                                document.getElementById("processing").style.display = 'none';
+                                alert(value.reason);
+                                return;
+                            }
+                            document.getElementById("init").style.display = 'none';
+                            document.getElementById("more").style.display = 'block';
+                            value.detail.map(item => {
+                                if (item.subType) {
+                                    $("#detail").append(`<div>${item.subType}</div>`)
+                                }
+                                if (item.thirdType) {
+                                    $("#detail").append(`<div>${item.thirdType.join(',')}</div>`)
+                                }
+                            })
+                            $("#type").text(value.type);
+                            $("#dataCount").text(value.dataCount);
+                            $("#number").text(value.number);
+                            $("#size").text(value.size);
+                        },
+                        error: function (e) {
+                            document.getElementById("error").style.display = 'block';
+                        }
+                    });
+                }
+            }
+            inputObj.click();
+        }
+        function uploadSubmit () {
+            if (!$("#name").val()) {
+                alert('请输入评测集名称')
+                return;
+            }
+            $.ajax({
+                url: '/admin/evaluationdatasetmanager/conform',
+                type: 'POST',
+                data: JSON.stringify({
+                    "dataset_name": $('#name').val()
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (value) {
+                    if (value.result) {
+                        alert('评测集已完成上传')
+                        history.back();
+                    } else {
+                        alert(value.reason)
+                    }
+                }
+            })
+
+        }
+    </script>
+{% endblock %}

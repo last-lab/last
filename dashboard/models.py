@@ -71,6 +71,13 @@ class Record(Model):
     status: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress)
 
 
+class EvaluationRecord(Model):
+    model_name = fields.CharField(max_length=50)
+    eval_setting = fields.IntField()
+    submit_time = fields.DatetimeField()
+    eval_status = fields.IntEnumField(EvalStatus, description="EvaluationRecord Status")
+
+
 class Log(AbstractLog):
     class Meta:
         ordering = ["-id"]
@@ -123,6 +130,14 @@ class EvaluationPlan(Model):
     score_way = fields.IntEnumField(
         ScoreWayType, description="Score Way", default=ScoreWayType.system
     )
+
+
+class EvaluationDatasetManager(Model):
+    name = fields.CharField(max_length=200)
+    type = fields.CharField(max_length=200)
+    sub_type = fields.CharField(max_length=200)
+    updateTime = fields.CharField(max_length=200)
+    useCount = fields.IntField()
 
 
 class LabelPage(Model):

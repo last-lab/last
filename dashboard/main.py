@@ -113,7 +113,7 @@ def create_app():
             redis=r,
             default_layout=enums.Layout.layout,
         )
-        await rearq_server.start_worker(with_timer=True)
+        # await rearq_server.start_worker(with_timer=True)
 
     return app
 

@@ -1,0 +1,108 @@
+<span data-bs-toggle="modal" data-bs-target="#detail" style="cursor: pointer; color: #0D53DE;">
+  详细信息
+</span>
+<span data-bs-toggle="modal" data-bs-target="#exportDataset" style="cursor: pointer; color: #0D53DE; margin-left: 10px; margin-right: 10px;">
+  <a href="data:application/json;charset=utf-8,{{ value.dataset_file }}" download="download.json" style="text-decoration: none">导出</a>
+</span>
+<span data-bs-toggle="modal" data-bs-target="#deleteDataset" style="cursor: pointer; color: #F5483B;">
+  删除
+</span>
+
+<div class="modal" id="detail" tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">评测集详情</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="datagrid">
+          <div class="datagrid-item">
+            <div class="datagrid-title">评测集名称</div>
+            <div class="datagrid-content">{{ value.detail.name }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">风险类型</div>
+            <div class="datagrid-content">{{ value.detail.type }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">风险详情</div>
+            <div class="datagrid-content">
+                {% for type in value.detail.moreType %}
+                    <div>
+                        <div>{{ type.subType }}</div>
+                        {% for subType in type.thirdType %}
+                            <span>{{ subType }}</span>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">访问路径</div>
+            <div class="datagrid-content">
+                <span id="url">{{ value.detail.url }}</span>
+                <button class="btn btn-primary" onclick="copyUrl()" style="margin-left: 5px">复制</button>
+            </div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">数据条数</div>
+            <div class="datagrid-content">{{ value.detail.dataCount }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">语料字数</div>
+            <div class="datagrid-content">{{ value.detail.number }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">评测集大小</div>
+            <div class="datagrid-content">{{ value.detail.size }}</div>
+          </div>
+          <div class="datagrid-item">
+            <div class="datagrid-title">更新时间</div>
+            <div class="datagrid-content">{{ value.detail.updateTime }}</div>
+          </div>
+            <div class="datagrid-item">
+            <div class="datagrid-title">使用次数</div>
+            <div class="datagrid-content">{{ value.detail.useCount }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="deleteDataset" tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom: none">
+        <h5 class="modal-title">确认删除此评测集</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">取消</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="deleteDataset()">删除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    function deleteDataset() {
+        $.ajax({
+            url: '/admin/evaluationdatasetmanager/delete/{{ value.detail.id }}',
+            type: 'DELETE',
+            contentType: "application/json;charset=UTF-8",
+            data: JSON.stringify({
+                pk: `{{ value.detail.id  }}`
+            }),
+            success: function () {
+                location.reload();
+            }
+        })
+    }
+    function copyUrl(value) {
+        const copyText = $("#url").text();
+        navigator.clipboard.writeText(copyText);
+        alert('复制成功');
+    }
+</script>
