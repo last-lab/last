@@ -63,7 +63,6 @@ class ShowOperation(Display):
         )
 
 
-
 class ShowModelCard(Display):
     template = "widgets/model_card.html"
 
@@ -75,7 +74,7 @@ class ShowModelCard(Display):
             },
         )
 
-              
+
 class ShowAction(Display):
     template = "evaluationdatasetmanager/action_dataset.html"
 
