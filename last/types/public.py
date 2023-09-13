@@ -3,13 +3,12 @@ from pydantic import BaseModel
 from enum import Enum, auto
 from datetime import datetime
 import uuid
-from enum import Enum
 
 
 class RiskDimension(BaseModel):
-    level: Optional[int]
+    level: Optional[int] = None
     name: str
-    description: Optional[str]
+    description: Optional[str] = None
 
     def __str__(self):
         return self.name

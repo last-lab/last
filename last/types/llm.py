@@ -3,6 +3,7 @@ from .base import Record, Statistics, BaseModel
 from .public import ReturnCode
 from .dataset import Message
 from enum import Enum
+from pydantic import BaseModel, Field
 
 class LLMType(str, Enum):
     critic = "critic"
@@ -11,14 +12,14 @@ class LLMType(str, Enum):
 
 # 这个类里面的东西是专门用来display的
 class LLMInfo(Record):
-    name: Optional[str]
-    model_type: Optional[LLMType]
-    version: Optional[str]
-    base_model: Optional[str]
-    parameter_volume: Optional[str]
-    pretraining_info: Optional[str]
-    finetuning_info: Optional[str]
-    alignment_info: Optional[str]
+    name: Optional[str] = Field(default=None)
+    model_type: Optional[LLMType] = Field(default=None)
+    version: Optional[str] = Field(default=None)
+    base_model: Optional[str] = Field(default=None)
+    parameter_volume: Optional[str] = Field(default=None)
+    pretraining_info: Optional[str] = Field(default=None)
+    finetuning_info: Optional[str] = Field(default=None)
+    alignment_info: Optional[str] = Field(default=None)
     
     endpoint: str
     access_key: str
@@ -29,7 +30,7 @@ class Registration(Record):
 
 
 class LLM(LLMInfo):
-    registration: Optional[Registration] = None
+    registration: Optional[Registration] = Field(default=None)
 
     """Model name to use."""
     temperature: Optional[float] = 0.7
@@ -47,9 +48,9 @@ class LLM(LLMInfo):
     """Number of chat completions to generate for each prompt."""
     max_tokens: Optional[int] = None
     """Maximum number of tokens to generate."""
-    max_token_length: Optional[int]  # 单句 最大token长度
-    max_access_per_hour: Optional[int]  # 每小时最大访问次数
-    max_access_per_min: Optional[int]  # 每分钟最大访问次数
+    max_token_length: Optional[int] = Field(default=None)  # 单句 最大token长度
+    max_access_per_hour: Optional[int] = Field(default=None)  # 每小时最大访问次数
+    max_access_per_min: Optional[int] = Field(default=None) # 每分钟最大访问次数
 
 
     def __call__(self, *msgs:Message) -> Message:

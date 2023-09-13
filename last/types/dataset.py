@@ -4,7 +4,7 @@ from .base import Record, Statistics, BaseManager
 from .public import RiskDimension, ReturnCode, ID
 from datetime import datetime
 from pathlib import Path
-from pydantic import HttpUrl, Field
+from pydantic import HttpUrl, Field, validator
 import csv
 from enum import Enum
 
@@ -30,18 +30,27 @@ class QARecord(Record):
 class Dataset(Record, BaseManager):
     name: str
     dimensions: List[RiskDimension]
-    url: Optional[HttpUrl] # 文件url
-    file: Optional[Path] # 文件本地path
-    volume: Optional[str] # 数据集大小
-    used_by: Optional[List[str]]
-    qa_record: Optional[Dict[str, QARecord]]  # Message的唯一id
-    conversation_start_id: Optional[List[str]] # 每段对话的起始Message id
-    current_conversation_index: Optional[int] = Field(init=False)
-    current_message_id: Optional[int] = Field(init=False)
+    url: Optional[HttpUrl] = None # 文件url
+    file: Optional[Path] = None # 文件本地path
+    volume: Optional[str] = None # 数据集大小
+    used_by: Optional[List[str]] = None
+    qa_record: Optional[Dict[str, QARecord]] = None  # Message的唯一id
+    conversation_start_id: Optional[List[str]] = None # 每段对话的起始Message id
+    current_conversation_index: Optional[int] = Field(default=0, init=False) # 供迭代器使用
+    current_message_id: Optional[int] = Field(default=0, init=False) # 供迭代器使用
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.__post_init__()  # 调用 __post_init__ 方法
+        self.post_init()  
+
+    def post_init(self):
+        # 根据传入的url或者file path，新建Dataset对象
+        if self.file is not None:
+            self.qa_record, self.conversation_start_id = Dataset.upload(self.file)
+        elif self.url is not None:
+            self.qa_record, self.conversation_start_id = Dataset.fetch(self.url)
+        else:
+            raise ValueError("Input parameter cannot be empty")
 
     @property
     def length(self):
@@ -71,16 +80,6 @@ class Dataset(Record, BaseManager):
             self.current_message_id = message.successor_uid
         return message
 
-    def __post_init__(self):
-        # 根据传入的url或者file path，新建Dataset对象
-        if self.file is not None:
-            self.qa_record, self.conversation_start_id = Dataset.upload(self.file)
-        elif self.url is not None:
-            self.qa_record, self.conversation_start_id = Dataset.fetch(self.url)
-        else:
-            raise ValueError("Input parameter cannot be empty")
-        # 将新建的Dataset对象同步到DB中
-        Dataset.new(Dataset)
 
     @staticmethod
     def edit(uid, conf: T) -> ReturnCode:  # 编辑数据集信息，返回状态码

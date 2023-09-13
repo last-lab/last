@@ -13,7 +13,7 @@ from last.types.dataset import Dataset
 from last.types.public import RiskDimension
 
 # Main Flow
-with client_wrapper(name='puan', server_address="http://localhost:5020") as client: # 目前还没实现client作为全局变量
+with client_wrapper(name='puan', server_address="http://localhost:5020") as client: # TODO 目前还没实现client作为全局变量
     # 如果需要加载新数据集, 则提供DatasetInfo，内含数据集访问链接，返回dataset uid="uuid4"
     dataset1 = Dataset(name="test1", dimensions=[RiskDimension(name="国家安全")], file='docs/examples/testset.csv')
     # 上传第二份数据集
