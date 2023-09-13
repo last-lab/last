@@ -64,7 +64,11 @@ class LLM(LLMInfo):
 
     def generate(self, msg:Message) -> Message:
         # TODO SystemMessage的支持
-        return_msg = Message(predecessor_uid="83fba5b4-5c6d-4f88-a7d3-9e3d2c1f6b02", successor_uid="d8b1e6d7-9a0b-4c2f-8e3d-1f0e9b8c7a6d", role=MessageRole.AI, content="大模型标准回答")
+        # 整个函数现在的Mock的以后开发
+        if self.model_type == LLMType.normal:
+            return_msg = Message(role=MessageRole.AI, content="大模型的回答")
+        elif self.model_type == LLMType.critic:
+            return_msg = Message(role=MessageRole.AI, content="6.6")
         return return_msg
 
     def gen_similarity_prompt(self, responce:Message, correct_ans:Message) -> str:

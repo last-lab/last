@@ -4,7 +4,7 @@ from typing import List, Dict, Union, Optional
 from abc import ABC, abstractmethod
 from last.client import Client
 
-from .public import DateString, PermissionLevel, UserInfo, ReturnCode
+from .public import DateString, PermissionLevel, UserInfo, ReturnCode, ID
 from datetime import datetime
 from pydantic import BaseModel
 
@@ -19,18 +19,20 @@ class Record(BaseModel):
     updated_at:  Optional[DateString] = None
     permissions: Optional[PermissionLevel] = PermissionLevel.VIEWER
 
-    # def __init__(self, **data):
-    #     if "created_at" not in data:
-    #         now = datetime.now()
-    #         data["created_at"] = DateString(
-    #             year=str(now.year),
-    #             month=str(now.month),
-    #             day=str(now.day),
-    #             hour=str(now.hour),
-    #             minute=str(now.minute),
-    #             second=str(now.second),
-    #         )
-    #     super().__init__(**data)
+    def __init__(self, **data):
+        if "created_at" not in data:
+            now = datetime.now()
+            data["created_at"] = DateString(
+                year=str(now.year),
+                month=str(now.month),
+                day=str(now.day),
+                hour=str(now.hour),
+                minute=str(now.minute),
+                second=str(now.second),
+            )
+        if "uid" not in data:
+            data["uid"] = ID()
+        super().__init__(**data)
 
 
 class Statistics(BaseModel):

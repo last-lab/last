@@ -1,11 +1,12 @@
 from typing import List, Dict, Union, Optional, TypeVar
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from enum import Enum
 
 from .llm import LLM, Registration
 from .plan import Plan
 from .base import Record, Statistics, BaseManager
-from .public import UserInfo, StateCode, ReturnCode
+from .public import UserInfo, StateCode, ReturnCode, ID
+from .dataset import QARecord
 
 
 T = TypeVar('T', bound='Task')
@@ -16,9 +17,11 @@ class TaskDetail(Record):
 
 class Task(Record, BaseManager):
     plan: Plan
-    state: StateCode
-    report_detail: Optional[TaskDetail] = None
+    state: Optional[StateCode] = Field(default=StateCode.In_Progress)
+    report_detail: Optional[TaskDetail] = Field(default=None)
     model_detail: LLM
+    critic_model: LLM
+    results: Dict[str, QARecord]
 
     @staticmethod
     def repeat(id, conf: T) -> str:  # 因为某些异常，需要重新提交一次评测
@@ -39,8 +42,7 @@ class Task(Record, BaseManager):
         # 检查状态
         pass
 
-    @staticmethod
-    def render(file_path, type) -> None:
+    def render_report(self, file_path, type) -> None:
         pass
 
 

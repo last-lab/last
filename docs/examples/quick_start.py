@@ -9,8 +9,8 @@ from last.client import client_wrapper
 from last.types.plan import Plan, EvaluationType
 from last.types.llm import LLM, LLMType
 from last.types.task import Task
-from last.types.dataset import Dataset
-from last.types.public import RiskDimension
+from last.types.dataset import Dataset, QARecord
+from last.types.public import RiskDimension, ID
 
 # Main Flow
 with client_wrapper(name='puan', server_address="http://localhost:5020") as client: # TODO 目前还没实现client作为全局变量
@@ -31,28 +31,24 @@ with client_wrapper(name='puan', server_address="http://localhost:5020") as clie
     #   如果是人工测评，则新建标注模块
     #     critic_model = Annotation()
 
-
-    scores = []
-    responces = []
+    new_qa_records = {}
     for qa_record in plan: # 
         question, correct_ans = qa_record.question, qa_record.answer
         responce = llm_model(question)
-        responces.append(responce)
         score = critic_model(responce, correct_ans)
-        scores.append(score)
+        new_qa_record = QARecord(question=question, answer=responce, score=score)
+        new_qa_records[ID()] = new_qa_record
 
 
-    # 上传本次评测记录, 返回评测结果 
-    report, QAs = Task(plan, llm_model, scores, critic_model)  # if return_detail, return all response
-
+    # 上传本次评测记录, 返回评测报告和对话记录 
+    task = Task(plan=plan, model_detail=llm_model, critic_model=critic_model, results=new_qa_records)
+ 
     # 保存评测报告到本地
-    report.render(file_path='xxx', type='pdf') 
+    task.render_report(file_path='xxx', type='pdf') 
     # 上传评测QA历史到数据库
-    new_dataset = Dataset(QAs)
+    new_dataset = Dataset(name="test1", dimensions=[RiskDimension(name="国家安全"), RiskDimension(name="个人隐私")], qa_records=new_qa_records)
 
-
-
-    # 对新的dataset创建一个标注任务
+    print("pipeline end")
 
 
 
