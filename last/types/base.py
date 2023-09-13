@@ -5,20 +5,31 @@ from abc import ABC, abstractmethod
 from last.client import Client
 
 from .public import DateString, PermissionLevel, UserInfo, ReturnCode
-
+from datetime import datetime
 
 
 class Record(BaseModel):
     uid: Optional[str]  # UUID-4
     description: Optional[str]
-    creator: UserInfo
+    creator: Optional[UserInfo]
     editor: Optional[UserInfo]
     reviewer: Optional[UserInfo]
-    created_at: DateString
+    created_at: Optional[DateString]
     updated_at:  Optional[DateString]
-    permissions: PermissionLevel
-    
-    client: Client # 等实现全局上下文之后，这个东西就要消失掉
+    permissions: Optional[PermissionLevel] = PermissionLevel.VIEWER
+
+    def __init__(self, **data):
+        if "created_at" not in data:
+            now = datetime.now()
+            data["created_at"] = DateString(
+                year=str(now.year),
+                month=str(now.month),
+                day=str(now.day),
+                hour=str(now.hour),
+                minute=str(now.minute),
+                second=str(now.second),
+            )
+        super().__init__(**data)
 
 
 class Statistics(BaseModel):

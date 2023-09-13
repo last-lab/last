@@ -10,13 +10,14 @@ from last.types.plan import Plan, EvaluationType
 from last.types.llm import LLM, LLMType
 from last.types.task import Task
 from last.types.dataset import Dataset
+from last.types.public import RiskDimension
 
 # Main Flow
-with client_wrapper(name='puan', server_address="http://localhost:5020") as client:
+with client_wrapper(name='puan', server_address="http://localhost:5020") as client: # 目前还没实现client作为全局变量
     # 如果需要加载新数据集, 则提供DatasetInfo，内含数据集访问链接，返回dataset uid="uuid4"
-    dataset1 = Dataset(name="test1", dimensions="国家安全", file='docs/examples/testset.csv')
+    dataset1 = Dataset(name="test1", dimensions=[RiskDimension(name="国家安全")], file='docs/examples/testset.csv')
     # 上传第二份数据集
-    dataset2 = Dataset(name="test2", dimensions="个人隐私", file='docs/examples/testset.csv')
+    dataset2 = Dataset(name="test2", dimensions=[RiskDimension(name="个人隐私")], file='docs/examples/testset.csv')
     # 明确评测方案，即使用哪些数据集进行评测
     plan = Plan(name="union", eval_type=EvaluationType.auto_ai_critique, datasets=[dataset1,dataset2])
 

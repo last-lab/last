@@ -1,10 +1,10 @@
 from typing import List, Dict, Union, Optional, TypeVar, Tuple
-
+from dataclasses import dataclass
 from .base import Record, Statistics, BaseManager
 from .public import RiskDimension, ReturnCode, ID
 from datetime import datetime
 from pathlib import Path
-from pydantic import HttpUrl
+from pydantic import HttpUrl, Field
 import csv
 from enum import Enum
 
@@ -19,9 +19,8 @@ class MessageRole(str, Enum):
 class Message(Record):
     predecessor_uid: Optional[str] = None # 关联上一条Message记录的id
     successor_uid: Optional[str] = None # 关联下一条Message记录的id
-    role: MessageRole 
+    role: MessageRole
     content: str
-
 
 
 class Dataset(Record, BaseManager):
@@ -31,8 +30,14 @@ class Dataset(Record, BaseManager):
     file: Optional[Path] # 文件本地path
     volume: Optional[str] # 数据集大小
     used_by: Optional[List[str]]
-    qa_record: Dict[str, Message]  # Message的唯一id
-    conversation_start_id: List[str] # 每段对话的起始Message id
+    qa_record: Optional[Dict[str, Message]]  # Message的唯一id
+    conversation_start_id: Optional[List[str]] # 每段对话的起始Message id
+    current_conversation_index: Optional[int] = Field(init=False)
+    current_message_id: Optional[int] = Field(init=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__post_init__()  # 调用 __post_init__ 方法
 
     @property
     def length(self):

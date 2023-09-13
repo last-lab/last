@@ -7,9 +7,9 @@ from enum import Enum
 
 
 class RiskDimension(BaseModel):
-    level: int
+    level: Optional[int]
     name: str
-    description: str
+    description: Optional[str]
 
     def __str__(self):
         return self.name

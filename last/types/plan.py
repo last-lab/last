@@ -1,10 +1,10 @@
-from typing import List, Dict, Union, Optional, TypeVar
+from typing import List, Dict, Union, Optional, TypeVar, Any
 from enum import Enum
-
+from dataclasses import dataclass
 from .base import Record, Statistics, BaseManager
 from .public import RiskDimension, RelatedRiskDimensions, ReturnCode
 from .dataset import Dataset, Message
-
+from pydantic import BaseModel, Field
 
 T = TypeVar('T', bound='Plan')
 
@@ -29,6 +29,12 @@ class Plan(Record, BaseManager):
     dimensions: Optional[Dict[str, str]]  # 填写各个一级风险维度的占比%
     datasets: List[Dataset]
     focused_risk: Optional[RelatedRiskDimensions]  # 新建时不填写
+    current_dataset_index: Optional[int] = Field(init=False)
+    current_dataset_iter: Optional[Any] = Field(init=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__post_init__()  # 调用 __post_init__ 方法
 
     def __iter__(self):
         self.current_dataset_index = 0
@@ -44,7 +50,7 @@ class Plan(Record, BaseManager):
                 self.current_dataset_iter = iter(self.datasets[self.current_dataset_index])
                 return next(self.current_dataset_iter)
             else:
-                raise StopIteration
+                raise
 
     def __post_init__(self):
         # 将新建的Plan对象同步到DB中
