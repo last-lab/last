@@ -1,57 +1,101 @@
 {% extends layout %}
 {% block page_body %}
-<fieldset class="form-fieldset" style="width: 100%; margin-left: 12px; max-width: 800px">
-  <div class="mb-3">
-  <label class="form-label">{{ _('Evaluation Plan') }}</label>
-  <select class="form-select">
-    {% for item in eval_plans %}
-      <option value="{{ item.plan_name }}">{{ item.plan_name }}</option>
-    {% endfor %}
-  </select>
-</div>
-<div class="mb-3">
-  <label class="form-label">{{ _('Evaluation Model') }}</label>
-  <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#modelModal">
-     {{ _('Add Model')}}
-  </button>
-</div>
-</fieldset>
-<div class="modal" id="modelModal" tabindex="-1">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Add Model</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form method="post" action="{{ request.app.admin_path }}/record/add">
-          <div class="mb-3">
-            <label class="form-label required">{{ _('Evaluation Model') }}</label>
-            <input required class="form-control" list="datalistOptions" name="model_name" placeholder="Type to search..."/>
-              <datalist id="datalistOptions">
-                {% for item in eval_models %}
-                  <option value="{{ item.name }}" />
+<form>
+    <fieldset class="form-fieldset" style="width: 100%; margin-left: 12px; max-width: 800px">
+        <div class="mb-3">
+            <label class="form-label required">{{ _('Evaluation Plan') }}</label>
+            <select required class="form-select" id="evaluation_plan">
+                {% for item in eval_plans %}
+                <option value="{{ item.plan_name }}">{{ item.plan_name }}</option>
                 {% endfor %}
-              </datalist>
-          </div>
-          <div class="mb-3">
-            <label class="form-label required">Access Key</label>
-            <input required type="text" class="form-control" name="model_ak" placeholder="请输入模型 Access Key" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label required">Secret Key</label>
-            <input required type="text" class="form-control" name="model_sk" placeholder="请输入模型 Secret Key" />
-          </div>
-          <div class="form-footer">
-            <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
-              Cancel
-            </a>
-            <button type="submit" class="btn btn-primary">{{ _('Create new report')}}</button>
-          </div>
-        </form>
-      </div>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label required">{{ _('Evaluation Model') }}</label>
+            <div id="model_card_list">
+                {% for item in model_cards %}
+                    {{ item }}
+                {% endfor %}
+            </div>
+            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#modelModal">
+                {{ _('Add Model')}}
+            </button>
+        </div>
+        <div class="form-footer">
+            <button type="submit" class="btn btn-primary">Submit Evaluations</button>
+        </div>
+    </fieldset>
+</form>
+
+<div class="modal" id="modelModal" tabindex="-1">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Model</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="model-form" method="post">
+                    <div class="mb-3">
+                        <label class="form-label required">{{ _('Evaluation Model') }}</label>
+                        <input required type="text" class="form-control" id="model_name"
+                               placeholder="请输入模型名称"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">Access Key</label>
+                        <input required type="text" class="form-control" id="model_ak"
+                               placeholder="请输入模型 Access Key"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">Secret Key</label>
+                        <input required type="text" class="form-control" id="model_sk"
+                               placeholder="请输入模型 Secret Key"/>
+                    </div>
+                    <div class="form-footer">
+                        <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                            Cancel
+                        </a>
+                        <button type="submit" id="form-submit-btn" class="btn btn-primary">
+                            {{ _('Create new Model')}}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
+
+<script>
+
+    const handleFormSubmit = function () {
+        const data = {
+            name: $('#model_name').val(),
+            model_ak: $('#model_ak').val(),
+            model_sk: $('#model_sk').val()
+        }
+
+        $.ajax({
+            url: '/admin/model/model_create',
+            method: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+            },
+            error: function (data) {
+                console.log(data)
+                alert('创建失败')
+            }
+        })
+        $('#modelModal').modal('hide')
+    }
+
+    const form = document.getElementById('model-form')
+
+    form.addEventListener('submit', event => {
+        event.preventDefault();
+        handleFormSubmit(event)
+    });
+</script>
 
 {% endblock %}

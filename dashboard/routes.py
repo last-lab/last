@@ -11,7 +11,8 @@ from tortoise.transactions import in_transaction
 
 from dashboard.biz_routers import biz_router
 from dashboard.data_labeling import labeling_router
-from dashboard.models import Config, Log
+from dashboard.models import Config, EvaluationPlan, Log, ModelInfo
+from dashboard.widgets.displays import ShowModelCard
 from last.services.app import app
 from last.services.depends import (
     AdminLog,
@@ -103,6 +104,13 @@ async def create_eval(
     request: Request,
     resources=Depends(get_resources),
 ):
+    eval_plans = await EvaluationPlan.all().limit(10)
+    model_list = await ModelInfo.all().limit(10)
+    model_cards = []
+    for model_detail in model_list:
+        card = await ShowModelCard().render(request, model_detail)
+        model_cards.append(card)
+
     return templates.TemplateResponse(
         "create_eval.html",
         context={
@@ -111,42 +119,8 @@ async def create_eval(
             "resource_label": "Label",
             "page_pre_title": "BY LABEL STUDIO",
             "page_title": _("Create Evaluation"),
-            "eval_plans": [
-                {
-                    "plan_name": "Plan 1",
-                    "plan_content": "Plan 1 content",
-                },
-                {
-                    "plan_name": "Plan 2",
-                    "plan_content": "Plan 2 content",
-                },
-                {
-                    "plan_name": "Plan 3",
-                    "plan_content": "Plan 3 content",
-                },
-            ],
-            "eval_models": [
-                {
-                    "name": "Model 1",
-                    "model_content": "Model 1 content",
-                    "uid": "1",
-                },
-                {
-                    "name": "Model 2",
-                    "model_content": "Model 2 content",
-                    "uid": "2",
-                },
-                {
-                    "name": "Model 3",
-                    "model_content": "Model 3 content",
-                    "uid": "3",
-                },
-                {
-                    "name": "Model 4",
-                    "model_content": "Model 4 content",
-                    "uid": "4",
-                },
-            ],
+            "eval_plans": eval_plans,
+            "model_cards": model_cards,
         },
     )
 
@@ -399,14 +373,3 @@ async def stable1(request: Request):
     return templates.TemplateResponse(
         "stable/stable1.html", context={"request": request, "stable_1": table_1}
     )
-
-    # try:
-    #     return templates.TemplateResponse(
-    #         f"{resource}/update.html",
-    #         context=context,
-    #     )
-    # except TemplateNotFound:
-    #     return templates.TemplateResponse(
-    #         "update.html",
-    #         context=context,
-    #     )

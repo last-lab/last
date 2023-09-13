@@ -63,6 +63,18 @@ class ShowOperation(Display):
         )
 
 
+class ShowModelCard(Display):
+    template = "widgets/model_card.html"
+
+    async def render(self, request: Request, value: str):
+        return await super().render(
+            request,
+            {
+                "model_detail": value,
+            },
+        )
+
+
 class ShowAction(Display):
     template = "evaluationdatasetmanager/action_dataset.html"
 
