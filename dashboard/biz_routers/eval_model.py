@@ -2,11 +2,11 @@ from typing import Union
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+from starlette.requests import Request
 
-from dashboard.models import ModelInfo, EvaluationPlan
+from dashboard.models import EvaluationPlan, ModelInfo
 from dashboard.widgets.displays import ShowModelCard
 from last.services.template import templates
-from starlette.requests import Request
 
 router = APIRouter()
 
@@ -20,11 +20,10 @@ class ModelView(BaseModel):
 
 # 用来创建model的接口
 @router.post("/model/model_create")
-async def create_model(
-    request: Request,
-    model_view: ModelView
-):
-    await ModelInfo.create(name=model_view.name, access_key=model_view.model_ak, secret_key=model_view.model_sk)
+async def create_model(request: Request, model_view: ModelView):
+    await ModelInfo.create(
+        name=model_view.name, access_key=model_view.model_ak, secret_key=model_view.model_sk
+    )
     model_list = await ModelInfo.all().limit(10)
     eval_plans = await EvaluationPlan.all().limit(10)
     model_cards = []
