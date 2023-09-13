@@ -7,7 +7,7 @@ from last.types.task import Task
 
 
 def test_pipeline():
-    # 如果需要加载新数据集, 则提供DatasetInfo，内含数据集访问链接，返回dataset uid="uuid4"
+    # 如果需要加载新数据集, 则提供file\url，返回数据集对象
     dataset1 = Dataset(
         name="test1", dimensions=[RiskDimension(name="国家安全")], file="docs/examples/testset.csv"
     )
@@ -15,7 +15,7 @@ def test_pipeline():
     dataset2 = Dataset(
         name="test2", dimensions=[RiskDimension(name="个人隐私")], file="docs/examples/testset.csv"
     )
-    # 明确评测方案，即使用哪些数据集进行评测
+    # 明确评测方案，即使用哪些数据集合集进行评测
     plan = Plan(
         name="union", eval_type=EvaluationType.auto_ai_critique, datasets=[dataset1, dataset2]
     )
