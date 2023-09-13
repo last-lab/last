@@ -168,7 +168,7 @@ async def update_view(
         "datasets": datasets,
         "obj": obj,
         "page_title": model_resource.page_title,
-        " page_pre_title": model_resource.page_pre_title,
+        "page_pre_title": model_resource.page_pre_title,
     }
     return templates.TemplateResponse(
         f"{resource}/update.html",
@@ -194,6 +194,7 @@ async def copy_create_view(
     """
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
+    datasets = await DataSet.filter(id__in=obj.datasets.split(",")).order_by("id").limit(10)
     context = {
         "request": request,
         "resources": resources,
@@ -202,6 +203,8 @@ async def copy_create_view(
         "inputs": inputs,
         "pk": pk,
         "model_resource": model_resource,
+        "datasets": datasets,
+        "obj": obj,
         "page_title": model_resource.page_title,
         "page_pre_title": model_resource.page_pre_title,
     }
@@ -212,15 +215,13 @@ async def copy_create_view(
 
 
 @router.post(
-    "/{resource}/epm_copy_create/{pk}",
+    "/{resource}/epm_copy_create",
     dependencies=[Depends(admin_log_update), Depends(update_checker)],
 )
 async def copy_create(
     request: Request,
     resource: str = Path(...),
-    pk: str = Path(...),
     model_resource: ModelResource = Depends(get_model_resource),
-    resources=Depends(get_resources),
     model: Type[Model] = Depends(get_model),
 ):
     """
@@ -228,7 +229,7 @@ async def copy_create(
     upstream dependency: evaluation plan copy create page
     downstream dependency: evaluation model, dataset model
     input example:
-        POST /{resource}/epm_copy_create/1
+        POST /{resource}/epm_copy_create
         {
           "plan_name": "test",
           "plan_content": "国家安全/50.0%/50.0%,个人权利/50.0%/50.0%",
@@ -240,43 +241,12 @@ async def copy_create(
     form = await request.form()
     data, m2m_data = await model_resource.resolve_data(request, form)
     async with in_transaction() as conn:
-        obj = (
-            await model.filter(pk=pk)
-            .using_db(conn)
-            .select_for_update()
-            .get()
-            .prefetch_related(*model_resource.get_m2m_field())
-        )
-        await obj.update_from_dict(data).save(using_db=conn)
+        obj = await model.create(**data, using_db=conn)
+        request.state.pk = obj.pk
         for k, items in m2m_data.items():
             m2m_obj = getattr(obj, k)
-            await m2m_obj.clear()
-            if items:
-                await m2m_obj.add(*items)
-        obj = (
-            await model.filter(pk=pk)
-            .using_db(conn)
-            .get()
-            .prefetch_related(*model_resource.get_m2m_field())
-        )
-    inputs = await model_resource.get_inputs(request, obj)
-    if "save" in form.keys():
-        context = {
-            "request": request,
-            "resources": resources,
-            "resource_label": model_resource.label,
-            "resource": resource,
-            "model_resource": model_resource,
-            "inputs": inputs,
-            "page_title": model_resource.page_title,
-            "page_pre_title": model_resource.page_pre_title,
-        }
-        return templates.TemplateResponse(
-            f"{resource}/copy_create.html",
-            context=context,
-        )
-
-    return redirect(request, "list_view", resource=resource)
+            await m2m_obj.add(*items, using_db=conn)
+        return redirect(request, "list_view", resource=resource)
 
 
 @router.post("/{resource}/epm_ds_query", dependencies=[Depends(read_checker)])
