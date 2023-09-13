@@ -468,7 +468,7 @@ class DataManager(Dropdown):
             Field(name="sub_type", label="二级类型"),
             Field(name="updateTime", label="更新时间"),
             Field(name="useCount", label="使用次数"),
-            Field(name="dataset_action", label="操作", display=ShowAction()),
+            Field(name="dataset_action_id", label="操作", display=ShowAction()),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:

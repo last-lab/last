@@ -1,12 +1,12 @@
-<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#detail">
+<span data-bs-toggle="modal" data-bs-target="#detail" style="cursor: pointer; color: #0D53DE;">
   详细信息
-</button>
-<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#exportDataset">
-  <a href="data:application/json;charset=utf-8,{{ value.dataset_file }}" download="download.json">导出</a>
-</button>
-<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#deleteDataset">
+</span>
+<span data-bs-toggle="modal" data-bs-target="#exportDataset" style="cursor: pointer; color: #0D53DE; margin-left: 10px; margin-right: 10px;">
+  <a href="data:application/json;charset=utf-8,{{ value.dataset_file }}" download="download.json" style="text-decoration: none">导出</a>
+</span>
+<span data-bs-toggle="modal" data-bs-target="#deleteDataset" style="cursor: pointer; color: #F5483B;">
   删除
-</button>
+</span>
 
 <div class="modal" id="detail" tabindex="-1">
   <div class="modal-dialog" role="document">
@@ -40,7 +40,10 @@
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">访问路径</div>
-            <div class="datagrid-content">{{ value.detail.url }}</div>
+            <div class="datagrid-content">
+                <span id="url">{{ value.detail.url }}</span>
+                <button class="btn btn-primary" onclick="copyUrl()" style="margin-left: 5px">复制</button>
+            </div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">数据条数</div>
@@ -93,8 +96,13 @@
                 pk: `{{ value.detail.id  }}`
             }),
             success: function () {
-                window.reload();
+                location.reload();
             }
         })
+    }
+    function copyUrl(value) {
+        const copyText = $("#url").text();
+        navigator.clipboard.writeText(copyText);
+        alert('复制成功');
     }
 </script>
