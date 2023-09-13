@@ -12,7 +12,7 @@ class LLMType(str, Enum):
 
 # 这个类里面的东西是专门用来display的
 class LLMInfo(Record):
-    name: Optional[str] = Field(default=None)
+    name: Optional[str] = Field(default=None) # 如果多个模型str用换行符隔开
     model_type: Optional[LLMType] = Field(default=None)
     version: Optional[str] = Field(default=None)
     base_model: Optional[str] = Field(default=None)

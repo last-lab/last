@@ -29,16 +29,22 @@ class QARecord(Record):
 
 
 class Dataset(Record, BaseManager):
-    name: str
-    dimensions: List[RiskDimension]
+    name: str # 模型名称
+    dimensions: List[RiskDimension] # 风险详情
     url: Optional[HttpUrl] = None # 文件url
     file: Optional[Path] = None # 文件本地path
-    volume: Optional[str] = None # 数据集大小
-    used_by: Optional[List[str]] = None
+    volume: Optional[str] = None # 数据集大小GB
+    used_by: Optional[List[str]] = None # 使用次数
     qa_records: Optional[Dict[str, QARecord]] = None  # Message的唯一id
     conversation_start_id: Optional[List[str]] = None # 每段对话的起始Message id
     current_conversation_index: Optional[int] = Field(default=0, init=False) # 供迭代器使用
     current_qa_record_id: Optional[int] = Field(default=0, init=False) # 供迭代器使用
+
+    # 风险详情
+    # 数据条数
+    # 语料字数
+
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
