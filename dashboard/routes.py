@@ -3,7 +3,8 @@ from starlette.requests import Request
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
 
-from dashboard.biz_routers import biz_router, labeling_router
+from dashboard.biz_routers import biz_router
+from dashboard.data_labeling import labeling_router
 from dashboard.models import Config, Log
 from last.services.app import app
 from last.services.depends import AdminLog, get_resources
