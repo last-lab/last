@@ -6,13 +6,28 @@ from starlette.requests import Request
 
 from dashboard import enums
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin, Cat, Category, Config, Dog1, EvaluationPlan, LabelPage, Log
+
+# from dashboard.models import Evaluation
+from dashboard.models import Admin  # EvaluationPlan,; Evaluation,
+from dashboard.models import Cat  # EvaluationPlan,; Evaluation,
+from dashboard.models import Category  # EvaluationPlan,; Evaluation,
+from dashboard.models import Config  # Evaluation,
+from dashboard.models import Dog1  # EvaluationPlan,; Evaluation,
+from dashboard.models import (  # EvaluationPlan,; Evaluation,
+    EvaluationDatasetManager,
+    EvaluationPlan,
+    EvaluationRecord,
+    LabelPage,
+    Log,
+)
 from dashboard.models import Permission as PermissionModel
-from dashboard.models import Product, Record
+from dashboard.models import Product, Record  # EvaluationPlan,; Evaluation,
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
+
+# from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
-from dashboard.widgets.displays import ShowIp, ShowOperation, ShowPopover, ShowStatus
+from dashboard.widgets.displays import ShowAction, ShowIp, ShowOperation, ShowPopover, ShowStatus
 from last.services import enums as _enums
 from last.services.app import app
 from last.services.enums import Method
@@ -60,8 +75,18 @@ class Evaluation(Dropdown):
 
         page_title = "评测记录"
         page_pre_title = "模型评测记录"
+
+        label: str = _("Evaluation Record")
+        model = Record
+
+    class EvaluationRecord(Model):
+        label: str = _("EvaluationRecord Record")
+        icon = "fas fa-user"
+        model = EvaluationRecord
+
         label: str = _("EvaluationRecord Record")
         model = Record
+
         filters = [
             filters.Search(
                 name="model_name",
@@ -100,6 +125,8 @@ class Evaluation(Dropdown):
         label = _("Create Evaluation")
         url = "/admin/record/add"
 
+    label: str = _("Evaluation")
+
     label: str = _("EvaluationRecord")
     icon = "fas fa-user"
     resources = [Record, Create]
@@ -119,7 +146,7 @@ class Dataset(Dropdown):
                     label=_("labeling"),
                     icon="ti ti-edit",
                     name="labeling",
-                    method=enums.Method.GET,
+                    method=Method.GET,
                     ajax=False,
                 )
             ]
@@ -426,9 +453,57 @@ class DataManager(Dropdown):
                 )
             ]
 
+    class EvaluationDatasetManagerResource(Model):
+        label = "评测集管理"
+        model = EvaluationDatasetManager
+        page_title = "评测集管理"
+        filters = [
+            filters.Search(name="name", label="评测集名称"),
+            filters.Search(name="type", label="风险类型"),
+        ]
+        fields = [
+            "id",
+            Field(name="name", label="评测集名称"),
+            Field(name="type", label="风险类型"),
+            Field(name="sub_type", label="二级类型"),
+            Field(name="updateTime", label="更新时间"),
+            Field(name="useCount", label="使用次数"),
+            Field(name="dataset_action_id", label="操作", display=ShowAction()),
+        ]
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("上传数据集"),
+                    icon="fas fa-upload",
+                    name="upload_dataset",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                    class_="btn-primary",
+                )
+            ]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return []
+
     label = "数据管理"
     icon = "fas fa-bars"
-    resources = [EvaluationPlanResource]
+    resources = [EvaluationDatasetManagerResource, EvaluationPlanResource]
+
+
+class DataManagePage(Dropdown):
+    class LabelingPage(Model):
+        label = "Labeling"
+        model = LabelPage
+        filters = [filters.Search(name="task_type", label="Task Type")]
+        fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
+
+    label = "DataSet"
+    icon = "fas fa-bars"
+    resources = [LabelingPage]
+
+    # resources = [EvaluationPlanManagerResource]
+    # resources = [EvaluationPlanResource]
 
 
 @app.register

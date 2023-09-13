@@ -3,12 +3,12 @@
 <div class="col-12">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">新建评测方案</h3>
+            <h3 class="card-title">编辑评测方案</h3>
         </div>
         <div class="card-body border-bottom py-3">
             <form method="post" action="{{ request.app.admin_path }}/{{ resource }}/epm_update/{{ pk }}"
                   enctype="application/x-www-form-urlencoded">
-                <input hidden="hidden" name="datasets" id="input-datasets" />
+                <input hidden="hidden" name="datasets" id="input-datasets"/>
                 <input hidden="hidden" plan="{{obj.plan_content}}" name="plan_content" id="input-plan-content"/>
                 <div class="mb-3 row">
                     <label class="col-2 col-form-label">方案名称</label>
@@ -24,13 +24,14 @@
                         <label class="form-check form-check-inline">
                             <input type="radio" class="form-check-input" name="score_way"
                                    value="0"
-                                   checked>
+                                   {% if obj.score_way== 0 %}checked{% endif %}>
                             <span class="form-check-label">系统评分</span>
                         </label>
 
                         <label class="form-check form-check-inline">
                             <input type="radio" class="form-check-input" name="score_way"
                                    value="1"
+                                   {% if obj.score_way == 1 %}checked{% endif %}
                             >
                             <span class="form-check-label">人工评分</span>
                         </label>
@@ -341,6 +342,7 @@
                 statistics()
                 });
         }
+
 
 
 
