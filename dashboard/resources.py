@@ -119,7 +119,7 @@ class Dataset(Dropdown):
                     label=_("labeling"),
                     icon="ti ti-edit",
                     name="labeling",
-                    method=enums.Method.GET,
+                    method=Method.GET,
                     ajax=False,
                 )
             ]

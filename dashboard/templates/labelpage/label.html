@@ -11,59 +11,11 @@
     // TODO 后续填上label配置数据
     function getLabelConfig() {
         $.ajax({
-            url: '/',
-            method: 'get',
+            url: '/admin/labelpage/labeling/get_config',
+            method: 'post',
             success: function (e) {
-                const tags = [
-                    {
-                        value: 'Person',
-                        background: 'red'
-                    },
-                    {
-                        value: 'Organization',
-                        background: 'darkorange'
-                    },
-                    {
-                        value: 'Fact',
-                        background: 'orange'
-                    },
-                    {
-                        value: 'Person',
-                        background: 'red'
-                    },
-                    {
-                        value: 'Money',
-                        background: 'green'
-                    },
-                    {
-                        value: 'Date',
-                        background: 'darkblue'
-                    },
-                    {
-                        value: 'Time',
-                        background: 'blue'
-                    },
-                    {
-                        value: 'Ordinal',
-                        background: 'purple'
-                    },
-                    {
-                        value: 'Percent',
-                        background: '#842'
-                    },
-                    {
-                        value: 'Product',
-                        background: '#428'
-                    },
-                    {
-                        value: 'Language',
-                        background: '#482'
-                    },
-                    {
-                        value: 'Location',
-                        background: 'rgba(0,0,0,0.8)'
-                    },
-                ]
+                const tags = e.tags;
+                const text = e.text;
                 const interfaces = [
                         "panel",
                         "update",
@@ -86,8 +38,7 @@
                         "auto-annotation",
                         "edit-history"
                     ]
-                const text = "这是一段测试文本这是一段测试文本阖家安康手动滑稽卡号登记卡苍南县阿贾克斯发货单速发动机可塑性你记得康师傅你记得康师傅hi无回复和亢"
-                const labels = tags.map((tag) => {
+                    const labels = tags.map((tag) => {
                     return `<Label value="${tag.value}" background="${tag.background}" />`
                 }).join('\n')
 
