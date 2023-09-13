@@ -1,7 +1,7 @@
 from typing import List, Dict, Union, Optional, Tuple
 from .base import Record, Statistics, BaseModel
 from .public import ReturnCode
-from .dataset import Message
+from .dataset import Message, MessageRole
 from enum import Enum
 from pydantic import BaseModel, Field
 
@@ -57,12 +57,14 @@ class LLM(LLMInfo):
         # 先mock一下
         if self.model_type is LLMType.critic:
             prompt = self.gen_similarity_prompt(*msgs)
+        else:
+            prompt = msgs[0]
         return_msg = self.generate(prompt)
         return return_msg
 
     def generate(self, msg:Message) -> Message:
         # TODO SystemMessage的支持
-        return_msg = Message(predecessor_uid="83fba5b4-5c6d-4f88-a7d3-9e3d2c1f6b02", successor_uid="d8b1e6d7-9a0b-4c2f-8e3d-1f0e9b8c7a6d", role="assistant", content="大模型标准回答")
+        return_msg = Message(predecessor_uid="83fba5b4-5c6d-4f88-a7d3-9e3d2c1f6b02", successor_uid="d8b1e6d7-9a0b-4c2f-8e3d-1f0e9b8c7a6d", role=MessageRole.AI, content="大模型标准回答")
         return return_msg
 
     def gen_similarity_prompt(self, responce:Message, correct_ans:Message) -> str:

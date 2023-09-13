@@ -24,7 +24,7 @@ class QARecord(Record):
     predecessor_uid: Optional[str] = None # 关联上一条Message记录的id
     successor_uid: Optional[str] = None # 关联下一条Message记录的id
     question: Message
-    answer: Optional[Message]
+    answer: Optional[Message] = None
 
 
 class Dataset(Record, BaseManager):
