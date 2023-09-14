@@ -1,7 +1,7 @@
 from starlette.requests import Request
 
 from dashboard.enums import EvalStatus
-from dashboard.models import EvaluationPlan
+from dashboard.models import EvaluationPlan, ModelInfo
 from last.services.widgets.displays import Display, Popover, Status
 
 
@@ -55,23 +55,12 @@ class ShowPlanDetail(Display):
 class ShowOperation(Display):
     template = "record/record_operations.html"
 
-    async def render(self, request: Request, value: str):
+    async def render(self, request: Request, value: int):
+        model_detail = await ModelInfo.get_or_none(id=value).values()
         return await super().render(
             request,
             {
-                "model_detail": {
-                    "name": "书生·浦语",
-                    "model_type": "聊天机器人、自然语言处理助手",
-                    "version": "1.3.0",
-                    "base_model": "GShard-v2-xlarge",
-                    "parameter_volume": "约50亿个参数",
-                    "pretraining_info": "包含约7500亿个英文和中文字词的大规模无标签文本数据集",
-                    "finetuning_info": "通过Fine-tuning在任务特定数据集上进行微调",
-                    "alignment_info": "根据不同任务需求选择相应的数据集进行微调，如问答、摘要、机器翻译等任务",
-                    "endpoint": "RLHF对齐方法",
-                    "access_key": "",
-                    "secret_key": "",
-                },
+                "model_detail": model_detail,
                 "record_file": ["书生·浦语 1.3.0", "送评模型1 1.0", "送评模型1 1.4"],
             },
         )

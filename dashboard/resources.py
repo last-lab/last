@@ -98,7 +98,7 @@ class Evaluation(Dropdown):
             Field(name="eval_plan_id", label="评测方案", display=ShowPlanDetail()),
             Field(name="created_at", label="提交时间"),
             Field(name="status", label="评测状态", display=ShowStatus()),
-            Field(name="operations", label="操作", display=ShowOperation()),
+            Field(name="model_id", label="操作", display=ShowOperation()),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
