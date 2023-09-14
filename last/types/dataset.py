@@ -35,30 +35,51 @@ class Dataset(Record, BaseManager):
     focused_risks: Optional[List[RiskDimension]] = Field(default=None) # 风险详情
     url: Optional[HttpUrl] = None # 文件导出url
     file: Optional[str] = None # 文件本地path
-    volume: Optional[str] = None # 数据集大小GB
+    volume: Optional[str] = "0.0GB" # 数据集大小GB
     used_by: Optional[List[str]] = None # 使用次数
     qa_num: Optional[int] = Field(default=0, init=False) # 对话条数
     word_cnt: Optional[int] = Field(default=0, init=False) # 语料字数
 
-    qa_records: Optional[Dict[str, QARecord]] = None  # key是每条QARecord的唯一id
+    qa_records: Optional[Dict[str, QARecord]] = None  # key是每条QARecord的唯一id, 也是Dataset类中的实际内容存储
+
     conversation_start_id: Optional[List[str]] = None # 每段对话的起始QARecord id, 为了多轮对话，目前暂时不启用
     current_conversation_index: Optional[int] = Field(default=0, init=False) # 供迭代器使用
     current_qa_record_id: Optional[int] = Field(default=0, init=False) # 供迭代器使用
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.post_init()  
-        self.qa_num = len(self.qa_records)
-        self.word_cnt = 100000 # TODO 总语料字数的获取方法暂时还没有写
-
-    def post_init(self):
-        # 根据传入的file path，新建Dataset对象 TODO 如果传入的不是path而是file对象，还没实现
-        if self.file is not None:
-            self.qa_records, self.conversation_start_id = Dataset.upload(self.file)
-        elif self.qa_records is not None:
-            self.conversation_start_id = list(self.qa_records.keys())
+        if self.file is not None: # 根据传入的file path，新建Dataset对象
+            self.qa_records = Dataset.upload(self.file)
         else:
-            raise ValueError("Input parameter cannot be empty")
+            raise ValueError("Input parameter cannot be empty") 
+        
+        self.fill_attributes(self.qa_records)
+        
+    @staticmethod
+    def upload(file_path: str) -> Tuple[Dict[str, QARecord], List[str]]:  
+        # TODO 注释掉的部分是为了给多轮对话准备的，目前还没有经过测试，故不写
+        # 通过上传文件创建数据集
+        qa_records = {}
+        # predecessor_uid = None # 关联上一条Message记录的id
+        with open(file_path, "r") as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                self_uid = ID()
+                question = Message(role=MessageRole.Human, content=row["question"])
+                correct_ans = Message(role=MessageRole.AI, content=row["correct_ans"])
+                # successor_uid = ID() # 提前安排好下一条数据的ID
+                qa_records[self_uid] = QARecord(predecessor_uid=None, successor_uid=None, question=question, answer=correct_ans)
+                # predecessor_uid = self_uid 
+        return qa_records
+
+    # TODO 根据qa_records填充其他属性
+    def fill_attributes(self, qa_records: Dict[str, QARecord]) -> None: 
+        self.conversation_start_id = list(self.qa_records.keys()) 
+        self.qa_num = len(qa_records)
+        self.word_cnt = 100000 # TODO 总语料字数的获取函数暂时还没有写
+        self.volume = "10.6GB"
+        self.focused_risks = [RiskDimension(name="国家安全"), RiskDimension(level=2, name="颠覆国家政权", uplevel_risk_name="国家安全"), RiskDimension(level=2, name="宣扬恐怖主义", uplevel_risk_name="国家安全"), RiskDimension(level=2, name="挑拨民族对立", uplevel_risk_name="国家安全")] # TODO 单独写函数
+
 
     @property
     def length(self):
@@ -112,24 +133,11 @@ class Dataset(Record, BaseManager):
         # 通过访问url创建数据集
         pass
 
+    @classmethod
+    def create_from_file(cls, file_path: str):
+        dataset = cls(file=file_path)
+        return dataset
 
-    @staticmethod
-    def upload(file_path: str) -> Tuple[Dict[str, QARecord], List[str]]:  
-        # TODO 注释掉的部分是为了给多轮对话准备的，目前还没有经过测试，故不写
-        # 通过上传文件创建数据集
-        qa_records = {}
-        # predecessor_uid = None # 关联上一条Message记录的id
-        with open(file_path, "r") as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                self_uid = ID()
-                question = Message(role=MessageRole.Human, content=row["question"])
-                correct_ans = Message(role=MessageRole.AI, content=row["correct_ans"])
-                # successor_uid = ID() # 提前安排好下一条数据的ID
-                qa_records[self_uid] = QARecord(predecessor_uid=None, successor_uid=None, question=question, answer=correct_ans)
-                # predecessor_uid = self_uid 
-            conversation_start_id = list(qa_records.keys())
-        return qa_records, conversation_start_id
 
 
 

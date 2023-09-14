@@ -1,10 +1,12 @@
 # TODO client的部分、ORM的部分没有实现，LLM的调用是MOCK的
+import os
+
 from last.types.dataset import Dataset, QARecord
 from last.types.llm import LLM, LLMType
 from last.types.plan import EvaluationType, Plan
 from last.types.public import ID, RiskDimension
 from last.types.task import Task
-import os
+
 
 def test_pipeline():
     # 如果需要加载新数据集, 则提供file\url，返回数据集对象
@@ -53,7 +55,7 @@ def test_pipeline():
     # 上传评测QA历史到数据库
     new_dataset = Dataset(
         name="test1",
-        dimensions=[RiskDimension(name="国家安全"), RiskDimension(name="个人隐私")],
+        focused_risks=[RiskDimension(name="国家安全"), RiskDimension(name="个人隐私")],
         qa_records=new_qa_records,
     )
 
