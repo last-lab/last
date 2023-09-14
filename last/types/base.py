@@ -1,8 +1,6 @@
-from dataclasses import dataclass
 from typing import List, Dict, Union, Optional
 
 from abc import ABC, abstractmethod
-from last.client import Client
 
 from .public import DateString, PermissionLevel, UserInfo, ReturnCode, ID
 from datetime import datetime
