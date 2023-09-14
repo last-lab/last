@@ -3,9 +3,11 @@ from typing import Type, Union
 
 from fastapi import APIRouter, Depends, Path
 from starlette.requests import Request
-from tortoise import Model, fields
+from tortoise import Model
 from tortoise.transactions import in_transaction
 
+from dashboard.biz_models.datamanager import DataSet
+from dashboard.utils.converter import DataSetTool
 from last.services.depends import (
     admin_log_create,
     admin_log_update,
@@ -42,6 +44,7 @@ async def create_view(
     """
     inputs = await model_resource.get_inputs(request)
     datasets = await DataSet.all().order_by("id").limit(10)
+    dataset_schemas = DataSetTool.ds_model_to_schema(datasets)
     context = {
         "request": request,
         "resources": resources,
@@ -51,7 +54,7 @@ async def create_view(
         "model_resource": model_resource,
         "page_title": model_resource.page_title,
         "page_pre_title": model_resource.page_pre_title,
-        "datasets": datasets,
+        "datasets": dataset_schemas,
     }
     return templates.TemplateResponse(
         f"{resource}/create.html",
@@ -156,7 +159,8 @@ async def update_view(
     """
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
-    datasets = await DataSet.filter(id__in=obj.datasets.split(",")).order_by("id").limit(10)
+    datasets = await DataSet.filter(id__in=obj.dataset_ids.split(",")).order_by("id").limit(10)
+    dataset_schemas = DataSetTool.ds_model_to_schema(datasets)
     context = {
         "request": request,
         "resources": resources,
@@ -165,7 +169,7 @@ async def update_view(
         "inputs": inputs,
         "pk": pk,
         "model_resource": model_resource,
-        "datasets": datasets,
+        "datasets": dataset_schemas,
         "obj": obj,
         "page_title": model_resource.page_title,
         "page_pre_title": model_resource.page_pre_title,
@@ -194,7 +198,8 @@ async def copy_create_view(
     """
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
-    datasets = await DataSet.filter(id__in=obj.datasets.split(",")).order_by("id").limit(10)
+    datasets = await DataSet.all().order_by("id").limit(10)
+    dataset_schemas = DataSetTool.ds_model_to_schema(datasets)
     context = {
         "request": request,
         "resources": resources,
@@ -203,7 +208,7 @@ async def copy_create_view(
         "inputs": inputs,
         "pk": pk,
         "model_resource": model_resource,
-        "datasets": datasets,
+        "datasets": dataset_schemas,
         "obj": obj,
         "page_title": model_resource.page_title,
         "page_pre_title": model_resource.page_pre_title,
@@ -283,7 +288,8 @@ async def epm_ds_query(
         datasets = await DataSet.all().filter(name=ds_content).order_by("id").limit(10)
     if not datasets:
         datasets = await DataSet.all().order_by("id").limit(10)
-    return datasets
+    dataset_schemas = DataSetTool.ds_model_to_schema(datasets)
+    return dataset_schemas
 
 
 # datamanager end
@@ -304,14 +310,3 @@ class RiskType(Enum):
     @property
     def code(self):
         return self._code
-
-
-class DataSet(Model):
-    """
-    评测方案管理model
-    """
-
-    name = fields.CharField(max_length=200)
-    risk_type = fields.CharField(max_length=500)
-    risk_second_type = fields.CharField(max_length=500)
-    risk_third_type = fields.CharField(max_length=500)

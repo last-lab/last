@@ -48,7 +48,7 @@ class UserInfo(BaseModel):
     id: str
     name: str
     email: str
-    created_at: DateString  
+    created_at: DateString
     permission: PermissionLevel
 
 

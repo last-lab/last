@@ -1,6 +1,10 @@
+import json
+
 from starlette.requests import Request
 
+from dashboard.biz_models.datamanager import DataSet, EvaluationPlan
 from dashboard.enums import EvalStatus
+from dashboard.models import ModelInfo
 from last.services.widgets.displays import Display, Popover, Status
 
 
@@ -38,33 +42,50 @@ class ShowPopover(Popover):
         )
 
 
-class ShowOperation(Display):
-    template = "widgets/record_operations.html"
+class ShowPlanDetail(Display):
+    template = "record/record_plan_modal.html"
 
     async def render(self, request: Request, value: str):
+        eval_plan = await EvaluationPlan.get_or_none(id=value)
+        dataset_ids = eval_plan.datasets.split(",")
+        datasets = await DataSet.filter(id__in=dataset_ids)
+        dataset_names = []
+        risk_details = []
+
+        for ds in datasets:
+            dataset_names.append(ds.name)
+            risk_details.append(json.loads(ds.dimensions))
+
+        plan_detail = {
+            "name": eval_plan.plan_name,
+            "score_way": eval_plan.score_way,
+            "plan_content": eval_plan.plan_content,
+            "dataset_names": dataset_names,
+            "risk_detail": risk_details,
+        }
+
+        return await super().render(
+            request,
+            {"plan_detail": plan_detail},
+        )
+
+
+class ShowOperation(Display):
+    template = "record/record_operations.html"
+
+    async def render(self, request: Request, value: int):
+        model_detail = await ModelInfo.get_or_none(id=value).values()
         return await super().render(
             request,
             {
-                "model_detail": {
-                    "name": "书生·浦语",
-                    "model_type": "聊天机器人、自然语言处理助手",
-                    "version": "1.3.0",
-                    "base_model": "GShard-v2-xlarge",
-                    "parameter_volume": "约50亿个参数",
-                    "pretraining_info": "包含约7500亿个英文和中文字词的大规模无标签文本数据集",
-                    "finetuning_info": "通过Fine-tuning在任务特定数据集上进行微调",
-                    "alignment_info": "根据不同任务需求选择相应的数据集进行微调，如问答、摘要、机器翻译等任务",
-                    "endpoint": "RLHF对齐方法",
-                    "access_key": "",
-                    "secret_key": "",
-                },
+                "model_detail": model_detail,
                 "record_file": ["书生·浦语 1.3.0", "送评模型1 1.0", "送评模型1 1.4"],
             },
         )
 
 
 class ShowModelCard(Display):
-    template = "widgets/model_card.html"
+    template = "record/model_card.html"
 
     async def render(self, request: Request, value: str):
         return await super().render(
@@ -76,7 +97,7 @@ class ShowModelCard(Display):
 
 
 class ShowAction(Display):
-    template = "evaluationdatasetmanager/action_dataset.html"
+    template = "dataset/action_dataset.html"
 
     async def render(self, request: Request, value: any):
         return await super().render(

@@ -9,8 +9,9 @@ from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
 from tortoise import Model
 from tortoise.transactions import in_transaction
 
+from dashboard.biz_models.datamanager import DataSet, EvaluationPlan
 from dashboard.biz_routers import biz_router
-from dashboard.models import Config, EvaluationPlan, Log, ModelInfo
+from dashboard.models import Config, Log, ModelInfo
 from dashboard.widgets.displays import ShowModelCard
 from last.services.app import app
 from last.services.depends import (
@@ -344,12 +345,15 @@ async def json(request: Request, file: UploadFile = File(...)):
 
 
 class Item(BaseModel):
-    dataset_name: str
+    name: str
+    dimensions: str
 
 
 @app.post("/evaluationdatasetmanager/conform")
 async def conform(request: Request, item: Item):
-    contents = {"result": 1, "reason": "已存在同名的评测集"}
+    print(item)
+    contents = {"result": 1, "reason": "成功"}
+    await DataSet.create(name=item.name, dimensions=item.dimensions)
     return contents
 
 
