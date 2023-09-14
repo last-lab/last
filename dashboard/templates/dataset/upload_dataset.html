@@ -53,7 +53,7 @@
                     formData.append("file", file);
                     document.getElementById("processing").style.display = 'block';
                     $.ajax({
-                        url: '/admin/evaluationdatasetmanager/json',
+                        url: '/admin/dataset/json',
                         type: 'POST',
                         data: formData,
                         processData: false,
@@ -87,7 +87,7 @@
                 return;
             }
             $.ajax({
-                url: '/admin/evaluationdatasetmanager/conform',
+                url: '/admin/dataset/conform',
                 type: 'POST',
                 data: JSON.stringify({
                     "name": $('#name').val(),

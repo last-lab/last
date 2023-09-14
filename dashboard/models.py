@@ -132,18 +132,15 @@ class EvaluationPlan(Model):
 
 
 class DataSet(Model):
-    # name = fields.CharField(max_length=200)
-    # type = fields.CharField(max_length=200, null=True)
-    # sub_type = fields.CharField(max_length=200)
-    # third_type = fields.CharField(max_length=200)
-    # updateTime = fields.CharField(max_length=200)
-    # useCount = fields.IntField()
     name = fields.CharField(max_length=200)
     dimensions = fields.CharField(max_length=200, null=True)
     url = fields.CharField(max_length=200, null=True)
     file = fields.CharField(max_length=200, null=True)
     volume = fields.CharField(max_length=200, null=True)
     used_by = fields.CharField(max_length=200, null=True)
+    updated_at = fields.CharField(max_length=200, null=True)
+    qa_num = fields.CharField(max_length=200, null=True)
+    word_cnt = fields.CharField(max_length=200, null=True)
     qa_records = fields.CharField(max_length=200, null=True)
     conversation_start_id = fields.CharField(max_length=200, null=True)
     current_conversation_index = fields.IntField(null=True)

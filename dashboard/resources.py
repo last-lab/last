@@ -27,7 +27,8 @@ from dashboard.models import Role as RoleModel
 
 # from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
-from dashboard.widgets.displays import ShowAction, ShowIp, ShowOperation, ShowPopover, ShowStatus
+from dashboard.widgets.displays import ShowAction, ShowIp, ShowOperation, ShowPopover, ShowStatus, ShowRiskType, \
+    ShowSecondType
 from last.services import enums as _enums
 from last.services.app import app
 from last.services.enums import Method
@@ -453,7 +454,7 @@ class DataManager(Dropdown):
                 )
             ]
 
-    class EvaluationDatasetManagerResource(Model):
+    class DatasetResource(Model):
         label = "评测集管理"
         model = DataSet
         page_title = "评测集管理"
@@ -462,13 +463,12 @@ class DataManager(Dropdown):
             filters.Search(name="type", label="风险类型"),
         ]
         fields = [
-            "id",
             Field(name="name", label="评测集名称"),
-            Field(name="type", label="风险类型"),
-            Field(name="sub_type", label="二级类型"),
-            Field(name="updateTime", label="更新时间"),
-            Field(name="useCount", label="使用次数"),
-            Field(name="dataset_action_id", label="操作", display=ShowAction()),
+            Field(name="dimensions", label="风险类型", display=ShowRiskType()),
+            Field(name="dimensions", label="二级类型", display=ShowSecondType()),
+            Field(name="updated_at", label="更新时间"),
+            Field(name="used_by", label="使用次数"),
+            Field(name="qa_records", label="操作", display=ShowAction()),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
@@ -488,7 +488,7 @@ class DataManager(Dropdown):
 
     label = "数据管理"
     icon = "fas fa-bars"
-    resources = [EvaluationDatasetManagerResource, EvaluationPlanResource]
+    resources = [DatasetResource, EvaluationPlanResource]
 
 
 class DataManagePage(Dropdown):
