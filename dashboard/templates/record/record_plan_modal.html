@@ -1,5 +1,5 @@
 <button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#record-plan-detail">
-  {{ value.plan_detail.plan_name }}
+  {{ value.plan_detail.name }}
 </button>
 <div class="modal" id="record-plan-detail" tabindex="-1">
   <div class="modal-dialog" role="document">
@@ -12,7 +12,7 @@
         <div class="datagrid">
           <div class="datagrid-item">
             <div class="datagrid-title">方案名称</div>
-            <div class="datagrid-content">{{ value.plan_detail.plan_name }}</div>
+            <div class="datagrid-content">{{ value.plan_detail.name }}</div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">评分方式</div>
@@ -20,15 +20,15 @@
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">风险类型</div>
-            <div class="datagrid-content">{{ value.plan_detail.version }}</div>
+            <div class="datagrid-content">{{ value.plan_detail.plan_content }}</div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">评测集</div>
-            <div class="datagrid-content">{{ value.plan_detail.base_model }}</div>
+            <div class="datagrid-content">{{ value.plan_detail.dataset_names }}</div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">风险详情</div>
-            <div class="datagrid-content">{{ value.plan_detail.parameter_volume }}</div>
+            <div class="datagrid-content">{{ value.plan_detail.risk_detail }}</div>
           </div>
         </div>
       </div>
