@@ -11,8 +11,7 @@ from tortoise.transactions import in_transaction
 
 from dashboard.biz_routers import biz_router
 from dashboard.data_labeling import labeling_router
-from dashboard.models import Config, EvaluationPlan, Log, ModelInfo
-from dashboard.widgets.displays import ShowModelCard
+from dashboard.models import Config, Log
 from last.services.app import app
 from last.services.depends import (
     AdminLog,
@@ -24,7 +23,6 @@ from last.services.depends import (
     read_checker,
     update_checker,
 )
-from last.services.i18n import _
 from last.services.resources import Model as ModelResource
 from last.services.responses import redirect
 from last.services.routes.others import router
@@ -78,49 +76,6 @@ async def notification(
             "resource_label": "Notification",
             "page_pre_title": "Notification",
             "page_title": "Send notification",
-        },
-    )
-
-
-@app.get("/label")
-async def label(
-    request: Request,
-    resources=Depends(get_resources),
-):
-    return templates.TemplateResponse(
-        "label.html",
-        context={
-            "request": request,
-            "resources": resources,
-            "resource_label": "Label",
-            "page_pre_title": "BY LABEL STUDIO",
-            "page_title": "Label",
-        },
-    )
-
-
-@app.get("/record/add")
-async def create_eval(
-    request: Request,
-    resources=Depends(get_resources),
-):
-    eval_plans = await EvaluationPlan.all().limit(10)
-    model_list = await ModelInfo.all().limit(10)
-    model_cards = []
-    for model_detail in model_list:
-        card = await ShowModelCard().render(request, model_detail)
-        model_cards.append(card)
-
-    return templates.TemplateResponse(
-        "create_eval.html",
-        context={
-            "request": request,
-            "resources": resources,
-            "resource_label": "Label",
-            "page_pre_title": "BY LABEL STUDIO",
-            "page_title": _("Create Evaluation"),
-            "eval_plans": eval_plans,
-            "model_cards": model_cards,
         },
     )
 
