@@ -1,23 +1,23 @@
 {% extends layout %}
 {% block page_body %}
-<form>
+<form id="eval-form">
     <fieldset class="form-fieldset" style="width: 100%; margin-left: 12px; max-width: 800px">
         <div class="mb-3">
             <label class="form-label required">{{ _('Evaluation Plan') }}</label>
-            <select required class="form-select" id="evaluation_plan">
+            <select required class="form-select" id="eval_plan">
                 {% for item in eval_plans %}
-                <option value="{{ item.plan_name }}">{{ item.plan_name }}</option>
+                <option value="{{ item.id }}">{{ item.plan_name }}</option>
                 {% endfor %}
             </select>
         </div>
         <div class="mb-3">
             <label class="form-label required">{{ _('Evaluation Model') }}</label>
-            <div id="model_card_list">
-                {% for item in model_cards %}
-                    {{ item }}
+            <select required class="form-select" id="model">
+                {% for item in model_list %}
+                <option value="{{ item.id }}">{{ item.name }}</option>
                 {% endfor %}
-            </div>
-            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#modelModal">
+            </select>
+            <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modelModal">
                 {{ _('Add Model')}}
             </button>
         </div>
@@ -38,17 +38,17 @@
                 <form id="model-form" method="post">
                     <div class="mb-3">
                         <label class="form-label required">{{ _('Evaluation Model') }}</label>
-                        <input required type="text" class="form-control" id="model_name"
-                               placeholder="请输入模型名称"/>
+                        <input required type="text" class="form-control" id="endpoint"
+                               placeholder="请输入模型路径"/>
                     </div>
                     <div class="mb-3">
                         <label class="form-label required">Access Key</label>
-                        <input required type="text" class="form-control" id="model_ak"
+                        <input required type="text" class="form-control" id="access_key"
                                placeholder="请输入模型 Access Key"/>
                     </div>
                     <div class="mb-3">
                         <label class="form-label required">Secret Key</label>
-                        <input required type="text" class="form-control" id="model_sk"
+                        <input required type="text" class="form-control" id="secret_key"
                                placeholder="请输入模型 Secret Key"/>
                     </div>
                     <div class="form-footer">
@@ -67,11 +67,11 @@
 
 <script>
 
-    const handleFormSubmit = function () {
+    const handleCreateModel = function () {
         const data = {
-            name: $('#model_name').val(),
-            model_ak: $('#model_ak').val(),
-            model_sk: $('#model_sk').val()
+            endpoint: $('#endpoint').val(),
+            access_key: $('#access_key').val(),
+            secret_key: $('#secret_key').val()
         }
 
         $.ajax({
@@ -81,21 +81,53 @@
             contentType: 'application/json',
             dataType: 'html',
             success: function (data) {
+                $('#modelModal').modal('hide')
             },
             error: function (data) {
                 console.log(data)
                 alert('创建失败')
             }
         })
-        $('#modelModal').modal('hide')
     }
 
-    const form = document.getElementById('model-form')
+    const handleCreateEvaluation = function () {
+        const data = {
+            "model_id": $('#model').val(),
+            "eval_plan_id": $('#eval_plan').val(),
+            "created_at": new Date().toUTCString()
+        }
+        $.ajax({
+            url: '/admin/evaluation/evaluation_create',
+            method: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.success) {
+                    alert('新建评测成功')
+                    window.location.href = '/admin/record/list'
+                } else {
+                    alert('新建评测失败')
+                }
+            },
+            error: function (data) {
+                console.log(data)
+                alert('新建评测失败')
+            }
+        })
+    }
 
-    form.addEventListener('submit', event => {
+    const model_form = document.getElementById('model-form')
+    const eval_form = document.getElementById('eval-form')
+
+    model_form.addEventListener('submit', event => {
         event.preventDefault();
-        handleFormSubmit(event)
+        handleCreateModel(event)
     });
+
+    eval_form.addEventListener('submit', event => {
+        event.preventDefault();
+        handleCreateEvaluation(event)
+    })
 </script>
 
 {% endblock %}

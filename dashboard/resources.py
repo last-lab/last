@@ -16,7 +16,6 @@ from dashboard.models import Dog1  # EvaluationPlan,; Evaluation,
 from dashboard.models import (  # EvaluationPlan,; Evaluation,
     DataSet,
     EvaluationPlan,
-    EvaluationRecord,
     LabelPage,
     Log,
 )
@@ -27,7 +26,14 @@ from dashboard.models import Role as RoleModel
 
 # from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
-from dashboard.widgets.displays import ShowAction, ShowIp, ShowOperation, ShowPopover, ShowStatus
+from dashboard.widgets.displays import (
+    ShowAction,
+    ShowIp,
+    ShowOperation,
+    ShowPlanDetail,
+    ShowPopover,
+    ShowStatus,
+)
 from last.services import enums as _enums
 from last.services.app import app
 from last.services.enums import Method
@@ -75,15 +81,6 @@ class Evaluation(Dropdown):
 
         page_title = "评测记录"
         page_pre_title = "模型评测记录"
-
-        label: str = _("Evaluation Record")
-        model = Record
-
-    class EvaluationRecord(Model):
-        label: str = _("EvaluationRecord Record")
-        icon = "fas fa-user"
-        model = EvaluationRecord
-
         label: str = _("EvaluationRecord Record")
         model = Record
 
@@ -98,7 +95,7 @@ class Evaluation(Dropdown):
         ]
         fields = [
             Field(name="model_name", label="评测模型", display=ShowPopover()),
-            Field(name="eval_pan", label="评测方案"),
+            Field(name="eval_plan_id", label="评测方案", display=ShowPlanDetail()),
             Field(name="created_at", label="提交时间"),
             Field(name="status", label="评测状态", display=ShowStatus()),
             Field(name="operations", label="操作", display=ShowOperation()),
@@ -124,8 +121,6 @@ class Evaluation(Dropdown):
 
         label = _("Create Evaluation")
         url = "/admin/record/add"
-
-    label: str = _("Evaluation")
 
     label: str = _("EvaluationRecord")
     icon = "fas fa-user"

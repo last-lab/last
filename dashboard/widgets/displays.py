@@ -1,6 +1,7 @@
 from starlette.requests import Request
 
 from dashboard.enums import EvalStatus
+from dashboard.models import EvaluationPlan
 from last.services.widgets.displays import Display, Popover, Status
 
 
@@ -38,8 +39,21 @@ class ShowPopover(Popover):
         )
 
 
+class ShowPlanDetail(Display):
+    template = "record/record_plan_modal.html"
+
+    async def render(self, request: Request, value: str):
+        plan_detail = await EvaluationPlan.get_or_none(id=value).values()
+        return await super().render(
+            request,
+            {
+                "plan_detail": plan_detail,
+            },
+        )
+
+
 class ShowOperation(Display):
-    template = "widgets/record_operations.html"
+    template = "record/record_operations.html"
 
     async def render(self, request: Request, value: str):
         return await super().render(
@@ -64,7 +78,7 @@ class ShowOperation(Display):
 
 
 class ShowModelCard(Display):
-    template = "widgets/model_card.html"
+    template = "record/model_card.html"
 
     async def render(self, request: Request, value: str):
         return await super().render(
