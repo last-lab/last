@@ -31,7 +31,7 @@ class QARecord(Record):
 
 class Dataset(Record, BaseManager):
     name: str # 模型名称
-    focused_risks: Optional[List[RiskDimension]] = Field(default=None) # 风险详情 TODO 写个class 
+    focused_risks: Optional[List[RiskDimension]] = Field(default=None) # 风险详情
     url: Optional[HttpUrl] = None # 文件url
     file: Optional[Path] = None # 文件本地path
     volume: Optional[str] = None # 数据集大小GB
