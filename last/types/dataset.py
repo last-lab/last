@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from .base import Record, Statistics, BaseManager
 from .public import RiskDimension, ReturnCode, ID
 from datetime import datetime
-from pathlib import Path
 from pydantic import HttpUrl, Field, validator
 import csv
 from enum import Enum
@@ -32,10 +31,10 @@ class QARecord(Record):
     annotation: Optional[Annotation] = None # QARecord对应的人工标注结果
 
 class Dataset(Record, BaseManager):
-    name: str # 模型名称
+    name: Optional[str] = Field(default=None) # 模型名称
     focused_risks: Optional[List[RiskDimension]] = Field(default=None) # 风险详情
     url: Optional[HttpUrl] = None # 文件导出url
-    file: Optional[Path] = None # 文件本地path
+    file: Optional[str] = None # 文件本地path
     volume: Optional[str] = None # 数据集大小GB
     used_by: Optional[List[str]] = None # 使用次数
     qa_num: Optional[int] = Field(default=0, init=False) # 对话条数
@@ -115,7 +114,7 @@ class Dataset(Record, BaseManager):
 
 
     @staticmethod
-    def upload(file_path: Path) -> Tuple[Dict[str, QARecord], List[str]]:  
+    def upload(file_path: str) -> Tuple[Dict[str, QARecord], List[str]]:  
         # TODO 注释掉的部分是为了给多轮对话准备的，目前还没有经过测试，故不写
         # 通过上传文件创建数据集
         qa_records = {}
@@ -131,6 +130,7 @@ class Dataset(Record, BaseManager):
                 # predecessor_uid = self_uid 
             conversation_start_id = list(qa_records.keys())
         return qa_records, conversation_start_id
+
 
 
 
