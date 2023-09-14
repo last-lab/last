@@ -2,7 +2,7 @@ from typing import List, Dict, Union, Optional, TypeVar, Any
 from enum import Enum
 from dataclasses import dataclass
 from .base import Record, Statistics, BaseManager
-from .public import RiskDimension, RelatedRiskDimensions, ReturnCode
+from .public import RiskDimension, ReturnCode
 from .dataset import Dataset, Message
 from pydantic import BaseModel, Field
 
