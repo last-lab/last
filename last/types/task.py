@@ -1,42 +1,59 @@
-from dataclasses import dataclass
-from typing import List, Dict, Union, Optional
-from pydantic import BaseModel
-import contextlib
+from typing import List, Dict, Union, Optional, TypeVar
+from pydantic import BaseModel, Field
+from enum import Enum
 
-from .base import Record, Statistics
-from .public import RiskDimension, RelatedRiskDimensions
-from .dataset import DatasetInfo
+from .llm import LLM, Registration
+from .plan import Plan
+from .base import Record, Statistics, BaseManager
+from .public import UserInfo, StateCode, ReturnCode, ID
+from .dataset import QARecord
 
 
-@dataclass
+T = TypeVar('T', bound='Task')
+
+class Report(Record): # 评测报告PDF
+    context: str  # 二进制字符串
+
 class Task(Record, BaseManager):
-    """
-    评测方案信息
-    """
+    plan_id: Optional[str] = Field(default=None, init=False)
+    plan: Plan # 方案
+    state: Optional[StateCode] = Field(default=StateCode.In_Progress) 
+    report: Optional[Report] = Field(default=None) # 评测报告
 
-    name: str
-    dimensions: Optional[Dict[RiskDimension.name, str]]  # 填写各个一级风险维度的占比%
-    datasets: List[DatasetInfo]
-    focused_risk: Optional[RelatedRiskDimensions]  # 新建时不填写
+    llm_id: Optional[str] = Field(default=None, init=False)
+    llm_model: LLM # 如何查备案文件： LLM.registration->PDF的二进制编码
 
-    def __post_init__(self):
-        # 将新建的Task对象同步到DB中
-        Task.new(self.url)
+    critic_id: Optional[str] = Field(default=None, init=False)
+    critic_model: LLM
+    results: Dict[str, QARecord] 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.plan_id = self.plan.uid
+        self.llm_id = self.llm_model.uid
+        self.critic_id = self.critic_model.uid
 
     @staticmethod
-    def edit(id, conf: Task) -> ReturnCode:  # 编辑评测方案，返回状态码
+    def repeat(id, conf: T) -> str:  # 因为某些异常，需要重新提交一次评测
         pass
 
     @staticmethod
-    def fork(id) -> str:  # 返回新的方案id
+    def load_model_api(model: LLM) -> ReturnCode:
+        # 通过输入test prompt进行模型测试
+        pass
+
+    @staticmethod
+    def check_state(id) -> StateCode:
+        # 检查状态
+        pass
+
+    @staticmethod
+    def open_registration(model_id) -> Registration:
+        # 检查状态
+        pass
+
+    def render_report(self, file_path, type) -> None:
         pass
 
 
-@dataclass
-class RiskDataDistribution(Record):
-    num_QA: int
-    percent: str
-    weight: str
 
-    def __str__(self):
-        return f"{self.num_QA}条问答 占比{self.percent} 权重{self.weight}"
