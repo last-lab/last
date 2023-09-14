@@ -2,8 +2,9 @@ import json
 
 from starlette.requests import Request
 
+from dashboard.biz_models.datamanager import DataSet, EvaluationPlan
 from dashboard.enums import EvalStatus
-from dashboard.models import DataSet, EvaluationPlan, ModelInfo
+from dashboard.models import ModelInfo
 from last.services.widgets.displays import Display, Popover, Status
 
 

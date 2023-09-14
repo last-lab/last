@@ -6,7 +6,7 @@ from starlette.requests import Request
 from tortoise import Model
 from tortoise.transactions import in_transaction
 
-from dashboard.models import DataSet
+from dashboard.biz_models.datamanager import DataSet
 from dashboard.utils.converter import DataSetTool
 from last.services.depends import (
     admin_log_create,
