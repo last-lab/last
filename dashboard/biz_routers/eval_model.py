@@ -21,8 +21,8 @@ class ModelView(BaseModel):
 
 
 class EvalInfo(BaseModel):
-    eval_plan_id: int
-    model_id: int
+    plan_id: int
+    llm_id: int
     created_at: str
 
 
@@ -52,13 +52,13 @@ async def create_eval(
 async def evaluation_create(
     eval_info: EvalInfo,
 ):
-    plan = await EvaluationPlan.get_or_none(id=eval_info.eval_plan_id).values()
-    model = await ModelInfo.get_or_none(id=eval_info.model_id).values()
+    plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
+    model = await ModelInfo.get_or_none(id=eval_info.llm_id).values()
     await Record.create(
         eval_plan=plan["plan_name"],
-        eval_plan_id=eval_info.eval_plan_id,
-        model_name=model["name"],
-        model_id=eval_info.model_id,
+        plan_id=eval_info.plan_id,
+        llm_name=model["name"],
+        llm_id=eval_info.llm_id,
     )
 
     return {"status": "ok", "success": 1, "msg": "create eval success"}

@@ -64,19 +64,13 @@ class Config(Model):
 
 class Record(Model):
     eval_models = fields.CharField(max_length=200, null=True)
-    model_name = fields.CharField(max_length=200, null=True)
-    model_id = fields.IntField(null=True)
+    llm_name = fields.CharField(max_length=200, null=True)
+    llm_id = fields.IntField(null=True)
     eval_plan = fields.CharField(description="Choose evaluation plan", max_length=200, null=True)
-    eval_plan_id = fields.IntField(null=True)
+    plan_id = fields.IntField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
-    status: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress, null=True)
-
-
-class EvaluationRecord(Model):
-    model_name = fields.CharField(max_length=50)
-    eval_setting = fields.IntField()
-    submit_time = fields.DatetimeField()
-    eval_status = fields.IntEnumField(EvalStatus, description="EvaluationRecord Status")
+    state: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress, null=True)
+    report = fields.BinaryField(null=True)
 
 
 class Log(AbstractLog):
