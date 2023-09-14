@@ -25,7 +25,7 @@ class QARecord(Record):
     successor_uid: Optional[str] = None # 关联下一条Message记录的id, 用于多轮对话，目前不启用
     question: Message
     answer: Optional[Message] = None
-    score: Optional[Message] = None # 标注时的得分
+    critic: Optional[Message] = None # critic模型对该条QARecord的回复
 
 
 class Dataset(Record, BaseManager):
@@ -35,20 +35,21 @@ class Dataset(Record, BaseManager):
     file: Optional[Path] = None # 文件本地path
     volume: Optional[str] = None # 数据集大小GB
     used_by: Optional[List[str]] = None # 使用次数
+    qa_num: Optional[int] = Field(default=0, init=False) # 对话条数
+    word_cnt: Optional[int] = Field(default=0, init=False) # 语料字数
+
     qa_records: Optional[Dict[str, QARecord]] = None  # Message的唯一id
     conversation_start_id: Optional[List[str]] = None # 每段对话的起始Message id
     current_conversation_index: Optional[int] = Field(default=0, init=False) # 供迭代器使用
     current_qa_record_id: Optional[int] = Field(default=0, init=False) # 供迭代器使用
 
     # 风险详情
-    # 数据条数
-    # 语料字数
-
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.post_init()  
+        self.qa_num = len(self.qa_records)
+        self.word_cnt = 100000 # TODO 总语料字数的获取方法暂时还没有写
 
     def post_init(self):
         # 根据传入的url或者file path，新建Dataset对象

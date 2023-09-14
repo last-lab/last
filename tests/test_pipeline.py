@@ -41,9 +41,7 @@ def test_pipeline():
         new_qa_records[ID()] = new_qa_record
 
     # 上传本次评测记录, 返回评测报告和对话记录
-    task = Task(
-        plan=plan, model_detail=llm_model, critic_model=critic_model, results=new_qa_records
-    )
+    task = Task(plan=plan, llm_model=llm_model, critic_model=critic_model, results=new_qa_records)
 
     # 保存评测报告到本地
     task.render_report(file_path="xxx", type="pdf")

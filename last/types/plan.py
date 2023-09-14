@@ -23,7 +23,6 @@ class Plan(Record, BaseManager):
     """
     评测方案信息
     """
-
     name: str
     eval_type: EvaluationType # 系统评分、人工评分
     dimensions: Optional[Dict[str, List[str]]] = Field(default=None) # 填写各个一级风险维度的占比%，key是风险维度，v是str，逗号隔开 TODO 写个类
