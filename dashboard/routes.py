@@ -12,6 +12,7 @@ from tortoise.transactions import in_transaction
 from dashboard.biz_routers import biz_router
 from dashboard.data_labeling import labeling_router
 from dashboard.models import Config, EvaluationPlan, Log, ModelInfo, DataSet
+from dashboard.models import Config, EvaluationPlan, Log, ModelInfo
 from dashboard.widgets.displays import ShowModelCard
 from last.services.app import app
 from last.services.depends import (
@@ -30,7 +31,6 @@ from last.services.responses import redirect
 from last.services.routes.others import router
 from last.services.template import templates
 
-app.include_router(labeling_router)
 app.include_router(biz_router)
 
 
