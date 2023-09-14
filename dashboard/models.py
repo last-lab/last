@@ -1,6 +1,12 @@
 from tortoise import Model, fields
 
-from dashboard.enums import EvalStatus, GenderType, ProductType, ScoreWayType, Status, EvaluationType
+from dashboard.enums import (
+    EvalStatus,
+    EvaluationType,
+    GenderType,
+    ProductType,
+    Status,
+)
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -118,6 +124,7 @@ class EvaluationPlan(Model):
     """
     评测方案管理model
     """
+
     name = fields.CharField(max_length=200)
     eval_type = fields.IntEnumField(
         EvaluationType, description="Eval Type", default=EvaluationType.auto_ai_critique

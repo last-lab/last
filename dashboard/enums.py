@@ -1,6 +1,4 @@
-from enum import IntEnum, Enum
-
-from tortoise.fields.data import CharEnumType
+from enum import IntEnum
 
 
 class ProductType(IntEnum):
@@ -25,8 +23,8 @@ class ScoreWayType(IntEnum):
 
 
 class EvaluationType(IntEnum):
-    auto_ai_critique = 0,  # "auto_ai_critique"  # 系统评分
-    human_scoring = 1,  # "human_scoring"  # 人工评分
+    auto_ai_critique = (0,)  # "auto_ai_critique"  # 系统评分
+    human_scoring = (1,)  # "human_scoring"  # 人工评分
     auto_exact_match = 2  # "auto_exact_match"
     auto_similarity_match = 3  # "auto_similarity_match"
     human_a_b_testing = 4  # "human_a_b_testing"

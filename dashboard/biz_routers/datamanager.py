@@ -30,10 +30,10 @@ router = APIRouter()
 
 @router.get("/{resource}/epm_create")
 async def create_view(
-        request: Request,
-        resource: str = Path(...),
-        resources=Depends(get_resources),
-        model_resource: ModelResource = Depends(get_model_resource),
+    request: Request,
+    resource: str = Path(...),
+    resources=Depends(get_resources),
+    model_resource: ModelResource = Depends(get_model_resource),
 ):
     """
     page location: create button on the evaluation plan management page
@@ -67,10 +67,10 @@ async def create_view(
     dependencies=[Depends(admin_log_create), Depends(create_checker)],
 )
 async def create(
-        request: Request,
-        resource: str = Path(...),
-        model_resource: ModelResource = Depends(get_model_resource),
-        model: Type[Model] = Depends(get_model),
+    request: Request,
+    resource: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    model: Type[Model] = Depends(get_model),
 ):
     """
     page location: save button on the evaluation plan create page
@@ -102,11 +102,11 @@ async def create(
     dependencies=[Depends(admin_log_update), Depends(update_checker)],
 )
 async def update(
-        request: Request,
-        resource: str = Path(...),
-        pk: str = Path(...),
-        model_resource: ModelResource = Depends(get_model_resource),
-        model: Type[Model] = Depends(get_model),
+    request: Request,
+    resource: str = Path(...),
+    pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    model: Type[Model] = Depends(get_model),
 ):
     """
     page location: save button on the evaluation plan create page
@@ -143,12 +143,12 @@ async def update(
 
 @router.get("/{resource}/epm_update/{pk}", dependencies=[Depends(read_checker)])
 async def update_view(
-        request: Request,
-        resource: str = Path(...),
-        pk: str = Path(...),
-        model_resource: ModelResource = Depends(get_model_resource),
-        resources=Depends(get_resources),
-        model: Type[Model] = Depends(get_model),
+    request: Request,
+    resource: str = Path(...),
+    pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
 ):
     """
     page location: edit button on the evaluation plan management page
@@ -182,12 +182,12 @@ async def update_view(
 
 @router.get("/{resource}/epm_copy_create/{pk}")
 async def copy_create_view(
-        request: Request,
-        resource: str = Path(...),
-        pk: str = Path(...),
-        model_resource: ModelResource = Depends(get_model_resource),
-        resources=Depends(get_resources),
-        model: Type[Model] = Depends(get_model),
+    request: Request,
+    resource: str = Path(...),
+    pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
 ):
     """
     page location: copy create button on the evaluation plan management page
@@ -224,10 +224,10 @@ async def copy_create_view(
     dependencies=[Depends(admin_log_update), Depends(update_checker)],
 )
 async def copy_create(
-        request: Request,
-        resource: str = Path(...),
-        model_resource: ModelResource = Depends(get_model_resource),
-        model: Type[Model] = Depends(get_model),
+    request: Request,
+    resource: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    model: Type[Model] = Depends(get_model),
 ):
     """
     page location: save button on the copy create page
@@ -256,7 +256,7 @@ async def copy_create(
 
 @router.post("/{resource}/epm_ds_query", dependencies=[Depends(read_checker)])
 async def epm_ds_query(
-        request: Request, ds_name: Union[str, None] = None, ds_content: Union[str, None] = None
+    request: Request, ds_name: Union[str, None] = None, ds_content: Union[str, None] = None
 ):
     """
     page location: datasets search btn on evaluation plan create page、update page and copy create page
@@ -310,6 +310,3 @@ class RiskType(Enum):
     @property
     def code(self):
         return self._code
-
-
-
