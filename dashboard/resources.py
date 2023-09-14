@@ -26,7 +26,14 @@ from dashboard.models import Role as RoleModel
 
 # from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
-from dashboard.widgets.displays import ShowAction, ShowIp, ShowOperation, ShowPopover, ShowStatus
+from dashboard.widgets.displays import (
+    ShowAction,
+    ShowIp,
+    ShowOperation,
+    ShowPlanDetail,
+    ShowPopover,
+    ShowStatus,
+)
 from last.services import enums as _enums
 from last.services.app import app
 from last.services.enums import Method
@@ -88,7 +95,7 @@ class Evaluation(Dropdown):
         ]
         fields = [
             Field(name="model_name", label="评测模型", display=ShowPopover()),
-            Field(name="eval_plan", label="评测方案"),
+            Field(name="eval_plan_id", label="评测方案", display=ShowPlanDetail()),
             Field(name="created_at", label="提交时间"),
             Field(name="status", label="评测状态", display=ShowStatus()),
             Field(name="operations", label="操作", display=ShowOperation()),

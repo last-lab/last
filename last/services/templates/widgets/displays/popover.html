@@ -7,6 +7,14 @@
         title="{{ value.popover }}"
         data-bs-content="{{ value.popover }}"
 >
-    <span style="width: 120px; overflow: hidden; text-overflow: ellipsis">{{ value.content }}</span>
+    <span class="popover_S6H">{{ value.content }}</span>
 </button>
+<style>
+    .popover_S6H {
+        width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: left;
+    }
+</style>
 
