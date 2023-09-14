@@ -49,7 +49,7 @@ async def create_eval(
 
 
 @router.post("/evaluation/evaluation_create")
-async def create_eval(
+async def evaluation_create(
     eval_info: EvalInfo,
 ):
     plan = await EvaluationPlan.get_or_none(id=eval_info.eval_plan_id).values()
