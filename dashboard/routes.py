@@ -1,8 +1,7 @@
 from typing import Type
 
-from fastapi import Depends, File, HTTPException, Path, UploadFile
+from fastapi import Depends, HTTPException, Path
 from jinja2 import TemplateNotFound
-from pydantic import BaseModel
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
@@ -10,15 +9,12 @@ from tortoise import Model
 from tortoise.transactions import in_transaction
 
 from dashboard.biz_routers import biz_router
-from dashboard.data_labeling import labeling_router
-from dashboard.models import Config, EvaluationPlan, Log, ModelInfo, DataSet
 from dashboard.models import Config, EvaluationPlan, Log, ModelInfo
 from dashboard.widgets.displays import ShowModelCard
 from last.services.app import app
 from last.services.depends import (
     AdminLog,
     admin_log_update,
-    create_checker,
     get_model,
     get_model_resource,
     get_resources,

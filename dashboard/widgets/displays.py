@@ -1,9 +1,11 @@
+from ast import literal_eval
+
 from starlette.requests import Request
 
 from dashboard.enums import EvalStatus
 from dashboard.models import DataSet
 from last.services.widgets.displays import Display, Popover, Status
-from ast import literal_eval
+
 
 class ShowIp(Display):
     async def render(self, request: Request, value: str):
@@ -80,39 +82,31 @@ class ShowAction(Display):
     template = "dataset/action_dataset.html"
 
     async def render(self, request: Request, value: any):
-        dataset = await DataSet.get(id=value).values()
-        label = literal_eval(dataset['dimensions'])
-        return await super().render(
-            request,
-            {
-                **dataset,
-                "dimensions": label
-            }
-        )
+        dataset = {}
+        label = []
+        if value is not None:
+            dataset = await DataSet.get(id=value).values()
+            label = literal_eval(dataset["focused_risks"])
+        return await super().render(request, {**dataset, "focused_risks": label})
 
 
 class ShowRiskType(Display):
     template = "dataset/risk.html"
 
     async def render(self, request: Request, value: any):
-        label = list(filter(lambda x: x['level'] == 1, literal_eval(value)))
-        return await super().render(
-            request,
-            {
-                "content": label
-            }
-        )
+        label = list(filter(lambda x: x["level"] == 1, literal_eval(value)))
+        return await super().render(request, {"content": label})
 
 
 class ShowSecondType(Display):
     template = "dataset/risk_second.html"
 
     async def render(self, request: Request, value: any):
-        label = list(filter(lambda x: x['level'] == 2, literal_eval(value)))
+        label = list(filter(lambda x: x["level"] == 2, literal_eval(value)))
         return await super().render(
             request,
             {
-                "content": ','.join([d['name'] for d in label]),
-                "popover": ','.join([d['name'] for d in label])
-            }
+                "content": ",".join([d["name"] for d in label]),
+                "popover": ",".join([d["name"] for d in label]),
+            },
         )

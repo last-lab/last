@@ -12,14 +12,10 @@ from dashboard.models import Admin  # EvaluationPlan,; Evaluation,
 from dashboard.models import Cat  # EvaluationPlan,; Evaluation,
 from dashboard.models import Category  # EvaluationPlan,; Evaluation,
 from dashboard.models import Config  # Evaluation,
+from dashboard.models import DataSet  # EvaluationPlan,; Evaluation,
 from dashboard.models import Dog1  # EvaluationPlan,; Evaluation,
-from dashboard.models import (  # EvaluationPlan,; Evaluation,
-    DataSet,
-    EvaluationPlan,
-    EvaluationRecord,
-    LabelPage,
-    Log,
-)
+from dashboard.models import EvaluationPlan  # EvaluationPlan,; Evaluation,
+from dashboard.models import EvaluationRecord, LabelPage, Log  # EvaluationPlan,; Evaluation,
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product, Record  # EvaluationPlan,; Evaluation,
 from dashboard.models import Resource as ResourceModel
@@ -27,8 +23,15 @@ from dashboard.models import Role as RoleModel
 
 # from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
-from dashboard.widgets.displays import ShowAction, ShowIp, ShowOperation, ShowPopover, ShowStatus, ShowRiskType, \
-    ShowSecondType
+from dashboard.widgets.displays import (
+    ShowAction,
+    ShowIp,
+    ShowOperation,
+    ShowPopover,
+    ShowRiskType,
+    ShowSecondType,
+    ShowStatus,
+)
 from last.services import enums as _enums
 from last.services.app import app
 from last.services.enums import Method
@@ -464,8 +467,8 @@ class DataManager(Dropdown):
         ]
         fields = [
             Field(name="name", label="评测集名称"),
-            Field(name="dimensions", label="风险类型", display=ShowRiskType()),
-            Field(name="dimensions", label="二级类型", display=ShowSecondType()),
+            Field(name="focused_risks", label="风险类型", display=ShowRiskType()),
+            Field(name="focused_risks", label="二级类型", display=ShowSecondType()),
             Field(name="updated_at", label="更新时间"),
             Field(name="used_by", label="使用次数"),
             Field(name="qa_records", label="操作", display=ShowAction()),
