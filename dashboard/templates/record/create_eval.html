@@ -92,8 +92,8 @@
 
     const handleCreateEvaluation = function () {
         const data = {
-            "model_id": $('#model').val(),
-            "eval_plan_id": $('#eval_plan').val(),
+            "llm_id": $('#model').val(),
+            "plan_id": $('#eval_plan').val(),
             "created_at": new Date().toUTCString()
         }
         $.ajax({
