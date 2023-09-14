@@ -27,7 +27,7 @@ class Plan(Record, BaseManager):
     eval_type: EvaluationType # 系统评分、人工评分
     dimensions: Optional[Dict[str, str]] = Field(default=None) # 填写各个一级风险维度的占比%，key是风险维度，v是str，逗号隔开
     datasets: List[Dataset] 
-    focused_risk: Optional[RelatedRiskDimensions] = Field(default=None, init=False) # TODO 写个class
+    focused_risks: Optional[List[RiskDimension]] = Field(default=None, init=False) 
 
     dataset_ids: Optional[str] = Field(default=None, init=False) 
     current_dataset_index: Optional[int] = Field(default=0, init=False) # 供迭代器使用
@@ -37,6 +37,10 @@ class Plan(Record, BaseManager):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dataset_ids = [dataset.uid for dataset in self.datasets]
+        _focused_risks = []
+        for dataset in self.datasets:
+            _focused_risks.extend(dataset.focused_risks)
+        self.focused_risks = _focused_risks
 
     def __iter__(self):
         self.current_dataset_index = 0

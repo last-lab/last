@@ -5,7 +5,6 @@ from .public import RiskDimension, ReturnCode, ID
 from datetime import datetime
 from pathlib import Path
 from pydantic import HttpUrl, Field, validator
-from .annotation import Annotations
 import csv
 from enum import Enum
 
@@ -21,13 +20,16 @@ class Message(Record):
     role: MessageRole
     content: str
 
+class Annotation(Record):
+    pass
+
 class QARecord(Record):
     predecessor_uid: Optional[str] = None # 关联上一条Message记录的id, 用于多轮对话，目前不启用
     successor_uid: Optional[str] = None # 关联下一条Message记录的id, 用于多轮对话，目前不启用
     question: Message
     answer: Optional[Message] = None
     critic: Optional[Message] = None # critic模型对该条QARecord的回复
-    annotation: Optional[Annotations] = None # QARecord对应的人工标注结果
+    annotation: Optional[Annotation] = None # QARecord对应的人工标注结果
 
 class Dataset(Record, BaseManager):
     name: str # 模型名称
