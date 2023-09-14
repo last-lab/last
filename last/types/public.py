@@ -6,14 +6,13 @@ import uuid
 
 
 class RiskDimension(BaseModel):
-    level: Optional[int] = Field(default=1) # 风险类型级别，默认是三级
+    level: Optional[int] = Field(default=1)  # 风险类型级别，默认是三级
     name: str
     description: Optional[str] = None
     uplevel_risk_name: Optional[str] = Field(default=None)
 
     def __str__(self):
         return self.name
-
 
 
 class PermissionLevel(Enum):
@@ -24,8 +23,7 @@ class PermissionLevel(Enum):
     VIEWER = auto()
 
 
-
-class DateString(BaseModel): # 改成时间戳
+class DateString(BaseModel):  # 改成时间戳
     year: str
     month: str
     day: str
@@ -59,6 +57,7 @@ class CodeMsg(BaseModel):
     def __str__(self):
         return f"Error {self.code}: {self.message}"
 
+
 class ReturnCode(Enum):
     NOT_FOUND = CodeMsg(code=404, message="Not found")
     UNAUTHORIZED = CodeMsg(code=401, message="Unauthorized")
@@ -66,9 +65,12 @@ class ReturnCode(Enum):
     SUCCESS = CodeMsg(code=10000, message="Success")
     BAD_REQUEST = CodeMsg(code=400, message="Bad Request")
     INVALID_INPUT = CodeMsg(code=422, message="Invalid Input")
+    ALREADY_EXIST = CodeMsg(code=101, message="Already Exist")
+    
 
     def __str__(self):
         return str(self.value)
+
 
 class StateCode(Enum):
     In_Progress = CodeMsg(code=0, message="进行中")

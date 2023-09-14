@@ -7,33 +7,35 @@ from .base import Record, BaseManager
 from .dataset import Dataset, Message
 from .public import RiskDimension, ReturnCode
 
-T = TypeVar('T', bound='Plan')
+T = TypeVar("T", bound="Plan")
+
 
 class EvaluationType(str, Enum):
-    auto_exact_match = "auto_exact_match" 
+    auto_exact_match = "auto_exact_match"
     auto_similarity_match = "auto_similarity_match"
-    auto_ai_critique = "auto_ai_critique" # 系统评分
+    auto_ai_critique = "auto_ai_critique"  # 系统评分
     human_a_b_testing = "human_a_b_testing"
-    human_scoring = "human_scoring" # 人工评分
+    human_scoring = "human_scoring"  # 人工评分
     human_ranking = "human_ranking"
-    human_boxing = "human_boxing"    
-
+    human_boxing = "human_boxing"
 
 
 class Plan(Record, BaseManager):
     """
     评测方案信息
     """
-    name: str
-    eval_type: EvaluationType # 系统评分、人工评分
-    dimensions: Optional[Dict[str, str]] = Field(default=None) # 填写各个一级风险维度的占比%，key是风险维度，v是str，逗号隔开
-    datasets: List[Dataset] 
-    focused_risks: Optional[List[RiskDimension]] = Field(default=None, init=False) 
 
-    dataset_ids: Optional[str] = Field(default=None, init=False) 
-    current_dataset_index: Optional[int] = Field(default=0, init=False) # 供迭代器使用
-    current_dataset_iter: Optional[Any] = Field(default=None, init=False) # 供迭代器使用
-    
+    name: str
+    eval_type: EvaluationType  # 系统评分、人工评分
+    dimensions: Optional[Dict[str, str]] = Field(
+        default=None
+    )  # 填写各个一级风险维度的占比%，key是风险维度，v是str，逗号隔开
+    datasets: List[Dataset]
+    focused_risks: Optional[List[RiskDimension]] = Field(default=None, init=False)
+
+    dataset_ids: Optional[str] = Field(default=None, init=False)
+    current_dataset_index: Optional[int] = Field(default=0, init=False)  # 供迭代器使用
+    current_dataset_iter: Optional[Any] = Field(default=None, init=False)  # 供迭代器使用
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -54,7 +56,9 @@ class Plan(Record, BaseManager):
         except StopIteration:
             self.current_dataset_index += 1
             if self.current_dataset_index < len(self.datasets):
-                self.current_dataset_iter = iter(self.datasets[self.current_dataset_index])
+                self.current_dataset_iter = iter(
+                    self.datasets[self.current_dataset_index]
+                )
                 return next(self.current_dataset_iter)
             else:
                 raise
