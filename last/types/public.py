@@ -9,12 +9,11 @@ class RiskDimension(BaseModel):
     level: Optional[int] = Field(default=3) # 风险类型级别，默认是三级
     name: str
     description: Optional[str] = None
+    uplevel_risk_name: Optional[str] = Field(default=None)
 
     def __str__(self):
         return self.name
 
-
-RelatedRiskDimensions = Dict[str, Dict[str, Dict[str, str]]]
 
 
 class PermissionLevel(Enum):

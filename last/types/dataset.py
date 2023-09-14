@@ -34,7 +34,7 @@ class QARecord(Record):
 class Dataset(Record, BaseManager):
     name: str # 模型名称
     focused_risks: Optional[List[RiskDimension]] = Field(default=None) # 风险详情
-    url: Optional[HttpUrl] = None # 文件url
+    url: Optional[HttpUrl] = None # 文件导出url
     file: Optional[Path] = None # 文件本地path
     volume: Optional[str] = None # 数据集大小GB
     used_by: Optional[List[str]] = None # 使用次数
@@ -53,11 +53,9 @@ class Dataset(Record, BaseManager):
         self.word_cnt = 100000 # TODO 总语料字数的获取方法暂时还没有写
 
     def post_init(self):
-        # 根据传入的url或者file path，新建Dataset对象
+        # 根据传入的file path，新建Dataset对象 TODO 如果传入的不是path而是file对象，还没实现
         if self.file is not None:
             self.qa_records, self.conversation_start_id = Dataset.upload(self.file)
-        elif self.url is not None:
-            self.qa_records, self.conversation_start_id = Dataset.fetch(self.url)
         elif self.qa_records is not None:
             self.conversation_start_id = list(self.qa_records.keys())
         else:
