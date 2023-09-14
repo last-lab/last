@@ -1,31 +1,45 @@
-from dataclasses import dataclass
 from typing import List, Dict, Union, Optional
-from pydantic import BaseModel
+
 from abc import ABC, abstractmethod
 
-from .public import DateString, PermissionLevel, UserInfo
+from .public import DateString, PermissionLevel, UserInfo, ReturnCode, ID
+from datetime import datetime
+from pydantic import BaseModel
 
 
-@dataclass
 class Record(BaseModel):
-    uid: Optional[str]  # UUID-4
-    description: Optional[str]
-    creator: UserInfo
-    editor: Optional[UserInfo]
-    reviewer: Optional[UserInfo]
-    created_at: DateString
-    updated_at:  Optional[DateString]
-    permissions: PermissionLevel
+    uid: Optional[str] = None  # UUID-4
+    description: Optional[str] = None
+    creator: Optional[UserInfo] = None
+    editor: Optional[UserInfo] = None
+    reviewer: Optional[UserInfo] = None
+    created_at: Optional[DateString] = None
+    updated_at:  Optional[DateString] = None
+    permissions: Optional[PermissionLevel] = PermissionLevel.VIEWER
+
+    def __init__(self, **data):
+        if "created_at" not in data:
+            now = datetime.now()
+            data["created_at"] = DateString(
+                year=str(now.year),
+                month=str(now.month),
+                day=str(now.day),
+                hour=str(now.hour),
+                minute=str(now.minute),
+                second=str(now.second),
+            )
+        if "uid" not in data:
+            data["uid"] = ID()
+        super().__init__(**data)
 
 
-@dataclass
 class Statistics(BaseModel):
     total_cnt: str
     updated_at: DateString
     description: Optional[str]
 
 
-@dataclass
+
 class Filter(BaseModel):
     field: str  # 要筛选的字段
     operator: str  # 筛选操作符，如果是"between"则代表是可比较大小的筛选，如果是“equal”则是匹配筛选
@@ -59,8 +73,3 @@ class BaseManager(ABC):
     @staticmethod
     def delete(id: str) -> ReturnCode:  # 返回行为码
         pass
-
-
-class BaseModel(ABC):
-    """Base class for Chat models."""
-    pass
