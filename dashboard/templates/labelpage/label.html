@@ -8,88 +8,122 @@
 <div id="label-studio"></div>
 
 <script>
-    // TODO 后续填上label配置数据
-    function getLabelConfig() {
-        $.ajax({
-            url: '/admin/labelpage/labeling/get_config',
+
+    let tags = [];
+    let tagView = '';
+    let text = '';
+    let predictions = [];
+    let annotations = [];
+    const interfaces = [
+        "panel",
+        "update",
+        "submit",
+        "controls",
+        "side-column",
+        "skip",
+        "instruction",
+        "infobar",
+        "topbar",
+        "annotations:menu",
+        "annotations:add-new",
+        "annotations:delete",
+        "annotations:current",
+        "annotations:tabs",
+        "annotations:history",
+        "annotations:view-all",
+        "predictions:menu",
+        "predictions:tabs",
+        "auto-annotation",
+        "edit-history"
+    ]
+
+    async function getLabelData() {
+        const rsp = await fetch('/admin/labelpage/labeling/get_data', {
             method: 'post',
-            success: function (e) {
-                const tags = e.tags;
-                const text = e.text;
-                const interfaces = [
-                        "panel",
-                        "update",
-                        "submit",
-                        "controls",
-                        "side-column",
-                        "skip",
-                        "instruction",
-                        "infobar",
-                        "topbar",
-                        "annotations:menu",
-                        "annotations:add-new",
-                        "annotations:delete",
-                        "annotations:current",
-                        "annotations:tabs",
-                        "annotations:history",
-                        "annotations:view-all",
-                        "predictions:menu",
-                        "predictions:tabs",
-                        "auto-annotation",
-                        "edit-history"
-                    ]
-                    const labels = tags.map((tag) => {
-                    return `<Label value="${tag.value}" background="${tag.background}" />`
-                }).join('\n')
-
-                const tagView = `
-                    <View>
-                          <Labels name="label" toName="text">
-                          ${labels}
-                          </Labels>
-                          <Text name="text" value="$text"/>
-                    </View>
-                `
-
-                const root = document.querySelector('#label-studio');
-                const labelStudio = new LabelStudio(root, {
-                    config: tagView,
-                    interfaces: interfaces,
-                    user: {
-                        pk: 1,
-                        firstName: "James",
-                        lastName: "Dean"
-                    },
-                    task: {
-                        annotations: [],
-                        predictions: [],
-                        id: 1,
-                        data: {
-                            text: text
-                        }
-                    }
-                });
-
-                labelStudio.on("labelStudioLoad", (LS) => {
-                    // Perform an action when Label Studio is loaded
-                    const c = LS.annotationStore.addAnnotation({
-                        userGenerate: true
-                    });
-                    LS.annotationStore.selectAnnotation(c.id);
-                    console.log("loading...")
-                });
-
-                labelStudio.on("submitAnnotation", (LS, annotation) => {
-                    // Retrieve an annotation in JSON format
-                    console.log(annotation.serializeAnnotation())
-                });
-            }
         })
+        return rsp.json();
     }
 
-    // execute getLabelConfig when page load
-    window.onload = function () {
-        getLabelConfig();
+    async function getLabelConfig() {
+        const rsp = await fetch('/admin/labelpage/labeling/get_config', {
+            method: 'post',
+        })
+        return rsp.json();
+
+    }
+
+    window.onload = async function () {
+        const config = await getLabelConfig();
+        const data = await getLabelData();
+
+        if (config) {
+            tags = config.tags;
+            text = config.text;
+            const labels = tags.map((tag) => {
+                return `<Label value="${tag.value}" background="${tag.background}" />`
+            }).join('\n')
+
+            tagView = `
+                <View>
+                      <Labels name="label" toName="text">
+                      ${labels}
+                      </Labels>
+                      <Text name="text" value="$text"/>
+                </View>
+            `
+        }
+
+        if (data) {
+            annotations = data.annotations;
+            predictions = data.predictions;
+        }
+
+        const root = document.querySelector('#label-studio');
+        const labelStudio = new LabelStudio(root, {
+            config: tagView,
+            interfaces: interfaces,
+            user: {
+                pk: 1,
+                firstName: "James",
+                lastName: "Dean"
+            },
+            task: {
+                annotations: annotations,
+                predictions: predictions,
+                id: 1,
+                data: {
+                    text: text
+                }
+            }
+        });
+
+        labelStudio.on("labelStudioLoad", (LS) => {
+            // Perform an action when Label Studio is loaded
+            const c = LS.annotationStore.addAnnotation({
+                userGenerate: true
+            });
+            LS.annotationStore.selectAnnotation(c.id);
+            console.log("loading...")
+        });
+
+        labelStudio.on("submitAnnotation", (LS, annotation) => {
+            // Retrieve an annotation in JSON format
+            console.log(annotation.serializeAnnotation())
+            $.ajax({
+                url: '/admin/labeling/{item}/submit',
+                method: 'post',
+                data: {
+                    annotation: annotation.serializeAnnotation(),
+                    text: text
+                },
+                success: function (e) {
+                    console.log(e)
+                },
+                error: function (e) {
+                    console.log(e)
+                }
+            })
+        });
     }
 
 

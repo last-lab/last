@@ -29,7 +29,6 @@ async def labeling_view(
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
 
-    # TODO, @xiaomin, 将这个请求里面的参数传递给label.html，从而生成不同的标注页面形式
     context = {
         "request": request,
         "resources": resources,
