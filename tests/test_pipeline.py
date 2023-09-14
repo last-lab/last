@@ -9,11 +9,15 @@ from last.types.task import Task
 def test_pipeline():
     # 如果需要加载新数据集, 则提供file\url，返回数据集对象
     dataset1 = Dataset(
-        name="test1", dimensions=[RiskDimension(name="国家安全")], file="docs/examples/testset.csv"
+        name="test1",
+        focused_risks=[RiskDimension(level=1, name="国家安全")],
+        file="docs/examples/testset.csv",
     )
     # 上传第二份数据集
     dataset2 = Dataset(
-        name="test2", dimensions=[RiskDimension(name="个人隐私")], file="docs/examples/testset.csv"
+        name="test2",
+        focused_risks=[RiskDimension(level=1, name="个人隐私")],
+        file="docs/examples/testset.csv",
     )
     # 明确评测方案，即使用哪些数据集合集进行评测
     plan = Plan(

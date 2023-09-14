@@ -1,12 +1,12 @@
 from typing import List, Dict, Union, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from enum import Enum, auto
 from datetime import datetime
 import uuid
 
 
 class RiskDimension(BaseModel):
-    level: Optional[int] = None
+    level: Optional[int] = Field(default=3) # 风险类型级别，默认是三级
     name: str
     description: Optional[str] = None
 

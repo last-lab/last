@@ -5,6 +5,7 @@ from .public import RiskDimension, ReturnCode, ID
 from datetime import datetime
 from pathlib import Path
 from pydantic import HttpUrl, Field, validator
+from .annotation import Annotations
 import csv
 from enum import Enum
 
@@ -26,11 +27,11 @@ class QARecord(Record):
     question: Message
     answer: Optional[Message] = None
     critic: Optional[Message] = None # critic模型对该条QARecord的回复
-
+    annotation: Optional[Annotations] = None # QARecord对应的人工标注结果
 
 class Dataset(Record, BaseManager):
     name: str # 模型名称
-    dimensions: List[RiskDimension] # 风险详情
+    focused_risks: Optional[List[RiskDimension]] = Field(default=None) # 风险详情 TODO 写个class 
     url: Optional[HttpUrl] = None # 文件url
     file: Optional[Path] = None # 文件本地path
     volume: Optional[str] = None # 数据集大小GB
@@ -38,12 +39,10 @@ class Dataset(Record, BaseManager):
     qa_num: Optional[int] = Field(default=0, init=False) # 对话条数
     word_cnt: Optional[int] = Field(default=0, init=False) # 语料字数
 
-    qa_records: Optional[Dict[str, QARecord]] = None  # Message的唯一id
-    conversation_start_id: Optional[List[str]] = None # 每段对话的起始Message id
+    qa_records: Optional[Dict[str, QARecord]] = None  # key是每条QARecord的唯一id
+    conversation_start_id: Optional[List[str]] = None # 每段对话的起始QARecord id, 为了多轮对话，目前暂时不启用
     current_conversation_index: Optional[int] = Field(default=0, init=False) # 供迭代器使用
     current_qa_record_id: Optional[int] = Field(default=0, init=False) # 供迭代器使用
-
-    # 风险详情
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

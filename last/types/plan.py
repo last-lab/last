@@ -25,7 +25,7 @@ class Plan(Record, BaseManager):
     """
     name: str
     eval_type: EvaluationType # 系统评分、人工评分
-    dimensions: Optional[Dict[str, List[str]]] = Field(default=None) # 填写各个一级风险维度的占比%，key是风险维度，v是str，逗号隔开 TODO 写个类
+    dimensions: Optional[Dict[str, str]] = Field(default=None) # 填写各个一级风险维度的占比%，key是风险维度，v是str，逗号隔开
     datasets: List[Dataset] 
     focused_risk: Optional[RelatedRiskDimensions] = Field(default=None, init=False) # TODO 写个class
 
