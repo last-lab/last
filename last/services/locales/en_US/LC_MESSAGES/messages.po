@@ -60,7 +60,7 @@ msgstr "Add Model"
 
 #: dashboard/resources.py:69
 msgid "EvaluationRecord"
-msgstr ""
+msgstr "Evaluation Record"
 
 #: dashboard/resources.py:76
 msgid "Labeling Record"
