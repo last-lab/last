@@ -10,7 +10,7 @@ from tortoise import Model
 from tortoise.transactions import in_transaction
 
 from dashboard.biz_routers import biz_router
-from dashboard.models import Config, EvaluationPlan, Log, ModelInfo
+from dashboard.models import Config, EvaluationPlan, Log, ModelInfo, DataSet
 from dashboard.widgets.displays import ShowModelCard
 from last.services.app import app
 from last.services.depends import (

@@ -1,6 +1,6 @@
 from tortoise import Model, fields
 
-from dashboard.enums import EvalStatus, GenderType, ProductType, ScoreWayType, Status
+from dashboard.enums import EvalStatus, GenderType, ProductType, ScoreWayType, Status, EvaluationType
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -118,13 +118,22 @@ class EvaluationPlan(Model):
     """
     评测方案管理model
     """
-
-    plan_name = fields.CharField(max_length=200)
-    plan_content = fields.CharField(max_length=500)
-    datasets = fields.CharField(max_length=200)
-    score_way = fields.IntEnumField(
-        ScoreWayType, description="Score Way", default=ScoreWayType.system
+    name = fields.CharField(max_length=200)
+    eval_type = fields.IntEnumField(
+        EvaluationType, description="Eval Type", default=EvaluationType.auto_ai_critique
     )
+    dimensions = fields.CharField(max_length=500)
+    dataset_ids = fields.CharField(max_length=200)
+    current_dataset_index = fields.CharField(max_length=200, null=True)
+    current_dataset_iter = fields.CharField(max_length=200, null=True)
+    uid = fields.CharField(max_length=200, null=True)
+    description = fields.CharField(max_length=200, null=True)
+    creator = fields.CharField(max_length=200, null=True)
+    editor = fields.CharField(max_length=200, null=True)
+    reviewer = fields.CharField(max_length=200, null=True)
+    permissions = fields.CharField(max_length=200, null=True)
+    created_at = fields.DatetimeField(null=True)
+    updated_at = fields.DatetimeField(null=True)
 
 
 class DataSet(Model):

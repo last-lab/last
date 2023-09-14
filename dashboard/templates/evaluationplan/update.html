@@ -8,13 +8,13 @@
         <div class="card-body border-bottom py-3">
             <form method="post" action="{{ request.app.admin_path }}/{{ resource }}/epm_update/{{ pk }}"
                   enctype="application/x-www-form-urlencoded">
-                <input hidden="hidden" name="datasets" id="input-datasets"/>
-                <input hidden="hidden" plan="{{obj.plan_content}}" name="plan_content" id="input-plan-content"/>
+                <input hidden="hidden" name="dataset_ids" id="input-datasets"/>
+                <input hidden="hidden" plan="{{obj.dimensions}}" name="dimensions" id="input-plan-content"/>
                 <div class="mb-3 row">
                     <label class="col-2 col-form-label">方案名称</label>
                     <div class="col-3">
-                        <input required type="" class="form-control" name="plan_name"
-                               placeholder="请输入" value="{{obj.plan_name}}">
+                        <input required type="" class="form-control" name="name"
+                               placeholder="请输入" value="{{obj.name}}">
                     </div>
 
                 </div>
@@ -22,16 +22,16 @@
                     <div class="col-2 col-form-label">评分方式</div>
                     <div class="col-3">
                         <label class="form-check form-check-inline">
-                            <input type="radio" class="form-check-input" name="score_way"
+                            <input type="radio" class="form-check-input" name="eval_type"
                                    value="0"
-                                   {% if obj.score_way== 0 %}checked{% endif %}>
+                                   {% if obj.eval_type== 0 %}checked{% endif %}>
                             <span class="form-check-label">系统评分</span>
                         </label>
 
                         <label class="form-check form-check-inline">
-                            <input type="radio" class="form-check-input" name="score_way"
+                            <input type="radio" class="form-check-input" name="eval_type"
                                    value="1"
-                                   {% if obj.score_way == 1 %}checked{% endif %}
+                                   {% if obj.eval_type == 1 %}checked{% endif %}
                             >
                             <span class="form-check-label">人工评分</span>
                         </label>

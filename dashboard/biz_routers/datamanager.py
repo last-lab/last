@@ -159,7 +159,7 @@ async def update_view(
     """
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
-    datasets = await DataSet.filter(id__in=obj.datasets.split(",")).order_by("id").limit(10)
+    datasets = await DataSet.filter(id__in=obj.dataset_ids.split(",")).order_by("id").limit(10)
     dataset_schemas = DataSetTool.ds_model_to_schema(datasets)
     context = {
         "request": request,
