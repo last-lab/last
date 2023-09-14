@@ -4,11 +4,11 @@ from pydantic import BaseModel
 from enum import Enum, auto
 
 
-@dataclass
+# @dataclass
 class RiskDimension(BaseModel):
-    level: int
     name: str
-    description: str
+    level: Union[int, None] = None
+    description: Union[str, None] = None
 
     def __str__(self):
         return self.name

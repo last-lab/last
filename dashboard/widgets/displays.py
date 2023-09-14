@@ -76,7 +76,7 @@ class ShowModelCard(Display):
 
 
 class ShowAction(Display):
-    template = "evaluationdatasetmanager/action_dataset.html"
+    template = "dataset/action_dataset.html"
 
     async def render(self, request: Request, value: any):
         return await super().render(
