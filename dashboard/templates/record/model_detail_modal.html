@@ -1,7 +1,7 @@
-<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#modelDetail">
+<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#modelDetail-{{ value.model_detail.name }}">
   模型详情
 </button>
-<div class="modal" id="modelDetail" tabindex="-1">
+<div class="modal" id="modelDetail-{{ value.model_detail.name }}" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">

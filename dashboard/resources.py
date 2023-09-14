@@ -75,8 +75,7 @@ class Evaluation(Dropdown):
     class Record(Model):
         """评测记录"""
 
-        page_title = "评测记录"
-        page_pre_title = "模型评测记录"
+        page_title = _("EvaluationRecord Record")
         label: str = _("EvaluationRecord Record")
         model = Record
 
