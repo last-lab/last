@@ -67,3 +67,29 @@ async def get_config_from_db(request: Request, resource: str):
     }
     # return "test"
     return mock_data
+
+
+@router.post("/{resource}/labeling/get_data")
+async def get_annotatoin_and_predict_data(request: Request, resource: str):
+    """_summary_
+    # 需要返回labelstudio需要的annotation和predict的两个数据
+
+    Args:
+        request (Request): _description_
+        resource (str): _description_
+    """
+    mock_data = {
+        "annotations": [],
+        "predictions": []
+    }
+    return mock_data
+
+
+@router.post("/{resource}/labeling/{pk}/submit")
+async def submit_callback(
+    request: Request,
+    resource: str,
+    pk: str
+):
+    form = await request.form()
+    print(form)
