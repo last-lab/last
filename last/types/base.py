@@ -14,7 +14,7 @@ class Record(BaseModel):
     editor: Optional[UserInfo] = None
     reviewer: Optional[UserInfo] = None
     created_at: Optional[DateString] = None
-    updated_at:  Optional[DateString] = None
+    updated_at: Optional[DateString] = None
     permissions: Optional[PermissionLevel] = PermissionLevel.VIEWER
 
     def __init__(self, **data):
@@ -37,7 +37,6 @@ class Statistics(BaseModel):
     total_cnt: str
     updated_at: DateString
     description: Optional[str]
-
 
 
 class Filter(BaseModel):
