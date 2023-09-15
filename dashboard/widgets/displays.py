@@ -6,6 +6,7 @@ from starlette.requests import Request
 from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo
 from dashboard.enums import EvalStatus
 from last.services.widgets.displays import Display, Popover, Status
+from dashboard.utils.converter import DataSetTool
 
 
 class ShowIp(Display):
@@ -51,17 +52,28 @@ class ShowPlanDetail(Display):
         datasets = await DataSet.filter(id__in=dataset_ids)
         dataset_names = []
         risk_details = []
+        eval_type = '系统评分⭐'
+        if eval_plan.eval_type == 1:
+            eval_type = "人工评分 👤️"
 
         for ds in datasets:
             dataset_names.append(ds.name)
             risk_details.append(json.loads(ds.dimensions))
 
+        risk_names = []
+        for r in risk_details:
+            if isinstance(r, list):
+                for r_item in r:
+                    risk_names.append(r_item['name'])
+            else:
+                risk_names.append(r['name'])
+
         plan_detail = {
             "name": eval_plan.name,
-            "score_way": eval_plan.eval_type,
+            "score_way": eval_type,
             "plan_content": eval_plan.dimensions,
-            "dataset_names": dataset_names,
-            "risk_detail": risk_details,
+            "dataset_names": "\n".join(dataset_names),
+            "risk_detail": "\n".join(risk_names),
         }
 
         return await super().render(
