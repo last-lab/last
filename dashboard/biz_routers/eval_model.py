@@ -67,7 +67,8 @@ async def evaluation_create(
 # 用来创建model的接口
 @router.post("/model/model_create")
 async def create_model(request: Request, model_view: ModelView):
-    # TODO: @wangxuhong 这里需要将下面的 model_info 替换成 LLM 的信息
+    # TODO: @wangxuhong 写一个接口，输入是endpoint, AK, SK. 
+    # 输出是一个LLM类 类的定义 from last.types.llm import LLM
     model_info = {
         "name": "书生·浦语",
         "model_type": "聊天机器人、自然语言处理助手",
