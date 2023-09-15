@@ -1,7 +1,7 @@
-<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#record-plan-detail">
+<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#record-plan-detail-{{ value.plan_detail.name }}">
   {{ value.plan_detail.name }}
 </button>
-<div class="modal" id="record-plan-detail" tabindex="-1">
+<div class="modal" id="record-plan-detail-{{ value.plan_detail.name }}" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -20,15 +20,15 @@
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">风险类型</div>
-            <div class="datagrid-content">{{ value.plan_detail.plan_content }}</div>
+            <div class="datagrid-content">{{ value.plan_detail.version }}</div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">评测集</div>
-            <div class="datagrid-content">{{ value.plan_detail.dataset_names }}</div>
+            <div class="datagrid-content">{{ value.plan_detail.base_model }}</div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">风险详情</div>
-            <div class="datagrid-content">{{ value.plan_detail.risk_detail }}</div>
+            <div class="datagrid-content">{{ value.plan_detail.parameter_volume }}</div>
           </div>
         </div>
       </div>

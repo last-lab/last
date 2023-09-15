@@ -1,6 +1,6 @@
 from tortoise import Tortoise
 
-from dashboard.models import LabelPage
+from dashboard.biz_models import LabelPage
 
 
 async def create_labeling_mock_data():
