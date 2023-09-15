@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-09-11 10:25+0800\n"
+"POT-Creation-Date: 2023-09-15 15:41+0800\n"
 "PO-Revision-Date: 2021-04-16 22:46+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans_CN\n"
@@ -18,62 +18,134 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.12.1\n"
 
-#: dashboard/resources.py:39
+#: dashboard/resources.py:58
 msgid "Dashboard"
 msgstr "监控台"
 
-#: dashboard/resources.py:44
+#: dashboard/resources.py:63
 msgid "Notification"
 msgstr "通知"
 
-#: dashboard/resources.py:48
+#: dashboard/resources.py:67
 msgid "Administartor"
 msgstr "安全监管"
 
-#: dashboard/resources.py:57
-#, fuzzy
-msgid "EvaluationRecord Record"
+#: dashboard/resources.py:79
+msgid "评测记录"
 msgstr "评测记录"
 
-#: dashboard/resources.py:57
+#: dashboard/resources.py:102 last/services/resources.py:115
+msgid "create"
+msgstr "创建"
+
+#: dashboard/resources.py:116
+msgid "创建评测"
+msgstr "创建评测"
+
+#: dashboard/resources.py:120
+msgid "模型评测"
+msgstr ""
+
+#: dashboard/resources.py:128
+msgid "Labeling Record"
+msgstr "标注记录"
+
+#: dashboard/resources.py:136
+#, fuzzy
+msgid "labeling"
+msgstr "标注工具"
+
+#: dashboard/resources.py:150
+msgid "Labeling"
+msgstr "标注工具"
+
+#: dashboard/resources.py:154
+msgid "Dataset"
+msgstr "数据集"
+
+#: dashboard/resources.py:162
+#, fuzzy
+msgid "评测方案管理"
+msgstr "评测方案管理"
+
+#: dashboard/resources.py:183 last/services/resources.py:127
+msgid "update"
+msgstr "更新"
+
+#: dashboard/resources.py:190
+msgid "复制并新建"
+msgstr ""
+
+#: dashboard/resources.py:197 last/services/resources.py:134
+msgid "delete"
+msgstr "删除"
+
+#: dashboard/resources.py:207
+msgid "新建方案"
+msgstr ""
+
+#: dashboard/resources.py:217 dashboard/resources.py:219
+msgid "评测集管理"
+msgstr "评测集管理"
+
+#: dashboard/resources.py:236
+msgid "上传数据集"
+msgstr ""
+
+#: dashboard/resources.py:248
+msgid "datamanager"
+msgstr "数据管理"
+
+#: dashboard/resources.py:335
+msgid "Log"
+msgstr "日志"
+
+#: dashboard/resources.py:384
+msgid "Admin"
+msgstr "管理员"
+
+#: dashboard/resources.py:423
+msgid "Resource"
+msgstr "资源"
+
+#: dashboard/resources.py:433
+msgid "Permission"
+msgstr "权限"
+
+#: dashboard/resources.py:443
+msgid "Role"
+msgstr "角色"
+
+#: dashboard/resources.py:446
+msgid "Auth"
+msgstr "权限管理"
+
+#: dashboard/resources.py:566
+msgid "Switch Layout"
+msgstr "切换布局"
+
+#: dashboard/biz_routers/eval_model.py:44
 #, fuzzy
 msgid "Create Evaluation"
 msgstr "新建评测"
 
-#: dashboard/resources.py:57
-#, fuzzy
-msgid "Evaluation Plan"
-msgstr "评测方案"
+#: dashboard/templates/evaluationplan/copy_create.html:133
+#: dashboard/templates/evaluationplan/create.html:131
+#: dashboard/templates/evaluationplan/update.html:133
+#: last/services/templates/create.html:15
+#: last/services/templates/update.html:17
+msgid "save"
+msgstr "保存"
 
-#: dashboard/resources.py:57
-#, fuzzy
-msgid "Evaluation Model"
-msgstr "评测模型"
-
-#: dashboard/resources.py:57
-#, fuzzy
-msgid "Add Model"
-msgstr "添加模型"
-
-#: dashboard/resources.py:69
-msgid "EvaluationRecord"
-msgstr "模型评测"
-
-#: dashboard/resources.py:76
-msgid "Labeling Record"
-msgstr "标注记录"
-
-#: dashboard/resources.py:83
-msgid "Labeling"
-msgstr "标注工具"
-
-#: dashboard/resources.py:87
-msgid "Dataset"
-msgstr "数据集"
-
-#: dashboard/resources.py:289
-msgid "Cat"
-msgstr "猫"
+#: dashboard/templates/evaluationplan/copy_create.html:136
+#: dashboard/templates/evaluationplan/create.html:133
+#: dashboard/templates/evaluationplan/update.html:136
+#: last/services/templates/create.html:19
+#: last/services/templates/providers/import_export/export.html:25
+#: last/services/templates/providers/import_export/import.html:32
+#: last/services/templates/update.html:27
+msgid "return"
+msgstr "返回"
 
 #: dashboard/templates/providers/login/password.html:6
 #: last/services/templates/providers/login/avatar.html:20
@@ -117,6 +189,27 @@ msgstr "请再次输入新密码"
 msgid "submit"
 msgstr "提交"
 
+#: dashboard/templates/record/create_eval.html:6
+#, fuzzy
+msgid "Evaluation Plan"
+msgstr "评测方案"
+
+#: dashboard/templates/record/create_eval.html:14
+#: dashboard/templates/record/create_eval.html:40
+#, fuzzy
+msgid "Evaluation Model"
+msgstr "模型评测"
+
+#: dashboard/templates/record/create_eval.html:21
+#, fuzzy
+msgid "Add Model"
+msgstr "添加模型"
+
+#: dashboard/templates/record/create_eval.html:59
+#, fuzzy
+msgid "Create new Model"
+msgstr "评测模型"
+
 #: last/services/middlewares.py:77
 #, python-format
 msgid "You can only try after %(seconds)s seconds"
@@ -126,18 +219,6 @@ msgstr ""
 #, python-format
 msgid "Login failed %(times)s times, you can try %(rest_times)s more times"
 msgstr ""
-
-#: last/services/resources.py:115
-msgid "create"
-msgstr "创建"
-
-#: last/services/resources.py:127
-msgid "update"
-msgstr "更新"
-
-#: last/services/resources.py:134
-msgid "delete"
-msgstr "删除"
 
 #: last/services/resources.py:144
 msgid "delete_selected"
@@ -188,21 +269,9 @@ msgstr "旧密码"
 msgid "new_password_different"
 msgstr "新密码"
 
-#: last/services/templates/create.html:15
-#: last/services/templates/update.html:17
-msgid "save"
-msgstr "保存"
-
 #: last/services/templates/create.html:17
 msgid "save_and_add_another"
 msgstr "保存并添加下一个"
-
-#: last/services/templates/create.html:19
-#: last/services/templates/providers/import_export/export.html:25
-#: last/services/templates/providers/import_export/import.html:32
-#: last/services/templates/update.html:27
-msgid "return"
-msgstr "返回"
 
 #: last/services/templates/init.html:10
 msgid "Create first admin"
@@ -373,4 +442,31 @@ msgstr ""
 
 #~ msgid "Animal"
 #~ msgstr "动物"
+
+#~ msgid "Cat"
+#~ msgstr "猫"
+
+#~ msgid "EvaluationRecord Record"
+#~ msgstr "模型评测"
+
+#~ msgid "EvaluationRecord_Record"
+#~ msgstr "评测记录"
+
+#~ msgid "CreateEvaluation"
+#~ msgstr "新建评测"
+
+#~ msgid "EvaluationModel"
+#~ msgstr "模型评测"
+
+#~ msgid "Evaluation Plan Manager"
+#~ msgstr "评测方案管理"
+
+#~ msgid "Model Evaluation"
+#~ msgstr "名称评测"
+
+#~ msgid "Evaluation Create"
+#~ msgstr "新建评测"
+
+#~ msgid "Evaluation Record"
+#~ msgstr "评测记录"
 

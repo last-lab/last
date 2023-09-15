@@ -41,7 +41,7 @@ from last.services.resources import (
 )
 from last.services.widgets import displays, filters, inputs
 
-upload = FileUpload(uploads_dir=f"{(Path(BASE_DIR)/'static'/'uploads').resolve()}")
+upload = FileUpload(uploads_dir=f"{(Path(BASE_DIR) / 'static' / 'uploads').resolve()}")
 
 
 @app.register
@@ -70,8 +70,7 @@ class Evaluation(Dropdown):
     class Record(Model):
         """评测记录"""
 
-        page_title = _("EvaluationRecord Record")
-        label: str = _("EvaluationRecord Record")
+        label = _("评测记录")
         model = Record
 
         filters = [
@@ -108,11 +107,11 @@ class Evaluation(Dropdown):
 
     class Create(Link):
         """创建评测"""
-
-        label = _("Create Evaluation")
+        label = _("创建评测")
+        icon = "fas fa-tag"
         url = "/admin/record/add"
 
-    label: str = _("EvaluationRecord")
+    label = _("模型评测")
     icon = "fas fa-user"
     resources = [Record, Create]
 
@@ -154,7 +153,7 @@ class Dataset(Dropdown):
 @app.register
 class DataManager(Dropdown):
     class EvaluationPlanResource(Model):
-        label = "评测方案管理"
+        label = _("评测方案管理")
         model = EvaluationPlan
         filters = [filters.Search(name="name", label="方案名称", placeholder="请输入")]
         fields = [
@@ -209,9 +208,9 @@ class DataManager(Dropdown):
             ]
 
     class DatasetResource(Model):
-        label = "评测集管理"
+        label = _("评测集管理")
         model = DataSet
-        page_title = "评测集管理"
+        page_title = _("评测集管理")
         filters = [
             filters.Search(name="name", label="评测集名称"),
             filters.Search(name="type", label="风险类型"),
@@ -328,7 +327,7 @@ class DataManager(Dropdown):
 
 @app.register
 class LogResource(Model):
-    label = "Log"
+    label = _("Log")
     model = Log
     icon = "far fa-sticky-note"
     fields = [
@@ -377,7 +376,7 @@ class LogResource(Model):
 @app.register
 class Auth(Dropdown):
     class AdminResource(Model):
-        label = "Admin"
+        label = _("Admin")
         model = Admin
         icon = "fas fa-user"
         page_pre_title = "admin list"
@@ -416,7 +415,7 @@ class Auth(Dropdown):
         ]
 
     class Resource(Model):
-        label = "Resource"
+        label = _("Resource")
         model = ResourceModel
 
         async def get_actions(self, request: Request) -> List[Action]:
@@ -426,7 +425,7 @@ class Auth(Dropdown):
             return []
 
     class Permission(Model):
-        label = "Permission"
+        label = _("Permission")
         model = PermissionModel
 
         async def get_actions(self, request: Request) -> List[Action]:
@@ -436,10 +435,10 @@ class Auth(Dropdown):
             return []
 
     class Role(Model):
-        label = "Role"
+        label = _("Role")
         model = RoleModel
 
-    label = "Auth"
+    label = _("Auth")
     icon = "fas fa-users"
     resources = [AdminResource, Resource, Permission, Role]
 
@@ -560,6 +559,6 @@ class Amount(ComputeField):
 
 @app.register
 class SwitchLayout(Link):
-    label = "Switch Layout"
+    label = _("Switch Layout")
     url = "/admin/layout"
     icon = "fas fa-grip-horizontal"
