@@ -58,7 +58,7 @@ class ShowPlanDetail(Display):
 
         for ds in datasets:
             dataset_names.append(ds.name)
-            risk_details.append(json.loads(ds.dimensions))
+            risk_details.append(json.loads(ds.focused_risks))
 
         risk_names = []
         for r in risk_details:
