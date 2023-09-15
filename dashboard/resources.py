@@ -11,16 +11,10 @@ from dashboard.biz_models import LabelPage
 from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin  # EvaluationPlan,; Evaluation,
-from dashboard.models import Cat  # EvaluationPlan,; Evaluation,
-from dashboard.models import Category  # EvaluationPlan,; Evaluation,
-from dashboard.models import Config  # Evaluation,
-from dashboard.models import Dog1  # EvaluationPlan,; Evaluation,
 from dashboard.models import Log
 from dashboard.models import Permission as PermissionModel
-from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
-from dashboard.providers import import_export_provider
 from dashboard.widgets.displays import (
     ShowAction,
     ShowIp,
@@ -87,7 +81,7 @@ class Evaluation(Dropdown):
                 search_mode="contains",
                 placeholder="评测模型/版本/方案",
             ),
-            filters.Enum(enum=enums.EvalStatus, name="status", label="评测状态"),
+            filters.Enum(enum=enums.EvalStatus, name="state", label="评测状态"),
         ]
         fields = [
             Field(name="llm_name", label="评测模型", display=ShowPopover()),
@@ -155,6 +149,7 @@ class Dataset(Dropdown):
     label = _("Dataset")
     icon = "fas fa-bars"
     resources = [LabelingRecord, Labeling]
+
 
 @app.register
 class DataManager(Dropdown):
@@ -330,6 +325,7 @@ class DataManager(Dropdown):
 #         return actions
 #
 
+
 @app.register
 class LogResource(Model):
     label = "Log"
@@ -495,6 +491,7 @@ class Auth(Dropdown):
 #
 #     # resources = [EvaluationPlanManagerResource]
 #     # resources = [EvaluationPlanResource]
+
 
 class RestDays(ComputeField):
     async def get_value(self, request: Request, obj: dict):

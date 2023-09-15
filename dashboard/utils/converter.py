@@ -38,7 +38,7 @@ class DataSetTool:
         for item in risk_dict_list:
             level = item["level"]
             name = item["name"]
-            uplevel_risk_name = item.get('uplevel_risk_name', None)
+            uplevel_risk_name = item.get("uplevel_risk_name", None)
             if level in risk_group_dict:
                 risk_group_dict[level] += f", {name}"
             else:
