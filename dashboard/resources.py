@@ -5,6 +5,7 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
+from dashboard.biz_models.datamanager import DataSet, EvaluationPlan
 from dashboard.constants import BASE_DIR
 
 # from dashboard.models import Evaluation
@@ -14,8 +15,12 @@ from dashboard.models import Category  # EvaluationPlan,; Evaluation,
 from dashboard.models import Config  # Evaluation,
 from dashboard.models import DataSet  # EvaluationPlan,; Evaluation,
 from dashboard.models import Dog1  # EvaluationPlan,; Evaluation,
+
 from dashboard.models import EvaluationPlan  # EvaluationPlan,; Evaluation,
-from dashboard.models import EvaluationRecord, LabelPage, Log  # EvaluationPlan,; Evaluation,
+from dashboard.models import LabelPage, Log  # EvaluationPlan,; Evaluation,
+
+from dashboard.models import LabelPage, Log  # EvaluationPlan,; Evaluation,
+
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product, Record  # EvaluationPlan,; Evaluation,
 from dashboard.models import Resource as ResourceModel
@@ -27,9 +32,14 @@ from dashboard.widgets.displays import (
     ShowAction,
     ShowIp,
     ShowOperation,
+
     ShowPopover,
     ShowRiskType,
     ShowSecondType,
+
+    ShowPlanDetail,
+    ShowPopover,
+
     ShowStatus,
 )
 from last.services import enums as _enums
@@ -79,21 +89,12 @@ class Evaluation(Dropdown):
 
         page_title = "评测记录"
         page_pre_title = "模型评测记录"
-
-        label: str = _("Evaluation Record")
-        model = Record
-
-    class EvaluationRecord(Model):
-        label: str = _("EvaluationRecord Record")
-        icon = "fas fa-user"
-        model = EvaluationRecord
-
         label: str = _("EvaluationRecord Record")
         model = Record
 
         filters = [
             filters.Search(
-                name="model_name",
+                name="llm_name",
                 label="Search",
                 search_mode="contains",
                 placeholder="评测模型/版本/方案",
@@ -101,11 +102,11 @@ class Evaluation(Dropdown):
             filters.Enum(enum=enums.EvalStatus, name="status", label="评测状态"),
         ]
         fields = [
-            Field(name="model_name", label="评测模型", display=ShowPopover()),
-            Field(name="eval_pan", label="评测方案"),
+            Field(name="llm_name", label="评测模型", display=ShowPopover()),
+            Field(name="plan_id", label="评测方案", display=ShowPlanDetail()),
             Field(name="created_at", label="提交时间"),
-            Field(name="status", label="评测状态", display=ShowStatus()),
-            Field(name="operations", label="操作", display=ShowOperation()),
+            Field(name="state", label="评测状态", display=ShowStatus()),
+            Field(name="llm_id", label="操作", display=ShowOperation()),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
@@ -128,8 +129,6 @@ class Evaluation(Dropdown):
 
         label = _("Create Evaluation")
         url = "/admin/record/add"
-
-    label: str = _("Evaluation")
 
     label: str = _("EvaluationRecord")
     icon = "fas fa-user"
@@ -410,11 +409,11 @@ class DataManager(Dropdown):
         filters = [filters.Search(name="name", label="方案名称", placeholder="请输入")]
         fields = [
             "id",
-            Field(name="plan_name", label="评测方案"),
-            Field(name="plan_content", label="风险类型/数据占比/评测权重"),
-            Field(name="datasets", label="风险类型/数据占比/评测权重", display=displays.InputOnly()),
+            Field(name="name", label="评测方案"),
+            Field(name="dimensions", label="风险类型/数据占比/评测权重"),
+            Field(name="dataset_ids", label="风险类型/数据占比/评测权重", display=displays.InputOnly()),
             Field(
-                name="score_way",
+                name="eval_type",
                 label="评分方式",
                 display=displays.InputOnly(),
                 input_=inputs.RadioEnum(enums.ScoreWayType, default=enums.ScoreWayType.system),

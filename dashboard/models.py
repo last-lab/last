@@ -1,6 +1,6 @@
 from tortoise import Model, fields
 
-from dashboard.enums import EvalStatus, GenderType, ProductType, ScoreWayType, Status
+from dashboard.enums import EvalStatus, GenderType, ProductType, Status, ScoreWayType
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -12,7 +12,7 @@ from last.services.models import (
 
 # 这个类里面的东西是专门用来display的
 class ModelInfo(Model):
-    name = fields.CharField(max_length=200)
+    name = fields.CharField(max_length=200, null=True)
     model_type = fields.CharField(max_length=200, null=True)
     version = fields.CharField(max_length=200, null=True)
     base_model = fields.CharField(max_length=200, null=True)
@@ -63,18 +63,14 @@ class Config(Model):
 
 
 class Record(Model):
-    eval_models = fields.ManyToManyField("models.ModelInfo")
-    model_name = fields.CharField(max_length=200)
-    eval_pan = fields.IntField(description="Choose evaluation plan")
+    eval_models = fields.CharField(max_length=200, null=True)
+    llm_name = fields.CharField(max_length=200, null=True)
+    llm_id = fields.IntField(null=True)
+    eval_plan = fields.CharField(description="Choose evaluation plan", max_length=200, null=True)
+    plan_id = fields.IntField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
-    status: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress)
-
-
-class EvaluationRecord(Model):
-    model_name = fields.CharField(max_length=50)
-    eval_setting = fields.IntField()
-    submit_time = fields.DatetimeField()
-    eval_status = fields.IntEnumField(EvalStatus, description="EvaluationRecord Status")
+    state: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress, null=True)
+    report = fields.BinaryField(null=True)
 
 
 class Log(AbstractLog):
