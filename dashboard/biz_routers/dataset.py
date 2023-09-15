@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Depends, File, Path, UploadFile
 from jinja2 import TemplateNotFound
-from pydantic import BaseModel
 from starlette.requests import Request
 
 from dashboard.biz_models import DataSet
+from dashboard.resources import upload
 from last.services.depends import create_checker, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
-from dashboard.resources import upload
 from last.types.dataset import Dataset
 
 router = APIRouter()

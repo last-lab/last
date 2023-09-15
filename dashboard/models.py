@@ -1,6 +1,5 @@
 from tortoise import Model, fields
 
-from dashboard.enums import EvaluationType
 from dashboard.enums import GenderType, ProductType, Status
 from last.services.models import (
     AbstractAdmin,
@@ -87,8 +86,3 @@ class Dog1(Model):
     gender = fields.IntEnumField(GenderType, description="Gender Type")
     image = fields.CharField(max_length=200)
     birth_at = fields.DatetimeField(auto_now_add=True)
-
-
-
-
-

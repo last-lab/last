@@ -1,18 +1,10 @@
-
-from ast import literal_eval
-
 import json
-
+from ast import literal_eval
 
 from starlette.requests import Request
 
 from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo
 from dashboard.enums import EvalStatus
-
-from dashboard.biz_models import DataSet
-
-from dashboard.biz_models import ModelInfo
-
 from last.services.widgets.displays import Display, Popover, Status
 
 
@@ -107,7 +99,6 @@ class ShowModelCard(Display):
 class ShowAction(Display):
     template = "dataset/action_dataset.html"
 
-
     async def render(self, request: Request, value: any):
         dataset = {}
         label = []
@@ -119,7 +110,6 @@ class ShowAction(Display):
 
 class ShowRiskType(Display):
     template = "dataset/risk.html"
-
 
     async def render(self, request: Request, value: any):
         label = list(filter(lambda x: x["level"] == 1, literal_eval(value)))
