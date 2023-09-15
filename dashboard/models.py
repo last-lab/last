@@ -1,6 +1,6 @@
 from tortoise import Model, fields
 
-from dashboard.enums import EvalStatus, GenderType, ProductType, Status
+from dashboard.enums import GenderType, ProductType, Status
 from last.services.models import (
     AbstractAdmin,
     AbstractLog,
@@ -8,21 +8,6 @@ from last.services.models import (
     AbstractResource,
     AbstractRole,
 )
-
-
-# 这个类里面的东西是专门用来display的
-class ModelInfo(Model):
-    name = fields.CharField(max_length=200, null=True)
-    model_type = fields.CharField(max_length=200, null=True)
-    version = fields.CharField(max_length=200, null=True)
-    base_model = fields.CharField(max_length=200, null=True)
-    parameter_volume = fields.CharField(max_length=200, null=True)
-    pretraining_info = fields.CharField(max_length=200, null=True)
-    finetuning_info = fields.CharField(max_length=200, null=True)
-    alignment_info = fields.CharField(max_length=200, null=True)
-    endpoint = fields.CharField(max_length=200, null=True)
-    access_key = fields.CharField(max_length=200, null=True)
-    secret_key = fields.CharField(max_length=200, null=True)
 
 
 class Admin(AbstractAdmin):
@@ -60,17 +45,6 @@ class Config(Model):
     key = fields.CharField(max_length=20, unique=True, description="Unique key for config")
     value = fields.JSONField()
     status: Status = fields.IntEnumField(Status, default=Status.on)
-
-
-class Record(Model):
-    eval_models = fields.CharField(max_length=200, null=True)
-    llm_name = fields.CharField(max_length=200, null=True)
-    llm_id = fields.IntField(null=True)
-    eval_plan = fields.CharField(description="Choose evaluation plan", max_length=200, null=True)
-    plan_id = fields.IntField(null=True)
-    created_at = fields.DatetimeField(auto_now_add=True)
-    state: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress, null=True)
-    report = fields.BinaryField(null=True)
 
 
 class Log(AbstractLog):
@@ -112,10 +86,3 @@ class Dog1(Model):
     gender = fields.IntEnumField(GenderType, description="Gender Type")
     image = fields.CharField(max_length=200)
     birth_at = fields.DatetimeField(auto_now_add=True)
-
-
-class LabelPage(Model):
-    task_type = fields.CharField(max_length=50)
-    labeling_method = fields.CharField(max_length=255)
-    release_time = fields.DatetimeField()
-    current_status = fields.CharField(max_length=50)
