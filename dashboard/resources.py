@@ -16,9 +16,9 @@ from dashboard.models import Permission as PermissionModel
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
 from dashboard.widgets.displays import (
+    OperationField,
     ShowAction,
     ShowIp,
-    ShowOperation,
     ShowPlanDetail,
     ShowPopover,
     ShowRiskType,
@@ -87,7 +87,7 @@ class Evaluation(Dropdown):
             Field(name="plan_id", label="评测方案", display=ShowPlanDetail()),
             Field(name="created_at", label="提交时间"),
             Field(name="state", label="评测状态", display=ShowStatus()),
-            Field(name="llm_id", label="操作", display=ShowOperation()),
+            OperationField(name="llm_id", label="操作"),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
@@ -107,6 +107,7 @@ class Evaluation(Dropdown):
 
     class Create(Link):
         """创建评测"""
+
         label = _("创建评测")
         icon = "fas fa-tag"
         url = "/admin/record/add"
