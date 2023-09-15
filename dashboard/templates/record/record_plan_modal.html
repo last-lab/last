@@ -1,37 +1,71 @@
-<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#record-plan-detail-{{ value.plan_detail.name }}">
-  {{ value.plan_detail.name }}
+<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal"
+        data-bs-target="#record-plan-detail-{{ value.plan_detail.name }}">
+    {{ value.plan_detail.name }}
 </button>
 <div class="modal" id="record-plan-detail-{{ value.plan_detail.name }}" tabindex="-1">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">方案信息</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="datagrid">
-          <div class="datagrid-item">
-            <div class="datagrid-title">方案名称</div>
-            <div class="datagrid-content">{{ value.plan_detail.name }}</div>
-          </div>
-          <div class="datagrid-item">
-            <div class="datagrid-title">评分方式</div>
-            <div class="datagrid-content">{{ value.plan_detail.score_way }}</div>
-          </div>
-          <div class="datagrid-item">
-            <div class="datagrid-title">风险类型</div>
-            <div class="datagrid-content">{{ value.plan_detail.plan_content }}</div>
-          </div>
-          <div class="datagrid-item">
-            <div class="datagrid-title">评测集</div>
-            <div class="datagrid-content">{{ value.plan_detail.dataset_names }}</div>
-          </div>
-          <div class="datagrid-item">
-            <div class="datagrid-title">风险详情</div>
-            <div class="datagrid-content">{{ value.plan_detail.risk_detail }}</div>
-          </div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">方案信息</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="datagrid">
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">方案名称</div>
+                        <div class="datagrid-content">{{ value.plan_detail.name }}</div>
+                    </div>
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">评分方式</div>
+                        <div class="datagrid-content">{{ value.plan_detail.score_way }}</div>
+                    </div>
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">风险类型</div>
+                        <div class="datagrid-content">
+                            {% for item in value.plan_detail.plan_content %}
+                                <div class="badge bg-azure-lt">{{ item }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">评测集</div>
+                        <div class="datagrid-content">
+                            {% for item in value.plan_detail.dataset_names %}
+                                <code>{{ item }}</code>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="datagrid-item">
+                        <div class="datagrid-title">风险详情</div>
+                        <div class="datagrid-content">
+                            {% for item in value.plan_detail.risk_detail %}
+                                <code>{{ item }}</code>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
+
+<script>
+    const a = [
+        {
+            "level": 1,
+            "name": "国家安全",
+            "description": ""
+        },
+        {
+            "level": 2,
+            "name": "颠覆政权",
+            "description": "",
+            "uplevel_risk_name": ["敏感信息", "安全问题"]
+        },
+        {
+            "level": 2,
+            "name": "宣扬恐怖主义",
+            "description": "",
+            "uplevel_risk_name": ["维度三1", "维度三2"]
+        }]
+</script>

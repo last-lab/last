@@ -4,11 +4,9 @@ from pydantic import BaseModel
 from starlette.requests import Request
 
 from dashboard.biz_models import DataSet
-from dashboard.resources import upload
 from last.services.depends import create_checker, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
-from last.types.dataset import Dataset
 
 router = APIRouter()
 
@@ -47,23 +45,18 @@ async def json(request: Request, file: UploadFile = File(...)):
         "result": 1,
         "reason": "",
         "focused_risks": [
-            {"level":1,"name":"国家安全","description":""},
-            {
-                "level":2,
-                "name":"颠覆政权",
-                "description":"",
-                "uplevel_risk_name": ["敏感信息", "安全问题"]
-            },
+            {"level": 1, "name": "国家安全", "description": ""},
+            {"level": 2, "name": "颠覆政权", "description": "", "uplevel_risk_name": ["敏感信息", "安全问题"]},
             {
                 "level": 2,
                 "name": "宣扬恐怖主义",
                 "description": "",
-                "uplevel_risk_name": ["维度三1", "维度三2"]
+                "uplevel_risk_name": ["维度三1", "维度三2"],
             },
         ],
         "qa_num": 666,
         "word_cnt": 1000,
-        "volume": "10GB"
+        "volume": "10GB",
     }
     return contents
 
@@ -74,6 +67,7 @@ class Item(BaseModel):
     volume: str
     qa_num: str
     word_cnt: str
+
 
 @router.post("/dataset/conform")
 async def conform(request: Request, item: Item):
