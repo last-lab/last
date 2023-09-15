@@ -2,9 +2,9 @@ import json
 
 from starlette.requests import Request
 
-from dashboard.biz_models.datamanager import DataSet, EvaluationPlan
+from dashboard.biz_models import DataSet, EvaluationPlan
 from dashboard.enums import EvalStatus
-from dashboard.models import ModelInfo
+from dashboard.biz_models import ModelInfo
 from last.services.widgets.displays import Display, Popover, Status
 
 
@@ -47,7 +47,7 @@ class ShowPlanDetail(Display):
 
     async def render(self, request: Request, value: str):
         eval_plan = await EvaluationPlan.get_or_none(id=value)
-        dataset_ids = eval_plan.datasets.split(",")
+        dataset_ids = eval_plan.dataset_ids.split(",")
         datasets = await DataSet.filter(id__in=dataset_ids)
         dataset_names = []
         risk_details = []
@@ -57,9 +57,9 @@ class ShowPlanDetail(Display):
             risk_details.append(json.loads(ds.dimensions))
 
         plan_detail = {
-            "name": eval_plan.plan_name,
-            "score_way": eval_plan.score_way,
-            "plan_content": eval_plan.plan_content,
+            "name": eval_plan.name,
+            "score_way": eval_plan.eval_type,
+            "plan_content": eval_plan.dimensions,
             "dataset_names": dataset_names,
             "risk_detail": risk_details,
         }

@@ -1,7 +1,7 @@
-<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#record-plan-detail-{{ value.plan_detail.plan_name }}">
-  {{ value.plan_detail.plan_name }}
+<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#record-plan-detail-{{ value.plan_detail.name }}">
+  {{ value.plan_detail.name }}
 </button>
-<div class="modal" id="record-plan-detail-{{ value.plan_detail.plan_name }}" tabindex="-1">
+<div class="modal" id="record-plan-detail-{{ value.plan_detail.name }}" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -12,7 +12,7 @@
         <div class="datagrid">
           <div class="datagrid-item">
             <div class="datagrid-title">方案名称</div>
-            <div class="datagrid-content">{{ value.plan_detail.plan_name }}</div>
+            <div class="datagrid-content">{{ value.plan_detail.name }}</div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">评分方式</div>

@@ -7,11 +7,7 @@ from tortoise import Model
 
 from last.services.depends import get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
-
-# from last.services.responses import redirect
 from last.services.template import templates
-
-# from tortoise.transactions import in_transaction
 
 
 router = APIRouter()
