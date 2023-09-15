@@ -6,7 +6,7 @@ from starlette.requests import Request
 from tortoise import Model
 from tortoise.transactions import in_transaction
 
-from dashboard.biz_models.datamanager import DataSet
+from dashboard.biz_models import DataSet
 from dashboard.utils.converter import DataSetTool
 from last.services.depends import (
     admin_log_create,
@@ -79,7 +79,7 @@ async def create(
     input example:
         POST /{resource}/epm_create
         {
-          "plan_name": "test",
+          "name": "test",
           "plan_content": "国家安全/50.0%/50.0%,个人权利/50.0%/50.0%",
           "score_way": 0,
           "datasets": "1,2",
@@ -115,7 +115,7 @@ async def update(
     input example:
         POST /{resource}/epm_create/1
         {
-          "plan_name": "test",
+          "name": "test",
           "plan_content": "国家安全/50.0%/50.0%,个人权利/50.0%/50.0%",
           "score_way": 0,
           "datasets": "1,2",
@@ -236,7 +236,7 @@ async def copy_create(
     input example:
         POST /{resource}/epm_copy_create
         {
-          "plan_name": "test",
+          "name": "test",
           "plan_content": "国家安全/50.0%/50.0%,个人权利/50.0%/50.0%",
           "score_way": 0,
           "datasets": "1,2",
@@ -265,7 +265,7 @@ async def epm_ds_query(
     input example:
         POST /{resource}/epm_copy_create/1
         {
-          "plan_name": "test",
+          "name": "test",
           "plan_content": "国家安全/50.0%/50.0%,个人权利/50.0%/50.0%",
           "score_way": 0,
           "datasets": "1,2",

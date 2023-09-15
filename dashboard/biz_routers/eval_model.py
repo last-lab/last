@@ -4,8 +4,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from starlette.requests import Request
 
-from dashboard.biz_models.datamanager import EvaluationPlan
-from dashboard.models import ModelInfo, Record
+from dashboard.biz_models import EvaluationPlan, ModelInfo, Record
 from last.services.app import app
 from last.services.depends import get_resources
 from last.services.i18n import _
@@ -56,7 +55,7 @@ async def evaluation_create(
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
     model = await ModelInfo.get_or_none(id=eval_info.llm_id).values()
     await Record.create(
-        eval_plan=plan["plan_name"],
+        eval_plan=plan["name"],
         plan_id=eval_info.plan_id,
         llm_name=model["name"],
         llm_id=eval_info.llm_id,

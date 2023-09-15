@@ -5,35 +5,27 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
-from dashboard.biz_models.datamanager import DataSet, EvaluationPlan
+from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
+from dashboard.biz_models import LabelPage
+from dashboard.biz_models import DataSet  # EvaluationPlan,; Evaluation,
+from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
-
-# from dashboard.models import Evaluation
 from dashboard.models import Admin  # EvaluationPlan,; Evaluation,
 from dashboard.models import Cat  # EvaluationPlan,; Evaluation,
 from dashboard.models import Category  # EvaluationPlan,; Evaluation,
 from dashboard.models import Config  # Evaluation,
-from dashboard.biz_models.dataset import DataSet  # EvaluationPlan,; Evaluation,
 from dashboard.models import Dog1  # EvaluationPlan,; Evaluation,
-
-from dashboard.models import EvaluationPlan  # EvaluationPlan,; Evaluation,
-from dashboard.models import LabelPage, Log  # EvaluationPlan,; Evaluation,
-
-from dashboard.models import LabelPage, Log  # EvaluationPlan,; Evaluation,
-
+from dashboard.models import Log
 from dashboard.models import Permission as PermissionModel
-from dashboard.models import Product, Record  # EvaluationPlan,; Evaluation,
+from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
-
-# from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
 from dashboard.widgets.displays import (
     ShowAction,
     ShowIp,
     ShowOperation,
 
-    ShowPopover,
     ShowRiskType,
     ShowSecondType,
 
@@ -87,8 +79,7 @@ class Evaluation(Dropdown):
     class Record(Model):
         """评测记录"""
 
-        page_title = "评测记录"
-        page_pre_title = "模型评测记录"
+        page_title = _("EvaluationRecord Record")
         label: str = _("EvaluationRecord Record")
         model = Record
 
@@ -416,7 +407,9 @@ class DataManager(Dropdown):
                 name="eval_type",
                 label="评分方式",
                 display=displays.InputOnly(),
-                input_=inputs.RadioEnum(enums.ScoreWayType, default=enums.ScoreWayType.system),
+                input_=inputs.RadioEnum(
+                    enums.EvaluationType, default=enums.EvaluationType.auto_ai_critique
+                ),
             ),
         ]
 

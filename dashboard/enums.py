@@ -17,9 +17,6 @@ class GenderType(IntEnum):
 
 
 # datamanager
-class ScoreWayType(IntEnum):
-    system = 0
-    human = 1
 
 
 class EvaluationType(IntEnum):
