@@ -9,7 +9,7 @@ from starlette.requests import Request
 from dashboard.biz_models.datamanager import DataSet, EvaluationPlan
 from dashboard.enums import EvalStatus
 
-from dashboard.models import DataSet
+from dashboard.biz_models.dataset import DataSet
 
 from dashboard.models import ModelInfo
 

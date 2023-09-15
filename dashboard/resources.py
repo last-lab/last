@@ -13,7 +13,7 @@ from dashboard.models import Admin  # EvaluationPlan,; Evaluation,
 from dashboard.models import Cat  # EvaluationPlan,; Evaluation,
 from dashboard.models import Category  # EvaluationPlan,; Evaluation,
 from dashboard.models import Config  # Evaluation,
-from dashboard.models import DataSet  # EvaluationPlan,; Evaluation,
+from dashboard.biz_models.dataset import DataSet  # EvaluationPlan,; Evaluation,
 from dashboard.models import Dog1  # EvaluationPlan,; Evaluation,
 
 from dashboard.models import EvaluationPlan  # EvaluationPlan,; Evaluation,
