@@ -2,7 +2,7 @@
   详细信息
 </span>
 <span data-bs-toggle="modal" data-bs-target="#exportDataset" style="cursor: pointer; color: #0D53DE; margin-left: 10px; margin-right: 10px;">
-  <a href="data:application/json;charset=utf-8,{{ value.dataset_file }}" download="download.json" style="text-decoration: none">导出</a>
+  <a href="data:application/json;charset=utf-8,{{ value.file }}" download="download.json" style="text-decoration: none">导出</a>
 </span>
 <span data-bs-toggle="modal" data-bs-target="#deleteDataset" style="cursor: pointer; color: #F5483B;">
   删除
@@ -19,51 +19,57 @@
         <div class="datagrid">
           <div class="datagrid-item">
             <div class="datagrid-title">评测集名称</div>
-            <div class="datagrid-content">{{ value.detail.name }}</div>
+            <div class="datagrid-content">{{ value.name }}</div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">风险类型</div>
-            <div class="datagrid-content">{{ value.detail.type }}</div>
+            <div class="datagrid-content">
+                {% for type in value.focused_risks %}
+                    {% if type.level == 1 %}
+                    	<div>{{ type.name }}</div>
+                    {% endif %}
+                {% endfor %}
+            </div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">风险详情</div>
             <div class="datagrid-content">
-                {% for type in value.detail.moreType %}
-                    <div>
-                        <div>{{ type.subType }}</div>
-                        {% for subType in type.thirdType %}
-                            <span>{{ subType }}</span>
+                {% for type in value.focused_risks %}
+                    {% if type.level == 2  %}
+                        <div>{{ type.name }}</div>
+                        {% for subType in type.uplevel_risk_name %}
+                            <span>{{ subType.name }}</span>
                         {% endfor %}
-                    </div>
+                    {% endif %}
                 {% endfor %}
             </div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">访问路径</div>
             <div class="datagrid-content">
-                <span id="url">{{ value.detail.url }}</span>
+                <span id="url">{{ value.file }}</span>
                 <button class="btn btn-primary" onclick="copyUrl()" style="margin-left: 5px">复制</button>
             </div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">数据条数</div>
-            <div class="datagrid-content">{{ value.detail.dataCount }}</div>
+            <div class="datagrid-content">{{ value.qa_num }}</div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">语料字数</div>
-            <div class="datagrid-content">{{ value.detail.number }}</div>
+            <div class="datagrid-content">{{ value.word_cnt }}</div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">评测集大小</div>
-            <div class="datagrid-content">{{ value.detail.size }}</div>
+            <div class="datagrid-content">{{ value.volume }}</div>
           </div>
           <div class="datagrid-item">
             <div class="datagrid-title">更新时间</div>
-            <div class="datagrid-content">{{ value.detail.updateTime }}</div>
+            <div class="datagrid-content">{{ value.updated_at }}</div>
           </div>
             <div class="datagrid-item">
             <div class="datagrid-title">使用次数</div>
-            <div class="datagrid-content">{{ value.detail.useCount }}</div>
+            <div class="datagrid-content">{{ value.used_by }}</div>
           </div>
         </div>
       </div>
@@ -89,11 +95,11 @@
 <script>
     function deleteDataset() {
         $.ajax({
-            url: '/admin/evaluationdatasetmanager/delete/{{ value.detail.id }}',
+            url: '/admin/dataset/delete/{{ value.qa_records }}',
             type: 'DELETE',
             contentType: "application/json;charset=UTF-8",
             data: JSON.stringify({
-                pk: `{{ value.detail.id  }}`
+                pk: `{{ value.qa_records  }}`
             }),
             success: function () {
                 location.reload();

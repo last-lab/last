@@ -19,27 +19,27 @@
         </div>
         <div class="mb-3 row">
             <label class="col-3 col-form-label">上传进度</label>
-            <input disabled class="col col-form-label">上传已完成</input>
+            <div class="col col-form-label">上传已完成</div>
         </div>
         <div class="mb-3 row">
             <label class="col-3 col-form-label">风险类型</label>
-            <input disabled class="col col-form-label" id="type"></input>
+            <div class="col col-form-label" id="type"></div>
         </div>
         <div class="mb-3 row">
             <label class="col-3 col-form-label">风险详情</label>
-            <input  disabled class="col col-form-label" id="detail"></input>
+            <div class="col col-form-label" id="detail"></div>
         </div>
         <div class="mb-3 row">
             <label class="col-3 col-form-label">数据条数</label>
-            <input disabled class="col col-form-label" id="dataCount"></input>
+            <div class="col col-form-label" id="dataCount"></div>
         </div>
         <div class="mb-3 row">
             <label class="col-3 col-form-label">语料字数</label>
-            <input disabled class="col col-form-label" id="number"></input>
+            <div class="col col-form-label" id="number"></div>
         </div>
         <div class="mb-3 row">
             <label class="col-3 col-form-label">评测集大小</label>
-            <input  disabled class="col col-form-label" id="size"></input>
+            <div class="col col-form-label" id="size"></div>
         </div>
         <button type="button" class="btn btn-primary" onclick="uploadSubmit()">完成上传</button>
     </div>
@@ -53,27 +53,35 @@
                     formData.append("file", file);
                     document.getElementById("processing").style.display = 'block';
                     $.ajax({
-                        url: '/admin/evaluationdatasetmanager/json',
+                        url: '/admin/dataset/json',
                         type: 'POST',
                         data: formData,
                         processData: false,
                         contentType: false,
                         success: function (value) {
+                            console.log(value)
                             if(!value.result) {
                                 document.getElementById("processing").style.display = 'none';
                                 alert(value.reason);
                                 return;
-                            }
+                             }
                             document.getElementById("init").style.display = 'none';
                             document.getElementById("more").style.display = 'block';
-                            const data = [{"level":1,"name":"国家安全","description":""},{"level":2,"name":"颠覆政权","description":""},{"level":3,"name":"敏感信息","description":""}]
-                            $("#detail").val(JSON.stringify(data))
-                            $("#type").val(value.type);
-                            $("#dataCount").val(value.dataCount);
-                            $("#number").val(value.number);
-                            $("#size").val(value.size);
+                            value.focused_risks.map(item => {
+                                if (item.level === 2) {
+                                    $("#detail").append(`<div>${item.name}</div>`)
+                                    if (item.uplevel_risk_name) {
+                                        $("#detail").append(`<div>${item.uplevel_risk_name.join(',')}</div>`)
+                                    }
+                                }
+                             })
+                            $("#type").text(value.focused_risks.filter(item => item.level === 1)[0].name);
+                            $("#dataCount").text(value.qa_num);
+                            $("#number").text(value.word_cnt);
+                            $("#size").text(value.volume);
                         },
                         error: function (e) {
+                            document.getElementById("processing").style.display = 'none';
                             document.getElementById("error").style.display = 'block';
                         }
                     });
@@ -86,12 +94,30 @@
                 alert('请输入评测集名称')
                 return;
             }
+            const data = [
+                {"level":1,"name":"国家安全","description":""},
+                {
+                    "level":2,
+                    "name":"颠覆政权",
+                    "description":"",
+                    "uplevel_risk_name": ["敏感信息", "安全问题"]
+                },
+                {
+                    "level": 2,
+                    "name": "宣扬恐怖主义",
+                    "description": "",
+                    "uplevel_risk_name": ["维度三1", "维度三2"]
+                },
+            ];
             $.ajax({
-                url: '/admin/evaluationdatasetmanager/conform',
+                url: '/admin/dataset/conform',
                 type: 'POST',
                 data: JSON.stringify({
                     "name": $('#name').val(),
-                    "dimensions": $("#detail").val()
+                    "focused_risks": JSON.stringify(data),
+                    "volume": $("#size").text(),
+                    "qa_num": $("#dataCount").text(),
+                    "word_cnt": $("#number").text()
                 }),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -105,6 +131,6 @@
                 }
             })
 
-        }
+         }
     </script>
 {% endblock %}

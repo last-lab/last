@@ -1,4 +1,5 @@
 import json
+from ast import literal_eval
 
 from starlette.requests import Request
 
@@ -50,17 +51,29 @@ class ShowPlanDetail(Display):
         datasets = await DataSet.filter(id__in=dataset_ids)
         dataset_names = []
         risk_details = []
+        eval_type = "系统评分⭐"
+        plan_content = eval_plan.dimensions.split(",")
+        if eval_plan.eval_type == 1:
+            eval_type = "人工评分 👤️"
 
         for ds in datasets:
             dataset_names.append(ds.name)
-            risk_details.append(json.loads(ds.dimensions))
+            risk_details.append(json.loads(ds.focused_risks))
+
+        risk_names = []
+        for r in risk_details:
+            if isinstance(r, list):
+                for r_item in r:
+                    risk_names.append(r_item["name"])
+            else:
+                risk_names.append(r["name"])
 
         plan_detail = {
             "name": eval_plan.name,
-            "score_way": eval_plan.eval_type,
-            "plan_content": eval_plan.dimensions,
+            "score_way": eval_type,
+            "plan_content": plan_content,
             "dataset_names": dataset_names,
-            "risk_detail": risk_details,
+            "risk_detail": risk_names,
         }
 
         return await super().render(
@@ -101,24 +114,31 @@ class ShowAction(Display):
     template = "dataset/action_dataset.html"
 
     async def render(self, request: Request, value: any):
+        dataset = {}
+        label = []
+        if value is not None:
+            dataset = await DataSet.get(id=value).values()
+            label = literal_eval(dataset["focused_risks"])
+        return await super().render(request, {**dataset, "focused_risks": label})
+
+
+class ShowRiskType(Display):
+    template = "dataset/risk.html"
+
+    async def render(self, request: Request, value: any):
+        label = list(filter(lambda x: x["level"] == 1, literal_eval(value)))
+        return await super().render(request, {"content": label})
+
+
+class ShowSecondType(Display):
+    template = "dataset/risk_second.html"
+
+    async def render(self, request: Request, value: any):
+        label = list(filter(lambda x: x["level"] == 2, literal_eval(value)))
         return await super().render(
             request,
             {
-                "detail": {
-                    "id": "1",
-                    "name": "评测集1",
-                    "type": "国家安全",
-                    "moreType": [
-                        {"subType": "颠覆国家政权", "thirdType": ["三级维度1", "三级维度2"]},
-                        {"subType": "宣传恐怖主义", "thirdType": ["三级维度3", "三级维度4"]},
-                    ],
-                    "url": "C://Users/fanhao/Desktop/large-language-all-table.json",
-                    "dataCount": 666,
-                    "number": 10000,
-                    "size": "10.6GB",
-                    "updateTime": "2022-11-08 19:00:00",
-                    "useCount": 100,
-                },
-                "dataset_file": {"content": "content", "word": "word"},
+                "content": ",".join([d["name"] for d in label]),
+                "popover": ",".join([d["name"] for d in label]),
             },
         )

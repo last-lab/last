@@ -66,11 +66,11 @@ async def evaluation_create(
 
 # 用来创建model的接口
 @router.post("/model/model_create")
-async def create_model(request: Request, model_view: ModelView):
+async def create_model(model_view: ModelView):
     # TODO: @wangxuhong 写一个接口，输入是endpoint, AK, SK.
     # 输出是一个LLM类 类的定义 from last.types.llm import LLM
     model_info = {
-        "name": "书生·浦语",
+        "name": f"name-{model_view.endpoint}",
         "model_type": "聊天机器人、自然语言处理助手",
         "version": "1.3.0",
         "base_model": "GShard-v2-xlarge",
@@ -92,19 +92,8 @@ async def create_model(request: Request, model_view: ModelView):
         finetuning_info=model_info["finetuning_info"],
         alignment_info=model_info["alignment_info"],
     )
-    model_list = await ModelInfo.all().limit(10)
-    eval_plans = await EvaluationPlan.all().limit(10)
 
-    context = {
-        "request": request,
-        "eval_plans": eval_plans,
-        "chosen_plan": model_view.evaluation_plan,
-        "model_list": model_list,
-    }
-    return templates.TemplateResponse(
-        "record/create_eval.html",
-        context=context,
-    )
+    return {"status": "ok", "success": 1}
 
 
 # 用来获取model列表的接口

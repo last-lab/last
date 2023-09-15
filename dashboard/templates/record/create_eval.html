@@ -81,7 +81,9 @@
             contentType: 'application/json',
             dataType: 'html',
             success: function (data) {
+                alert('模型创建成功')
                 $('#modelModal').modal('hide')
+                window.location.reload()
             },
             error: function (data) {
                 console.log(data)
