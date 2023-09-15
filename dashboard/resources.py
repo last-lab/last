@@ -66,8 +66,10 @@ class Administartor(Dropdown):
 @app.register
 class Evaluation(Dropdown):
     """模型评测"""
+
     class Create(Link):
         """创建评测"""
+
         label = _("创建评测")
         icon = "fas fa-tag"
         url = "/admin/record/add"
