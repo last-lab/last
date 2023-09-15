@@ -1,6 +1,7 @@
 import os
 
 from last.types.dataset import Dataset
+from last.types.public import ReturnCode
 
 def test_create_from_file():
     file_path = os.path.join("docs", "examples", "testset.csv")
@@ -11,4 +12,5 @@ def test_create_from_file():
     assert len(dataset.focused_risks) == 13
 
     return_code = Dataset.create_from_file(file_path) # 文件重复上传
-    assert return_code == "Error 101: Already Exist"
+    assert str(return_code) == "Error 101: Already Exist"
+    assert return_code == ReturnCode.ALREADY_EXIST
