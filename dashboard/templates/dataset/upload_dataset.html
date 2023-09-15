@@ -59,27 +59,29 @@
                         processData: false,
                         contentType: false,
                         success: function (value) {
-                            if(!value.result) {
-                                document.getElementById("processing").style.display = 'none';
-                                alert(value.reason);
-                                return;
-                            }
-                            document.getElementById("init").style.display = 'none';
-                            document.getElementById("more").style.display = 'block';
-                            value.focused_risks.map(item => {
-                                if (item.level === 2) {
-                                    $("#detail").append(`<div>${item.name}</div>`)
-                                    if (item.uplevel_risk_name) {
-                                        $("#detail").append(`<div>${item.uplevel_risk_name.join(',')}</div>`)
-                                    }
-                                }
-                            })
-                            $("#type").text(value.focused_risks.filter(item => item.level === 1)[0].name);
-                            $("#dataCount").text(value.qa_num);
-                            $("#number").text(value.word_cnt);
-                            $("#size").text(value.volume);
+                            console.log(value)
+                            {#if(!value.result) {#}
+                            {#    document.getElementById("processing").style.display = 'none';#}
+                            {#    alert(value.reason);#}
+                            {#    return;#}
+                            {# } #}
+                            {#document.getElementById("init").style.display = 'none';#}
+                            {#document.getElementById("more").style.display = 'block';#}
+                            {#value.focused_risks.map(item => {#}
+                            {#    if (item.level === 2) {#}
+                            {#        $("#detail").append(`<div>${item.name}</div>`)#}
+                            {#        if (item.uplevel_risk_name) {#}
+                            {#            $("#detail").append(`<div>${item.uplevel_risk_name.join(',')}</div>`)#}
+                            {#        }#}
+                            {#    }#}
+                            {# }) #}
+                            {#$("#type").text(value.focused_risks.filter(item => item.level === 1)[0].name);#}
+                            {#$("#dataCount").text(value.qa_num);#}
+                            {#$("#number").text(value.word_cnt);#}
+                            {#$("#size").text(value.volume);#}
                         },
                         error: function (e) {
+                            document.getElementById("processing").style.display = 'none';
                             document.getElementById("error").style.display = 'block';
                         }
                     });
