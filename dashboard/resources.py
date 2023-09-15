@@ -260,16 +260,9 @@ class DataManager(Dropdown):
         async def get_bulk_actions(self, request: Request) -> List[Action]:
             return []
 
-    class Labeling(Link):
-        """Label Studio Embedding"""
-
-        label = _("Labeling")
-        icon = "fas fa-tag"
-        url = "/admin/label"
-
     label = _("datamanager")
     icon = "fas fa-bars"
-    resources = [DatasetResource, EvaluationPlanResource, LabelingRecord, Labeling]
+    resources = [DatasetResource, EvaluationPlanResource, LabelingRecord]
 
 
 # @app.register
