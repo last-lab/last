@@ -9,23 +9,25 @@ from .public import UserInfo, StateCode, ReturnCode, ID
 from .dataset import QARecord
 
 
-T = TypeVar('T', bound='Task')
+T = TypeVar("T", bound="Task")
 
-class Report(Record): # 评测报告PDF
+
+class Report(Record):  # 评测报告PDF
     context: str  # 二进制字符串
+
 
 class Task(Record, BaseManager):
     plan_id: Optional[str] = Field(default=None, init=False)
-    plan: Plan # 方案
-    state: Optional[StateCode] = Field(default=StateCode.In_Progress) 
-    report: Optional[Report] = Field(default=None) # 评测报告
+    plan: Plan  # 方案
+    state: Optional[StateCode] = Field(default=StateCode.In_Progress)
+    report: Optional[Report] = Field(default=None)  # 评测报告
 
     llm_id: Optional[str] = Field(default=None, init=False)
-    llm_model: LLM # 如何查备案文件： LLM.registration->PDF的二进制编码
+    llm_model: LLM  # 如何查备案文件： LLM.registration->PDF的二进制编码
 
     critic_id: Optional[str] = Field(default=None, init=False)
     critic_model: LLM
-    results: Dict[str, QARecord] 
+    results: Dict[str, QARecord]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -54,6 +56,3 @@ class Task(Record, BaseManager):
 
     def render_report(self, file_path, type) -> None:
         pass
-
-
-
