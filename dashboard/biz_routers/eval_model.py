@@ -4,9 +4,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from starlette.requests import Request
 
-from dashboard.biz_models import EvaluationPlan
-from dashboard.biz_models import ModelInfo
-from dashboard.biz_models import Record
+from dashboard.biz_models import EvaluationPlan, ModelInfo, Record
 from last.services.app import app
 from last.services.depends import get_resources
 from last.services.i18n import _

@@ -5,8 +5,8 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
-from dashboard.biz_models import DataSet, EvaluationPlan
-from dashboard.biz_models import LabelPage
+from dashboard.biz_models import DataSet, EvaluationPlan, LabelPage
+from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
 
 # from dashboard.models import Evaluation
@@ -20,7 +20,6 @@ from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
-from dashboard.biz_models.eval_model import Record
 
 # from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
@@ -405,7 +404,9 @@ class DataManager(Dropdown):
                 name="eval_type",
                 label="评分方式",
                 display=displays.InputOnly(),
-                input_=inputs.RadioEnum(enums.EvaluationType, default=enums.EvaluationType.auto_ai_critique),
+                input_=inputs.RadioEnum(
+                    enums.EvaluationType, default=enums.EvaluationType.auto_ai_critique
+                ),
             ),
         ]
 
