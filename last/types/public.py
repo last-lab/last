@@ -1,21 +1,24 @@
 from typing import List, Dict, Union, Optional
 from pydantic import BaseModel, Field
-from enum import Enum, auto
+from enum import Enum, auto, IntEnum
 from datetime import datetime
 import uuid
+from last.services.enums import StrEnum
+
+
 
 
 class RiskDimension(BaseModel):
     level: Optional[int] = Field(default=1)  # 风险类型级别，默认是三级
     name: str
     description: Optional[str] = None
-    uplevel_risk_name: Optional[str] = Field(default=None)
+    downlevel_risk_name: Optional[List[str]] = Field(default=None)
 
     def __str__(self):
         return self.name
 
 
-class PermissionLevel(Enum):
+class PermissionLevel(IntEnum):
     SUPER_ADMIN = auto()
     ADMIN = auto()
     EDITOR = auto()
