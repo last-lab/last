@@ -24,7 +24,7 @@
           <div class="datagrid-item">
             <div class="datagrid-title">风险类型</div>
             <div class="datagrid-content">
-                {% for type in value.dimensions %}
+                {% for type in value.focused_risks %}
                     {% if type.level == 1 %}
                     	<div>{{ type.name }}</div>
                     {% endif %}
@@ -34,7 +34,7 @@
           <div class="datagrid-item">
             <div class="datagrid-title">风险详情</div>
             <div class="datagrid-content">
-                {% for type in value.dimensions %}
+                {% for type in value.focused_risks %}
                     {% if type.level == 2  %}
                         <div>{{ type.name }}</div>
                         {% for subType in type.uplevel_risk_name %}
