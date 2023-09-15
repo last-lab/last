@@ -66,7 +66,6 @@ class ReturnCode(Enum):
     BAD_REQUEST = CodeMsg(code=400, message="Bad Request")
     INVALID_INPUT = CodeMsg(code=422, message="Invalid Input")
     ALREADY_EXIST = CodeMsg(code=101, message="Already Exist")
-    
 
     def __str__(self):
         return str(self.value)

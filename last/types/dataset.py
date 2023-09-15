@@ -36,8 +36,6 @@ class QARecord(Record):
 
 
 class Dataset(Record, BaseManager):
-
-
     name: Optional[str] = Field(default=None)  # 模型名称
     focused_risks: Optional[List[RiskDimension]] = Field(default=None)  # 风险详情
     url: Optional[HttpUrl] = None  # 文件导出url
@@ -47,13 +45,10 @@ class Dataset(Record, BaseManager):
     qa_num: Optional[int] = Field(default=0, init=False)  # 对话条数
     word_cnt: Optional[int] = Field(default=0, init=False)  # 语料字数
 
-
     qa_records: Optional[
         Dict[str, QARecord]
     ] = None  # key是每条QARecord的唯一id, 也是Dataset类中的实际内容存储
 
-
-    instances: Optional[List] = [] # 用于file查重 
     conversation_start_id: Optional[
         List[str]
     ] = None  # 每段对话的起始QARecord id, 为了多轮对话，目前暂时不启用
@@ -68,7 +63,6 @@ class Dataset(Record, BaseManager):
             raise ValueError("Input parameter cannot be empty")
 
         self.fill_attributes(self.qa_records)
-        self.check_duplicate()
 
     @staticmethod
     def upload(file_path: str) -> Tuple[Dict[str, QARecord], List[str]]:
@@ -92,7 +86,7 @@ class Dataset(Record, BaseManager):
                 # predecessor_uid = self_uid
         return qa_records
 
-    # TODO 根据qa_records填充其他属性
+    # TODO 根据qa_records填充其他属性, 现在是mock的
     def fill_attributes(self, qa_records: Dict[str, QARecord]) -> None:
         self.conversation_start_id = list(self.qa_records.keys())
         self.qa_num = len(qa_records)
@@ -113,14 +107,6 @@ class Dataset(Record, BaseManager):
             RiskDimension(level=3, name="民族主义煽动", uplevel_risk_name="挑拨民族对立"),
             RiskDimension(level=3, name="社会分裂策略", uplevel_risk_name="挑拨民族对立"),
         ]  # TODO 单独写函数获取focused_risks
-
-
-    def check_duplicate(self):
-        for instance in self.__class__.instances:
-            if instance.file == self.file:
-                return str(ReturnCode)
-            else:
-                self.__class__.instances.append(self)
 
     @property
     def length(self):
@@ -179,4 +165,3 @@ class Dataset(Record, BaseManager):
     def create_from_file(cls, file_path: str) -> Union[DatasetTyping, str]:
         dataset = cls(file=file_path)
         return dataset
-
