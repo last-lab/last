@@ -9,6 +9,7 @@ from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
 from tortoise import Model
 from tortoise.transactions import in_transaction
 
+from dashboard.biz_models.datamanager import DataSet
 from dashboard.biz_routers import biz_router
 from dashboard.models import Config, Log
 from last.services.app import app
@@ -74,6 +75,23 @@ async def notification(
             "resource_label": "Notification",
             "page_pre_title": "Notification",
             "page_title": "Send notification",
+        },
+    )
+
+
+@app.get("/label")
+async def label(
+    request: Request,
+    resources=Depends(get_resources),
+):
+    return templates.TemplateResponse(
+        "label.html",
+        context={
+            "request": request,
+            "resources": resources,
+            "resource_label": "Label",
+            "page_pre_title": "BY LABEL STUDIO",
+            "page_title": "Label",
         },
     )
 
@@ -299,12 +317,15 @@ async def json(request: Request, file: UploadFile = File(...)):
 
 
 class Item(BaseModel):
-    dataset_name: str
+    name: str
+    dimensions: str
 
 
 @app.post("/evaluationdatasetmanager/conform")
 async def conform(request: Request, item: Item):
-    contents = {"result": 1, "reason": "已存在同名的评测集"}
+    print(item)
+    contents = {"result": 1, "reason": "成功"}
+    await DataSet.create(name=item.name, dimensions=item.dimensions)
     return contents
 
 

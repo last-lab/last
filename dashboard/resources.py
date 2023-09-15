@@ -5,6 +5,7 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
+from dashboard.biz_models.datamanager import DataSet, EvaluationPlan
 from dashboard.constants import BASE_DIR
 
 # from dashboard.models import Evaluation
@@ -13,12 +14,7 @@ from dashboard.models import Cat  # EvaluationPlan,; Evaluation,
 from dashboard.models import Category  # EvaluationPlan,; Evaluation,
 from dashboard.models import Config  # Evaluation,
 from dashboard.models import Dog1  # EvaluationPlan,; Evaluation,
-from dashboard.models import (  # EvaluationPlan,; Evaluation,
-    EvaluationDatasetManager,
-    EvaluationPlan,
-    LabelPage,
-    Log,
-)
+from dashboard.models import LabelPage, Log  # EvaluationPlan,; Evaluation,
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product, Record  # EvaluationPlan,; Evaluation,
 from dashboard.models import Resource as ResourceModel
@@ -400,11 +396,11 @@ class DataManager(Dropdown):
         filters = [filters.Search(name="name", label="方案名称", placeholder="请输入")]
         fields = [
             "id",
-            Field(name="plan_name", label="评测方案"),
-            Field(name="plan_content", label="风险类型/数据占比/评测权重"),
-            Field(name="datasets", label="风险类型/数据占比/评测权重", display=displays.InputOnly()),
+            Field(name="name", label="评测方案"),
+            Field(name="dimensions", label="风险类型/数据占比/评测权重"),
+            Field(name="dataset_ids", label="风险类型/数据占比/评测权重", display=displays.InputOnly()),
             Field(
-                name="score_way",
+                name="eval_type",
                 label="评分方式",
                 display=displays.InputOnly(),
                 input_=inputs.RadioEnum(enums.ScoreWayType, default=enums.ScoreWayType.system),
@@ -449,7 +445,7 @@ class DataManager(Dropdown):
 
     class EvaluationDatasetManagerResource(Model):
         label = "评测集管理"
-        model = EvaluationDatasetManager
+        model = DataSet
         page_title = "评测集管理"
         filters = [
             filters.Search(name="name", label="评测集名称"),

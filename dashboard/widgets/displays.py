@@ -1,7 +1,10 @@
+import json
+
 from starlette.requests import Request
 
+from dashboard.biz_models.datamanager import DataSet, EvaluationPlan
 from dashboard.enums import EvalStatus
-from dashboard.models import EvaluationPlan, ModelInfo
+from dashboard.models import ModelInfo
 from last.services.widgets.displays import Display, Popover, Status
 
 
@@ -43,12 +46,27 @@ class ShowPlanDetail(Display):
     template = "record/record_plan_modal.html"
 
     async def render(self, request: Request, value: str):
-        plan_detail = await EvaluationPlan.get_or_none(id=value).values()
+        eval_plan = await EvaluationPlan.get_or_none(id=value)
+        dataset_ids = eval_plan.datasets.split(",")
+        datasets = await DataSet.filter(id__in=dataset_ids)
+        dataset_names = []
+        risk_details = []
+
+        for ds in datasets:
+            dataset_names.append(ds.name)
+            risk_details.append(json.loads(ds.dimensions))
+
+        plan_detail = {
+            "name": eval_plan.plan_name,
+            "score_way": eval_plan.score_way,
+            "plan_content": eval_plan.plan_content,
+            "dataset_names": dataset_names,
+            "risk_detail": risk_details,
+        }
+
         return await super().render(
             request,
-            {
-                "plan_detail": plan_detail,
-            },
+            {"plan_detail": plan_detail},
         )
 
 
@@ -79,7 +97,7 @@ class ShowModelCard(Display):
 
 
 class ShowAction(Display):
-    template = "evaluationdatasetmanager/action_dataset.html"
+    template = "dataset/action_dataset.html"
 
     async def render(self, request: Request, value: any):
         return await super().render(

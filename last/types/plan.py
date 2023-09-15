@@ -1,10 +1,11 @@
-from typing import List, Dict, Union, Optional, TypeVar, Any
 from enum import Enum
-from dataclasses import dataclass
-from .base import Record, Statistics, BaseManager
-from .public import RiskDimension, ReturnCode
+from typing import List, Dict, Optional, TypeVar, Any
+
+from pydantic import Field
+
+from .base import Record, BaseManager
 from .dataset import Dataset, Message
-from pydantic import BaseModel, Field
+from .public import RiskDimension, ReturnCode
 
 T = TypeVar('T', bound='Plan')
 
