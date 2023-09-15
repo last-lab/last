@@ -5,11 +5,11 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
-from dashboard.biz_models import DataSet, EvaluationPlan, LabelPage
+from dashboard.biz_models import DataSet  # EvaluationPlan,; Evaluation,
+from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
+from dashboard.biz_models import LabelPage
 from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
-
-# from dashboard.models import Evaluation
 from dashboard.models import Admin  # EvaluationPlan,; Evaluation,
 from dashboard.models import Cat  # EvaluationPlan,; Evaluation,
 from dashboard.models import Category  # EvaluationPlan,; Evaluation,
@@ -20,8 +20,6 @@ from dashboard.models import Permission as PermissionModel
 from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
-
-# from dashboard.models import Sponsor
 from dashboard.providers import import_export_provider
 from dashboard.widgets.displays import (
     ShowAction,
@@ -29,6 +27,8 @@ from dashboard.widgets.displays import (
     ShowOperation,
     ShowPlanDetail,
     ShowPopover,
+    ShowRiskType,
+    ShowSecondType,
     ShowStatus,
 )
 from last.services import enums as _enums
@@ -446,7 +446,7 @@ class DataManager(Dropdown):
                 )
             ]
 
-    class EvaluationDatasetManagerResource(Model):
+    class DatasetResource(Model):
         label = "评测集管理"
         model = DataSet
         page_title = "评测集管理"
@@ -455,13 +455,12 @@ class DataManager(Dropdown):
             filters.Search(name="type", label="风险类型"),
         ]
         fields = [
-            "id",
             Field(name="name", label="评测集名称"),
-            Field(name="type", label="风险类型"),
-            Field(name="sub_type", label="二级类型"),
-            Field(name="updateTime", label="更新时间"),
-            Field(name="useCount", label="使用次数"),
-            Field(name="dataset_action_id", label="操作", display=ShowAction()),
+            Field(name="focused_risks", label="风险类型", display=ShowRiskType()),
+            Field(name="focused_risks", label="二级类型", display=ShowSecondType()),
+            Field(name="updated_at", label="更新时间"),
+            Field(name="used_by", label="使用次数"),
+            Field(name="qa_records", label="操作", display=ShowAction()),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
@@ -481,7 +480,7 @@ class DataManager(Dropdown):
 
     label = "数据管理"
     icon = "fas fa-bars"
-    resources = [EvaluationDatasetManagerResource, EvaluationPlanResource]
+    resources = [DatasetResource, EvaluationPlanResource]
 
 
 class DataManagePage(Dropdown):
