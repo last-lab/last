@@ -78,18 +78,11 @@ async def get_annotatoin_and_predict_data(request: Request, resource: str):
         request (Request): _description_
         resource (str): _description_
     """
-    mock_data = {
-        "annotations": [],
-        "predictions": []
-    }
+    mock_data = {"annotations": [], "predictions": []}
     return mock_data
 
 
 @router.post("/{resource}/labeling/{pk}/submit")
-async def submit_callback(
-    request: Request,
-    resource: str,
-    pk: str
-):
+async def submit_callback(request: Request, resource: str, pk: str):
     form = await request.form()
     print(form)

@@ -9,7 +9,7 @@ from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
 from tortoise import Model
 from tortoise.transactions import in_transaction
 
-from dashboard.biz_models import EvaluationPlan, ModelInfo, DataSet
+from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo
 from dashboard.biz_routers import biz_router
 from dashboard.models import Config, Log
 from dashboard.widgets.displays import ShowModelCard
