@@ -110,7 +110,7 @@
             // Retrieve an annotation in JSON format
             console.log(annotation.serializeAnnotation())
             $.ajax({
-                url: '/admin/labeling/{item}/submit',
+                url: '/admin/labelpage/labeling/{item}/submit',
                 method: 'post',
                 data: {
                     annotation: annotation.serializeAnnotation(),
