@@ -9,10 +9,11 @@ from starlette.status import HTTP_303_SEE_OTHER, HTTP_404_NOT_FOUND
 from tortoise import Model
 from tortoise.transactions import in_transaction
 
-from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo
+
+from dashboard.biz_models import DataSet
+
 from dashboard.biz_routers import biz_router
 from dashboard.models import Config, Log
-from dashboard.widgets.displays import ShowModelCard
 from last.services.app import app
 from last.services.depends import (
     AdminLog,
@@ -24,7 +25,6 @@ from last.services.depends import (
     read_checker,
     update_checker,
 )
-from last.services.i18n import _
 from last.services.resources import Model as ModelResource
 from last.services.responses import redirect
 from last.services.routes.others import router
@@ -94,32 +94,6 @@ async def label(
             "resource_label": "Label",
             "page_pre_title": "BY LABEL STUDIO",
             "page_title": "Label",
-        },
-    )
-
-
-@app.get("/record/add")
-async def create_eval(
-    request: Request,
-    resources=Depends(get_resources),
-):
-    eval_plans = await EvaluationPlan.all().limit(10)
-    model_list = await ModelInfo.all().limit(10)
-    model_cards = []
-    for model_detail in model_list:
-        card = await ShowModelCard().render(request, model_detail)
-        model_cards.append(card)
-
-    return templates.TemplateResponse(
-        "create_eval.html",
-        context={
-            "request": request,
-            "resources": resources,
-            "resource_label": "Label",
-            "page_pre_title": "BY LABEL STUDIO",
-            "page_title": _("Create Evaluation"),
-            "eval_plans": eval_plans,
-            "model_cards": model_cards,
         },
     )
 
