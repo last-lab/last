@@ -66,6 +66,11 @@ class Administartor(Dropdown):
 @app.register
 class Evaluation(Dropdown):
     """模型评测"""
+    class Create(Link):
+        """创建评测"""
+        label = _("创建评测")
+        icon = "fas fa-tag"
+        url = "/admin/record/add"
 
     class Record(Model):
         """评测记录"""
@@ -105,49 +110,43 @@ class Evaluation(Dropdown):
         async def get_actions(self, request: Request) -> List[Action]:
             return []
 
-    class Create(Link):
-        """创建评测"""
-        label = _("创建评测")
-        icon = "fas fa-tag"
-        url = "/admin/record/add"
-
     label = _("模型评测")
     icon = "fas fa-user"
     resources = [Record, Create]
 
 
-@app.register
-class Dataset(Dropdown):
-    class LabelingRecord(Model):
-        label = _("Labeling Record")
-        model = LabelPage
-        filters = [filters.Search(name="task_type", label="Task Type")]
-        fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
-
-        async def get_actions(self, request: Request) -> List[Action]:
-            return [
-                Action(
-                    label=_("labeling"),
-                    icon="ti ti-edit",
-                    name="labeling",
-                    method=Method.GET,
-                    ajax=False,
-                )
-            ]
-
-        async def get_bulk_actions(self, request: Request) -> List[Action]:
-            return []
-
-    class Labeling(Link):
-        """Label Studio Embedding"""
-
-        label = _("Labeling")
-        icon = "fas fa-tag"
-        url = "/admin/label"
-
-    label = _("Dataset")
-    icon = "fas fa-bars"
-    resources = [LabelingRecord, Labeling]
+# @app.register
+# class Dataset(Dropdown):
+#     class LabelingRecord(Model):
+#         label = _("Labeling Record")
+#         model = LabelPage
+#         filters = [filters.Search(name="task_type", label="Task Type")]
+#         fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
+#
+#         async def get_actions(self, request: Request) -> List[Action]:
+#             return [
+#                 Action(
+#                     label=_("labeling"),
+#                     icon="ti ti-edit",
+#                     name="labeling",
+#                     method=Method.GET,
+#                     ajax=False,
+#                 )
+#             ]
+#
+#         async def get_bulk_actions(self, request: Request) -> List[Action]:
+#             return []
+#
+#     class Labeling(Link):
+#         """Label Studio Embedding"""
+#
+#         label = _("Labeling")
+#         icon = "fas fa-tag"
+#         url = "/admin/label"
+#
+#     label = _("Dataset")
+#     icon = "fas fa-bars"
+#     resources = [LabelingRecord, Labeling]
 
 
 @app.register
@@ -239,9 +238,36 @@ class DataManager(Dropdown):
         async def get_actions(self, request: Request) -> List[Action]:
             return []
 
+    class LabelingRecord(Model):
+        label = _("Labeling Record")
+        model = LabelPage
+        filters = [filters.Search(name="task_type", label="Task Type")]
+        fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return [
+                Action(
+                    label=_("labeling"),
+                    icon="ti ti-edit",
+                    name="labeling",
+                    method=Method.GET,
+                    ajax=False,
+                )
+            ]
+
+        async def get_bulk_actions(self, request: Request) -> List[Action]:
+            return []
+
+    class Labeling(Link):
+        """Label Studio Embedding"""
+
+        label = _("Labeling")
+        icon = "fas fa-tag"
+        url = "/admin/label"
+
     label = _("datamanager")
     icon = "fas fa-bars"
-    resources = [DatasetResource, EvaluationPlanResource]
+    resources = [DatasetResource, EvaluationPlanResource, LabelingRecord, Labeling]
 
 
 # @app.register
