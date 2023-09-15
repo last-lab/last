@@ -59,6 +59,8 @@ class Dataset(Record, BaseManager):
         super().__init__(*args, **kwargs)
         if self.file is not None:  # 根据传入的file path，新建Dataset对象
             self.qa_records = Dataset.upload(self.file)
+        elif self.qa_records is not None:  # 根据传入的file path，新建Dataset对象
+            pass
         else:
             raise ValueError("Input parameter cannot be empty")
 
