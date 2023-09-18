@@ -131,7 +131,7 @@ class ShowModelCard(Display):
 class ShowAction(Display):
     template = "dataset/action_dataset.html"
 
-    async def render(self, request: Request, value: str):
+    async def render(self, request: Request, value: any):
         dataset = {}
         label = []
         if value is not None:
@@ -139,12 +139,10 @@ class ShowAction(Display):
             label = json.loads(dataset["focused_risks"])
         return await super().render(request, {**dataset, "focused_risks": label})
 
-
 class ShowRiskType(Display):
     template = "dataset/risk.html"
 
     async def render(self, request: Request, value: any):
-        hah = json.loads(value)
         label = list(filter(lambda x: x["level"] == 1, json.loads(value)))
         return await super().render(request, {"content": label})
 

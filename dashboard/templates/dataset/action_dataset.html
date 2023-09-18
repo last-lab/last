@@ -1,14 +1,13 @@
-<span data-bs-toggle="modal" data-bs-target="#detail" style="cursor: pointer; color: #0D53DE;">
+<span data-bs-toggle="modal" data-bs-target="#{{ value.uid }}" style="cursor: pointer; color: #0D53DE;">
   详细信息
 </span>
-<span data-bs-toggle="modal" data-bs-target="#exportDataset" style="cursor: pointer; color: #0D53DE; margin-left: 10px; margin-right: 10px;">
+<span style="cursor: pointer; color: #0D53DE; margin-left: 10px; margin-right: 10px;">
   <a href="data:application/json;charset=utf-8,{{ value.file }}" download="download.json" style="text-decoration: none">导出</a>
 </span>
-<span data-bs-toggle="modal" data-bs-target="#deleteDataset" style="cursor: pointer; color: #F5483B;">
+<span data-bs-toggle="modal" data-bs-target="#{{ value.name }}" style="cursor: pointer; color: #F5483B;">
   删除
 </span>
-
-<div class="modal" id="detail" tabindex="-1">
+<div class="modal" id={{ value.uid }} tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -77,7 +76,7 @@
   </div>
 </div>
 
-<div class="modal" id="deleteDataset" tabindex="-1">
+<div class="modal" id={{ value.name }} tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header" style="border-bottom: none">
@@ -86,27 +85,27 @@
       </div>
       <div class="modal-footer">
           <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">取消</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="deleteDataset()">删除</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="deleteDataset({{ value.id }})">删除</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-    function deleteDataset() {
+    function deleteDataset(id) {
         $.ajax({
-            url: '/admin/dataset/delete/{{ value.qa_records }}',
+            url: `/admin/dataset/delete/${id}`,
             type: 'DELETE',
             contentType: "application/json;charset=UTF-8",
             data: JSON.stringify({
-                pk: `{{ value.qa_records  }}`
+                pk: id
             }),
             success: function () {
                 location.reload();
             }
         })
     }
-    function copyUrl(value) {
+    function copyUrl() {
         const copyText = $("#url").text();
         navigator.clipboard.writeText(copyText);
         alert('复制成功');

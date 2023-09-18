@@ -465,147 +465,39 @@ class Auth(Dropdown):
 
 
 
-@app.register
-class Animal(Dropdown):
-    class CatResource(Model):
-        label = _("Cat")
-        model = Cat
-        filters = [filters.Search(name="name", label="Name")]
-        fields = ["id", "name", "age", "birth_at"]
+# @app.register
+# class Animal(Dropdown):
+#     class CatResource(Model):
+#         label = _("Cat")
+#         model = Cat
+#         filters = [filters.Search(name="name", label="Name")]
+#         fields = ["id", "name", "age", "birth_at"]
+#
+#     class DogResource(Model):
+#         label = "Dog"
+#         model = Dog1
+#         filters = [
+#             filters.Enum(enum=enums.GenderType, name="gender", label="Gender"),
+#             filters.Datetime(name="birth_at", label="Birth_At"),
+#         ]
+#         fields = [
+#             "id",
+#             "name",
+#             "age",
+#             "gender",
+#             Field(
+#                 name="image",
+#                 label="Image",
+#                 display=displays.Image(width="40"),
+#                 input_=inputs.Image(null=True, upload=upload),
+#             ),
+#             "birth_at",
+#         ]
+#
+#     label = "Animal"
+#     icon = "fas fa-bars"
+#     resources = [CatResource, DogResource]
 
-    class DogResource(Model):
-        label = "Dog"
-        model = Dog1
-        filters = [
-            filters.Enum(enum=enums.GenderType, name="gender", label="Gender"),
-            filters.Datetime(name="birth_at", label="Birth_At"),
-        ]
-        fields = [
-            "id",
-            "name",
-            "age",
-            "gender",
-            Field(
-                name="image",
-                label="Image",
-                display=displays.Image(width="40"),
-                input_=inputs.Image(null=True, upload=upload),
-            ),
-            "birth_at",
-        ]
-
-    label = "Animal"
-    icon = "fas fa-bars"
-    resources = [CatResource, DogResource]
-
-
-@app.register
-class DataManager(Dropdown):
-    class EvaluationPlanResource(Model):
-        label = "评测方案管理"
-        model = EvaluationPlan
-        filters = [filters.Search(name="name", label="方案名称", placeholder="请输入")]
-        fields = [
-            "id",
-            Field(name="name", label="评测方案"),
-            Field(name="dimensions", label="风险类型/数据占比/评测权重"),
-            Field(name="dataset_ids", label="风险类型/数据占比/评测权重", display=displays.InputOnly()),
-            Field(
-                name="eval_type",
-                label="评分方式",
-                display=displays.InputOnly(),
-                input_=inputs.RadioEnum(
-                    enums.EvaluationType, default=enums.EvaluationType.auto_ai_critique
-                ),
-            ),
-        ]
-
-        async def get_actions(self, request: Request) -> List[Action]:
-            return [
-                Action(
-                    label=_("update"),
-                    icon="ti ti-edit",
-                    name="epm_update",
-                    method=_enums.Method.GET,
-                    ajax=False,
-                ),
-                Action(
-                    label=_("复制并新建"),
-                    icon="ti ti-toggle-left",
-                    name="epm_copy_create",
-                    method=_enums.Method.GET,
-                    ajax=False,
-                ),
-                Action(
-                    label=_("delete"),
-                    icon="ti ti-trash",
-                    name="delete",
-                    method=_enums.Method.DELETE,
-                ),
-            ]
-
-        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
-            return [
-                ToolbarAction(
-                    label=_("新建方案"),
-                    icon="fas fa-plus",
-                    name="epm_create",
-                    method=_enums.Method.GET,
-                    ajax=False,
-                    class_="btn-dark",
-                )
-            ]
-
-    class DatasetResource(Model):
-        label = "评测集管理"
-        model = DataSet
-        page_title = "评测集管理"
-        filters = [
-            filters.Search(name="name", label="评测集名称"),
-            filters.Search(name="type", label="风险类型"),
-        ]
-        fields = [
-            Field(name="name", label="评测集名称"),
-            Field(name="focused_risks", label="风险类型", display=ShowRiskType()),
-            Field(name="focused_risks", label="二级类型", display=ShowSecondType()),
-            Field(name="updated_at", label="更新时间"),
-            Field(name="used_by", label="使用次数"),
-            Field(name="uid", label="操作", display=ShowAction()),
-        ]
-
-        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
-            return [
-                ToolbarAction(
-                    label=_("上传数据集"),
-                    icon="fas fa-upload",
-                    name="upload_dataset",
-                    method=_enums.Method.GET,
-                    ajax=False,
-                    class_="btn-primary",
-                )
-            ]
-
-        async def get_actions(self, request: Request) -> List[Action]:
-            return []
-
-    label = "数据管理"
-    icon = "fas fa-bars"
-    resources = [DatasetResource, EvaluationPlanResource]
-
-
-class DataManagePage(Dropdown):
-    class LabelingPage(Model):
-        label = "Labeling"
-        model = LabelPage
-        filters = [filters.Search(name="task_type", label="Task Type")]
-        fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
-
-    label = "DataSet"
-    icon = "fas fa-bars"
-    resources = [LabelingPage]
-
-    # resources = [EvaluationPlanManagerResource]
-    # resources = [EvaluationPlanResource]
 
 # @app.register
 # class Animal(Dropdown):
