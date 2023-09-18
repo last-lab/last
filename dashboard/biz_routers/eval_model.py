@@ -62,9 +62,6 @@ async def evaluation_create(
         llm_name=model["name"],
         llm_id=eval_info.llm_id,
     )
-    foo_str = inspect.getsource(AI_eval)
-    kwargs_json = None
-    Client.execute(foo_str, kwargs_json)
 
     return {"status": "ok", "success": 1, "msg": "create eval success"}
 
