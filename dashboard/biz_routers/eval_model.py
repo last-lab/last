@@ -1,3 +1,4 @@
+import inspect
 from typing import Union
 
 from fastapi import APIRouter, Depends
@@ -5,6 +6,7 @@ from pydantic import BaseModel
 from starlette.requests import Request
 
 from dashboard.biz_models import EvaluationPlan, ModelInfo, Record
+from last.client import AI_eval, Client
 from last.services.app import app
 from last.services.depends import get_resources
 from last.services.i18n import _
@@ -60,6 +62,9 @@ async def evaluation_create(
         llm_name=model["name"],
         llm_id=eval_info.llm_id,
     )
+    foo_str = inspect.getsource(AI_eval)
+    kwargs_json = None
+    Client.execute(foo_str, kwargs_json)
 
     return {"status": "ok", "success": 1, "msg": "create eval success"}
 

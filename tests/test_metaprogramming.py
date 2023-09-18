@@ -65,7 +65,7 @@
 # if __name__ == "__main__":
 #     client = Client()
 #     kwargs_json = {'filepath':xxx}
-#     client.exec(test_pipeline, **kwargs_json) #  NEW PLAN 
+#     client.exec(test_pipeline, **kwargs_json) #  NEW PLAN
 
 #     def exec(func, kwargs):
 #         args = placeholder.prase(kwargs)
@@ -88,4 +88,3 @@
 #     locals['filepath'] = last.placeholder.parser.kwargs['filepath']
 
 # filepath
-

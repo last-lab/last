@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import List, Dict, Union, Optional
 from pydantic import BaseModel, Field
 from enum import Enum, auto, IntEnum
@@ -5,8 +6,9 @@ from datetime import datetime
 import uuid
 from last.services.enums import StrEnum
 
-
-
+@dataclass
+class Placeholder:
+    parser: callable
 
 class RiskDimension(BaseModel):
     level: Optional[int] = Field(default=1)  # 风险类型级别，默认是三级
