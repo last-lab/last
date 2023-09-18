@@ -1,5 +1,4 @@
 import json
-from ast import literal_eval
 
 from starlette.requests import Request
 
@@ -138,6 +137,7 @@ class ShowAction(Display):
             dataset = await DataSet.get_or_none(uid=value).values()
             label = json.loads(dataset["focused_risks"])
         return await super().render(request, {**dataset, "focused_risks": label})
+
 
 class ShowRiskType(Display):
     template = "dataset/risk.html"

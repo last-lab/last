@@ -10,8 +10,7 @@ from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import LabelPage
 from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin, Cat, Dog1  # EvaluationPlan,; Evaluation,
-from dashboard.models import Log
+from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
@@ -222,7 +221,7 @@ class DataManager(Dropdown):
             Field(name="focused_risks", label="二级类型", display=ShowSecondType()),
             Field(name="updated_at", label="更新时间"),
             Field(name="used_by", label="使用次数"),
-            Field(name="uid", label="操作", display=ShowAction())
+            Field(name="uid", label="操作", display=ShowAction()),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
@@ -462,7 +461,6 @@ class Auth(Dropdown):
     label = _("Auth")
     icon = "fas fa-users"
     resources = [AdminResource, Resource, Permission, Role]
-
 
 
 # @app.register
