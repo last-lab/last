@@ -4,7 +4,6 @@ import json
 from last.types.public import UserInfo, Placeholder
 
 
-
 class Client:
     @staticmethod
     def execute(func, kwargs_json, user_info=None):
@@ -20,8 +19,11 @@ class Client:
             func = locals()[func_name]
 
         # Get the placeholders from the function's default arguments
-        placeholders = {key: value for key, value in zip(func.__code__.co_varnames, func.__defaults__)
-                        if isinstance(value, Placeholder)}
+        placeholders = {
+            key: value
+            for key, value in zip(func.__code__.co_varnames, func.__defaults__)
+            if isinstance(value, Placeholder)
+        }
 
         # Transform the arguments using the placeholders
         transformed_kwargs = {}
@@ -37,4 +39,3 @@ class Client:
 
         # Execute the function with the transformed arguments
         return func(**transformed_kwargs)
-

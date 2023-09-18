@@ -5,6 +5,7 @@ from .dataset import Message, MessageRole
 from pydantic import BaseModel, Field
 from last.services.enums import StrEnum
 
+
 class LLMType(StrEnum):
     critic = "critic"
     normal = "normal"

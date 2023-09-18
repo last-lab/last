@@ -1,4 +1,3 @@
-import inspect
 from typing import Union
 
 from fastapi import APIRouter, Depends
@@ -6,7 +5,6 @@ from pydantic import BaseModel
 from starlette.requests import Request
 
 from dashboard.biz_models import EvaluationPlan, ModelInfo, Record
-from last.client import AI_eval, Client
 from last.services.app import app
 from last.services.depends import get_resources
 from last.services.i18n import _

@@ -32,9 +32,7 @@ def test_pipeline():
     )
 
     # 配置待测模型API
-    llm_model = LLM(
-        model_type=LLMType.normal, endpoint="xxx", access_key="xxx", secret_key="xxx"
-    )
+    llm_model = LLM(model_type=LLMType.normal, endpoint="xxx", access_key="xxx", secret_key="xxx")
 
     if plan.eval_type == EvaluationType.auto_ai_critique:
         # 如果是AI测评，配置评分模型API
