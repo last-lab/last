@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from fastapi import Depends, Form
 from redis.asyncio import Redis
 from starlette.requests import Request
@@ -12,18 +14,19 @@ from last.services.providers.login import (
     GitHubOAuth2Provider,
     GoogleOAuth2Provider,
     UsernamePasswordProvider,
+    SSOOAuth2Provider,
 )
 
 
 class LoginProvider(UsernamePasswordProvider):
     async def password(
-        self,
-        request: Request,
-        old_password: str = Form(...),
-        new_password: str = Form(...),
-        re_new_password: str = Form(...),
-        admin: AbstractAdmin = Depends(get_current_admin),
-        resources=Depends(get_resources),
+            self,
+            request: Request,
+            old_password: str = Form(...),
+            new_password: str = Form(...),
+            re_new_password: str = Form(...),
+            admin: AbstractAdmin = Depends(get_current_admin),
+            resources=Depends(get_resources),
     ):
         return await self.logout(request)
 
@@ -51,6 +54,10 @@ class GitHubProvider(GitHubOAuth2Provider, OAuth2ProviderMixin):
         username = user_info.get("login")
         avatar = user_info.get("avatar_url")
         email = user_info.get("email")
+        if email is None:
+            email = 'dong.alvinme@gmail.com'
+        if avatar is None:
+            avatar = ''
         admin, created = await Admin.update_or_create(
             email=email,
             defaults=dict(
@@ -76,6 +83,35 @@ class GoogleProvider(GoogleOAuth2Provider, OAuth2ProviderMixin):
                 password="",
                 username=username,
                 channel="google",
+                last_login=timezone.now(),
+            ),
+        )
+        return await self.after_admin_login(admin, created)
+
+
+class SSOProvider(SSOOAuth2Provider, OAuth2ProviderMixin):
+    def get_authorize_url(self):
+        # params = {"clientId": self.client_id}
+        # if self.redirect_uri:
+        #     params["redirect"] = self.redirect_uri
+        # params.update(self.kwargs)
+        return self.authorize_url + "?clientId=" + self.client_id + "&redirect=" + self.redirect_uri
+
+    async def get_admin(self, user_info: dict):
+        username = user_info.get("login")
+        avatar = user_info.get("avatar_url")
+        email = user_info.get("email")
+        if email is None:
+            email = 'dong.alvinme@gmail.com'
+        if avatar is None:
+            avatar = ''
+        admin, created = await Admin.update_or_create(
+            email=email,
+            defaults=dict(
+                avatar=avatar,
+                password="",
+                username=username,
+                channel="github",
                 last_login=timezone.now(),
             ),
         )

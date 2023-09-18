@@ -1,3 +1,4 @@
+import json
 import typing
 import uuid
 from typing import Optional, Type
@@ -26,6 +27,13 @@ from last.services.utils import check_password, hash_password
 if typing.TYPE_CHECKING:
     from last.services.app import FastAPIAdmin
 
+import base64
+import hashlib
+import time
+
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_v1_5
+
 
 class GoogleRecaptcha(BaseModel):
     cdn_url: str = "https://www.google.com/recaptcha/api.js"
@@ -38,15 +46,15 @@ class UsernamePasswordProvider(Provider):
     name = "login_provider"
 
     def __init__(
-        self,
-        admin_model: Type[AbstractAdmin],
-        enable_captcha: bool = False,
-        google_recaptcha: Optional[GoogleRecaptcha] = None,
-        login_path="/login",
-        logout_path="/logout",
-        template="providers/login/login.html",
-        login_title="Login to your account",
-        login_logo_url: str = None,
+            self,
+            admin_model: Type[AbstractAdmin],
+            enable_captcha: bool = False,
+            google_recaptcha: Optional[GoogleRecaptcha] = None,
+            login_path="/login",
+            logout_path="/logout",
+            template="providers/login/login.html",
+            login_title="Login to your account",
+            login_logo_url: str = None,
     ):
         self.login_path = login_path
         self.logout_path = logout_path
@@ -58,8 +66,8 @@ class UsernamePasswordProvider(Provider):
         self.login_logo_url = login_logo_url
 
     async def login_view(
-        self,
-        request: Request,
+            self,
+            request: Request,
     ):
         return templates.TemplateResponse(
             self.template,
@@ -94,11 +102,11 @@ class UsernamePasswordProvider(Provider):
             instance.password = hash_password(instance.password)
 
     async def captcha(
-        self,
-        request: Request,
-        width: int = 160,
-        height: int = 60,
-        redis: Redis = Depends(get_redis),
+            self,
+            request: Request,
+            width: int = 160,
+            height: int = 60,
+            redis: Redis = Depends(get_redis),
     ):
         if not self.enable_captcha:
             raise ConfigurationError("Should enable captcha first")
@@ -127,8 +135,8 @@ class UsernamePasswordProvider(Provider):
         if self.enable_captcha:
             captcha_id = request.cookies.get("captcha_id")
             if (
-                not captcha
-                or await redis.get(constants.CAPTCHA_ID.format(captcha_id=captcha_id)) != captcha
+                    not captcha
+                    or await redis.get(constants.CAPTCHA_ID.format(captcha_id=captcha_id)) != captcha
             ):
                 return templates.TemplateResponse(
                     self.template,
@@ -186,9 +194,9 @@ class UsernamePasswordProvider(Provider):
         return response
 
     async def authenticate(
-        self,
-        request: Request,
-        call_next: RequestResponseEndpoint,
+            self,
+            request: Request,
+            call_next: RequestResponseEndpoint,
     ):
         redis = request.app.redis  # type:Redis
         token = request.cookies.get(constants.ACCESS_TOKEN)
@@ -218,8 +226,8 @@ class UsernamePasswordProvider(Provider):
         return templates.TemplateResponse("init.html", context={"request": request})
 
     async def init(
-        self,
-        request: Request,
+            self,
+            request: Request,
     ):
         exists = await self.admin_model.all().limit(1).exists()
         if exists:
@@ -243,9 +251,9 @@ class UsernamePasswordProvider(Provider):
         )
 
     async def password_view(
-        self,
-        request: Request,
-        resources=Depends(get_resources),
+            self,
+            request: Request,
+            resources=Depends(get_resources),
     ):
         return templates.TemplateResponse(
             "providers/login/password.html",
@@ -256,13 +264,13 @@ class UsernamePasswordProvider(Provider):
         )
 
     async def password(
-        self,
-        request: Request,
-        old_password: str = Form(...),
-        new_password: str = Form(...),
-        re_new_password: str = Form(...),
-        admin: AbstractAdmin = Depends(get_current_admin),
-        resources=Depends(get_resources),
+            self,
+            request: Request,
+            old_password: str = Form(...),
+            new_password: str = Form(...),
+            re_new_password: str = Form(...),
+            admin: AbstractAdmin = Depends(get_current_admin),
+            resources=Depends(get_resources),
     ):
         error = None
         if not check_password(old_password, admin.password):
@@ -288,12 +296,12 @@ class OAuth2Provider(Provider):
     user_url: str
 
     def __init__(
-        self,
-        admin_model: Type[AbstractAdmin],
-        client_id: str,
-        client_secret: str,
-        redirect_uri: typing.Optional[str] = None,
-        **kwargs,
+            self,
+            admin_model: Type[AbstractAdmin],
+            client_id: str,
+            client_secret: str,
+            redirect_uri: typing.Optional[str] = None,
+            **kwargs,
     ):
         self.admin_model = admin_model
         self.client_id = client_id
@@ -361,7 +369,7 @@ class GitHubOAuth2Provider(OAuth2Provider):
     user_url = "https://api.github.com/user"
 
     def __init__(
-        self, admin_model: Type[AbstractAdmin], client_id: str, client_secret: str, **kwargs
+            self, admin_model: Type[AbstractAdmin], client_id: str, client_secret: str, **kwargs
     ):
         super().__init__(
             admin_model,
@@ -409,7 +417,7 @@ class GitHubOAuth2Provider(OAuth2Provider):
         """
         token = await self.get_access_token(code)
         async with httpx.AsyncClient(
-            headers={"Authorization": f"token {token}"}, timeout=30
+                headers={"Authorization": f"token {token}"}, timeout=30
         ) as client:
             res = await client.get(self.user_url)
             ret = res.json()
@@ -425,13 +433,13 @@ class GoogleOAuth2Provider(OAuth2Provider):
     user_url = "https://www.googleapis.com/oauth2/v3/userinfo"
 
     def __init__(
-        self,
-        admin_model: Type[AbstractAdmin],
-        client_id: str,
-        client_secret: str,
-        response_type: str = "code",
-        scopes: typing.List[str] = None,
-        **kwargs,
+            self,
+            admin_model: Type[AbstractAdmin],
+            client_id: str,
+            client_secret: str,
+            response_type: str = "code",
+            scopes: typing.List[str] = None,
+            **kwargs,
     ):
         if scopes is None:
             scopes = [
@@ -472,8 +480,85 @@ class GoogleOAuth2Provider(OAuth2Provider):
         """
         token = await self.get_access_token(code)
         async with httpx.AsyncClient(
-            headers={"Authorization": f"Bearer {token}"}, timeout=30
+                headers={"Authorization": f"Bearer {token}"}, timeout=30
         ) as client:
             res = await client.get(self.user_url)
             ret = res.json()
             return ret
+
+
+def encrypt(public_key, client_id, client_secret):
+    timestamp_str = str(time.time()).split('.')[0]
+    raw_text = f"{client_id}||{client_secret}||{timestamp_str}"
+    key = base64.b64decode(public_key)
+    key = RSA.importKey(key)
+
+    cipher = PKCS1_v1_5.new(key)
+    encrypt_key = base64.b64encode(cipher.encrypt(bytes(raw_text, 'utf-8')))
+    encrypt_str = encrypt_key.decode('utf-8')
+    return encrypt_str
+
+
+class SSOOAuth2Provider(OAuth2Provider):
+    name = "sso_oauth2_provider"
+    label = "Login with SSO"
+    icon = "fab fa-github fa-lg"
+    authorize_url = "https://sso.openxlab.org.cn/authentication"
+    cipher_url = "https://sso.openxlab.org.cn/gw/uaa-be/api/v1/cipher/getPubKey"
+    token_url = "https://sso.openxlab.org.cn/gw/uaa-be/api/v1/internal/getJwt"
+    user_url = "https://sso.openxlab.org.cn/api/v1/internal/getUserInfo"
+
+    def __init__(
+            self, admin_model: Type[AbstractAdmin], client_id: str, client_secret: str, **kwargs
+    ):
+        super().__init__(
+            admin_model,
+            client_id,
+            client_secret,
+            **kwargs,
+        )
+
+    async def get_user_info(self, code: str):
+        """
+        {
+            "ssoUid": "STRING",            // 用户sso uid
+            "email": "STRING",             // 电子邮箱
+            "phone": "STRING",             // 手机号码
+            "githubAccount": "STRING",     // github账号
+            "wechat": "STRING",            // 用户微信唯一ID
+            "wechatName": "STRING",        // 用户微信名
+            "avatar":"STRING",             // 用户头像URL
+            "username":"STRING"            // 用户名（存量用户、后台创建用户，可能为空）
+            "nickname":"STRING"            // 用户昵称
+        }
+        """
+        token = await self.get_access_token(code)
+        async with httpx.AsyncClient(
+                headers={"Authorization": f"Bearer {token}"}, timeout=30
+        ) as client:
+            res = await client.get(self.user_url)
+            ret = res.json()
+            return ret
+
+    async def get_access_token(self, code: str) -> str:
+        public_key = await self.get_public_key()
+        async with httpx.AsyncClient(headers={"Content-Type": "application/json"}, timeout=30) as client:
+            res = await client.post(self.token_url, data=json.dumps(self.get_access_token_params(code, public_key)))
+            ret = res.json()
+            return ret.get("data").get("jwt")
+
+    def get_access_token_params(self, code: str, public_key):
+        return {"clientId": self.client_id, "d": self.get_d_params(public_key), "code": code}
+
+    async def get_public_key(self) -> str:
+        async with httpx.AsyncClient(headers={"Content-Type": "application/json"}, timeout=30) as client:
+            res = await client.post(self.cipher_url, data=json.dumps(self.get_public_key_params()))
+            ret = res.json()
+            return ret.get("data")["pubKey"]
+
+    def get_public_key_params(self):
+        return {"clientId": self.client_id, "from": "platform", "type": "auth"}
+
+    def get_d_params(self, public_key):
+        d = encrypt(public_key, self.client_id, self.client_secret)
+        return d
