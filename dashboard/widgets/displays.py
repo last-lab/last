@@ -1,5 +1,4 @@
 import json
-from ast import literal_eval
 
 from starlette.requests import Request
 
@@ -135,8 +134,8 @@ class ShowAction(Display):
         dataset = {}
         label = []
         if value is not None:
-            dataset = await DataSet.get(id=value).values()
-            label = literal_eval(dataset["focused_risks"])
+            dataset = await DataSet.get_or_none(uid=value).values()
+            label = json.loads(dataset["focused_risks"])
         return await super().render(request, {**dataset, "focused_risks": label})
 
 
@@ -144,7 +143,7 @@ class ShowRiskType(Display):
     template = "dataset/risk.html"
 
     async def render(self, request: Request, value: any):
-        label = list(filter(lambda x: x["level"] == 1, literal_eval(value)))
+        label = list(filter(lambda x: x["level"] == 1, json.loads(value)))
         return await super().render(request, {"content": label})
 
 
@@ -152,7 +151,7 @@ class ShowSecondType(Display):
     template = "dataset/risk_second.html"
 
     async def render(self, request: Request, value: any):
-        label = list(filter(lambda x: x["level"] == 2, literal_eval(value)))
+        label = list(filter(lambda x: x["level"] == 2, json.loads(value)))
         return await super().render(
             request,
             {

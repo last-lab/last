@@ -2,7 +2,7 @@
 {% block page_body %}
     <div id="init">
         <span style="margin-right: 80px">选择文件</span>
-        <input type="file" id="fileInput" style="display:none;" accept="application/json">
+        <input type="file" id="fileInput" style="display:none;" accept=".csv">
         <button onclick="openFileSelector()" id="btn">打开文件</button>
         <div style="display:none; margin-top: 10px" id="processing">上传评测集中，请勿关闭此页面</div>
         <div style="display:none; margin-top: 10px" id="error">上传失败，请重试</div>
@@ -10,40 +10,70 @@
             <button type="button" class="btn btn-primary" onclick="history.back();">返回</button>
         </div>
     </div>
-    <div id="more" style="display: none; width: 500px">
+    <div id="more" style="display: none; width: 700px">
         <div class="mb-3 row">
-            <label class="col-3 col-form-label">评测集名称</label>
+            <label class="col-4 col-form-label">评测集名称</label>
             <div class="col">
                 <input class="form-control" placeholder="请输入" id="name">
             </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-3 col-form-label">上传进度</label>
+            <label class="col-4 col-form-label">上传进度</label>
             <div class="col col-form-label">上传已完成</div>
         </div>
+{#        <div class="mb-3 row">#}
+{#            <label class="col-3 col-form-label">风险类型</label>#}
+{#            <div class="col col-form-label" id="type"></div>#}
+{#        </div>#}
+{#        <div class="mb-3 row">#}
+{#            <label class="col-3 col-form-label">风险详情</label>#}
+{#            <div class="col col-form-label" id="detail"></div>#}
+{#        </div>#}
         <div class="mb-3 row">
-            <label class="col-3 col-form-label">风险类型</label>
-            <div class="col col-form-label" id="type"></div>
+            <label class="col-4 col-form-label">风险类型</label>
+            <div class="col col-form-label">
+                <label class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="radios-inline" checked="">
+                <span class="form-check-label">国家安全</span>
+            </label>
+            </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-3 col-form-label">风险详情</label>
-            <div class="col col-form-label" id="detail"></div>
+            <label class="col-4 col-form-label">二级、三级风险类型</label>
+            <div class="col col-form-label">
+                {% for item in risk_info %}
+                        <label class="form-check" onchange="getValue({{ item.id }})">
+                            <input class="form-check-input" type="checkbox" id={{ item.id }}>
+                            <span class="form-check-label">{{ item.name }}</span>
+                        </label>
+                        <div>
+                            {% for risk in item.downlevel_risk_name %}
+                                <label class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="{{ risk.id }}" disabled name={{ item.id }}>
+                                    <span class="form-check-label">{{ risk.name }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+
+                {% endfor %}
+            </div>
         </div>
         <div class="mb-3 row">
-            <label class="col-3 col-form-label">数据条数</label>
+            <label class="col-4 col-form-label">数据条数</label>
             <div class="col col-form-label" id="dataCount"></div>
         </div>
         <div class="mb-3 row">
-            <label class="col-3 col-form-label">语料字数</label>
+            <label class="col-4 col-form-label">语料字数</label>
             <div class="col col-form-label" id="number"></div>
         </div>
         <div class="mb-3 row">
-            <label class="col-3 col-form-label">评测集大小</label>
+            <label class="col-4 col-form-label">评测集大小</label>
             <div class="col col-form-label" id="size"></div>
         </div>
-        <button type="button" class="btn btn-primary" onclick="uploadSubmit()">完成上传</button>
+        <button type="button" class="btn btn-primary" onclick="uploadSubmit({{ risk_info }})">完成上传</button>
     </div>
     <script>
+        var jsonvalue = {}
         function openFileSelector() {
             const inputObj = document.getElementById('fileInput');
             inputObj.onchange = (event) => {
@@ -60,22 +90,23 @@
                         contentType: false,
                         success: function (value) {
                             console.log(value)
-                            if(!value.result) {
-                                document.getElementById("processing").style.display = 'none';
-                                alert(value.reason);
-                                return;
-                             }
+                            jsonvalue=value
+                            {#if(!value.result) {#}
+                            {#    document.getElementById("processing").style.display = 'none';#}
+                            {#    alert(value.reason);#}
+                            {#    return;#}
+                            {# }#}
                             document.getElementById("init").style.display = 'none';
                             document.getElementById("more").style.display = 'block';
-                            value.focused_risks.map(item => {
-                                if (item.level === 2) {
-                                    $("#detail").append(`<div>${item.name}</div>`)
-                                    if (item.uplevel_risk_name) {
-                                        $("#detail").append(`<div>${item.uplevel_risk_name.join(',')}</div>`)
-                                    }
-                                }
-                             })
-                            $("#type").text(value.focused_risks.filter(item => item.level === 1)[0].name);
+                            {#value.focused_risks.map(item => {#}
+                            {#    if (item.level === 2) {#}
+                            {#        $("#detail").append(`<div>${item.name}</div>`)#}
+                            {#        if (item.downlevel_risk_name) {#}
+                            {#            $("#detail").append(`<div>${item.downlevel_risk_name.join(',')}</div>`)#}
+                            {#        }#}
+                            {#    }#}
+                            {# })#}
+                            {#$("#type").text(value.focused_risks.filter(item => item.level === 1)[0].name);#}
                             $("#dataCount").text(value.qa_num);
                             $("#number").text(value.word_cnt);
                             $("#size").text(value.volume);
@@ -89,35 +120,43 @@
             }
             inputObj.click();
         }
-        function uploadSubmit () {
+        function uploadSubmit (info) {
             if (!$("#name").val()) {
                 alert('请输入评测集名称')
                 return;
             }
-            const data = [
-                {"level":1,"name":"国家安全","description":""},
+            const risks = [
                 {
-                    "level":2,
-                    "name":"颠覆政权",
-                    "description":"",
-                    "uplevel_risk_name": ["敏感信息", "安全问题"]
+                    level: 1,
+                    name: '国家安全',
+                    description: null,
                 },
-                {
-                    "level": 2,
-                    "name": "宣扬恐怖主义",
-                    "description": "",
-                    "uplevel_risk_name": ["维度三1", "维度三2"]
-                },
-            ];
+            ]
+            info.forEach(item => {
+                if ($("#" + item.id)[0].checked) {
+                    const risk = {
+                        level: 2,
+                        name: item.name,
+                        description: null,
+                        downlevel_risk_name: []
+                    }
+                    item.downlevel_risk_name.forEach(ele => {
+                        if ($("#" + ele.id)[0].checked) {
+                            risk.downlevel_risk_name.push(ele.name)
+                        }
+
+                    })
+                    risks.push(risk)
+                 }
+            })
             $.ajax({
                 url: '/admin/dataset/conform',
                 type: 'POST',
                 data: JSON.stringify({
+                    ...jsonvalue,
                     "name": $('#name').val(),
-                    "focused_risks": JSON.stringify(data),
-                    "volume": $("#size").text(),
-                    "qa_num": $("#dataCount").text(),
-                    "word_cnt": $("#number").text()
+                    "focused_risks": JSON.stringify(risks),
+                    "focused_risks_json": JSON.stringify(risks)
                 }),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
@@ -129,8 +168,16 @@
                         alert(value.reason)
                     }
                 }
-            })
+             })
 
          }
+        function getValue(id) {
+             if ($(id)[0].checked) {
+                $(`input[name=${$(id)[0].id}]`).prop("disabled", false);
+             } else {
+                $(`input[name=${$(id)[0].id}]`).prop("checked", false);
+                $(`input[name=${$(id)[0].id}]`).prop("disabled", true);
+             }
+        }
     </script>
 {% endblock %}
