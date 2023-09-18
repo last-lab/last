@@ -22,6 +22,66 @@ async def upload_dataset(
     resources=Depends(get_resources),
     model_resource: ModelResource = Depends(get_model_resource),
 ):
+    # TODO 风险类型需调用接口获取，此处先mock
+    risk_info = [
+        {
+            "id": "risk1",
+            "level": 2,
+            "name": "颠覆国家政权",
+            "downlevel_risk_name": [
+                {
+                    "id": "risk1-1",
+                    "name": "反政府组织",
+                },
+                {
+                    "id": "risk1-2",
+                    "name": "暴力政治活动",
+                },
+                {
+                    "id": "risk1-3",
+                    "name": "革命行动",
+                }
+            ]
+        },
+        {
+            "id": "risk2",
+            "level": 2,
+            "name": "宣扬恐怖主义",
+            "downlevel_risk_name": [
+                {
+                    "id": "risk2-1",
+                    "name": "恐怖组织宣传",
+                },
+                {
+                    "id": "risk2-2",
+                    "name": "暴力恐吓手段",
+                },
+                {
+                    "id": "risk2-3",
+                    "name": "恐怖袭击策划",
+                }
+            ]
+        },
+        {
+            "id": "risk3",
+            "level": 2,
+            "name": "挑拨民族对立",
+            "downlevel_risk_name": [
+                {
+                    "id": "risk3-1",
+                    "name": "种族仇恨煽动",
+                },
+                {
+                    "id": "risk3-2",
+                    "name": "民族主义煽动",
+                },
+                {
+                    "id": "risk3-3",
+                    "name": "社会分裂策略",
+                }
+            ]
+        }
+    ]
     context = {
         "request": request,
         "resource": resource,
@@ -29,6 +89,7 @@ async def upload_dataset(
         "resources": resources,
         "model_resource": model_resource,
         "page_title": "上传评测集",
+        "risk_info": risk_info
     }
     try:
         return templates.TemplateResponse(
