@@ -41,7 +41,7 @@ class Dataset(Record, BaseManager):
     url: Optional[HttpUrl] = None  # 文件导出url
     file: Optional[str] = None  # 文件本地path
     volume: Optional[str] = Field(default="0.0GB")  # 数据集大小GB
-    used_by: Optional[List[str]] = Field(default=0)  # 使用次数
+    used_by: Optional[int] = Field(default=0)  # 使用次数
     qa_num: Optional[int] = Field(default=0, init=False)  # 对话条数
     word_cnt: Optional[int] = Field(default=0, init=False)  # 语料字数
 

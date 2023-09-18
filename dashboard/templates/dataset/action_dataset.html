@@ -37,7 +37,7 @@
                 {% for type in value.focused_risks %}
                     {% if type.level == 2  %}
                         <div>{{ type.name }}</div>
-                        {% for subType in type.uplevel_risk_name %}
+                        {% for subType in type.downlevel_risk_name %}
                             <span>{{ subType.name }}</span>
                         {% endfor %}
                     {% endif %}

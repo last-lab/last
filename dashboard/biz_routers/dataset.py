@@ -1,9 +1,13 @@
+import os
 from fastapi import APIRouter, Depends, File, Path, UploadFile
 from jinja2 import TemplateNotFound
 from pydantic import BaseModel
+from pydantic.dataclasses import dataclass
 from starlette.requests import Request
-
+import json
 from dashboard.biz_models import DataSet
+from dashboard.resources import upload
+from last.types.dataset import Dataset
 from last.services.depends import create_checker, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
@@ -39,34 +43,18 @@ async def upload_dataset(
 
 
 @router.post("/dataset/json")
+
 async def json(request: Request, file: UploadFile = File(...)):
-    # contents = await upload.upload(file)
-    contents = {
-        "result": 1,
-        "reason": "",
-        "focused_risks": [
-            {"level": 1, "name": "国家安全", "description": ""},
-            {"level": 2, "name": "颠覆政权", "description": "", "uplevel_risk_name": ["敏感信息", "安全问题"]},
-            {
-                "level": 2,
-                "name": "宣扬恐怖主义",
-                "description": "",
-                "uplevel_risk_name": ["维度三1", "维度三2"],
-            },
-        ],
-        "qa_num": 666,
-        "word_cnt": 1000,
-        "volume": "10GB",
-    }
+    url = await upload.upload(file)
+    name = url.split('/')[-1]
+    contents = Dataset(file=os.path.join("static", name))
     return contents
 
 
-class Item(BaseModel):
-    name: str
+class Item(Dataset):
     focused_risks: str
-    volume: str
-    qa_num: str
-    word_cnt: str
+    focused_risks_json: str
+
 
 
 @router.post("/dataset/conform")
@@ -75,11 +63,28 @@ async def conform(request: Request, item: Item):
     if len(result) > 0:
         return {"result": 0, "reason": "评测集名称重复，请修改"}
     else:
+        time = (item.created_at.year + '-' + item.created_at.month + '-' + item.created_at.day +
+                ' ' + item.created_at.hour + ':' + item.created_at.minute)
         await DataSet.create(
             name=item.name,
-            focused_risks=item.focused_risks,
+            focused_risks=item.focused_risks_json,
             volume=item.volume,
             qa_num=item.qa_num,
             word_cnt=item.word_cnt,
+            url=item.url,
+            file=item.file,
+            used_by=item.used_by,
+            qa_records=str(item.qa_records),
+            conversation_start_id=str(item.conversation_start_id),
+            current_conversation_index=item.current_conversation_index,
+            current_qa_record_id=item.current_qa_record_id,
+            uid=item.uid,
+            description=item.description,
+            creator=str(item.creator),
+            editor=item.editor,
+            reviewer=item.reviewer,
+            created_at=time,
+            updated_at=time,
+            permissions=item.permissions
         )
         return {"result": 1, "reason": "上传成功"}
