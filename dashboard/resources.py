@@ -222,7 +222,7 @@ class DataManager(Dropdown):
             Field(name="focused_risks", label="二级类型", display=ShowSecondType()),
             Field(name="updated_at", label="更新时间"),
             Field(name="used_by", label="使用次数"),
-            Field(name="qa_records", label="操作", display=ShowAction()),
+            Field(name="uid", label="操作", display=ShowAction())
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:

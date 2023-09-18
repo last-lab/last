@@ -131,12 +131,12 @@ class ShowModelCard(Display):
 class ShowAction(Display):
     template = "dataset/action_dataset.html"
 
-    async def render(self, request: Request, value: any):
+    async def render(self, request: Request, value: str):
         dataset = {}
         label = []
         if value is not None:
-            dataset = await DataSet.get(id=value).values()
-            label = literal_eval(dataset["focused_risks"])
+            dataset = await DataSet.get_or_none(uid=value).values()
+            label = json.loads(dataset["focused_risks"])
         return await super().render(request, {**dataset, "focused_risks": label})
 
 
