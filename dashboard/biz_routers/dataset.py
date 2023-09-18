@@ -1,16 +1,16 @@
 import os
+
 from fastapi import APIRouter, Depends, File, Path, UploadFile
 from jinja2 import TemplateNotFound
-from pydantic import BaseModel
-from pydantic.dataclasses import dataclass
 from starlette.requests import Request
-import json
+
 from dashboard.biz_models import DataSet
 from dashboard.resources import upload
-from last.types.dataset import Dataset
+from dashboard.constants import BASE_DIR
 from last.services.depends import create_checker, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
+from last.types.dataset import Dataset
 
 router = APIRouter()
 
@@ -106,9 +106,8 @@ async def upload_dataset(
 @router.post("/dataset/json")
 
 async def json(request: Request, file: UploadFile = File(...)):
-    url = await upload.upload(file)
-    name = url.split('/')[-1]
-    contents = Dataset(file=os.path.join("static", name))
+    await upload.upload(file)
+    contents = Dataset(file=os.path.join(BASE_DIR, "static", "uploads", file.filename))
     return contents
 
 
