@@ -5,6 +5,7 @@ from starlette.requests import Request
 
 from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo
 from dashboard.enums import EvalStatus
+from last.services.resources import ComputeField
 from last.services.widgets.displays import Display, Popover, Status
 
 
@@ -51,17 +52,29 @@ class ShowPlanDetail(Display):
         datasets = await DataSet.filter(id__in=dataset_ids)
         dataset_names = []
         risk_details = []
+        eval_type = "系统评分⭐"
+        plan_content = eval_plan.dimensions.split(",")
+        if eval_plan.eval_type == 1:
+            eval_type = "人工评分 👤️"
 
         for ds in datasets:
             dataset_names.append(ds.name)
-            risk_details.append(json.loads(ds.dimensions))
+            risk_details.append(json.loads(ds.focused_risks))
+
+        risk_names = []
+        for r in risk_details:
+            if isinstance(r, list):
+                for r_item in r:
+                    risk_names.append(r_item["name"])
+            else:
+                risk_names.append(r["name"])
 
         plan_detail = {
             "name": eval_plan.name,
-            "score_way": eval_plan.eval_type,
-            "plan_content": eval_plan.dimensions,
+            "score_way": eval_type,
+            "plan_content": plan_content,
             "dataset_names": dataset_names,
-            "risk_detail": risk_details,
+            "risk_detail": risk_names,
         }
 
         return await super().render(
@@ -70,18 +83,35 @@ class ShowPlanDetail(Display):
         )
 
 
+class OperationField(ComputeField):
+    def __init__(self, **context):
+        super().__init__(**context)
+        self.display = ShowOperation(**context)
+
+    async def get_value(self, request: Request, obj: dict):
+        return {
+            "id": obj["id"],
+            "llm_id": obj["llm_id"],
+            "report": obj["report"],
+        }
+
+
 class ShowOperation(Display):
     template = "record/record_operations.html"
 
-    async def render(self, request: Request, value: int):
-        model_detail = await ModelInfo.get_or_none(id=value).values()
-        # TODO: 下面的 record_file 需要替换为查询得到文件列表
+    def __init__(self, **context):
+        super().__init__(**context)
+
+    async def render(self, request: Request, value: any):
+        model_detail = await ModelInfo.get_or_none(id=value["llm_id"]).values()
+        # TODO: 下面的 record_file(备案文件) 需要替换为查询得到文件列表
         record_file = ["书生·浦语 1.3.0", "送评模型1 1.0", "送评模型1 1.4"]
         return await super().render(
             request,
             {
                 "model_detail": model_detail,
                 "record_file": record_file,
+                "report": value["report"],
             },
         )
 

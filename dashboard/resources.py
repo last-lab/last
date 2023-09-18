@@ -10,21 +10,15 @@ from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import LabelPage
 from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin  # EvaluationPlan,; Evaluation,
-from dashboard.models import Cat  # EvaluationPlan,; Evaluation,
-from dashboard.models import Category  # EvaluationPlan,; Evaluation,
-from dashboard.models import Config  # Evaluation,
-from dashboard.models import Dog1  # EvaluationPlan,; Evaluation,
+from dashboard.models import Admin, Cat, Dog1  # EvaluationPlan,; Evaluation,
 from dashboard.models import Log
 from dashboard.models import Permission as PermissionModel
-from dashboard.models import Product
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
-from dashboard.providers import import_export_provider
 from dashboard.widgets.displays import (
+    OperationField,
     ShowAction,
     ShowIp,
-    ShowOperation,
     ShowPlanDetail,
     ShowPopover,
     ShowRiskType,
@@ -47,7 +41,7 @@ from last.services.resources import (
 )
 from last.services.widgets import displays, filters, inputs
 
-upload = FileUpload(uploads_dir=f"{(Path(BASE_DIR)/'static'/'uploads').resolve()}")
+upload = FileUpload(uploads_dir=f"{(Path(BASE_DIR) / 'static' / 'uploads').resolve()}")
 
 
 @app.register
@@ -73,11 +67,17 @@ class Administartor(Dropdown):
 class Evaluation(Dropdown):
     """模型评测"""
 
+    class Create(Link):
+        """创建评测"""
+
+        label = _("创建评测")
+        icon = "fas fa-tag"
+        url = "/admin/record/add"
+
     class Record(Model):
         """评测记录"""
 
-        page_title = _("EvaluationRecord Record")
-        label: str = _("EvaluationRecord Record")
+        label = _("评测记录")
         model = Record
 
         filters = [
@@ -87,14 +87,14 @@ class Evaluation(Dropdown):
                 search_mode="contains",
                 placeholder="评测模型/版本/方案",
             ),
-            filters.Enum(enum=enums.EvalStatus, name="status", label="评测状态"),
+            filters.Enum(enum=enums.EvalStatus, name="state", label="评测状态"),
         ]
         fields = [
             Field(name="llm_name", label="评测模型", display=ShowPopover()),
             Field(name="plan_id", label="评测方案", display=ShowPlanDetail()),
             Field(name="created_at", label="提交时间"),
             Field(name="state", label="评测状态", display=ShowStatus()),
-            Field(name="llm_id", label="操作", display=ShowOperation()),
+            OperationField(name="llm_id", label="操作"),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
@@ -112,19 +112,134 @@ class Evaluation(Dropdown):
         async def get_actions(self, request: Request) -> List[Action]:
             return []
 
-    class Create(Link):
-        """创建评测"""
-
-        label = _("Create Evaluation")
-        url = "/admin/record/add"
-
-    label: str = _("EvaluationRecord")
+    label = _("模型评测")
     icon = "fas fa-user"
     resources = [Record, Create]
 
 
+# @app.register
+# class Dataset(Dropdown):
+#     class LabelingRecord(Model):
+#         label = _("Labeling Record")
+#         model = LabelPage
+#         filters = [filters.Search(name="task_type", label="Task Type")]
+#         fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
+#
+#         async def get_actions(self, request: Request) -> List[Action]:
+#             return [
+#                 Action(
+#                     label=_("labeling"),
+#                     icon="ti ti-edit",
+#                     name="labeling",
+#                     method=Method.GET,
+#                     ajax=False,
+#                 )
+#             ]
+#
+#         async def get_bulk_actions(self, request: Request) -> List[Action]:
+#             return []
+#
+#     class Labeling(Link):
+#         """Label Studio Embedding"""
+#
+#         label = _("Labeling")
+#         icon = "fas fa-tag"
+#         url = "/admin/label"
+#
+#     label = _("Dataset")
+#     icon = "fas fa-bars"
+#     resources = [LabelingRecord, Labeling]
+
+
 @app.register
-class Dataset(Dropdown):
+class DataManager(Dropdown):
+    class EvaluationPlanResource(Model):
+        label = _("评测方案管理")
+        model = EvaluationPlan
+        filters = [filters.Search(name="name", label="方案名称", placeholder="请输入")]
+        fields = [
+            "id",
+            Field(name="name", label="评测方案"),
+            Field(name="dimensions", label="风险类型/数据占比/评测权重"),
+            Field(name="dataset_ids", label="风险类型/数据占比/评测权重", display=displays.InputOnly()),
+            Field(
+                name="eval_type",
+                label="评分方式",
+                display=displays.InputOnly(),
+                input_=inputs.RadioEnum(
+                    enums.EvaluationType, default=enums.EvaluationType.auto_ai_critique
+                ),
+            ),
+        ]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return [
+                Action(
+                    label=_("update"),
+                    icon="ti ti-edit",
+                    name="epm_update",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                ),
+                Action(
+                    label=_("复制并新建"),
+                    icon="ti ti-toggle-left",
+                    name="epm_copy_create",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                ),
+                Action(
+                    label=_("delete"),
+                    icon="ti ti-trash",
+                    name="delete",
+                    method=_enums.Method.DELETE,
+                ),
+            ]
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("新建方案"),
+                    icon="fas fa-plus",
+                    name="epm_create",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                    class_="btn-dark",
+                )
+            ]
+
+    class DatasetResource(Model):
+        label = _("评测集管理")
+        model = DataSet
+        page_title = _("评测集管理")
+        filters = [
+            filters.Search(name="name", label="评测集名称"),
+            filters.Search(name="type", label="风险类型"),
+        ]
+        fields = [
+            Field(name="name", label="评测集名称"),
+            Field(name="focused_risks", label="风险类型", display=ShowRiskType()),
+            Field(name="focused_risks", label="二级类型", display=ShowSecondType()),
+            Field(name="updated_at", label="更新时间"),
+            Field(name="used_by", label="使用次数"),
+            Field(name="qa_records", label="操作", display=ShowAction()),
+        ]
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("上传数据集"),
+                    icon="fas fa-upload",
+                    name="upload_dataset",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                    class_="btn-primary",
+                )
+            ]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return []
+
     class LabelingRecord(Model):
         label = _("Labeling Record")
         model = LabelPage
@@ -145,101 +260,95 @@ class Dataset(Dropdown):
         async def get_bulk_actions(self, request: Request) -> List[Action]:
             return []
 
-    class Labeling(Link):
-        """Label Studio Embedding"""
-
-        label = _("Labeling")
-        icon = "fas fa-tag"
-        url = "/admin/label"
-
-    label = _("Dataset")
+    label = _("datamanager")
     icon = "fas fa-bars"
-    resources = [LabelingRecord, Labeling]
+    resources = [DatasetResource, EvaluationPlanResource, LabelingRecord]
 
 
-@app.register
-class Content(Dropdown):
-    class CategoryResource(Model):
-        label = "Category"
-        model = Category
-        filters = [filters.Search(name="name", label="Name")]
-        fields = ["id", "name", "slug", "created_at"]
-
-        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
-            actions = await super().get_toolbar_actions(request)
-            actions.append(import_export_provider.import_action)
-            actions.append(import_export_provider.export_action)
-            return actions
-
-    class ProductResource(Model):
-        label = "Product"
-        model = Product
-        filters = [
-            filters.Enum(enum=enums.ProductType, name="type", label="ProductType"),
-            filters.Datetime(name="created_at", label="CreatedAt"),
-        ]
-        fields = [
-            "id",
-            "name",
-            "view_num",
-            "sort",
-            "is_reviewed",
-            "type",
-            Field(name="image", label="Image", display=displays.Image(width="40")),
-            Field(name="body", label="Body", input_=inputs.Editor()),
-            "created_at",
-        ]
-
-    label = "Content"
-    icon = "fas fa-bars"
-    resources = [ProductResource, CategoryResource]
-
-
-@app.register
-class ConfigResource(Model):
-    label = "Config"
-    model = Config
-    icon = "fas fa-cogs"
-    filters = [
-        filters.Enum(
-            enum=enums.Status,
-            name="status",
-            label="Status",
-        ),
-        filters.Search(name="key", label="Key", search_mode="equal"),
-    ]
-    fields = [
-        "id",
-        "label",
-        "key",
-        "value",
-        Field(
-            name="status",
-            label="Status",
-            input_=inputs.RadioEnum(enums.Status, default=enums.Status.on),
-        ),
-    ]
-
-    async def row_attributes(self, request: Request, obj: dict) -> dict:
-        if obj.get("status") == enums.Status.on:
-            return {"class": "bg-green text-white"}
-        return await super().row_attributes(request, obj)
-
-    async def get_actions(self, request: Request) -> List[Action]:
-        actions = await super().get_actions(request)
-        switch_status = Action(
-            label="Switch Status",
-            icon="ti ti-toggle-left",
-            name="switch_status",
-            method=Method.PUT,
-        )
-        actions.append(switch_status)
-        return actions
+# @app.register
+# class Content(Dropdown):
+#     class CategoryResource(Model):
+#         label = "Category"
+#         model = Category
+#         filters = [filters.Search(name="name", label="Name")]
+#         fields = ["id", "name", "slug", "created_at"]
+#
+#         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+#             actions = await super().get_toolbar_actions(request)
+#             actions.append(import_export_provider.import_action)
+#             actions.append(import_export_provider.export_action)
+#             return actions
+#
+#     class ProductResource(Model):
+#         label = "Product"
+#         model = Product
+#         filters = [
+#             filters.Enum(enum=enums.ProductType, name="type", label="ProductType"),
+#             filters.Datetime(name="created_at", label="CreatedAt"),
+#         ]
+#         fields = [
+#             "id",
+#             "name",
+#             "view_num",
+#             "sort",
+#             "is_reviewed",
+#             "type",
+#             Field(name="image", label="Image", display=displays.Image(width="40")),
+#             Field(name="body", label="Body", input_=inputs.Editor()),
+#             "created_at",
+#         ]
+#
+#     label = "Content"
+#     icon = "fas fa-bars"
+#     resources = [ProductResource, CategoryResource]
+#
+#
+# @app.register
+# class ConfigResource(Model):
+#     label = "Config"
+#     model = Config
+#     icon = "fas fa-cogs"
+#     filters = [
+#         filters.Enum(
+#             enum=enums.Status,
+#             name="status",
+#             label="Status",
+#         ),
+#         filters.Search(name="key", label="Key", search_mode="equal"),
+#     ]
+#     fields = [
+#         "id",
+#         "label",
+#         "key",
+#         "value",
+#         Field(
+#             name="status",
+#             label="Status",
+#             input_=inputs.RadioEnum(enums.Status, default=enums.Status.on),
+#         ),
+#     ]
+#
+#     async def row_attributes(self, request: Request, obj: dict) -> dict:
+#         if obj.get("status") == enums.Status.on:
+#             return {"class": "bg-green text-white"}
+#         return await super().row_attributes(request, obj)
+#
+#     async def get_actions(self, request: Request) -> List[Action]:
+#         actions = await super().get_actions(request)
+#         switch_status = Action(
+#             label="Switch Status",
+#             icon="ti ti-toggle-left",
+#             name="switch_status",
+#             method=Method.PUT,
+#         )
+#         actions.append(switch_status)
+#         return actions
+#
 
 
 @app.register
 class LogResource(Model):
-    label = "Log"
+    label = _("Log")
     model = Log
     icon = "far fa-sticky-note"
     fields = [
@@ -288,7 +397,7 @@ class LogResource(Model):
 @app.register
 class Auth(Dropdown):
     class AdminResource(Model):
-        label = "Admin"
+        label = _("Admin")
         model = Admin
         icon = "fas fa-user"
         page_pre_title = "admin list"
@@ -327,7 +436,7 @@ class Auth(Dropdown):
         ]
 
     class Resource(Model):
-        label = "Resource"
+        label = _("Resource")
         model = ResourceModel
 
         async def get_actions(self, request: Request) -> List[Action]:
@@ -337,7 +446,7 @@ class Auth(Dropdown):
             return []
 
     class Permission(Model):
-        label = "Permission"
+        label = _("Permission")
         model = PermissionModel
 
         async def get_actions(self, request: Request) -> List[Action]:
@@ -347,12 +456,13 @@ class Auth(Dropdown):
             return []
 
     class Role(Model):
-        label = "Role"
+        label = _("Role")
         model = RoleModel
 
-    label = "Auth"
+    label = _("Auth")
     icon = "fas fa-users"
     resources = [AdminResource, Resource, Permission, Role]
+
 
 
 @app.register
@@ -497,12 +607,53 @@ class DataManagePage(Dropdown):
     # resources = [EvaluationPlanManagerResource]
     # resources = [EvaluationPlanResource]
 
+# @app.register
+# class Animal(Dropdown):
+#     class CatResource(Model):
+#         label = _("Cat")
+#         model = Cat
+#         filters = [filters.Search(name="name", label="Name")]
+#         fields = ["id", "name", "age", "birth_at"]
+#
+#     class DogResource(Model):
+#         label = "Dog"
+#         model = Dog1
+#         filters = [
+#             filters.Enum(enum=enums.GenderType, name="gender", label="Gender"),
+#             filters.Datetime(name="birth_at", label="Birth_At"),
+#         ]
+#         fields = [
+#             "id",
+#             "name",
+#             "age",
+#             "gender",
+#             Field(
+#                 name="image",
+#                 label="Image",
+#                 display=displays.Image(width="40"),
+#                 input_=inputs.Image(null=True, upload=upload),
+#             ),
+#             "birth_at",
+#         ]
+#
+#     label = "Animal"
+#     icon = "fas fa-bars"
+#     resources = [CatResource, DogResource]
 
-@app.register
-class SimpleTable(Link):
-    label = "Simple Table1"
-    icon = "fa-solid fa-table"
-    url = "/admin/stable1"
+
+# class DataManagePage(Dropdown):
+#     class LabelingPage(Model):
+#         label = "Labeling"
+#         model = LabelPage
+#         filters = [filters.Search(name="task_type", label="Task Type")]
+#         fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
+#
+#     label = "DataSet"
+#     icon = "fas fa-bars"
+#     resources = [LabelingPage]
+#
+#     # resources = [EvaluationPlanManagerResource]
+#     # resources = [EvaluationPlanResource]
 
 
 class RestDays(ComputeField):
@@ -572,6 +723,6 @@ class Amount(ComputeField):
 
 @app.register
 class SwitchLayout(Link):
-    label = "Switch Layout"
+    label = _("Switch Layout")
     url = "/admin/layout"
     icon = "fas fa-grip-horizontal"

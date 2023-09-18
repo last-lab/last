@@ -43,16 +43,39 @@ async def upload_dataset(
 
 
 @router.post("/dataset/json")
+
 async def json_dataset(request: Request, file: UploadFile = File(...)):
     url = await upload.upload(file)
     name = url.split('/')[-1]
     contents = Dataset(file=os.path.join("static", name))
+
+async def json(request: Request, file: UploadFile = File(...)):
+    # contents = await upload.upload(file)
+    contents = {
+        "result": 1,
+        "reason": "",
+        "focused_risks": [
+            {"level": 1, "name": "国家安全", "description": ""},
+            {"level": 2, "name": "颠覆政权", "description": "", "uplevel_risk_name": ["敏感信息", "安全问题"]},
+            {
+                "level": 2,
+                "name": "宣扬恐怖主义",
+                "description": "",
+                "uplevel_risk_name": ["维度三1", "维度三2"],
+            },
+        ],
+        "qa_num": 666,
+        "word_cnt": 1000,
+        "volume": "10GB",
+    }
+
     return contents
 
 
 class Item(Dataset):
     focused_risks: str
     focused_risks_json: str
+
 
 
 @router.post("/dataset/conform")
