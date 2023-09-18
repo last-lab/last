@@ -70,5 +70,4 @@ if __name__ == "__main__":
     ):
         return [Circle(a.radius + i.radius).area() for i in b]
 
-    inspect.getsource(foo)
     print(client.execute(foo, kwargs_json))  # Output: [9.42, 12.56, 15.7]
