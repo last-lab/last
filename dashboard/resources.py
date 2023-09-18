@@ -10,8 +10,7 @@ from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import LabelPage
 from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
-from dashboard.models import Admin  # EvaluationPlan,; Evaluation,
-from dashboard.models import Log
+from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
@@ -222,7 +221,7 @@ class DataManager(Dropdown):
             Field(name="focused_risks", label="二级类型", display=ShowSecondType()),
             Field(name="updated_at", label="更新时间"),
             Field(name="used_by", label="使用次数"),
-            Field(name="qa_records", label="操作", display=ShowAction()),
+            Field(name="uid", label="操作", display=ShowAction()),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
@@ -462,6 +461,40 @@ class Auth(Dropdown):
     label = _("Auth")
     icon = "fas fa-users"
     resources = [AdminResource, Resource, Permission, Role]
+
+
+# @app.register
+# class Animal(Dropdown):
+#     class CatResource(Model):
+#         label = _("Cat")
+#         model = Cat
+#         filters = [filters.Search(name="name", label="Name")]
+#         fields = ["id", "name", "age", "birth_at"]
+#
+#     class DogResource(Model):
+#         label = "Dog"
+#         model = Dog1
+#         filters = [
+#             filters.Enum(enum=enums.GenderType, name="gender", label="Gender"),
+#             filters.Datetime(name="birth_at", label="Birth_At"),
+#         ]
+#         fields = [
+#             "id",
+#             "name",
+#             "age",
+#             "gender",
+#             Field(
+#                 name="image",
+#                 label="Image",
+#                 display=displays.Image(width="40"),
+#                 input_=inputs.Image(null=True, upload=upload),
+#             ),
+#             "birth_at",
+#         ]
+#
+#     label = "Animal"
+#     icon = "fas fa-bars"
+#     resources = [CatResource, DogResource]
 
 
 # @app.register
