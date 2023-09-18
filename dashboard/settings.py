@@ -17,9 +17,11 @@ GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
 GOOGLE_RECAPTCHA_SITE_KEY = os.getenv("GOOGLE_RECAPTCHA_SITE_KEY", "")
 GOOGLE_RECAPTCHA_SECRET = os.getenv("GOOGLE_RECAPTCHA_SECRET", "")
 
-SSO_CLIENT_ID = os.getenv("SSO_CLIENT_ID", "o1mdgwg6e7rmbdqvamgx")
-SSO_CLIENT_SECRET = os.getenv("SSO_CLIENT_SECRET", "mwg7rpdnanvql9zrvl2gopgdvyk2dag4e8j6ozlp")
-SSO_REDIRECT_URL = os.getenv("SSO_REDIRECT_URL", "http://127.0.0.1:8000/admin/oauth2/sso_oauth2_provider")
+SSO_CLIENT_ID = os.getenv("SSO_CLIENT_ID", "")
+SSO_CLIENT_SECRET = os.getenv("SSO_CLIENT_SECRET", "")
+SSO_REDIRECT_URL = os.getenv(
+    "SSO_REDIRECT_URL", "http://127.0.0.1:8000/admin/oauth2/sso_oauth2_provider"
+)
 SSO_TOKEN = os.getenv("SSO_TOKEN", "")
 SSO_USERNAME = "long2ice"
 

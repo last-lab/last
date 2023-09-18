@@ -22,7 +22,8 @@ from dashboard.mock_data import mock_data
 from dashboard.models import Admin, Log, Permission, Resource
 from dashboard.providers import (  # GitHubProvider,; GoogleProvider,
     LoginProvider,
-    import_export_provider, GitHubProvider, SSOProvider
+    SSOProvider,
+    import_export_provider,
 )
 from dashboard.tasks import rearq
 from last.services import enums, middlewares
@@ -109,8 +110,12 @@ def create_app():
                 #     settings.GOOGLE_CLIENT_SECRET,
                 #     redirect_uri="https://fastapi-admin-pro.long2ice.io/admin/oauth2/google_oauth2_provider",
                 # ),
-                SSOProvider(Admin, settings.SSO_CLIENT_ID, settings.SSO_CLIENT_SECRET,
-                            redirect_uri=settings.SSO_REDIRECT_URL),
+                SSOProvider(
+                    Admin,
+                    settings.SSO_CLIENT_ID,
+                    settings.SSO_CLIENT_SECRET,
+                    redirect_uri=settings.SSO_REDIRECT_URL,
+                ),
                 import_export_provider,
             ],  # type: ignore
             redis=r,

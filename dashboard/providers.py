@@ -1,5 +1,3 @@
-from urllib.parse import urlencode
-
 from fastapi import Depends, Form
 from redis.asyncio import Redis
 from starlette.requests import Request
@@ -13,20 +11,20 @@ from last.services.providers.import_export import ImportExportProvider
 from last.services.providers.login import (
     GitHubOAuth2Provider,
     GoogleOAuth2Provider,
-    UsernamePasswordProvider,
     SSOOAuth2Provider,
+    UsernamePasswordProvider,
 )
 
 
 class LoginProvider(UsernamePasswordProvider):
     async def password(
-            self,
-            request: Request,
-            old_password: str = Form(...),
-            new_password: str = Form(...),
-            re_new_password: str = Form(...),
-            admin: AbstractAdmin = Depends(get_current_admin),
-            resources=Depends(get_resources),
+        self,
+        request: Request,
+        old_password: str = Form(...),
+        new_password: str = Form(...),
+        re_new_password: str = Form(...),
+        admin: AbstractAdmin = Depends(get_current_admin),
+        resources=Depends(get_resources),
     ):
         return await self.logout(request)
 
@@ -105,7 +103,7 @@ class SSOProvider(SSOOAuth2Provider, OAuth2ProviderMixin):
                 username=username,
                 channel="sso",
                 last_login=timezone.now(),
-                is_superuser=True
+                is_superuser=True,
             ),
         )
         return await self.after_admin_login(admin, created)
