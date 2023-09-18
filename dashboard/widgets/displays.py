@@ -5,6 +5,7 @@ from starlette.requests import Request
 
 from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo
 from dashboard.enums import EvalStatus
+from last.services.resources import ComputeField
 from last.services.widgets.displays import Display, Popover, Status
 
 
@@ -82,18 +83,35 @@ class ShowPlanDetail(Display):
         )
 
 
+class OperationField(ComputeField):
+    def __init__(self, **context):
+        super().__init__(**context)
+        self.display = ShowOperation(**context)
+
+    async def get_value(self, request: Request, obj: dict):
+        return {
+            "id": obj["id"],
+            "llm_id": obj["llm_id"],
+            "report": obj["report"],
+        }
+
+
 class ShowOperation(Display):
     template = "record/record_operations.html"
 
-    async def render(self, request: Request, value: int):
-        model_detail = await ModelInfo.get_or_none(id=value).values()
-        # TODO: 下面的 record_file 需要替换为查询得到文件列表
+    def __init__(self, **context):
+        super().__init__(**context)
+
+    async def render(self, request: Request, value: any):
+        model_detail = await ModelInfo.get_or_none(id=value["llm_id"]).values()
+        # TODO: 下面的 record_file(备案文件) 需要替换为查询得到文件列表
         record_file = ["书生·浦语 1.3.0", "送评模型1 1.0", "送评模型1 1.4"]
         return await super().render(
             request,
             {
                 "model_detail": model_detail,
                 "record_file": record_file,
+                "report": value["report"],
             },
         )
 
