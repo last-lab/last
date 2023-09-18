@@ -30,6 +30,7 @@ class Client:
         for key, value in kwargs.items():
             if key.startswith("$"):
                 key = key[1:]  # Remove the dollar sign
+                # TODO: This should be enhanced using regex to support format like ${arg}
 
             # If the argument is a placeholder, use its parser
             if key in placeholders:
@@ -43,6 +44,7 @@ class Client:
 
 @dataclass
 class Circle:
+    """An example class with a method that uses a placeholder"""
     radius: float
 
     def area(self):
