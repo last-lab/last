@@ -102,7 +102,7 @@ def create_app():
                 AdminLogProvider(Log),
                 SearchProvider(),
                 NotificationProvider(),
-                GitHubProvider(Admin, settings.GITHUB_CLIENT_ID, settings.GITHUB_CLIENT_SECRET),
+                # GitHubProvider(Admin, settings.GITHUB_CLIENT_ID, settings.GITHUB_CLIENT_SECRET),
                 # GoogleProvider(
                 #     Admin,
                 #     settings.GOOGLE_CLIENT_ID,

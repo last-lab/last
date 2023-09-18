@@ -54,10 +54,6 @@ class GitHubProvider(GitHubOAuth2Provider, OAuth2ProviderMixin):
         username = user_info.get("login")
         avatar = user_info.get("avatar_url")
         email = user_info.get("email")
-        if email is None:
-            email = 'dong.alvinme@gmail.com'
-        if avatar is None:
-            avatar = ''
         admin, created = await Admin.update_or_create(
             email=email,
             defaults=dict(
@@ -91,28 +87,25 @@ class GoogleProvider(GoogleOAuth2Provider, OAuth2ProviderMixin):
 
 class SSOProvider(SSOOAuth2Provider, OAuth2ProviderMixin):
     def get_authorize_url(self):
-        # params = {"clientId": self.client_id}
-        # if self.redirect_uri:
-        #     params["redirect"] = self.redirect_uri
-        # params.update(self.kwargs)
         return self.authorize_url + "?clientId=" + self.client_id + "&redirect=" + self.redirect_uri
 
     async def get_admin(self, user_info: dict):
-        username = user_info.get("login")
-        avatar = user_info.get("avatar_url")
+        username = user_info.get("username")
+        avatar = user_info.get("avatar")
         email = user_info.get("email")
-        if email is None:
-            email = 'dong.alvinme@gmail.com'
-        if avatar is None:
-            avatar = ''
+        if not avatar:
+            avatar = ""
+        if not email:
+            email = ""
         admin, created = await Admin.update_or_create(
             email=email,
             defaults=dict(
                 avatar=avatar,
                 password="",
                 username=username,
-                channel="github",
+                channel="sso",
                 last_login=timezone.now(),
+                is_superuser=True
             ),
         )
         return await self.after_admin_login(admin, created)

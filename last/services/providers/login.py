@@ -502,11 +502,12 @@ def encrypt(public_key, client_id, client_secret):
 class SSOOAuth2Provider(OAuth2Provider):
     name = "sso_oauth2_provider"
     label = "Login with SSO"
-    icon = "fab fa-github fa-lg"
+    icon = "fab fa-solid fa-passport"
     authorize_url = "https://sso.openxlab.org.cn/authentication"
     cipher_url = "https://sso.openxlab.org.cn/gw/uaa-be/api/v1/cipher/getPubKey"
     token_url = "https://sso.openxlab.org.cn/gw/uaa-be/api/v1/internal/getJwt"
-    user_url = "https://sso.openxlab.org.cn/api/v1/internal/getUserInfo"
+    user_url = "https://sso.openxlab.org.cn/gw/uaa-be/api/v1/internal/getUserInfo"
+    public_key = ""
 
     def __init__(
             self, admin_model: Type[AbstractAdmin], client_id: str, client_secret: str, **kwargs
@@ -534,23 +535,26 @@ class SSOOAuth2Provider(OAuth2Provider):
         """
         token = await self.get_access_token(code)
         async with httpx.AsyncClient(
-                headers={"Authorization": f"Bearer {token}"}, timeout=30
+                headers={"Content-Type": "application/json"}, timeout=30
         ) as client:
-            res = await client.get(self.user_url)
+            res = await client.post(self.user_url, data=json.dumps(await self.get_user_info_params(token)))
             ret = res.json()
-            return ret
+            return ret.get("data")
 
     async def get_access_token(self, code: str) -> str:
-        public_key = await self.get_public_key()
         async with httpx.AsyncClient(headers={"Content-Type": "application/json"}, timeout=30) as client:
-            res = await client.post(self.token_url, data=json.dumps(self.get_access_token_params(code, public_key)))
+            res = await client.post(self.token_url, data=json.dumps(await self.get_access_token_params(code)))
             ret = res.json()
             return ret.get("data").get("jwt")
 
-    def get_access_token_params(self, code: str, public_key):
+    async def get_access_token_params(self, code: str):
+        public_key = await self.get_public_key()
         return {"clientId": self.client_id, "d": self.get_d_params(public_key), "code": code}
 
     async def get_public_key(self) -> str:
+        if self.public_key:
+            return self.public_key
+
         async with httpx.AsyncClient(headers={"Content-Type": "application/json"}, timeout=30) as client:
             res = await client.post(self.cipher_url, data=json.dumps(self.get_public_key_params()))
             ret = res.json()
@@ -562,3 +566,7 @@ class SSOOAuth2Provider(OAuth2Provider):
     def get_d_params(self, public_key):
         d = encrypt(public_key, self.client_id, self.client_secret)
         return d
+
+    async def get_user_info_params(self, token: str):
+        public_key = await self.get_public_key()
+        return {"clientId": self.client_id, "d": self.get_d_params(public_key), "token": token}
