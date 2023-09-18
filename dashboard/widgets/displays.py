@@ -114,7 +114,8 @@ class ShowRiskType(Display):
     template = "dataset/risk.html"
 
     async def render(self, request: Request, value: any):
-        label = list(filter(lambda x: x["level"] == 1, literal_eval(value)))
+        hah = json.loads(value)
+        label = list(filter(lambda x: x["level"] == 1, json.loads(value)))
         return await super().render(request, {"content": label})
 
 
@@ -122,7 +123,7 @@ class ShowSecondType(Display):
     template = "dataset/risk_second.html"
 
     async def render(self, request: Request, value: any):
-        label = list(filter(lambda x: x["level"] == 2, literal_eval(value)))
+        label = list(filter(lambda x: x["level"] == 2, json.loads(value)))
         return await super().render(
             request,
             {
