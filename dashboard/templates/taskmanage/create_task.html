@@ -1,0 +1,64 @@
+{% extends layout %}
+{% block page_body %}
+
+<form>
+    <label for="file">选择要上传的文件:</label>
+    <input type="file" id="file" name="file" accept=".json">
+    <br><br>
+
+    <label>选择标注方式:</label>
+    <br>
+    <input type="checkbox" name="selection" value="0-1"> 0-1标注
+    <br>
+    <input type="checkbox" name="selection" value="box"> Box标注
+    <br>
+    <input type="checkbox" name="selection" value="rank"> Rank标注
+    <br><br>
+
+    <input type="button" value="提交" onclick="uploadSubmit()">
+</form>
+
+    <script>
+        function uploadSubmit() {
+            // 获取文件
+            var fileInput = document.getElementById('file');
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+            // 获取选中的复选框值
+            var selectedOptions = [];
+            var checkboxes = document.getElementsByName('selection');
+            checkboxes.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    selectedOptions.push(checkbox.value);
+                }
+            });
+            console.log(JSON.stringify(selectedOptions))
+            console.log(file)
+            reader.onload = function(event){
+            // 发送数据
+            $.ajax({
+                url: '/admin/taskmanage/create_task_callback',
+                type: 'POST',
+                data: {
+                    "file": event.target.result,
+                    "labeling_method": JSON.stringify(selectedOptions),
+                    "test": "test"
+                },
+                // data: JSON.stringify(data),
+                // contentType: "application/json; charset=utf-8",
+                // dataType: "json",
+                success: function(response) {
+                    // 处理成功响应
+                    console.log("success");
+                },
+                error: function(xhr, status, error) {
+                    // 处理错误
+                    console.error("error");
+                }
+            });
+        };
+        reader.readAsText(file)
+        }
+    </script>
+
+{% endblock %}

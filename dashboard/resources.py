@@ -8,6 +8,7 @@ from dashboard import enums
 from dashboard.biz_models import DataSet  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import LabelPage
+from dashboard.biz_models import TaskManage
 from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
@@ -258,6 +259,19 @@ class DataManager(Dropdown):
 
         async def get_bulk_actions(self, request: Request) -> List[Action]:
             return []
+
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("创建标注任务"),
+                    icon="fas fa-upload",
+                    name="create_task",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                    class_="btn-primary",
+                )
+            ]
 
     label = _("datamanager")
     icon = "fas fa-bars"
@@ -616,3 +630,36 @@ class SwitchLayout(Link):
     label = _("Switch Layout")
     url = "/admin/layout"
     icon = "fas fa-grip-horizontal"
+
+
+@app.register
+class TaskManage(Dropdown):
+    """ """
+    class CreateTask(Model):
+        label = _("Labeling Record")
+        model = TaskManage
+        filters = [filters.Search(name="task_type", label="Task Type")]
+        fields = ["id", "task_id", "labeling_method", "dataset_id", "create_time", "end_time", "current_status"]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return []
+
+        async def get_bulk_actions(self, request: Request) -> List[Action]:
+                return []
+
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("创建标注任务"),
+                    icon="fas fa-upload",
+                    name="create_task",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                    class_="btn-primary",
+                )
+            ]
+
+    label = _("任务管理")
+    icon = "fas fa-bars"
+    resources = [CreateTask]
