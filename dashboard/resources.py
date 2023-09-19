@@ -5,7 +5,7 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
-from dashboard.biz_models import DataSet  # EvaluationPlan,; Evaluation,
+from dashboard.biz_models import DataSet, Risk  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import LabelPage, TaskManage
 from dashboard.biz_models.eval_model import Record
@@ -23,6 +23,7 @@ from dashboard.widgets.displays import (
     ShowRiskType,
     ShowSecondType,
     ShowStatus,
+    RiskAction, ShowSecondRisk,
 )
 from last.services import enums as _enums
 from last.services.app import app
@@ -57,9 +58,38 @@ class Administartor(Dropdown):
         icon = "far fa-bell"
         url = "/admin/notification"
 
+    class RiskManage(Model):
+        label = _('风险维度管理')
+        model = Risk
+        page_title = _("风险维度管理")
+        filters = [
+            filters.Search(name="first_risk", label="一级维度"),
+        ]
+        fields = [
+            Field(name="first_risk", label="一级维度"),
+            Field(name="second_risk", label="二级维度"),
+            Field(name="description", label="具体描述", display=ShowSecondRisk()),
+            Field(name="uid", label="操作", display=RiskAction()),
+        ]
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("新建维度"),
+                    icon="fas fa-plus",
+                    name="risk_create",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                    class_="btn-primary",
+                )
+            ]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return []
+
     label = _("Administartor")
     icon = "fas fa-bars"
-    resources = [Dashboard, Notification]
+    resources = [Dashboard, Notification, RiskManage]
 
 
 @app.register

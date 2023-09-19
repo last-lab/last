@@ -3,7 +3,7 @@ import json
 
 from starlette.requests import Request
 
-from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo
+from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Risk
 from dashboard.enums import EvalStatus
 from last.services.resources import ComputeField
 from last.services.widgets.displays import Display, Popover, Status
@@ -167,5 +167,28 @@ class ShowSecondType(Display):
             {
                 "content": ",".join([d["name"] for d in label]),
                 "popover": ",".join([d["name"] for d in label]),
+            },
+        )
+
+
+class RiskAction(Display):
+    template = "risk/risk_action.html"
+
+    async def render(self, request: Request, value: any):
+        risk_info = await Risk.get_or_none(uid=value).values()
+        return await super().render(
+            request,
+            {**risk_info}
+        )
+
+
+class ShowSecondRisk(Display):
+    template = "risk/risk_second_show.html"
+
+    async def render(self, request: Request, value: any):
+        return await super().render(
+            request,
+            {
+                "content": value
             },
         )
