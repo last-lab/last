@@ -7,8 +7,8 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
-GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID", "19c9253d9e02fe9d93b8")
-GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET", "dda88f31fc2eb97c8dab86a43b67aca3f7eb7d69")
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID", "")
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET", "")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 GITHUB_USERNAME = "long2ice"
 
