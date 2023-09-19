@@ -29,6 +29,12 @@ tortoise-orm = "*"
 httpx = "*"
 pendulum = "*"
 requests = "*"
+langchain = "*"
+openai = "*"
+pydantic = "1.10.9"
+openxlab = "*"
+rich = "*"
+oss2 = "*"
 
 [tool.poetry.dev-dependencies]
 # test
