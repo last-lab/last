@@ -105,7 +105,7 @@ async def upload_dataset(
 
 @router.post("/dataset/json")
 async def json(request: Request, file: UploadFile = File(...)):
-    url = await upload.upload(file)
+    await upload.upload(file)
     contents = Dataset(file=os.path.join(BASE_DIR, "static", "uploads", file.filename))
     return contents
 
