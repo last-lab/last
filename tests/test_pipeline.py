@@ -10,21 +10,25 @@ from last.types.task import Task
 
 def test_pipeline():
     # 如果需要加载新数据集, 则提供file\url，返回数据集对象
-    file1_path = os.path.join("docs", "examples", "testset.csv")
+    file1_path = os.path.join("docs", "examples", "testset1.csv")
     dataset1 = Dataset(
         name="test1",
         focused_risks=[RiskDimension(level=1, name="国家安全")],
         file=file1_path,
     )
+
     # 上传第二份数据集
+    file2_path = os.path.join("docs", "examples", "testset2.csv")
     dataset2 = Dataset(
         name="test2",
         focused_risks=[RiskDimension(level=1, name="个人隐私")],
-        file=file1_path,
+        file=file2_path,
     )
     # 明确评测方案，即使用哪些数据集合集进行评测
     plan = Plan(
-        name="union", eval_type=EvaluationType.auto_ai_critique, datasets=[dataset1, dataset2]
+        name="union",
+        eval_type=EvaluationType.auto_ai_critique,
+        datasets=[dataset1, dataset2],
     )
 
     # 配置待测模型API
@@ -33,7 +37,10 @@ def test_pipeline():
     if plan.eval_type == EvaluationType.auto_ai_critique:
         # 如果是AI测评，配置评分模型API
         critic_model = LLM(
-            model_type=LLMType.critic, endpoint="xxx", access_key="xxx", secret_key="xxx"
+            model_type=LLMType.critic,
+            endpoint="xxx",
+            access_key="xxx",
+            secret_key="xxx",
         )
     # else:
     #   如果是人工测评，则新建标注模块
@@ -48,7 +55,12 @@ def test_pipeline():
         new_qa_records[ID()] = new_qa_record
 
     # 上传本次评测记录, 返回评测报告和对话记录
-    task = Task(plan=plan, llm_model=llm_model, critic_model=critic_model, results=new_qa_records)
+    task = Task(
+        plan=plan,
+        llm_model=llm_model,
+        critic_model=critic_model,
+        results=new_qa_records,
+    )
 
     # 保存评测报告到本地
     task.render_report(file_path="xxx", type="pdf")
