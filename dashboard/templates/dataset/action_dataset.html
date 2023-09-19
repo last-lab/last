@@ -1,7 +1,10 @@
-<span data-bs-toggle="modal" data-bs-target="#{{ value.uid }}" style="cursor: pointer; color: #0D53DE;">
+<span data-bs-toggle="modal" data-bs-target="#{{ value.uid }}" style="cursor: pointer; color: #0D53DE; margin-right: 10px;">
   详细信息
 </span>
-<span style="cursor: pointer; color: #0D53DE; margin-left: 10px; margin-right: 10px;">
+<span data-bs-toggle="modal" data-bs-target="#{{ value.name + value.uid }}" style="cursor: pointer; color: #0D53DE; margin-right: 10px;">
+    标注信息
+</span>
+<span style="cursor: pointer; color: #0D53DE; margin-right: 10px;">
   <a href="data:application/json;charset=utf-8,{{ value.file }}" download="download.json" style="text-decoration: none">导出</a>
 </span>
 <span data-bs-toggle="modal" data-bs-target="#{{ value.name }}" style="cursor: pointer; color: #F5483B;">
@@ -90,6 +93,42 @@
     </div>
   </div>
 </div>
+
+<div class="modal" id={{ value.name + value.uid }} tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom: none">
+        <h5 class="modal-title">评测集标注信息</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <div class="modal-body">
+            <div class="table-responsive">
+              <table class="table table-vcenter">
+                <thead>
+                  <tr>
+                    <th>Q</th>
+                    <th>A</th>
+                      <th>标注</th>
+                      <th>更新时间</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for item in value.label_info %}
+                        <tr>
+                            <td>{{ item[0] }}</td>
+                            <td>{{ item[1] }}</td>
+                            <td><button class="btn btn-primary">标注</button></td>
+                            <td>2022-10-10 10:10:10</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
 
 <script>
     function deleteDataset(id) {

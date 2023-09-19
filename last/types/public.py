@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import List, Dict, Union, Optional
 from pydantic import BaseModel, Field
 from enum import Enum, auto, IntEnum
@@ -6,6 +7,9 @@ import uuid
 from last.services.enums import StrEnum
 
 
+@dataclass
+class Placeholder:
+    parser: callable
 
 
 class RiskDimension(BaseModel):
