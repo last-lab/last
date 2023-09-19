@@ -7,4 +7,3 @@ class Risk(Model):
     second_risk = fields.CharField(max_length=200)
     third_risk = fields.CharField(max_length=200)
     description = fields.TextField(null=True)
-

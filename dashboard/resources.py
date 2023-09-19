@@ -5,10 +5,10 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
-from dashboard.biz_models import DataSet, Risk  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
-from dashboard.biz_models import LabelPage
+from dashboard.biz_models import DataSet, LabelPage  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models.eval_model import Record
+from dashboard.biz_models.risk import Risk
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
 from dashboard.models import Permission as PermissionModel
@@ -16,14 +16,15 @@ from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
 from dashboard.widgets.displays import (
     OperationField,
+    RiskAction,
     ShowAction,
     ShowIp,
     ShowPlanDetail,
     ShowPopover,
     ShowRiskType,
+    ShowSecondRisk,
     ShowSecondType,
     ShowStatus,
-    RiskAction, ShowSecondRisk,
 )
 from last.services import enums as _enums
 from last.services.app import app
@@ -59,7 +60,7 @@ class Administartor(Dropdown):
         url = "/admin/notification"
 
     class RiskManage(Model):
-        label = _('风险维度管理')
+        label = _("风险维度管理")
         model = Risk
         page_title = _("风险维度管理")
         filters = [
