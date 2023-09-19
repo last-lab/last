@@ -1,6 +1,5 @@
 import csv
 import json
-from ast import literal_eval
 
 from starlette.requests import Request
 
@@ -139,13 +138,16 @@ class ShowAction(Display):
         if value is not None:
             dataset = await DataSet.get_or_none(uid=value).values()
             label = json.loads(dataset["focused_risks"])
-            with open(dataset['file'], "r") as file:
+            with open(dataset["file"], "r") as file:
                 reader = csv.reader(file)
                 for row in reader:
                     info = row
                     label_info.append(info)
-            del(label_info[0])
-        return await super().render(request, {**dataset, "focused_risks": label, "label_info": label_info})
+            del label_info[0]
+        return await super().render(
+            request, {**dataset, "focused_risks": label, "label_info": label_info}
+        )
+
 
 class ShowRiskType(Display):
     template = "dataset/risk.html"
