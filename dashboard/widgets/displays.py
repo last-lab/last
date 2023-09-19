@@ -176,10 +176,7 @@ class RiskAction(Display):
 
     async def render(self, request: Request, value: any):
         risk_info = await Risk.get_or_none(uid=value).values()
-        return await super().render(
-            request,
-            {**risk_info}
-        )
+        return await super().render(request, {**risk_info})
 
 
 class ShowSecondRisk(Display):
@@ -188,7 +185,5 @@ class ShowSecondRisk(Display):
     async def render(self, request: Request, value: any):
         return await super().render(
             request,
-            {
-                "content": value
-            },
+            {"content": value},
         )
