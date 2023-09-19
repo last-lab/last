@@ -149,7 +149,6 @@ class ShowAction(Display):
         )
 
 
-
 class ShowRiskType(Display):
     template = "dataset/risk.html"
 
