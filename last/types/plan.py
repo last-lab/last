@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List, Dict, Optional, TypeVar, Any
-
+from last.services.enums import StrEnum
 from pydantic import Field
 
 from .base import Record, BaseManager
@@ -10,7 +10,7 @@ from .public import RiskDimension, ReturnCode
 T = TypeVar("T", bound="Plan")
 
 
-class EvaluationType(str, Enum):
+class EvaluationType(StrEnum):
     auto_exact_match = "auto_exact_match"
     auto_similarity_match = "auto_similarity_match"
     auto_ai_critique = "auto_ai_critique"  # 系统评分

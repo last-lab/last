@@ -2,11 +2,11 @@ from typing import List, Dict, Union, Optional, Tuple
 from .base import Record, Statistics, BaseModel
 from .public import ReturnCode
 from .dataset import Message, MessageRole
-from enum import Enum
 from pydantic import BaseModel, Field
+from last.services.enums import StrEnum
 
 
-class LLMType(str, Enum):
+class LLMType(StrEnum):
     critic = "critic"
     normal = "normal"
     attacker = "attacker"
@@ -25,7 +25,7 @@ class LLMInfo(Record):
 
     endpoint: str
     access_key: str
-    secret_key: str
+    secret_key: Optional[str] = Field(default=None)
 
 
 class Registration(Record):
