@@ -2,8 +2,9 @@
 {% block page_body %}
 
 <form>
-    <label for="file">选择要上传的文件:</label>
-    <input type="file" id="file" name="file" accept=".json">
+    <label for="dataset">选择数据集:</label>
+    <select id="dataset" name="dataset">
+    </select>
     <br><br>
 
     <label>选择标注方式:</label>
@@ -19,11 +20,32 @@
 </form>
 
     <script>
+        fetch('/admin/taskmanage/get_datasets_name')
+        .then(response => response.json())
+        .then(data => {
+            var datasetSelect = document.getElementById('dataset');
+
+            // 动态生成下拉框选项
+            data.forEach(dataset => {
+                var option = document.createElement('option');
+                option.value = dataset;
+                option.text = dataset;
+                datasetSelect.appendChild(option);
+            });
+
+            // 设置被选择的选项
+            var selectedOption = "test2"; // 设置为你想要被选择的选项
+            datasetSelect.value = selectedOption;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+
+
         function uploadSubmit() {
-            // 获取文件
-            var fileInput = document.getElementById('file');
-            var file = fileInput.files[0];
-            var reader = new FileReader();
+            var datasetSelect = document.getElementById('dataset');
+            var selectedDataset = datasetSelect.value;
             // 获取选中的复选框值
             var selectedOptions = [];
             var checkboxes = document.getElementsByName('selection');
@@ -32,24 +54,19 @@
                     selectedOptions.push(checkbox.value);
                 }
             });
-            console.log(JSON.stringify(selectedOptions))
-            console.log(file)
-            reader.onload = function(event){
+
             // 发送数据
             $.ajax({
                 url: '/admin/taskmanage/create_task_callback',
                 type: 'POST',
                 data: {
-                    "file": event.target.result,
+                    "dataset_name": selectedDataset,
                     "labeling_method": JSON.stringify(selectedOptions),
                     "test": "test"
                 },
-                // data: JSON.stringify(data),
-                // contentType: "application/json; charset=utf-8",
-                // dataType: "json",
                 success: function(response) {
                     // 处理成功响应
-                    console.log("success");
+                    alert("success")
                 },
                 error: function(xhr, status, error) {
                     // 处理错误
@@ -57,8 +74,6 @@
                 }
             });
         };
-        reader.readAsText(file)
-        }
     </script>
 
 {% endblock %}

@@ -1,1 +1,7 @@
-<div>{{ value.content[0]['name'] }}</div>
+<div>
+    {% if value.content[0] %}
+    	{{ value.content[0]['name'] }}
+    {% else %}
+        <div>无</div>
+    {% endif %}
+</div>

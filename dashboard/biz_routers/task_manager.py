@@ -1,10 +1,13 @@
 from typing import Type
+from uuid import uuid4
+from datetime import datetime
 
+from urllib.parse import parse_qs
 from fastapi import APIRouter, Depends, Path
 from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model
-
+from dashboard.biz_models import TaskManage
 from last.services.depends import get_model, get_model_resource, get_resources
 from last.services.depends import create_checker
 from last.services.resources import Model as ModelResource
@@ -48,5 +51,24 @@ async def create_task_callback(
     model_resource: ModelResource = Depends(get_model_resource),
     resource: str = Path(...)
     ):
-    json_data = await request.form()
-    print(resource)
+    form_data = await request.form()
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # # 将这个表单数据写入到task表中
+    await TaskManage(
+        task_id = uuid4(),
+        labeling_method = form_data['labeling_method'],
+        dateset = form_data["dataset_name"],
+        create_time = current_time,
+        current_status = "未标注",
+    ).save()
+    return "success"
+
+
+
+
+@router.get("/{resource}/get_datasets_name")
+async def get_datasets_name(
+    request: Request,
+    resources = Depends(get_resources)
+):
+    return ["test1", "test2"]

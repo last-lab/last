@@ -88,22 +88,3 @@ async def get_annotatoin_and_predict_data(request: Request, resource: str):
 async def submit_callback(request: Request, resource: str, pk: str):
     form = await request.form()
     print(form)
-
-
-
-@router.post("/{resource}/create_task_callback")
-async def create_task_callback(
-    request: Request,
-    model: Model = Depends(get_model),
-    resources=Depends(get_resources),
-    model_resource: ModelResource = Depends(get_model_resource),
-    resource: str = Path(...)
-    ):
-    json_data = await request.form()
-    print(resource)
-    return await list_view(request, model,
-                           resources,
-                           model_resource,
-                           resource,
-                           page_size = 10,
-                           page_num = 1)

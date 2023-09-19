@@ -639,7 +639,7 @@ class TaskManage(Dropdown):
         label = _("Labeling Record")
         model = TaskManage
         filters = [filters.Search(name="task_type", label="Task Type")]
-        fields = ["id", "task_id", "labeling_method", "dataset_id", "create_time", "end_time", "current_status"]
+        fields = ["id", "task_id", "labeling_method", "dateset", "create_time", "current_status"]
 
         async def get_actions(self, request: Request) -> List[Action]:
             return []
