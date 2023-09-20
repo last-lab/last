@@ -1,30 +1,10 @@
 from tortoise import Model, fields
 
-# 暂定数据结构
-# {
-#     cid: str
-#     first_risk: {
-#         id: str,
-#         name: str,
-#         description: str
-#     },
-#     second_risk: {
-#         id: str,
-#         name: str,
-#         description: str
-#     },
-#     third_risk: [
-#         {
-#             id: str,
-#             name: str,
-#             description: str
-#         }
-#     ]
-# }
-
 
 class Risk(Model):
-    cid = fields.CharField(max_length=200)
-    first_risk = fields.CharField(max_length=200)
-    second_risk = fields.CharField(max_length=200)
-    third_risk = fields.CharField(max_length=200)
+    risk_level = fields.IntField()
+    risk_id = fields.CharField(max_length=200)
+    risk_name = fields.CharField(max_length=200)
+    risk_description = fields.TextField(null=True)
+    parent_risk_id = fields.CharField(max_length=200, null=True)
+    third_risk = fields.CharField(max_length=200, null=True)

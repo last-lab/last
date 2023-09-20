@@ -23,7 +23,8 @@ from dashboard.widgets.displays import (
     ShowPopover,
     ShowRisk,
     ShowRiskType,
-    ShowSecondRiskDes,
+    ShowSecondRisk,
+    ShowSecondRiskDesc,
     ShowSecondType,
     ShowStatus,
 )
@@ -65,10 +66,10 @@ class Administartor(Dropdown):
         model = Risk
         page_title = _("风险维度管理")
         fields = [
-            Field(name="first_risk", label="一级维度", display=ShowRisk()),
-            Field(name="second_risk", label="二级维度", display=ShowRisk()),
-            Field(name="second_risk", label="具体描述", display=ShowSecondRiskDes()),
-            Field(name="cid", label="操作", display=RiskAction()),
+            Field(name="risk_id", label="一级维度", display=ShowRisk()),
+            Field(name="risk_id", label="二级维度", display=ShowSecondRisk()),
+            Field(name="risk_id", label="具体描述", display=ShowSecondRiskDesc()),
+            Field(name="risk_id", label="操作", display=RiskAction()),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
