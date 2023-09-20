@@ -1,10 +1,10 @@
 from typing import Union
-
+import json
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from starlette.requests import Request
 
-from dashboard.biz_models import EvaluationPlan, ModelInfo, Record
+from dashboard.biz_models import EvaluationPlan, ModelInfo, Record, DataSet
 from last.services.app import app
 from last.services.depends import get_resources
 from last.services.i18n import _
@@ -60,8 +60,31 @@ async def evaluation_create(
         llm_name=model["name"],
         llm_id=eval_info.llm_id,
     )
-
+    dataset_info = await DataSet.fetch_for_list(id=plan.dataset_ids).values()
+    kwargs_json = json.dumps(
+        {
+            "$datasets": [
+                {
+                    "name": "test1",
+                    "file": os.path.join("docs", "examples", "testset1.csv"),
+                },
+                {
+                    "name": "test2",
+                    "file": os.path.join("docs", "examples", "testset2.csv"),
+                },
+            ],
+            "$llm_model": {"name": "PuYu", "endpoint": "xxx", "access_key": "xxx"},
+            "$critic_model": {
+                "name": "GPT-3.5-Turbo",
+                "endpoint": "xxx",
+                "access_key": "xxx",
+            },
+            "$plan": {"name": "SafetyTest"},
+        }
+    )
     return {"status": "ok", "success": 1, "msg": "create eval success"}
+
+
 
 
 # 用来创建model的接口
