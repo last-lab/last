@@ -11,6 +11,7 @@ from last.services.providers.import_export import ImportExportProvider
 from last.services.providers.login import (
     GitHubOAuth2Provider,
     GoogleOAuth2Provider,
+    SSOOAuth2Provider,
     UsernamePasswordProvider,
 )
 
@@ -77,6 +78,32 @@ class GoogleProvider(GoogleOAuth2Provider, OAuth2ProviderMixin):
                 username=username,
                 channel="google",
                 last_login=timezone.now(),
+            ),
+        )
+        return await self.after_admin_login(admin, created)
+
+
+class SSOProvider(SSOOAuth2Provider, OAuth2ProviderMixin):
+    def get_authorize_url(self):
+        return self.authorize_url + "?clientId=" + self.client_id + "&redirect=" + self.redirect_uri
+
+    async def get_admin(self, user_info: dict):
+        username = user_info.get("username")
+        avatar = user_info.get("avatar")
+        email = user_info.get("email")
+        if not avatar:
+            avatar = ""
+        if not email:
+            email = ""
+        admin, created = await Admin.update_or_create(
+            email=email,
+            defaults=dict(
+                avatar=avatar,
+                password="",
+                username=username,
+                channel="sso",
+                last_login=timezone.now(),
+                is_superuser=True,
             ),
         )
         return await self.after_admin_login(admin, created)
