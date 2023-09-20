@@ -36,7 +36,7 @@ REDIS_URL=redis://localhost:6379/0
 then go to the project directory and run the following commands
 ```bash
 poetry install && make compile
-poetry run python dashboard/app.py
+poetry run python dashboard/main.py
 ```
 If this is the first time you run the dashboard, you need to create an admin user 
 by visiting http://127.0.0.1:8000/admin/init
