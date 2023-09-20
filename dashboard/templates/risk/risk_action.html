@@ -1,4 +1,4 @@
-<span data-bs-toggle="modal" data-bs-target="#edit" style="cursor: pointer; color: #0D53DE; margin-right: 10px;" onclick="editRisk({{ value.id }})">
+<span data-bs-toggle="modal" style="cursor: pointer; color: #0D53DE; margin-right: 10px;" onclick="editRisk({{ value.id }})">
     编辑
 </span>
 <span data-bs-toggle="modal" data-bs-target="#contact" style="cursor: pointer; color: #0D53DE; margin-right: 10px;">
@@ -37,5 +37,8 @@
                 location.reload();
             }
         })
+    }
+    function editRisk(id) {
+        window.location.href = `/admin/risk/edit/${id}`
     }
 </script>
