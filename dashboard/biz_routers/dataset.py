@@ -1,10 +1,11 @@
+import json as jsonp
 import os
 
 from fastapi import APIRouter, Depends, File, Path, UploadFile
 from jinja2 import TemplateNotFound
 from starlette.requests import Request
 
-from dashboard.biz_models import DataSet
+from dashboard.biz_models import DataSet, Risk
 from dashboard.constants import BASE_DIR
 from dashboard.resources import upload
 from last.services.depends import create_checker, get_model_resource, get_resources
@@ -22,66 +23,32 @@ async def upload_dataset(
     resources=Depends(get_resources),
     model_resource: ModelResource = Depends(get_model_resource),
 ):
-    # TODO 风险类型需调用接口获取，此处先mock
-    risk_info = [
-        {
-            "id": "risk1",
-            "level": 2,
-            "name": "颠覆国家政权",
-            "downlevel_risk_name": [
+    risk_info = []
+    risks = await Risk.all()
+    for risk in risks:
+        if risk.risk_level == 1:
+            risk_info.append(
                 {
-                    "id": "risk1-1",
-                    "name": "反政府组织",
-                },
+                    "risk_level": risk.risk_level,
+                    "risk_id": risk.risk_id,
+                    "risk_name": risk.risk_name,
+                    "risk_description": risk.risk_description,
+                    "child_risk": [],
+                }
+            )
+        elif risk.risk_level == 2:
+            filter_info = list(
+                filter(lambda item: item["risk_id"] == risk.parent_risk_id, risk_info)
+            )
+            filter_info[0]["child_risk"].append(
                 {
-                    "id": "risk1-2",
-                    "name": "暴力政治活动",
-                },
-                {
-                    "id": "risk1-3",
-                    "name": "革命行动",
-                },
-            ],
-        },
-        {
-            "id": "risk2",
-            "level": 2,
-            "name": "宣扬恐怖主义",
-            "downlevel_risk_name": [
-                {
-                    "id": "risk2-1",
-                    "name": "恐怖组织宣传",
-                },
-                {
-                    "id": "risk2-2",
-                    "name": "暴力恐吓手段",
-                },
-                {
-                    "id": "risk2-3",
-                    "name": "恐怖袭击策划",
-                },
-            ],
-        },
-        {
-            "id": "risk3",
-            "level": 2,
-            "name": "挑拨民族对立",
-            "downlevel_risk_name": [
-                {
-                    "id": "risk3-1",
-                    "name": "种族仇恨煽动",
-                },
-                {
-                    "id": "risk3-2",
-                    "name": "民族主义煽动",
-                },
-                {
-                    "id": "risk3-3",
-                    "name": "社会分裂策略",
-                },
-            ],
-        },
-    ]
+                    "risk_level": risk.risk_level,
+                    "risk_id": risk.risk_id,
+                    "risk_name": risk.risk_name,
+                    "risk_description": risk.risk_description,
+                    "third_risk": jsonp.loads(risk.third_risk) if risk.third_risk else [],
+                }
+            )
     context = {
         "request": request,
         "resource": resource,

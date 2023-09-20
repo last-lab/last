@@ -133,11 +133,46 @@ class ShowAction(Display):
 
     async def render(self, request: Request, value: any):
         dataset = {}
-        label = []
+        content = {}
         label_info = []
         if value is not None:
             dataset = await DataSet.get_or_none(uid=value).values()
-            label = json.loads(dataset["focused_risks"])
+            risk = json.loads(dataset["focused_risks"])
+            for i in risk:
+                res = await Risk.get_or_none(risk_id=i).values()
+                if res is not None:
+                    if res["risk_level"] == 1:
+                        content = {
+                            "risk_level": res["risk_level"],
+                            "risk_id": res["risk_id"],
+                            "risk_name": res["risk_name"],
+                            "risk_description": res["risk_description"],
+                            "child_risk": [],
+                        }
+                    elif res["risk_level"] == 2:
+                        content["child_risk"].append(
+                            {
+                                "risk_level": res["risk_level"],
+                                "risk_id": res["risk_id"],
+                                "risk_name": res["risk_name"],
+                                "risk_description": res["risk_description"],
+                                "third_risk": [],
+                            }
+                        )
+                    elif res["risk_level"] == 3:
+                        filter_info = list(
+                            filter(
+                                lambda item: item["risk_id"] == res["parent_risk_id"],
+                                content["child_risk"],
+                            )
+                        )
+                        filter_info[0]["third_risk"].append(
+                            {
+                                "risk_id": res["risk_id"],
+                                "risk_name": res["risk_name"],
+                                "risk_description": res["risk_description"],
+                            }
+                        )
             with open(dataset["file"], "r") as file:
                 reader = csv.reader(file)
                 for row in reader:
@@ -145,7 +180,7 @@ class ShowAction(Display):
                     label_info.append(info)
             del label_info[0]
         return await super().render(
-            request, {**dataset, "focused_risks": label, "label_info": label_info}
+            request, {**dataset, "focused_risks": content, "label_info": label_info}
         )
 
 
@@ -153,7 +188,12 @@ class ShowRiskType(Display):
     template = "dataset/risk.html"
 
     async def render(self, request: Request, value: any):
-        label = list(filter(lambda x: x["level"] == 1, json.loads(value)))
+        label = ""
+        for i in json.loads(value):
+            res = await Risk.get_or_none(risk_id=i).values()
+            if res is not None:
+                if res["risk_level"] == 1:
+                    label = res["risk_name"]
         return await super().render(request, {"content": label})
 
 
@@ -161,13 +201,15 @@ class ShowSecondType(Display):
     template = "dataset/risk_second.html"
 
     async def render(self, request: Request, value: any):
-        label = list(filter(lambda x: x["level"] == 2, json.loads(value)))
+        label = []
+        for i in json.loads(value):
+            res = await Risk.get_or_none(risk_id=i).values()
+            if res is not None:
+                if res["risk_level"] == 2:
+                    label.append(res["risk_name"])
         return await super().render(
             request,
-            {
-                "content": ",".join([d["name"] for d in label]),
-                "popover": ",".join([d["name"] for d in label]),
-            },
+            {"content": ",".join([d for d in label])},
         )
 
 
