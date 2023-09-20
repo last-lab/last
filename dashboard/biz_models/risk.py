@@ -28,5 +28,3 @@ class Risk(Model):
     first_risk = fields.CharField(max_length=200)
     second_risk = fields.CharField(max_length=200)
     third_risk = fields.CharField(max_length=200)
-
-
