@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Path
 from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model
-from dashboard.biz_models import TaskManage
+from dashboard.biz_models import TaskManage, LabelPage
 from last.services.depends import get_model, get_model_resource, get_resources
 from last.services.depends import create_checker
 from last.services.resources import Model as ModelResource
@@ -54,13 +54,23 @@ async def create_task_callback(
     form_data = await request.form()
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # # 将这个表单数据写入到task表中
+    task_id = uuid4()
     await TaskManage(
-        task_id = uuid4(),
+        task_id = task_id,
         labeling_method = form_data['labeling_method'],
         dateset = form_data["dataset_name"],
         create_time = current_time,
         current_status = "未标注",
     ).save()
+
+    await LabelPage(
+        task_id = task_id,
+        labeling_method = form_data['labeling_method'],
+        dateset = form_data["dataset_name"],
+        create_time = current_time,
+        current_status = "未标注",
+    ).save()
+
     return "success"
 
 
