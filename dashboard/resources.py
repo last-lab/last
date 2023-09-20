@@ -22,9 +22,10 @@ from dashboard.widgets.displays import (
     ShowPlanDetail,
     ShowPopover,
     ShowRiskType,
-    ShowSecondRisk,
     ShowSecondType,
     ShowStatus,
+    ShowSecondRiskDes,
+    ShowRisk,
 )
 from last.services import enums as _enums
 from last.services.app import app
@@ -63,14 +64,11 @@ class Administartor(Dropdown):
         label = _("风险维度管理")
         model = Risk
         page_title = _("风险维度管理")
-        filters = [
-            filters.Search(name="first_risk", label="一级维度"),
-        ]
         fields = [
-            Field(name="first_risk", label="一级维度"),
-            Field(name="second_risk", label="二级维度"),
-            Field(name="description", label="具体描述", display=ShowSecondRisk()),
-            Field(name="uid", label="操作", display=RiskAction()),
+            Field(name="first_risk", label="一级维度", display=ShowRisk()),
+            Field(name="second_risk", label="二级维度", display=ShowRisk()),
+            Field(name="second_risk", label="具体描述", display=ShowSecondRiskDes()),
+            Field(name="cid", label="操作", display=RiskAction()),
         ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:

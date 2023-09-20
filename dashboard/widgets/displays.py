@@ -175,15 +175,27 @@ class RiskAction(Display):
     template = "risk/risk_action.html"
 
     async def render(self, request: Request, value: any):
-        risk_info = await Risk.get_or_none(uid=value).values()
+        risk_info = await Risk.get_or_none(cid=value).values()
         return await super().render(request, {**risk_info})
 
 
-class ShowSecondRisk(Display):
-    template = "risk/risk_second_show.html"
+class ShowRisk(Display):
+    template = "risk/risk_show.html"
 
     async def render(self, request: Request, value: any):
+        content = json.loads(value)
         return await super().render(
             request,
-            {"content": value},
+            {"content": content},
+        )
+
+
+class ShowSecondRiskDes(Display):
+    template = "risk/risk_second_des_show.html"
+
+    async def render(self, request: Request, value: any):
+        content = json.loads(value)
+        return await super().render(
+            request,
+            {"content": content},
         )
