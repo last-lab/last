@@ -21,11 +21,11 @@ from dashboard.widgets.displays import (
     ShowIp,
     ShowPlanDetail,
     ShowPopover,
+    ShowRisk,
     ShowRiskType,
+    ShowSecondRiskDes,
     ShowSecondType,
     ShowStatus,
-    ShowSecondRiskDes,
-    ShowRisk,
 )
 from last.services import enums as _enums
 from last.services.app import app
