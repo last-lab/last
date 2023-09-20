@@ -256,11 +256,11 @@ class ShowSecondRiskDesc(Display):
     template = "risk/risk_second_desc_show.html"
 
     async def render(self, request: Request, value: any):
-        desc = ""
+        description = ""
         content = await Risk.get_or_none(risk_id=value).values()
         if content["risk_level"] == 2:
-            desc = content["risk_description"]
+            description = content["risk_description"]
         return await super().render(
             request,
-            {"content": desc},
+            {"content": description},
         )
