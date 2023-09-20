@@ -175,7 +175,7 @@ class RiskAction(Display):
     template = "risk/risk_action.html"
 
     async def render(self, request: Request, value: any):
-        risk_info = await Risk.get_or_none(cid=value).values()
+        risk_info = await Risk.get_or_none(risk_id=value).values()
         return await super().render(request, {**risk_info})
 
 
@@ -183,19 +183,42 @@ class ShowRisk(Display):
     template = "risk/risk_show.html"
 
     async def render(self, request: Request, value: any):
-        content = json.loads(value)
+        name = ""
+        content = await Risk.get_or_none(risk_id=value).values()
+        if content["risk_level"] == 1:
+            name = content["risk_name"]
+        if content["risk_level"] == 2:
+            res = await Risk.get_or_none(risk_id=content["parent_risk_id"]).values()
+            name = res["risk_name"]
         return await super().render(
             request,
-            {"content": content},
+            {"content": name},
         )
 
 
-class ShowSecondRiskDes(Display):
-    template = "risk/risk_second_des_show.html"
+class ShowSecondRisk(Display):
+    template = "risk/risk_show.html"
 
     async def render(self, request: Request, value: any):
-        content = json.loads(value)
+        name = ""
+        content = await Risk.get_or_none(risk_id=value).values()
+        if content["risk_level"] == 2:
+            name = content["risk_name"]
         return await super().render(
             request,
-            {"content": content},
+            {"content": name},
+        )
+
+
+class ShowSecondRiskDesc(Display):
+    template = "risk/risk_second_desc_show.html"
+
+    async def render(self, request: Request, value: any):
+        desc = ""
+        content = await Risk.get_or_none(risk_id=value).values()
+        if content["risk_level"] == 2:
+            desc = content["risk_description"]
+        return await super().render(
+            request,
+            {"content": desc},
         )
