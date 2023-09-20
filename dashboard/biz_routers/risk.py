@@ -37,6 +37,7 @@ async def edit(
     model_resource: ModelResource = Depends(get_model_resource),
     pk: str = Path(...),
 ):
+    # 通过id = pk获取当前一条数据
     context = {
         "request": request,
         "resource": resource,
