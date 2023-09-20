@@ -9,7 +9,9 @@ from last.services.app import app
 from last.services.depends import get_resources
 from last.services.i18n import _
 from last.services.template import templates
-
+from last.client import AI_eval, Client
+from tortoise.expressions import Q
+from dashboard.enums import EvalStatus
 router = APIRouter()
 
 
@@ -54,34 +56,32 @@ async def evaluation_create(
 ):
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
     model = await ModelInfo.get_or_none(id=eval_info.llm_id).values()
-    await Record.create(
+    record = await Record.create(
         eval_plan=plan["name"],
         plan_id=eval_info.plan_id,
         llm_name=model["name"],
         llm_id=eval_info.llm_id,
     )
-    dataset_info = await DataSet.fetch_for_list(id=plan.dataset_ids).values()
+    dataset_ids = [int(_) for _ in plan['dataset_ids'].split(',')]
+    dataset_info = await DataSet.filter(Q(uid__in=dataset_ids)).values()
     kwargs_json = json.dumps(
         {
-            "$datasets": [
-                {
-                    "name": "test1",
-                    "file": os.path.join("docs", "examples", "testset1.csv"),
-                },
-                {
-                    "name": "test2",
-                    "file": os.path.join("docs", "examples", "testset2.csv"),
-                },
-            ],
-            "$llm_model": {"name": "PuYu", "endpoint": "xxx", "access_key": "xxx"},
+            "$datasets": [{"name": dataset['name'], "file": dataset['file']} for dataset in dataset_info],
+            "$llm_model": {"name": model['name'], "endpoint": model['endpoint'], "access_key": model['access_key']},
             "$critic_model": {
                 "name": "GPT-3.5-Turbo",
                 "endpoint": "xxx",
                 "access_key": "xxx",
             },
-            "$plan": {"name": "SafetyTest"},
+            "$plan": {"name": plan['name']},
         }
     )
+    try:
+        _, new_dataset = Client.execute(AI_eval, kwargs_json)
+    except:
+        await Record.filter(id=record.id).update(state=EvalStatus.error)
+
+    await Record.filter(id=record.id).update(state=EvalStatus.finish)
     return {"status": "ok", "success": 1, "msg": "create eval success"}
 
 
