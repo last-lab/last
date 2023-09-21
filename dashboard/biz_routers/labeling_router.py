@@ -6,9 +6,8 @@ from starlette.requests import Request
 from tortoise import Model
 
 from dashboard.biz_models.task_manage_model import TaskManage
-from last.services.depends import create_checker, get_model, get_model_resource, get_resources
+from last.services.depends import get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
-from last.services.routes.resources import list_view
 from last.services.template import templates
 
 router = APIRouter()
@@ -65,6 +64,7 @@ async def labeling_view(
     # 获取数据集的名字，获取文件的路径，读取文件，返回所有的问题
     dataset_name = getattr(task, "dateset")
     # 根据这个数据集的名字，
+    print(dataset_name)
 
     context = {
         "request": request,

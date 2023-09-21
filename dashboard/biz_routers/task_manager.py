@@ -1,5 +1,5 @@
-from datetime import datetime
-from typing import Type
+# from datetime import datetime
+# from typing import Type
 from urllib.parse import parse_qs
 from uuid import uuid4
 
@@ -8,7 +8,7 @@ from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model
 
-from dashboard.biz_models import DataSet, LabelPage, TaskManage
+from dashboard.biz_models import DataSet, TaskManage
 from last.services.depends import create_checker, get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 from last.services.routes.resources import list_view
@@ -103,6 +103,7 @@ async def create_task_callback(
     #     create_time = current_time,
     #     current_status = "未标注",
     # ).save()
+    await TaskManage().save()
 
     # await LabelPage(
     #     task_id = task_id,
