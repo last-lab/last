@@ -1,7 +1,7 @@
 from tortoise import Model, fields
 
 
-class LabelPage(Model):
+class TaskManage(Model):
     task_id = fields.CharField(max_length=50)
     labeling_method = fields.CharField(max_length=255)
     dateset = fields.CharField(max_length=255)

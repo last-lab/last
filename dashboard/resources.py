@@ -7,7 +7,7 @@ from starlette.requests import Request
 from dashboard import enums
 from dashboard.biz_models import DataSet  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
-from dashboard.biz_models import LabelPage
+from dashboard.biz_models import LabelPage, TaskManage
 from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
@@ -243,7 +243,7 @@ class DataManager(Dropdown):
         label = _("Labeling Record")
         model = LabelPage
         filters = [filters.Search(name="task_type", label="Task Type")]
-        fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
+        fields = ["id", "task_id", "labeling_method", "dateset", "create_time", "current_status"]
 
         async def get_actions(self, request: Request) -> List[Action]:
             return [
@@ -253,10 +253,20 @@ class DataManager(Dropdown):
                     name="labeling",
                     method=Method.GET,
                     ajax=False,
-                )
+                ),
+                Action(
+                    label=_("display"),
+                    icon="ti ti-edit",
+                    name="display",
+                    method=Method.GET,
+                    ajax=False,
+                ),
             ]
 
         async def get_bulk_actions(self, request: Request) -> List[Action]:
+            return []
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return []
 
     label = _("datamanager")
@@ -463,89 +473,6 @@ class Auth(Dropdown):
     resources = [AdminResource, Resource, Permission, Role]
 
 
-# @app.register
-# class Animal(Dropdown):
-#     class CatResource(Model):
-#         label = _("Cat")
-#         model = Cat
-#         filters = [filters.Search(name="name", label="Name")]
-#         fields = ["id", "name", "age", "birth_at"]
-#
-#     class DogResource(Model):
-#         label = "Dog"
-#         model = Dog1
-#         filters = [
-#             filters.Enum(enum=enums.GenderType, name="gender", label="Gender"),
-#             filters.Datetime(name="birth_at", label="Birth_At"),
-#         ]
-#         fields = [
-#             "id",
-#             "name",
-#             "age",
-#             "gender",
-#             Field(
-#                 name="image",
-#                 label="Image",
-#                 display=displays.Image(width="40"),
-#                 input_=inputs.Image(null=True, upload=upload),
-#             ),
-#             "birth_at",
-#         ]
-#
-#     label = "Animal"
-#     icon = "fas fa-bars"
-#     resources = [CatResource, DogResource]
-
-
-# @app.register
-# class Animal(Dropdown):
-#     class CatResource(Model):
-#         label = _("Cat")
-#         model = Cat
-#         filters = [filters.Search(name="name", label="Name")]
-#         fields = ["id", "name", "age", "birth_at"]
-#
-#     class DogResource(Model):
-#         label = "Dog"
-#         model = Dog1
-#         filters = [
-#             filters.Enum(enum=enums.GenderType, name="gender", label="Gender"),
-#             filters.Datetime(name="birth_at", label="Birth_At"),
-#         ]
-#         fields = [
-#             "id",
-#             "name",
-#             "age",
-#             "gender",
-#             Field(
-#                 name="image",
-#                 label="Image",
-#                 display=displays.Image(width="40"),
-#                 input_=inputs.Image(null=True, upload=upload),
-#             ),
-#             "birth_at",
-#         ]
-#
-#     label = "Animal"
-#     icon = "fas fa-bars"
-#     resources = [CatResource, DogResource]
-
-
-# class DataManagePage(Dropdown):
-#     class LabelingPage(Model):
-#         label = "Labeling"
-#         model = LabelPage
-#         filters = [filters.Search(name="task_type", label="Task Type")]
-#         fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
-#
-#     label = "DataSet"
-#     icon = "fas fa-bars"
-#     resources = [LabelingPage]
-#
-#     # resources = [EvaluationPlanManagerResource]
-#     # resources = [EvaluationPlanResource]
-
-
 class RestDays(ComputeField):
     async def get_value(self, request: Request, obj: dict):
         v = await super(RestDays, self).get_value(request, obj)
@@ -616,3 +543,43 @@ class SwitchLayout(Link):
     label = _("Switch Layout")
     url = "/admin/layout"
     icon = "fas fa-grip-horizontal"
+
+
+@app.register
+class TaskManage(Dropdown):
+    """ """
+
+    class CreateTask(Model):
+        label = _("任务看板")
+        model = TaskManage
+        filters = [filters.Search(name="task_type", label="Task Type")]
+        fields = ["id", "task_id", "labeling_method", "dateset", "create_time", "current_status"]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return []
+
+        async def get_bulk_actions(self, request: Request) -> List[Action]:
+            return []
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("创建标注任务"),
+                    icon="fas fa-upload",
+                    name="create_task",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                    class_="btn-primary",
+                ),
+                ToolbarAction(
+                    label=_("分配评测任务"),
+                    icon="fas fa-upload",
+                    name="assign_test_task",
+                    method=_enums.Method.POST,
+                    class_="btn-primary",
+                ),
+            ]
+
+    label = _("任务管理")
+    icon = "fas fa-bars"
+    resources = [CreateTask]

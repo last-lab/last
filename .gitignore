@@ -148,4 +148,6 @@ uploads
 *.sqlite3*
 
 *.rdb
-.env
+
+/dataset_folder
+

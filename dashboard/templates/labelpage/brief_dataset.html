@@ -1,0 +1,75 @@
+{% extends layout %}
+{% block page_body %}
+
+    <table id="myTable">
+        <tr>
+            <th>ID</th>
+            <th>问题</th>
+            <th>当前状态</th>
+            <th>操作</th>
+        </tr>
+    </table>
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+
+    <script>
+        // 使用 $.ajax 方法获取数据
+        $.ajax({
+            url: '/admin/labelpage/get_dataset_brief_data', // 替换为您实际的数据获取 URL
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                const table = $('#myTable');
+
+                // 遍历数据并添加到表格中
+                data.forEach(function(item) {
+                    const row = $('<tr></tr>');
+
+                    const idCell = $('<td></td>').text(item.id);
+                    row.append(idCell);
+
+                    const questionCell = $('<td></td>').text(item.question);
+                    row.append(questionCell);
+
+                    const statusCell = $('<td></td>').text(item.status);
+                    row.append(statusCell);
+
+                    const actionCell = $('<td></td>');
+                    const actionLink = $('<a></a>').text(item.action);
+                    actionLink.attr('href', item.action === '标注' ? '/admin/labelpage/labeling/' + item.id : 'page2.html');
+                    actionCell.append(actionLink);
+                    row.append(actionCell);
+
+                    table.append(row);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+            }
+        });
+    </script>
+
+{% endblock %}
