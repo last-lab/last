@@ -9,6 +9,7 @@ from starlette.requests import Request
 from tortoise import Model
 
 from dashboard.biz_models import DataSet, TaskManage
+from dashboard.tools.statistic import statistic_dataset
 from last.services.depends import create_checker, get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 
@@ -84,7 +85,20 @@ async def create_task_callback(
 ):
     json_data = await request.json()
     print(json_data)
-    await DataSet(name="").save()
+    # TODO, 这个位置分配任务，那么如何给某个用户的表创建数据？
+    # volume, qa_num, word_cnt, qa_records
+    # await DataSet(
+    #     name= json_data.fileName,
+    #     fouces_risks = [
+    #         {"level": 1, "name": "国家安全", "description": "null"},
+    #         {"level": 2, "name": "颠覆国家政权", "description": "null", "downlevel_risk_name": ["反政府组织"]}
+    #     ], # TODO,这个位置我暂时是写死的，如果这个风险维度就是死的，那么从环境变量中读取
+    #     url = "null",
+    #     file = "null",
+    #     volume = "10GB", # TODO 这个文件大小的统计需要调用本地函数完成
+    #     used_by = 100, # TODO,如何计算这个文件被多少个人使用过了
+    #     qa_num = 5, # TODO, 同理，这个qa的数据也是没有办法被
+    #     ).save()
     # 回传回来的数据样例：
     # {'fileName': 'file',
     #  'annotationTypes': ['sorting', 'boundingBox'],
@@ -104,7 +118,7 @@ async def create_task_callback(
     #     create_time = current_time,
     #     current_status = "未标注",
     # ).save()
-    await TaskManage().save()
+
 
     # await LabelPage(
     #     task_id = task_id,

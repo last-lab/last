@@ -61,7 +61,7 @@
         function submitForm() {
             var fileInput = document.getElementById('file');
             var file = fileInput.files[0];
-            var fileName = fileInput.name; // 获取文件的路径
+            var fileName = file.name; // 获取文件的路径
 
             var annotationTypes = [];
             var checkboxes = document.getElementsByName('annotationType');
