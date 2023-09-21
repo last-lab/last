@@ -243,7 +243,7 @@ class DataManager(Dropdown):
         page_title = _("评测集管理")
         filters = [
             filters.Search(name="name", label="评测集名称"),
-            filters.Search(name="type", label="风险类型"),
+            filters.Search(name="focused_risks", label="风险类型"),
         ]
         fields = [
             Field(name="name", label="评测集名称"),
