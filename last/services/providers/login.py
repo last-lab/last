@@ -1,3 +1,4 @@
+import json
 import typing
 import uuid
 from typing import Optional, Type
@@ -25,6 +26,12 @@ from last.services.utils import check_password, hash_password
 
 if typing.TYPE_CHECKING:
     from last.services.app import FastAPIAdmin
+
+import base64
+import time
+
+from Crypto.Cipher import PKCS1_v1_5
+from Crypto.PublicKey import RSA
 
 
 class GoogleRecaptcha(BaseModel):
@@ -477,3 +484,96 @@ class GoogleOAuth2Provider(OAuth2Provider):
             res = await client.get(self.user_url)
             ret = res.json()
             return ret
+
+
+def encrypt(public_key, client_id, client_secret):
+    timestamp_str = str(time.time()).split(".")[0]
+    raw_text = f"{client_id}||{client_secret}||{timestamp_str}"
+    key = base64.b64decode(public_key)
+    key = RSA.importKey(key)
+
+    cipher = PKCS1_v1_5.new(key)
+    encrypt_key = base64.b64encode(cipher.encrypt(bytes(raw_text, "utf-8")))
+    encrypt_str = encrypt_key.decode("utf-8")
+    return encrypt_str
+
+
+class SSOOAuth2Provider(OAuth2Provider):
+    name = "sso_oauth2_provider"
+    label = "Login with SSO"
+    icon = "fab fa-solid fa-passport"
+    authorize_url = "https://sso.openxlab.org.cn/authentication"
+    cipher_url = "https://sso.openxlab.org.cn/gw/uaa-be/api/v1/cipher/getPubKey"
+    token_url = "https://sso.openxlab.org.cn/gw/uaa-be/api/v1/internal/getJwt"
+    user_url = "https://sso.openxlab.org.cn/gw/uaa-be/api/v1/internal/getUserInfo"
+    public_key = ""
+
+    def __init__(
+        self, admin_model: Type[AbstractAdmin], client_id: str, client_secret: str, **kwargs
+    ):
+        super().__init__(
+            admin_model,
+            client_id,
+            client_secret,
+            **kwargs,
+        )
+
+    async def get_user_info(self, code: str):
+        """
+        {
+            "ssoUid": "STRING",            // 用户sso uid
+            "email": "STRING",             // 电子邮箱
+            "phone": "STRING",             // 手机号码
+            "githubAccount": "STRING",     // github账号
+            "wechat": "STRING",            // 用户微信唯一ID
+            "wechatName": "STRING",        // 用户微信名
+            "avatar":"STRING",             // 用户头像URL
+            "username":"STRING"            // 用户名（存量用户、后台创建用户，可能为空）
+            "nickname":"STRING"            // 用户昵称
+        }
+        """
+        token = await self.get_access_token(code)
+        async with httpx.AsyncClient(
+            headers={"Content-Type": "application/json"}, timeout=30
+        ) as client:
+            res = await client.post(
+                self.user_url, data=json.dumps(await self.get_user_info_params(token))
+            )
+            ret = res.json()
+            return ret.get("data")
+
+    async def get_access_token(self, code: str) -> str:
+        async with httpx.AsyncClient(
+            headers={"Content-Type": "application/json"}, timeout=30
+        ) as client:
+            res = await client.post(
+                self.token_url, data=json.dumps(await self.get_access_token_params(code))
+            )
+            ret = res.json()
+            return ret.get("data").get("jwt")
+
+    async def get_access_token_params(self, code: str):
+        public_key = await self.get_public_key()
+        return {"clientId": self.client_id, "d": self.get_d_params(public_key), "code": code}
+
+    async def get_public_key(self) -> str:
+        if self.public_key:
+            return self.public_key
+
+        async with httpx.AsyncClient(
+            headers={"Content-Type": "application/json"}, timeout=30
+        ) as client:
+            res = await client.post(self.cipher_url, data=json.dumps(self.get_public_key_params()))
+            ret = res.json()
+            return ret.get("data")["pubKey"]
+
+    def get_public_key_params(self):
+        return {"clientId": self.client_id, "from": "platform", "type": "auth"}
+
+    def get_d_params(self, public_key):
+        d = encrypt(public_key, self.client_id, self.client_secret)
+        return d
+
+    async def get_user_info_params(self, token: str):
+        public_key = await self.get_public_key()
+        return {"clientId": self.client_id, "d": self.get_d_params(public_key), "token": token}
