@@ -1,7 +1,7 @@
-# from datetime import datetime
+from datetime import datetime
 # from typing import Type
 # from urllib.parse import parse_qs
-# from uuid import uuid4
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Path
 from jinja2 import TemplateNotFound
@@ -85,20 +85,39 @@ async def create_task_callback(
 ):
     json_data = await request.json()
     print(json_data)
+    # TODO，上传的时候，直接将数据的原本内容就直接上传上来就好了？
+    # 目前假设管理员和标注员都能访问到某个共享内容，所有的数据集放在这个里面，如cpfs位置，
+    # 但是只有管理员才有创建任务的权限
     # TODO, 这个位置分配任务，那么如何给某个用户的表创建数据？
-    # volume, qa_num, word_cnt, qa_records
-    # await DataSet(
-    #     name= json_data.fileName,
-    #     fouces_risks = [
-    #         {"level": 1, "name": "国家安全", "description": "null"},
-    #         {"level": 2, "name": "颠覆国家政权", "description": "null", "downlevel_risk_name": ["反政府组织"]}
-    #     ], # TODO,这个位置我暂时是写死的，如果这个风险维度就是死的，那么从环境变量中读取
-    #     url = "null",
-    #     file = "null",
-    #     volume = "10GB", # TODO 这个文件大小的统计需要调用本地函数完成
-    #     used_by = 100, # TODO,如何计算这个文件被多少个人使用过了
-    #     qa_num = 5, # TODO, 同理，这个qa的数据也是没有办法被
-    #     ).save()
+    # 目前就是根据回传回来的taskAssignments字段进行拆分
+    #  'taskAssignments': [{'annotator': '标注员1', 'taskCount': '10'},
+    #                      {'annotator': '标注员2', 'taskCount': '15'},
+    #                      {'annotator': '标注员3', 'taskCount': '20'}]}
+
+    # 默认有一个文件夹存放所有的数据集原始文件，因此只要传入数据的名字就可以了
+    volume, qa_num, word_cnt, qa_records = statistic_dataset(json_data.fileName)
+    # 将数据插入进dataset表中，这一个步骤我只能理解为将实际的数据按规则写入到表中
+    task_uid = uuid4()
+    await DataSet(
+        name= json_data.fileName,
+        url = "null",
+        file = "null", # url和file都是两个意义不明的字段，后面都将raw data放入到了qa_records中，有没有上面两个字段都无意义
+        volume = volume,
+        used_by = 10, #TODO 这个字段没意义，展示留着
+        qa_num = qa_num,
+        word_cnt = word_cnt,
+        updated_at = "null", # TODO, 这个字段没有意义
+        qa_records = qa_records,
+        conversation_start_id = 0,
+        current_conversation_index = 0,
+        uid = uuid4(), # 这一步意义不明，为什么一个数据集需要用一个uuid作为索引，使用name不行吗
+        description = "null", # 这一步意义不明，为什么需要有数据的描述，
+        creator = "root", # 如果有多个任务创建者，这个字段是有意义的
+        editor = "null", # 目前就没有这个角色，字段意义不明
+        reviewer = "null", # 意义不明的字段
+        created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        permissions = "null" # 自相矛盾的字段，意义不明
+        ).save()
     # 回传回来的数据样例：
     # {'fileName': 'file',
     #  'annotationTypes': ['sorting', 'boundingBox'],
