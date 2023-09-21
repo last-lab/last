@@ -1,19 +1,21 @@
-from typing import Union
 import json
 from functools import reduce
 from operator import add
+from typing import Union
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from starlette.requests import Request
+from tortoise.expressions import Q
 
-from dashboard.biz_models import EvaluationPlan, ModelInfo, Record, DataSet
+from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Record
+from dashboard.enums import EvalStatus
+from last.client import AI_eval, Client
 from last.services.app import app
 from last.services.depends import get_resources
 from last.services.i18n import _
 from last.services.template import templates
-from last.client import AI_eval, Client
-from tortoise.expressions import Q
-from dashboard.enums import EvalStatus
+
 router = APIRouter()
 
 
@@ -65,18 +67,29 @@ async def evaluation_create(
         llm_id=eval_info.llm_id,
     )
     # try:
-    dataset_ids = [int(_) for _ in plan['dataset_ids'].split(',')]
+    dataset_ids = [int(_) for _ in plan["dataset_ids"].split(",")]
     dataset_info = await DataSet.filter(Q(id__in=dataset_ids)).values()
     kwargs_json = json.dumps(
         {
-            "$datasets": [{"name": dataset['name'], "file": dataset['file'], "focused_risks": dataset['focused_risks'] } for dataset in dataset_info],
-            "$llm_model": {"name": model['name'], "endpoint": model['endpoint'], "access_key": model['access_key']},
+            "$datasets": [
+                {
+                    "name": dataset["name"],
+                    "file": dataset["file"],
+                    "focused_risks": dataset["focused_risks"],
+                }
+                for dataset in dataset_info
+            ],
+            "$llm_model": {
+                "name": model["name"],
+                "endpoint": model["endpoint"],
+                "access_key": model["access_key"],
+            },
             "$critic_model": {
                 "name": "GPT-3.5-Turbo",
                 "endpoint": "xxx",
                 "access_key": "xxx",
             },
-            "$plan": {"name": plan['name']},
+            "$plan": {"name": plan["name"]},
         }
     )
 
@@ -92,9 +105,9 @@ async def evaluation_create(
         + ":"
         + new_dataset.created_at.minute
     )
-    focused_risks = reduce(add, [dataset['focused_risks'] for dataset in dataset_info]) 
-    new_DataSet = await DataSet.create(
-        name=plan['name']+'_Result',
+    focused_risks = reduce(add, [dataset["focused_risks"] for dataset in dataset_info])
+    await DataSet.create(
+        name=plan["name"] + "_Result",
         focused_risks=focused_risks,
         volume=new_dataset.volume,
         qa_num=new_dataset.qa_num,
@@ -119,8 +132,6 @@ async def evaluation_create(
     # except:
     #     await Record.filter(id=record.id).update(state=EvalStatus.error)
     return {"status": "ok", "success": 1, "msg": "create eval success"}
-
-
 
 
 # 用来创建model的接口
