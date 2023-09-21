@@ -48,7 +48,7 @@ async def labeling_view(
 
 
 @router.get("/{resource}/display/{pk}")
-async def labeling_view(
+async def display(
     request: Request,
     resource: str = Path(...),
     pk: str = Path(...),
