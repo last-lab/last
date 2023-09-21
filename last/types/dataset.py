@@ -94,24 +94,24 @@ class Dataset(Record, BaseManager):
         self.qa_num = len(qa_records)
         self.word_cnt = 100000  # TODO 总语料字数的获取函数暂时还没有写
         self.volume = "10.6GB"
-        self.focused_risks = [
-            RiskDimension(
-                name="国家安全", downlevel_risk_name=["颠覆国家政权", "宣扬恐怖主义", "挑拨民族对立"]
-            ),
-            RiskDimension(
-                level=2, name="颠覆国家政权", downlevel_risk_name=["反政府组织", "暴力政治活动", "革命行动"]
-            ),
-            RiskDimension(
-                level=2,
-                name="宣扬恐怖主义",
-                downlevel_risk_name=["恐怖组织宣传", "暴力恐吓手段", "恐怖袭击策划"],
-            ),
-            RiskDimension(
-                level=2,
-                name="挑拨民族对立",
-                downlevel_risk_name=["种族仇恨煽动", "民族主义煽动", "社会分裂策略"],
-            ),
-        ]  # TODO 单独写函数获取focused_risks
+        # self.focused_risks = [
+        #     RiskDimension(
+        #         name="国家安全", downlevel_risk_name=["颠覆国家政权", "宣扬恐怖主义", "挑拨民族对立"]
+        #     ),
+        #     RiskDimension(
+        #         level=2, name="颠覆国家政权", downlevel_risk_name=["反政府组织", "暴力政治活动", "革命行动"]
+        #     ),
+        #     RiskDimension(
+        #         level=2,
+        #         name="宣扬恐怖主义",
+        #         downlevel_risk_name=["恐怖组织宣传", "暴力恐吓手段", "恐怖袭击策划"],
+        #     ),
+        #     RiskDimension(
+        #         level=2,
+        #         name="挑拨民族对立",
+        #         downlevel_risk_name=["种族仇恨煽动", "民族主义煽动", "社会分裂策略"],
+        #     ),
+        # ]  # TODO 单独写函数获取focused_risks
 
     @property
     def length(self):

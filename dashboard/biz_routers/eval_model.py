@@ -1,5 +1,7 @@
 from typing import Union
 import json
+from functools import reduce
+from operator import add
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from starlette.requests import Request
@@ -62,11 +64,12 @@ async def evaluation_create(
         llm_name=model["name"],
         llm_id=eval_info.llm_id,
     )
+    # try:
     dataset_ids = [int(_) for _ in plan['dataset_ids'].split(',')]
-    dataset_info = await DataSet.filter(Q(uid__in=dataset_ids)).values()
+    dataset_info = await DataSet.filter(Q(id__in=dataset_ids)).values()
     kwargs_json = json.dumps(
         {
-            "$datasets": [{"name": dataset['name'], "file": dataset['file']} for dataset in dataset_info],
+            "$datasets": [{"name": dataset['name'], "file": dataset['file'], "focused_risks": dataset['focused_risks'] } for dataset in dataset_info],
             "$llm_model": {"name": model['name'], "endpoint": model['endpoint'], "access_key": model['access_key']},
             "$critic_model": {
                 "name": "GPT-3.5-Turbo",
@@ -76,12 +79,45 @@ async def evaluation_create(
             "$plan": {"name": plan['name']},
         }
     )
-    try:
-        _, new_dataset = Client.execute(AI_eval, kwargs_json)
-    except:
-        await Record.filter(id=record.id).update(state=EvalStatus.error)
 
+    _, new_dataset = Client.execute(AI_eval, kwargs_json)
+    time = (
+        new_dataset.created_at.year
+        + "-"
+        + new_dataset.created_at.month
+        + "-"
+        + new_dataset.created_at.day
+        + " "
+        + new_dataset.created_at.hour
+        + ":"
+        + new_dataset.created_at.minute
+    )
+    focused_risks = reduce(add, [dataset['focused_risks'] for dataset in dataset_info]) 
+    new_DataSet = await DataSet.create(
+        name=plan['name']+'_Result',
+        focused_risks=focused_risks,
+        volume=new_dataset.volume,
+        qa_num=new_dataset.qa_num,
+        word_cnt=new_dataset.word_cnt,
+        url=new_dataset.url,
+        file=new_dataset.file,
+        used_by=new_dataset.used_by,
+        qa_records=str(new_dataset.qa_records),
+        conversation_start_id=str(new_dataset.conversation_start_id),
+        current_conversation_index=new_dataset.current_conversation_index,
+        current_qa_record_id=new_dataset.current_qa_record_id,
+        uid=new_dataset.uid,
+        description=new_dataset.description,
+        creator=str(new_dataset.creator),
+        editor=new_dataset.editor,
+        reviewer=new_dataset.reviewer,
+        created_at=time,
+        updated_at=time,
+        permissions=new_dataset.permissions,
+    )
     await Record.filter(id=record.id).update(state=EvalStatus.finish)
+    # except:
+    #     await Record.filter(id=record.id).update(state=EvalStatus.error)
     return {"status": "ok", "success": 1, "msg": "create eval success"}
 
 
