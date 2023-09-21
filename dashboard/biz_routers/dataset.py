@@ -23,32 +23,13 @@ async def upload_dataset(
     resources=Depends(get_resources),
     model_resource: ModelResource = Depends(get_model_resource),
 ):
-    risk_info = []
-    risks = await Risk.all()
-    for risk in risks:
-        if risk.risk_level == 1:
-            risk_info.append(
-                {
-                    "risk_level": risk.risk_level,
-                    "risk_id": risk.risk_id,
-                    "risk_name": risk.risk_name,
-                    "risk_description": risk.risk_description,
-                    "child_risk": [],
-                }
-            )
-        elif risk.risk_level == 2:
-            filter_info = list(
-                filter(lambda item: item["risk_id"] == risk.parent_risk_id, risk_info)
-            )
-            filter_info[0]["child_risk"].append(
-                {
-                    "risk_level": risk.risk_level,
-                    "risk_id": risk.risk_id,
-                    "risk_name": risk.risk_name,
-                    "risk_description": risk.risk_description,
-                    "third_risk": jsonp.loads(risk.third_risk) if risk.third_risk else [],
-                }
-            )
+    risk_info = await Risk.all().filter(risk_level=1)
+    for first_risk in risk_info:
+        second_risks = await Risk.all().filter(risk_level=2, parent_risk_id=first_risk.risk_id)
+        first_risk.second_risks = second_risks
+        for second_risk in second_risks:
+            third_risks = await Risk.all().filter(risk_level=3, parent_risk_id=second_risk.risk_id)
+            second_risk.third_risks = third_risks
     context = {
         "request": request,
         "resource": resource,

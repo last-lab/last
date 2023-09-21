@@ -24,10 +24,10 @@
         <div class="mb-3 row">
             <label class="col-4 col-form-label">风险类型</label>
             <div class="col col-form-label">
-                {% for risk in risk_info %}
-                    <label class="form-check form-check-inline" onchange="radioSelect({{ risk.risk_id }})">
+                {% for first_risk in risk_info %}
+                    <label class="form-check form-check-inline" onchange="radioSelect({{ first_risk.risk_id }})">
                         <input class="form-check-input" type="radio" name="radios-inline">
-                        <span class="form-check-label">{{ risk.risk_name }}</span>
+                        <span class="form-check-label">{{ first_risk.risk_name }}</span>
                     </label>
                 {% endfor %}
             </div>
@@ -35,18 +35,18 @@
         <div class="mb-3 row">
             <label class="col-4 col-form-label">二级、三级风险类型</label>
             <div class="col col-form-label">
-                {% for risk in risk_info %}
-                    <div style="display: none" id={{ risk.risk_id }}>
-                        {% for item in risk.child_risk %}
-                        	 <label class="form-check" onchange="getValue({{ item.risk_id }})">
-                                <input class="form-check-input" type="checkbox" id={{ item.risk_id }} name={{ risk.risk_id }}>
-                                <span class="form-check-label">{{ item.risk_name }}</span>
+                {% for first_risk in risk_info %}
+                    <div style="display: none" id={{ first_risk.risk_id }}>
+                        {% for second_risk in first_risk.second_risks %}
+                        	 <label class="form-check" onchange="getValue({{ second_risk.risk_id }})">
+                                <input class="form-check-input" type="checkbox" id={{ second_risk.risk_id }} name={{ first_risk.risk_id }}>
+                                <span class="form-check-label">{{ second_risk.risk_name }}</span>
                             </label>
                             <div>
-                                {% for ele in item.third_risk %}
+                                {% for third_risk in second_risk.third_risks %}
                                     <label class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" id="{{ ele.risk_id }}" disabled name={{ item.risk_id }} dirname={{ risk.risk_id }}>
-                                        <span class="form-check-label">{{ ele.risk_name }}</span>
+                                        <input class="form-check-input" type="checkbox" id="{{ third_risk.risk_id }}" disabled name={{ second_risk.risk_id }} dirname={{ first_risk.risk_id }}>
+                                        <span class="form-check-label">{{ third_risk.risk_name }}</span>
                                     </label>
                                 {% endfor %}
                             </div>
@@ -67,7 +67,7 @@
             <label class="col-4 col-form-label">评测集大小</label>
             <div class="col col-form-label" id="size"></div>
         </div>
-        <button type="button" class="btn btn-primary" onclick="uploadSubmit({{ risk_info }})">完成上传</button>
+        <button type="button" class="btn btn-primary" onclick="uploadSubmit()">完成上传</button>
     </div>
     <script>
         var jsonvalue = {}
@@ -128,21 +128,15 @@
                 return;
             }
             const risks = [String(pre_id)]
-            info.forEach(item => {
-                if (item.risk_id === String(pre_id)) {
-                    item.child_risk.forEach(ele => {
-                        if ($("#" + ele.risk_id)[0].checked) {
-                            risks.push(ele.risk_id)
-                            if (ele.third_risk) {
-                                ele.third_risk.forEach(el => {
-                                    if ($("#" + el.risk_id)[0].checked) {
-                                        risks.push(el.risk_id)
-                                    }
-                                })
-                            }
-                        }
-                    })
-                }
+            const second_id = []
+            $(`input[name=${$('#' + pre_id)[0].id}]:checked`).each(function () {
+                second_id.push($(this).attr('id'))
+                risks.push($(this).attr('id'))
+            })
+            second_id.map(function (item) {
+                $(`input[name=${$('#' + item)[0].id}]:checked`).each(function () {
+                    risks.push($(this).attr('id'))
+                })
             })
             $.ajax({
                 url: '/admin/dataset/conform',
@@ -158,13 +152,12 @@
                 success: function (value) {
                     if (value.result) {
                         alert('评测集已完成上传')
-                        history.back();
+                        window.location.replace(document.referrer);
                     } else {
                         alert(value.reason)
                     }
                 }
              })
-
          }
         function getValue(id) {
              if ($('#' + id)[0].checked) {
