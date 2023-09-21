@@ -573,6 +573,13 @@ class TaskManage(Dropdown):
                     method=_enums.Method.GET,
                     ajax=False,
                     class_="btn-primary",
+                ),
+                ToolbarAction(
+                    label = _("分配评测任务"),
+                    icon = "fas fa-upload",
+                    name = "assign_test_task",
+                    method  = _enums.Method.POST,
+                    class_ = "btn-primary"
                 )
             ]
 

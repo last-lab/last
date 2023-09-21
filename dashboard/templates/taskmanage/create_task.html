@@ -1,79 +1,115 @@
 {% extends layout %}
 {% block page_body %}
 
-<form>
-    <label for="dataset">选择数据集:</label>
-    <select id="dataset" name="dataset">
-    </select>
-    <br><br>
+    <h1>标注任务</h1>
 
-    <label>选择标注方式:</label>
-    <br>
-    <input type="checkbox" name="selection" value="0-1"> 0-1标注
-    <br>
-    <input type="checkbox" name="selection" value="box"> Box标注
-    <br>
-    <input type="checkbox" name="selection" value="rank"> Rank标注
-    <br><br>
+    <div class="form-group">
+        <label for="file">标注数据集合：</label>
+        <input type="file" id="file" name="file">
+    </div>
 
-    <input type="button" value="提交" onclick="uploadSubmit()">
-</form>
+    <div class="form-group">
+        <label>标注方式：</label>
+        <div>
+            <input type="checkbox" id="judgment" name="annotationType" value="judgment">
+            <label class="checkbox-label" for="judgment">判断标注</label>
+        </div>
+        <div>
+            <input type="checkbox" id="sorting" name="annotationType" value="sorting">
+            <label class="checkbox-label" for="sorting">排序标注</label>
+        </div>
+        <div>
+            <input type="checkbox" id="boundingBox" name="annotationType" value="boundingBox">
+            <label class="checkbox-label" for="boundingBox">框选标注</label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="deadline">截止时间：</label>
+        <input type="datetime-local" id="deadline" name="deadline">
+    </div>
+
+    <div class="form-group">
+        <label>任务分配：</label>
+        <table>
+            <thead>
+                <tr>
+                    <th>标注员</th>
+                    <th>题目数量</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>标注员1</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <td>标注员2</td>
+                    <td>15</td>
+                </tr>
+                <tr>
+                    <td>标注员3</td>
+                    <td>20</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <button type="submit" onclick="submitForm()">提交</button>
 
     <script>
-        fetch('/admin/taskmanage/get_datasets_name')
-        .then(response => response.json())
-        .then(data => {
-            var datasetSelect = document.getElementById('dataset');
+        function submitForm() {
+            var fileInput = document.getElementById('file');
+            var file = fileInput.files[0];
+            var fileName = fileInput.name; // 获取文件的路径
 
-            // 动态生成下拉框选项
-            data.forEach(dataset => {
-                var option = document.createElement('option');
-                option.value = dataset;
-                option.text = dataset;
-                datasetSelect.appendChild(option);
-            });
-
-            // 设置被选择的选项
-            var selectedOption = "test2"; // 设置为你想要被选择的选项
-            datasetSelect.value = selectedOption;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-
-
-
-        function uploadSubmit() {
-            var datasetSelect = document.getElementById('dataset');
-            var selectedDataset = datasetSelect.value;
-            // 获取选中的复选框值
-            var selectedOptions = [];
-            var checkboxes = document.getElementsByName('selection');
-            checkboxes.forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    selectedOptions.push(checkbox.value);
+            var annotationTypes = [];
+            var checkboxes = document.getElementsByName('annotationType');
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    annotationTypes.push(checkboxes[i].value);
                 }
-            });
+            }
 
-            // 发送数据
+            var deadlineInput = document.getElementById('deadline');
+            var deadline = deadlineInput.value;
+
+            var tableRows = document.querySelectorAll('table tbody tr');
+            var taskAssignments = [];
+            for (var i = 0; i < tableRows.length; i++) {
+                var cells = tableRows[i].querySelectorAll('td');
+                var annotator = cells[0].textContent;
+                var taskCount = cells[1].textContent;
+                taskAssignments.push({ annotator: annotator, taskCount: taskCount });
+            }
+
+            var formData = {
+                fileName: fileName,
+                annotationTypes: annotationTypes,
+                deadline: deadline,
+                taskAssignments: taskAssignments
+            };
+
+            // 调用回调函数，将数据传递给它进行处理
+            // 使用 $.ajax 发送数据到特定的 URL
             $.ajax({
-                url: '/admin/taskmanage/create_task_callback',
                 type: 'POST',
-                data: {
-                    "dataset_name": selectedDataset,
-                    "labeling_method": JSON.stringify(selectedOptions),
-                    "test": "test"
-                },
+                url: '/admin/taskmanage/create_task_callback',
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
                 success: function(response) {
-                    // 处理成功响应
-                    alert("success")
+                    // 请求成功的处理
+                    history.back();
+                    // alert(success);
                 },
-                error: function(xhr, status, error) {
-                    // 处理错误
-                    console.error("error");
+                error: function(error) {
+                    // 请求失败的处理
+                    console.log(error);
                 }
             });
-        };
+        }
+
     </script>
+</body>
 
 {% endblock %}
