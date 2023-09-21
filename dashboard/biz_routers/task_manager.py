@@ -1,7 +1,7 @@
 # from datetime import datetime
 # from typing import Type
-from urllib.parse import parse_qs
-from uuid import uuid4
+# from urllib.parse import parse_qs
+# from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Path
 from jinja2 import TemplateNotFound
@@ -11,7 +11,8 @@ from tortoise import Model
 from dashboard.biz_models import DataSet, TaskManage
 from last.services.depends import create_checker, get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
-from last.services.routes.resources import list_view
+
+# from last.services.routes.resources import list_view
 from last.services.template import templates
 
 router = APIRouter()
