@@ -28,6 +28,7 @@ from dashboard.widgets.displays import (
     ShowSecondType,
     ShowStatus,
 )
+from dashboard.widgets.filters import SearchFilter
 from last.services import enums as _enums
 from last.services.app import app
 from last.services.enums import Method
@@ -242,8 +243,8 @@ class DataManager(Dropdown):
         model = DataSet
         page_title = _("评测集管理")
         filters = [
-            filters.Search(name="name", label="评测集名称"),
-            filters.Search(name="focused_risks", label="风险类型"),
+            filters.Search(name="name", label="评测集名称", search_mode="contains", placeholder="请输入"),
+            SearchFilter(name="first_risk_id", label="风险类型", placeholder="请输入"),
         ]
         fields = [
             Field(name="name", label="评测集名称"),
@@ -257,7 +258,7 @@ class DataManager(Dropdown):
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return [
                 ToolbarAction(
-                    label=_("上传数据集"),
+                    label=_("上传评测集"),
                     icon="fas fa-upload",
                     name="upload_dataset",
                     method=_enums.Method.GET,

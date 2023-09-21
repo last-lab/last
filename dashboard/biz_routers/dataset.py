@@ -61,7 +61,7 @@ async def json(request: Request, file: UploadFile = File(...)):
 class Item(Dataset):
     focused_risks: str
     focused_risks_json: str
-
+    first_risk_id: str
 
 @router.post("/dataset/conform")
 async def conform(request: Request, item: Item):
@@ -101,5 +101,6 @@ async def conform(request: Request, item: Item):
             created_at=time,
             updated_at=time,
             permissions=item.permissions,
+            first_risk_id=item.first_risk_id
         )
         return {"result": 1, "reason": "上传成功"}

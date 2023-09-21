@@ -5,7 +5,7 @@
     标注信息
 </span>
 <span style="cursor: pointer; color: #0D53DE; margin-right: 10px;">
-  <a href="data:application/json;charset=utf-8,{{ value.file }}" download="download.json" style="text-decoration: none">导出</a>
+  导出
 </span>
 <span data-bs-toggle="modal" data-bs-target="#{{ value.name }}" style="cursor: pointer; color: #F5483B;">
   删除
@@ -43,8 +43,8 @@
           <div class="datagrid-item">
             <div class="datagrid-title">访问路径</div>
             <div class="datagrid-content">
-                <span id="url">{{ value.file }}</span>
-                <button class="btn btn-primary" onclick="copyUrl()" style="margin-left: 5px">复制</button>
+                <span id={{ value.id }}>{{ value.file }}</span>
+                <button type="button" class="btn btn-primary" onclick="copyUrl({{ value.id }})" style="margin-left: 5px">复制</button>
             </div>
           </div>
           <div class="datagrid-item">
@@ -138,8 +138,8 @@
             }
         })
     }
-    function copyUrl() {
-        const copyText = $("#url").text();
+    function copyUrl(id) {
+        const copyText = $("#"+id).text();
         navigator.clipboard.writeText(copyText);
         alert('复制成功');
     }

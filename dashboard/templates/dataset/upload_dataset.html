@@ -145,7 +145,8 @@
                     ...jsonvalue,
                     "name": $('#name').val(),
                     "focused_risks": JSON.stringify(risks),
-                    "focused_risks_json": JSON.stringify(risks)
+                    "focused_risks_json": JSON.stringify(risks),
+                    "first_risk_id": String(pre_id)
                 }),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",

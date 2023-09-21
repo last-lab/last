@@ -47,3 +47,4 @@ class DataSet(Model):
     reviewer = fields.CharField(max_length=200, null=True)
     created_at = fields.CharField(max_length=200, null=True)
     permissions = fields.CharField(max_length=200, null=True)
+    first_risk_id = fields.CharField(max_length=200)
