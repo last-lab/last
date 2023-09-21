@@ -1,7 +1,6 @@
 from tortoise import Model, fields
 
 
-
 class TaskManage(Model):
     task_id = fields.CharField(max_length=50)
     labeling_method = fields.CharField(max_length=255)

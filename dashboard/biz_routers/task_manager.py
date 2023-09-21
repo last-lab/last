@@ -1,18 +1,19 @@
-from typing import Type
-from uuid import uuid4
 from datetime import datetime
-
+from typing import Type
 from urllib.parse import parse_qs
+from uuid import uuid4
+
 from fastapi import APIRouter, Depends, Path
 from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model
-from dashboard.biz_models import TaskManage, LabelPage, DataSet
-from last.services.depends import get_model, get_model_resource, get_resources
-from last.services.depends import create_checker
+
+from dashboard.biz_models import DataSet, LabelPage, TaskManage
+from last.services.depends import create_checker, get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
-from last.services.template import templates
 from last.services.routes.resources import list_view
+from last.services.template import templates
+
 router = APIRouter()
 
 
@@ -49,7 +50,7 @@ async def assign_test_task(
     model: Model = Depends(get_model),
     resources=Depends(get_resources),
     model_resource: ModelResource = Depends(get_model_resource),
-    resource: str = Path(...)
+    resource: str = Path(...),
 ):
     # 分配评测任务给某一个用户的回调函数
     context = {
@@ -72,21 +73,17 @@ async def assign_test_task(
         )
 
 
-
-
 @router.post("/{resource}/create_task_callback")
 async def create_task_callback(
     request: Request,
     model: Model = Depends(get_model),
     resources=Depends(get_resources),
     model_resource: ModelResource = Depends(get_model_resource),
-    resource: str = Path(...)
-    ):
+    resource: str = Path(...),
+):
     json_data = await request.json()
     print(json_data)
-    await DataSet(
-        name = ""
-    ).save()
+    await DataSet(name="").save()
     # 回传回来的数据样例：
     # {'fileName': 'file',
     #  'annotationTypes': ['sorting', 'boundingBox'],
@@ -118,11 +115,6 @@ async def create_task_callback(
     return "success"
 
 
-
-
 @router.get("/{resource}/get_datasets_name")
-async def get_datasets_name(
-    request: Request,
-    resources = Depends(get_resources)
-):
+async def get_datasets_name(request: Request, resources=Depends(get_resources)):
     return ["test1", "test2"]

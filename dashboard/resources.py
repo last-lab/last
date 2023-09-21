@@ -7,8 +7,7 @@ from starlette.requests import Request
 from dashboard import enums
 from dashboard.biz_models import DataSet  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
-from dashboard.biz_models import LabelPage
-from dashboard.biz_models import TaskManage
+from dashboard.biz_models import LabelPage, TaskManage
 from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
@@ -256,17 +255,16 @@ class DataManager(Dropdown):
                     ajax=False,
                 ),
                 Action(
-                    label = _("display"),
-                    icon= "ti ti-edit",
-                    name = "display",
-                    method = Method.GET,
+                    label=_("display"),
+                    icon="ti ti-edit",
+                    name="display",
+                    method=Method.GET,
                     ajax=False,
-                )
+                ),
             ]
 
         async def get_bulk_actions(self, request: Request) -> List[Action]:
             return []
-
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return []
@@ -475,7 +473,6 @@ class Auth(Dropdown):
     resources = [AdminResource, Resource, Permission, Role]
 
 
-
 class RestDays(ComputeField):
     async def get_value(self, request: Request, obj: dict):
         v = await super(RestDays, self).get_value(request, obj)
@@ -551,6 +548,7 @@ class SwitchLayout(Link):
 @app.register
 class TaskManage(Dropdown):
     """ """
+
     class CreateTask(Model):
         label = _("任务看板")
         model = TaskManage
@@ -561,8 +559,7 @@ class TaskManage(Dropdown):
             return []
 
         async def get_bulk_actions(self, request: Request) -> List[Action]:
-                return []
-
+            return []
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return [
@@ -575,12 +572,12 @@ class TaskManage(Dropdown):
                     class_="btn-primary",
                 ),
                 ToolbarAction(
-                    label = _("分配评测任务"),
-                    icon = "fas fa-upload",
-                    name = "assign_test_task",
-                    method  = _enums.Method.POST,
-                    class_ = "btn-primary"
-                )
+                    label=_("分配评测任务"),
+                    icon="fas fa-upload",
+                    name="assign_test_task",
+                    method=_enums.Method.POST,
+                    class_="btn-primary",
+                ),
             ]
 
     label = _("任务管理")

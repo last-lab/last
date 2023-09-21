@@ -4,13 +4,15 @@ from fastapi import APIRouter, Depends, Path
 from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model
+
 from dashboard.biz_models.task_manage_model import TaskManage
-from last.services.depends import get_model, get_model_resource, get_resources
-from last.services.depends import create_checker
+from last.services.depends import create_checker, get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
-from last.services.template import templates
 from last.services.routes.resources import list_view
+from last.services.template import templates
+
 router = APIRouter()
+
 
 @router.get("/{resource}/labeling/{pk}")
 async def labeling_view(
@@ -21,7 +23,6 @@ async def labeling_view(
     resources=Depends(get_resources),
     model: Type[Model] = Depends(get_model),
 ):
-
     context = {
         "request": request,
         "resources": resources,
@@ -45,7 +46,6 @@ async def labeling_view(
             "label.html",
             context=context,
         )
-
 
 
 @router.get("/{resource}/display/{pk}")
@@ -95,26 +95,10 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
     # 读取这个文件的路径获取得到文件的数据
 
     return [
-        {
-            "id": 1,
-            "question": "问题1",
-            "status": "标注中",
-            "action": "标注"
-        },
-        {
-            "id": 2,
-            "question": "问题2",
-            "status": "已完成",
-            "action": "查看"
-        },
-        {
-            "id": 3,
-            "question": "问题3",
-            "status": "标注中",
-            "action": "标注"
-        }
+        {"id": 1, "question": "问题1", "status": "标注中", "action": "标注"},
+        {"id": 2, "question": "问题2", "status": "已完成", "action": "查看"},
+        {"id": 3, "question": "问题3", "status": "标注中", "action": "标注"},
     ]
-
 
 
 @router.post("/{resource}/labeling/get_config")
