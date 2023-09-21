@@ -167,13 +167,14 @@ class ShowAction(Display):
                                 content["child_risk"],
                             )
                         )
-                        filter_info[0]["third_risk"].append(
-                            {
-                                "risk_id": res["risk_id"],
-                                "risk_name": res["risk_name"],
-                                "risk_description": res["risk_description"],
-                            }
-                        )
+                        if len(filter_info) > 0:
+                            filter_info[0]["third_risk"].append(
+                                {
+                                    "risk_id": res["risk_id"],
+                                    "risk_name": res["risk_name"],
+                                    "risk_description": res["risk_description"],
+                                }
+                            )
             with open(dataset["file"], "r") as file:
                 reader = csv.reader(file)
                 for row in reader:
