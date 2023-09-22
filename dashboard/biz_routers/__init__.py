@@ -7,7 +7,6 @@ from .labeling_router import router as label_router
 from .risk import router as risk_router
 from .task_manager import router as task_router
 
-
 biz_router = APIRouter()
 biz_router.include_router(datamanager_router)
 biz_router.include_router(eval_model_router)
