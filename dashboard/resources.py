@@ -5,10 +5,10 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
-from dashboard.biz_models import DataSet  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
-from dashboard.biz_models import LabelPage, TaskManage
+from dashboard.biz_models import DataSet, LabelPage, TaskManage  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models.eval_model import Record
+from dashboard.biz_models.risk import Risk
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
 from dashboard.models import Permission as PermissionModel
@@ -16,14 +16,19 @@ from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
 from dashboard.widgets.displays import (
     OperationField,
+    RiskAction,
     ShowAction,
     ShowIp,
     ShowPlanDetail,
     ShowPopover,
+    ShowRisk,
     ShowRiskType,
+    ShowSecondRisk,
+    ShowSecondRiskDesc,
     ShowSecondType,
     ShowStatus,
 )
+from dashboard.widgets.filters import SearchFilter
 from last.services import enums as _enums
 from last.services.app import app
 from last.services.enums import Method
@@ -57,9 +62,35 @@ class Administartor(Dropdown):
         icon = "far fa-bell"
         url = "/admin/notification"
 
+    class RiskManage(Model):
+        label = _("风险维度管理")
+        model = Risk
+        page_title = _("风险维度管理")
+        fields = [
+            Field(name="risk_id", label="一级维度", display=ShowRisk()),
+            Field(name="risk_id", label="二级维度", display=ShowSecondRisk()),
+            Field(name="risk_id", label="具体描述", display=ShowSecondRiskDesc()),
+            Field(name="risk_id", label="操作", display=RiskAction()),
+        ]
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label=_("新建维度"),
+                    icon="fas fa-plus",
+                    name="risk_create",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                    class_="btn-primary",
+                )
+            ]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return []
+
     label = _("Administartor")
     icon = "fas fa-bars"
-    resources = [Dashboard, Notification]
+    resources = [Dashboard, Notification, RiskManage]
 
 
 @app.register
@@ -212,8 +243,8 @@ class DataManager(Dropdown):
         model = DataSet
         page_title = _("评测集管理")
         filters = [
-            filters.Search(name="name", label="评测集名称"),
-            filters.Search(name="type", label="风险类型"),
+            filters.Search(name="name", label="评测集名称", search_mode="contains", placeholder="请输入"),
+            SearchFilter(name="first_risk_id", label="风险类型", placeholder="请输入"),
         ]
         fields = [
             Field(name="name", label="评测集名称"),
@@ -227,7 +258,7 @@ class DataManager(Dropdown):
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return [
                 ToolbarAction(
-                    label=_("上传数据集"),
+                    label=_("上传评测集"),
                     icon="fas fa-upload",
                     name="upload_dataset",
                     method=_enums.Method.GET,
