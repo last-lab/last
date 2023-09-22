@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Path
 from starlette.requests import Request
 
+from dashboard.biz_models import Risk
 from last.services.depends import get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
@@ -50,4 +51,22 @@ async def edit(
     return templates.TemplateResponse(
         f"{resource}/risk_edit.html",
         context=context,
+    )
+
+
+@router.get("/{resource}")
+async def risk(
+        request: Request,
+        resources=Depends(get_resources),
+):
+    risks = await Risk.all()
+
+    return templates.TemplateResponse(
+        "risk/risk.html",
+        context={
+            "request": request,
+            "resources": resources,
+            "page_title": "风险维度",
+            "eval_plans": risks,
+        },
     )
