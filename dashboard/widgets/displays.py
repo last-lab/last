@@ -5,9 +5,10 @@ from starlette.requests import Request
 
 from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Risk
 from dashboard.enums import EvalStatus
+from dashboard.utils.converter import DataSetTool
 from last.services.resources import ComputeField
 from last.services.widgets.displays import Display, Popover, Status
-from dashboard.utils.converter import DataSetTool
+
 
 class ShowIp(Display):
     async def render(self, request: Request, value: str):
@@ -114,7 +115,6 @@ class ShowModelCard(Display):
                 "model_detail": value,
             },
         )
-
 
 
 class ShowAction(Display):
