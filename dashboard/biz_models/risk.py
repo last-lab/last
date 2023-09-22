@@ -7,4 +7,4 @@ class Risk(Model):
     risk_name = fields.CharField(max_length=200)
     risk_description = fields.TextField(null=True)
     parent_risk_id = fields.CharField(max_length=200, null=True)
-    sensitivity = fields.IntField()
+    sensitivity = fields.IntField(null=True)
