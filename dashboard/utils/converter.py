@@ -1,8 +1,7 @@
 """
 类型转换类
 """
-import json
-from typing import Union, Optional, List
+from typing import List, Optional, Union
 
 from pydantic.dataclasses import dataclass
 
@@ -27,6 +26,7 @@ class DataSetEvalModelSchema:
     """
     模型评测依赖的数据集数据结构
     """
+
     dataset_names: Optional[List[str]] = None
     risk_detail: Optional[List[List]] = None
 
@@ -41,7 +41,6 @@ class RiskSchema:
 
 
 class DataSetTool:
-
     @classmethod
     async def ds_model_to_eval_model_schema(cls, datasets) -> DataSetEvalModelSchema:
         """
@@ -58,10 +57,17 @@ class DataSetTool:
             if not item.focused_risks:
                 continue
             risk_list = await Risk.filter(risk_id__in=eval(item.focused_risks))
-            risk_schemas = list(map(lambda risk: RiskSchema(risk_id=risk.risk_id,
-                                                            risk_level=risk.risk_level,
-                                                            risk_name=risk.risk_name,
-                                                            parent_risk_id=risk.parent_risk_id), risk_list))
+            risk_schemas = list(
+                map(
+                    lambda risk: RiskSchema(
+                        risk_id=risk.risk_id,
+                        risk_level=risk.risk_level,
+                        risk_name=risk.risk_name,
+                        parent_risk_id=risk.parent_risk_id,
+                    ),
+                    risk_list,
+                )
+            )
 
             risk_detail.append(cls.build_risk_tree(risk_schemas))
         return DataSetEvalModelSchema(dataset_names=dataset_names, risk_detail=risk_detail)
@@ -120,5 +126,5 @@ class DataSetTool:
                 children = cls.build_risk_tree(risk_schemas, item.risk_id)
                 if children:
                     item.children = children
-                risk_tree.append({'name': item.risk_name, 'children': children})
+                risk_tree.append({"name": item.risk_name, "children": children})
         return risk_tree

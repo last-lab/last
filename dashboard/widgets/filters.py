@@ -31,5 +31,5 @@ class SearchFilter(Search):
     async def get_queryset(self, request: Request, value: Any, qs: QuerySet):
         value = await self.parse_value(request, value)
         first_risk = await Risk.get_or_none(risk_name=value).values()
-        filters = {self.context.get("name"): first_risk['risk_id']}
+        filters = {self.context.get("name"): first_risk["risk_id"]}
         return qs.filter(**filters)

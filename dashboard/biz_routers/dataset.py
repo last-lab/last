@@ -1,4 +1,3 @@
-import json as jsonp
 import os
 
 from fastapi import APIRouter, Depends, File, Path, UploadFile
@@ -63,6 +62,7 @@ class Item(Dataset):
     focused_risks_json: str
     first_risk_id: str
 
+
 @router.post("/dataset/conform")
 async def conform(request: Request, item: Item):
     result = await DataSet.all().filter(name=item.name)
@@ -101,6 +101,6 @@ async def conform(request: Request, item: Item):
             created_at=time,
             updated_at=time,
             permissions=item.permissions,
-            first_risk_id=item.first_risk_id
+            first_risk_id=item.first_risk_id,
         )
         return {"result": 1, "reason": "上传成功"}
