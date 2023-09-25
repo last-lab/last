@@ -66,7 +66,7 @@ class LLM(LLMInfo):
         if self.model_type is LLMType.critic:
             prompt = self.gen_similarity_prompt(*msgs)
         else:
-            prompt = msgs[0]
+            prompt = msgs[0].content
         return_msg = self.generate(prompt)
         return return_msg
 
@@ -104,17 +104,9 @@ class LLM(LLMInfo):
             "top_p": 0.9,
             "disable_report": False
         }
-        for i in range(self.max_retries):
-            try:
-                res =requests.post(self.endpoint, headers=header, data=json.dumps(data))
-                if res.status_code != 200:
-                    raise Exception("Request failed with status code {}".format(res.status_code))
-                break
-            except Exception as e:
-                print('Retrying...')
+
+        res = requests.post(self.endpoint, headers=header, data=json.dumps(data))
+        if res.status_code == 200:
+            return res.json()["data"]["choices"][0]["text"]
         else:
-            # max retries reached
-            return "Maximum number of retries ({}) exceeded.".format(self.max_retries)
-
-        return res.json()["data"]["choices"][0]["text"]
-
+            return res.json()['msg']

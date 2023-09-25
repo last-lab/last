@@ -2,7 +2,7 @@ import ast
 from dataclasses import dataclass
 import json
 from last.types.public import UserInfo, Placeholder
-
+import asyncio
 
 class Client:
     @staticmethod

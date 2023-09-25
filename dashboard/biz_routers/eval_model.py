@@ -3,7 +3,7 @@ from functools import reduce
 from operator import add
 from typing import Union
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from pydantic import BaseModel
 from starlette.requests import Request
 from tortoise.expressions import Q
@@ -15,7 +15,6 @@ from last.services.app import app
 from last.services.depends import get_resources
 from last.services.i18n import _
 from last.services.template import templates
-
 router = APIRouter()
 
 
@@ -53,47 +52,8 @@ async def create_eval(
         },
     )
 
-
-@router.post("/evaluation/evaluation_create")
-async def evaluation_create(
-    eval_info: EvalInfo,
-):
-    plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
-    model = await ModelInfo.get_or_none(id=eval_info.llm_id).values()
-    record = await Record.create(
-        eval_plan=plan["name"],
-        plan_id=eval_info.plan_id,
-        llm_name=model["name"],
-        llm_id=eval_info.llm_id,
-    )
-    # try:
-    dataset_ids = [int(_) for _ in plan["dataset_ids"].split(",")]
-    dataset_info = await DataSet.filter(Q(id__in=dataset_ids)).values()
-    kwargs_json = json.dumps(
-        {
-            "$datasets": [
-                {
-                    "name": dataset["name"],
-                    "file": dataset["file"],
-                    "focused_risks": dataset["focused_risks"],
-                }
-                for dataset in dataset_info
-            ],
-            "$llm_model": {
-                "name": model["name"],
-                "endpoint": model["endpoint"],
-                "access_key": model["access_key"],
-            },
-            "$critic_model": {
-                "name": "GPT-3.5-Turbo",
-                "endpoint": "xxx",
-                "access_key": "xxx",
-            },
-            "$plan": {"name": plan["name"]},
-        }
-    )
-
-    _, new_dataset = Client.execute(AI_eval, kwargs_json)
+async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
+    _, new_dataset = Client.execute(AI_eval, kwargs_json) # 这里是计算逻辑，执行很慢
     time = (
         new_dataset.created_at.year
         + "-"
@@ -132,9 +92,52 @@ async def evaluation_create(
         first_risk_id="1",  # 这里的逻辑不正确，TODO 改掉
     )
     await Record.filter(id=record.id).update(state=EvalStatus.finish)
+
+@router.post("/evaluation/evaluation_create")
+async def evaluation_create(
+    eval_info: EvalInfo, background_tasks: BackgroundTasks
+):
+    plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
+    model = await ModelInfo.get_or_none(id=eval_info.llm_id).values()
+    record = await Record.create(
+        eval_plan=plan["name"],
+        plan_id=eval_info.plan_id,
+        llm_name=model["name"],
+        llm_id=eval_info.llm_id,
+    )
+    # try:
+    dataset_ids = [int(_) for _ in plan["dataset_ids"].split(",")]
+    dataset_info = await DataSet.filter(Q(id__in=dataset_ids)).values()
+    kwargs_json = json.dumps(
+        {
+            "$datasets": [
+                {
+                    "name": dataset["name"],
+                    "file": dataset["file"],
+                    "focused_risks": dataset["focused_risks"],
+                }
+                for dataset in dataset_info
+            ],
+            "$llm_model": {
+                "name": model["name"],
+                "endpoint": model["endpoint"],
+                "access_key": model["access_key"],
+            },
+            "$critic_model": {
+                "name": model["name"],
+                "endpoint": model["endpoint"],
+                "access_key": model["access_key"],
+            },
+            "$plan": {"name": plan["name"]},
+        }
+    )
+
+    background_tasks.add_task(client_execute, plan, record, dataset_info, AI_eval, kwargs_json)
     # except:
     #     await Record.filter(id=record.id).update(state=EvalStatus.error)
     return {"status": "ok", "success": 1, "msg": "create eval success"}
+
+
 
 
 # 用来创建model的接口
