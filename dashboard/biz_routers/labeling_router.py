@@ -1,4 +1,3 @@
-import re
 from typing import Type
 
 from fastapi import APIRouter, Depends, Path
@@ -7,7 +6,6 @@ from starlette.requests import Request
 from tortoise import Model
 
 from dashboard.biz_models.labeling_model import LabelResult
-from dashboard.biz_models.task_manage_model import TaskManage
 from last.services.depends import get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
