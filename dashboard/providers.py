@@ -43,6 +43,10 @@ class OAuth2ProviderMixin:
             role = await Role.filter(label="admin").first()
             if role:
                 await role.admins.add(admin)
+            else:
+                general_role = await Role.filter(label="general").first()
+                if general_role:
+                    await general_role.admins.add(admin)
         await Admin.filter(pk=admin.pk).update(last_login=timezone.now())
         return admin
 
@@ -103,7 +107,7 @@ class SSOProvider(SSOOAuth2Provider, OAuth2ProviderMixin):
                 username=username,
                 channel="sso",
                 last_login=timezone.now(),
-                is_superuser=True,
+                is_superuser=False,
             ),
         )
         return await self.after_admin_login(admin, created)
