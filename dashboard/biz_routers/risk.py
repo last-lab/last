@@ -63,17 +63,21 @@ async def get_risk(
     for first_risk in risks:
         second_risks = await Risk.all().filter(risk_level=2, parent_risk_id=first_risk.risk_id)
         first_risk.second_risks = second_risks
-        datasets = await DataSet.all().filter(first_risk_id=first_risk.risk_id)
+        first_dataset = []
+        datasets = await DataSet.all()
+        for dataset in datasets:
+            if first_risk.risk_id in dataset.focused_risks:
+                first_dataset.append(dataset)
         first_risk.dataset = {
-            "dataset_count": len(datasets),
-            "dataset_word_cnt": sum([obj.word_cnt for obj in datasets]),
-            "dataset_name_list": [obj.name for obj in datasets],
+            "dataset_count": len(first_dataset),
+            "dataset_word_cnt": sum([obj.word_cnt for obj in first_dataset]),
+            "dataset_name_list": [obj.name for obj in first_dataset],
         }
         for second_risk in second_risks:
             third_risks = await Risk.all().filter(risk_level=3, parent_risk_id=second_risk.risk_id)
             second_risk.third_risks = third_risks
             second_dataset = []
-            datasets = await DataSet.all().filter()
+            datasets = await DataSet.all()
             for dataset in datasets:
                 if second_risk.risk_id in dataset.focused_risks:
                     second_dataset.append(dataset)
@@ -84,7 +88,7 @@ async def get_risk(
             }
             for third_risk in third_risks:
                 third_dataset = []
-                datasets = await DataSet.all().filter()
+                datasets = await DataSet.all()
                 for dataset in datasets:
                     if third_risk.risk_id in dataset.focused_risks:
                         third_dataset.append(dataset)
