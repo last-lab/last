@@ -21,40 +21,37 @@
             <label class="col-4 col-form-label">上传进度</label>
             <div class="col col-form-label">上传已完成</div>
         </div>
-{#        <div class="mb-3 row">#}
-{#            <label class="col-3 col-form-label">风险类型</label>#}
-{#            <div class="col col-form-label" id="type"></div>#}
-{#        </div>#}
-{#        <div class="mb-3 row">#}
-{#            <label class="col-3 col-form-label">风险详情</label>#}
-{#            <div class="col col-form-label" id="detail"></div>#}
-{#        </div>#}
         <div class="mb-3 row">
             <label class="col-4 col-form-label">风险类型</label>
             <div class="col col-form-label">
-                <label class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="radios-inline" checked="">
-                <span class="form-check-label">国家安全</span>
-            </label>
+                {% for first_risk in risk_info %}
+                    <label class="form-check form-check-inline" onchange="radioSelect({{ first_risk.risk_id }})">
+                        <input class="form-check-input" type="radio" name="radios-inline">
+                        <span class="form-check-label">{{ first_risk.risk_name }}</span>
+                    </label>
+                {% endfor %}
             </div>
         </div>
         <div class="mb-3 row">
             <label class="col-4 col-form-label">二级、三级风险类型</label>
             <div class="col col-form-label">
-                {% for item in risk_info %}
-                        <label class="form-check" onchange="getValue({{ item.id }})">
-                            <input class="form-check-input" type="checkbox" id={{ item.id }}>
-                            <span class="form-check-label">{{ item.name }}</span>
-                        </label>
-                        <div>
-                            {% for risk in item.downlevel_risk_name %}
-                                <label class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="{{ risk.id }}" disabled name={{ item.id }}>
-                                    <span class="form-check-label">{{ risk.name }}</span>
-                                </label>
-                            {% endfor %}
-                        </div>
-
+                {% for first_risk in risk_info %}
+                    <div style="display: none" id={{ first_risk.risk_id }}>
+                        {% for second_risk in first_risk.second_risks %}
+                        	 <label class="form-check" onchange="getValue({{ second_risk.risk_id }})">
+                                <input class="form-check-input" type="checkbox" id={{ second_risk.risk_id }} name={{ first_risk.risk_id }}>
+                                <span class="form-check-label">{{ second_risk.risk_name }}</span>
+                            </label>
+                            <div>
+                                {% for third_risk in second_risk.third_risks %}
+                                    <label class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="{{ third_risk.risk_id }}" disabled name={{ second_risk.risk_id }} dirname={{ first_risk.risk_id }}>
+                                        <span class="form-check-label">{{ third_risk.risk_name }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
                 {% endfor %}
             </div>
         </div>
@@ -70,10 +67,11 @@
             <label class="col-4 col-form-label">评测集大小</label>
             <div class="col col-form-label" id="size"></div>
         </div>
-        <button type="button" class="btn btn-primary" onclick="uploadSubmit({{ risk_info }})">完成上传</button>
+        <button type="button" class="btn btn-primary" onclick="uploadSubmit()">完成上传</button>
     </div>
     <script>
         var jsonvalue = {}
+        var pre_id
         function openFileSelector() {
             const inputObj = document.getElementById('fileInput');
             inputObj.onchange = (event) => {
@@ -125,29 +123,20 @@
                 alert('请输入评测集名称')
                 return;
             }
-            const risks = [
-                {
-                    level: 1,
-                    name: '国家安全',
-                    description: null,
-                },
-            ]
-            info.forEach(item => {
-                if ($("#" + item.id)[0].checked) {
-                    const risk = {
-                        level: 2,
-                        name: item.name,
-                        description: null,
-                        downlevel_risk_name: []
-                    }
-                    item.downlevel_risk_name.forEach(ele => {
-                        if ($("#" + ele.id)[0].checked) {
-                            risk.downlevel_risk_name.push(ele.name)
-                        }
-
-                    })
-                    risks.push(risk)
-                 }
+            if (!pre_id) {
+                alert('请选择一级风险维护')
+                return;
+            }
+            const risks = [String(pre_id)]
+            const second_id = []
+            $(`input[name=${$('#' + pre_id)[0].id}]:checked`).each(function () {
+                second_id.push($(this).attr('id'))
+                risks.push($(this).attr('id'))
+            })
+            second_id.map(function (item) {
+                $(`input[name=${$('#' + item)[0].id}]:checked`).each(function () {
+                    risks.push($(this).attr('id'))
+                })
             })
             $.ajax({
                 url: '/admin/dataset/conform',
@@ -156,28 +145,39 @@
                     ...jsonvalue,
                     "name": $('#name').val(),
                     "focused_risks": JSON.stringify(risks),
-                    "focused_risks_json": JSON.stringify(risks)
+                    "focused_risks_json": JSON.stringify(risks),
+                    "first_risk_id": String(pre_id)
                 }),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (value) {
                     if (value.result) {
                         alert('评测集已完成上传')
-                        history.back();
+                        window.location.replace(document.referrer);
                     } else {
                         alert(value.reason)
                     }
                 }
              })
-
          }
         function getValue(id) {
-             if ($(id)[0].checked) {
-                $(`input[name=${$(id)[0].id}]`).prop("disabled", false);
+             if ($('#' + id)[0].checked) {
+                $(`input[name=${$('#' + id)[0].id}]`).prop("disabled", false);
              } else {
-                $(`input[name=${$(id)[0].id}]`).prop("checked", false);
-                $(`input[name=${$(id)[0].id}]`).prop("disabled", true);
+                $(`input[name=${$('#' + id)[0].id}]`).prop("checked", false);
+                $(`input[name=${$('#' + id)[0].id}]`).prop("disabled", true);
              }
+        }
+        function radioSelect(id) {
+            if (pre_id) {
+                document.getElementById(pre_id).style.display = 'none';
+                const pid = $('#' + pre_id)[0].id;
+                $(`input[name=${pid}]`).prop("checked", false);
+                $(`input[dirname=${$('#' + pid)[0].id}]`).prop("checked", false);
+                $(`input[dirname=${$('#' + pid)[0].id}]`).prop("disabled", true);
+            }
+            pre_id = id
+            document.getElementById(id).style.display = 'block';
         }
     </script>
 {% endblock %}

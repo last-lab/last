@@ -1,0 +1,44 @@
+<span data-bs-toggle="modal" style="cursor: pointer; color: #0D53DE; margin-right: 10px;" onclick="editRisk({{ value.id }})">
+    编辑
+</span>
+<span data-bs-toggle="modal" data-bs-target="#contact" style="cursor: pointer; color: #0D53DE; margin-right: 10px;">
+    关联数据
+</span>
+<span data-bs-toggle="modal" data-bs-target="#{{ value.risk_id }}" style="cursor: pointer; color: #F5483B;">
+    删除
+</span>
+
+
+<div class="modal" id={{ value.risk_id }} tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom: none">
+        <h5 class="modal-title">确认删除此风险维度吗</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">取消</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="deleteRisk({{ value.id }})">删除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    function deleteRisk(id) {
+        $.ajax({
+            url: `/admin/risk/delete/${id}`,
+            type: 'DELETE',
+            contentType: "application/json;charset=UTF-8",
+            data: JSON.stringify({
+                pk: id
+            }),
+            success: function () {
+                location.reload();
+            }
+        })
+    }
+    function editRisk(id) {
+        window.location.href = `/admin/risk/edit/${id}`
+    }
+</script>

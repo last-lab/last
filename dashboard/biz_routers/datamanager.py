@@ -44,7 +44,7 @@ async def create_view(
     """
     inputs = await model_resource.get_inputs(request)
     datasets = await DataSet.all().order_by("id").limit(10)
-    dataset_schemas = DataSetTool.ds_model_to_schema(datasets)
+    dataset_schemas = await DataSetTool.ds_model_to_eval_plan_schema(datasets)
     context = {
         "request": request,
         "resources": resources,
@@ -160,7 +160,7 @@ async def update_view(
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
     datasets = await DataSet.filter(id__in=obj.dataset_ids.split(",")).order_by("id").limit(10)
-    dataset_schemas = DataSetTool.ds_model_to_schema(datasets)
+    dataset_schemas = await DataSetTool.ds_model_to_eval_plan_schema(datasets)
     context = {
         "request": request,
         "resources": resources,
@@ -199,7 +199,7 @@ async def copy_create_view(
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
     datasets = await DataSet.all().order_by("id").limit(10)
-    dataset_schemas = DataSetTool.ds_model_to_schema(datasets)
+    dataset_schemas = await DataSetTool.ds_model_to_eval_plan_schema(datasets)
     context = {
         "request": request,
         "resources": resources,
@@ -288,7 +288,7 @@ async def epm_ds_query(
         datasets = await DataSet.all().filter(name=ds_content).order_by("id").limit(10)
     if not datasets:
         datasets = await DataSet.all().order_by("id").limit(10)
-    dataset_schemas = DataSetTool.ds_model_to_schema(datasets)
+    dataset_schemas = await DataSetTool.ds_model_to_eval_plan_schema(datasets)
     return dataset_schemas
 
 

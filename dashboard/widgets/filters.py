@@ -4,7 +4,8 @@ from typing import Any
 from starlette.requests import Request
 from tortoise.queryset import QuerySet
 
-from last.services.widgets.filters import Filter
+from dashboard.biz_models import Risk
+from last.services.widgets.filters import Filter, Search
 
 
 class DueSoon(Filter):
@@ -24,3 +25,11 @@ class DueSoon(Filter):
         elif value == "-1":
             qs = qs.filter(invalid_date__lt=today)
         return qs
+
+
+class SearchFilter(Search):
+    async def get_queryset(self, request: Request, value: Any, qs: QuerySet):
+        value = await self.parse_value(request, value)
+        first_risk = await Risk.get_or_none(risk_name=value).values()
+        filters = {self.context.get("name"): first_risk["risk_id"]}
+        return qs.filter(**filters)
