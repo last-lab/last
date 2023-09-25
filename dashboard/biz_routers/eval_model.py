@@ -105,7 +105,9 @@ async def evaluation_create(
         + ":"
         + new_dataset.created_at.minute
     )
-    focused_risks = reduce(add, [dataset["focused_risks"] for dataset in dataset_info]).replace('][', ',')
+    focused_risks = reduce(add, [dataset["focused_risks"] for dataset in dataset_info]).replace(
+        "][", ","
+    )
     await DataSet.create(
         name=plan["name"] + "_Result",
         focused_risks=focused_risks,
@@ -127,7 +129,7 @@ async def evaluation_create(
         created_at=time,
         updated_at=time,
         permissions=new_dataset.permissions,
-        first_risk_id= "1" # 这里的逻辑不正确，TODO 改掉
+        first_risk_id="1",  # 这里的逻辑不正确，TODO 改掉
     )
     await Record.filter(id=record.id).update(state=EvalStatus.finish)
     # except:

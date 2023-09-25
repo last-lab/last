@@ -29,6 +29,10 @@ tortoise-orm = "*"
 httpx = "*"
 pendulum = "*"
 requests = "*"
+openxlab = "*"
+rich = "*"
+oss2 = "*"
+crcmod = "*"
 pycryptodome = "*"
 
 [tool.poetry.dev-dependencies]
