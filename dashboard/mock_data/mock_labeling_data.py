@@ -1,6 +1,6 @@
 from tortoise import Tortoise
 
-from dashboard.biz_models import LabelPage
+from dashboard.biz_models import LabelPage, LabelResult
 
 
 async def create_labeling_mock_data():
@@ -15,3 +15,6 @@ async def create_labeling_mock_data():
     #     current_status = "未标注"
     # )
     # await mock_data.save()
+
+    await connection.execute_query(f"DROP TABLE IF EXISTS {LabelResult.__name__.upper()}")
+    await Tortoise.generate_schemas(LabelResult)

@@ -273,19 +273,19 @@ class DataManager(Dropdown):
         label = _("Labeling Record")
         model = LabelPage
         filters = [filters.Search(name="task_type", label="Task Type")]
-        fields = ["id", "task_id", "labeling_method", "dateset", "create_time", "current_status"]
+        fields = ["id", "task_id", "task_type", "labeling_method", "end_time", "current_status"]
 
         async def get_actions(self, request: Request) -> List[Action]:
             return [
+                # Action(
+                #     label=_("labeling"),
+                #     icon="ti ti-edit",
+                #     name="labeling",
+                #     method=Method.GET,
+                #     ajax=False,
+                # ),
                 Action(
-                    label=_("labeling"),
-                    icon="ti ti-edit",
-                    name="labeling",
-                    method=Method.GET,
-                    ajax=False,
-                ),
-                Action(
-                    label=_("display"),
+                    label=_("标注任务详情"),
                     icon="ti ti-edit",
                     name="display",
                     method=Method.GET,
@@ -576,7 +576,7 @@ class SwitchLayout(Link):
 
 
 @app.register
-class TaskManage(Dropdown):
+class TaskManagePanel(Dropdown):
     """ """
 
     class CreateTask(Model):

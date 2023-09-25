@@ -39,8 +39,9 @@
         // 使用 $.ajax 方法获取数据
         $.ajax({
             url: '/admin/labelpage/get_dataset_brief_data', // 替换为您实际的数据获取 URL
-            method: 'GET',
-            dataType: 'json',
+            method: 'POST',
+            data: JSON.stringify({"taskID": "{{task_id}}"}),
+            contentType: 'application/json',
             success: function(data) {
                 const table = $('#myTable');
 
@@ -48,7 +49,7 @@
                 data.forEach(function(item) {
                     const row = $('<tr></tr>');
 
-                    const idCell = $('<td></td>').text(item.id);
+                    const idCell = $('<td></td>').text(item.question_id);
                     row.append(idCell);
 
                     const questionCell = $('<td></td>').text(item.question);
@@ -59,7 +60,22 @@
 
                     const actionCell = $('<td></td>');
                     const actionLink = $('<a></a>').text(item.action);
-                    actionLink.attr('href', item.action === '标注' ? '/admin/labelpage/labeling/' + item.id : 'page2.html');
+                    // 添加条件判断来设置不同的跳转链接和参数
+                    if (item.action === '标注') {
+                        const labelingUrl = '/admin/labelpage/labeling/' + item.id;
+
+                        // 在链接中添加参数
+                        const params = {
+                            question_id: item.question_id,
+                            task_id: item.task_id,
+                            // 添加其他参数
+                        };
+                        const queryString = $.param(params);
+                        actionLink.attr('href', labelingUrl + '?' + queryString);
+                    } else {
+                        // 设置其他页面的跳转链接
+                        actionLink.attr('href', 'page2.html');
+                    }
                     actionCell.append(actionLink);
                     row.append(actionCell);
 

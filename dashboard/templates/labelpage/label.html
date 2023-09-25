@@ -6,9 +6,16 @@
 <body>
 
 <div id="label-studio"></div>
-
+<!-- TODO, 选择标注的labelstudio的前端怎么写需要调研一下 -->
 <script>
+    const queryString = window.location.search;
 
+    // 解析查询字符串中的参数
+    const urlParams = new URLSearchParams(queryString);
+
+    // 获取特定参数的值
+    const question_id = urlParams.get('question_id');
+    const task_id = urlParams.get('task_id');
     let tags = [];
     let tagView = '';
     let text = '';
@@ -47,6 +54,10 @@
     async function getLabelConfig() {
         const rsp = await fetch('/admin/labelpage/labeling/get_config', {
             method: 'post',
+            body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
         })
         return rsp.json();
 
@@ -112,12 +123,13 @@
             $.ajax({
                 url: '/admin/labelpage/labeling/{item}/submit',
                 method: 'post',
-                data: {
-                    annotation: annotation.serializeAnnotation(),
-                    text: text
-                },
+                data: JSON.stringify({
+                    "annotation": annotation.serializeAnnotation(),
+                    "question_id": question_id,
+                    "task_id": task_id,
+                }),
                 success: function (e) {
-                    console.log(e)
+                    history.back();
                 },
                 error: function (e) {
                     console.log(e)
