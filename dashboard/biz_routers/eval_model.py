@@ -1,10 +1,16 @@
+import json
+from functools import reduce
+from operator import add
 from typing import Union
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from starlette.requests import Request
+from tortoise.expressions import Q
 
-from dashboard.biz_models import EvaluationPlan, ModelInfo, Record
+from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Record
+from dashboard.enums import EvalStatus
+from last.client import AI_eval, Client
 from last.services.app import app
 from last.services.depends import get_resources
 from last.services.i18n import _
@@ -54,13 +60,80 @@ async def evaluation_create(
 ):
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
     model = await ModelInfo.get_or_none(id=eval_info.llm_id).values()
-    await Record.create(
+    record = await Record.create(
         eval_plan=plan["name"],
         plan_id=eval_info.plan_id,
         llm_name=model["name"],
         llm_id=eval_info.llm_id,
     )
+    # try:
+    dataset_ids = [int(_) for _ in plan["dataset_ids"].split(",")]
+    dataset_info = await DataSet.filter(Q(id__in=dataset_ids)).values()
+    kwargs_json = json.dumps(
+        {
+            "$datasets": [
+                {
+                    "name": dataset["name"],
+                    "file": dataset["file"],
+                    "focused_risks": dataset["focused_risks"],
+                }
+                for dataset in dataset_info
+            ],
+            "$llm_model": {
+                "name": model["name"],
+                "endpoint": model["endpoint"],
+                "access_key": model["access_key"],
+            },
+            "$critic_model": {
+                "name": "GPT-3.5-Turbo",
+                "endpoint": "xxx",
+                "access_key": "xxx",
+            },
+            "$plan": {"name": plan["name"]},
+        }
+    )
 
+    _, new_dataset = Client.execute(AI_eval, kwargs_json)
+    time = (
+        new_dataset.created_at.year
+        + "-"
+        + new_dataset.created_at.month
+        + "-"
+        + new_dataset.created_at.day
+        + " "
+        + new_dataset.created_at.hour
+        + ":"
+        + new_dataset.created_at.minute
+    )
+    focused_risks = reduce(add, [dataset["focused_risks"] for dataset in dataset_info]).replace(
+        "][", ","
+    )
+    await DataSet.create(
+        name=plan["name"] + "_Result",
+        focused_risks=focused_risks,
+        volume=new_dataset.volume,
+        qa_num=new_dataset.qa_num,
+        word_cnt=new_dataset.word_cnt,
+        url=new_dataset.url,
+        file=new_dataset.file,
+        used_by=new_dataset.used_by,
+        qa_records=str(new_dataset.qa_records),
+        conversation_start_id=str(new_dataset.conversation_start_id),
+        current_conversation_index=new_dataset.current_conversation_index,
+        current_qa_record_id=new_dataset.current_qa_record_id,
+        uid=new_dataset.uid,
+        description=new_dataset.description,
+        creator=str(new_dataset.creator),
+        editor=new_dataset.editor,
+        reviewer=new_dataset.reviewer,
+        created_at=time,
+        updated_at=time,
+        permissions=new_dataset.permissions,
+        first_risk_id="1",  # 这里的逻辑不正确，TODO 改掉
+    )
+    await Record.filter(id=record.id).update(state=EvalStatus.finish)
+    # except:
+    #     await Record.filter(id=record.id).update(state=EvalStatus.error)
     return {"status": "ok", "success": 1, "msg": "create eval success"}
 
 

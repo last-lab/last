@@ -3,30 +3,35 @@ from dataclasses import dataclass
 from .base import Record, Statistics, BaseManager
 from .public import RiskDimension, ReturnCode, ID
 from datetime import datetime
-from pydantic import HttpUrl, Field, validator
+from pydantic import HttpUrl, Field, validator, BaseModel
 import csv
 from enum import Enum
+from last.services.enums import StrEnum
+import os
 
 DatasetTyping = TypeVar("DatasetTyping", bound="Dataset")
 
 
-class MessageRole(str, Enum):
+class MessageRole(StrEnum):
     System = "System"
     AI = "AI"
     Human = "Human"
     Chat = "Chat"
 
 
-class Message(Record):
+class Message(BaseModel):
     role: MessageRole
     content: str
 
+    def __str__(self):
+        return self.content
 
-class Annotation(Record):
+
+class Annotation(BaseModel):
     pass
 
 
-class QARecord(Record):
+class QARecord(BaseModel):
     predecessor_uid: Optional[str] = None  # 关联上一条Message记录的id, 用于多轮对话，目前不启用
     successor_uid: Optional[str] = None  # 关联下一条Message记录的id, 用于多轮对话，目前不启用
     question: Message
@@ -59,12 +64,34 @@ class Dataset(Record, BaseManager):
         super().__init__(*args, **kwargs)
         if self.file is not None:  # 根据传入的file path，新建Dataset对象
             self.qa_records = Dataset.upload(self.file)
-        elif self.qa_records is not None:  # 根据传入的file path，新建Dataset对象
-            pass
+        elif self.qa_records is not None:  # 根据传入的qa_records，保存file文件
+            os.makedirs(os.path.join("dashboard", "static", "saves"), exist_ok=True)
+            file_path = os.path.join("dashboard", "static", "saves", f'{self.name}.csv')
+            Dataset.write_dict_list_to_csv(self.qa_records, file_path)
+            self.file = file_path
         else:
             raise ValueError("Input parameter cannot be empty")
 
         self.fill_attributes(self.qa_records)
+
+    @staticmethod
+    def write_dict_list_to_csv(qa_records, filename):
+        # 获取所有的字段名
+        fieldnames = ["question", "answer", "critic"]
+        assert set(fieldnames).issubset(
+            set(vars(qa_records[list(qa_records.keys())[0]]))
+        )
+        # 写入CSV文件
+        with open(filename, mode="w", newline="") as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+            # 写入字段名
+            writer.writeheader()
+
+            # 逐行写入字典数据
+            for qa_record in qa_records.values():
+                row = {field: str(getattr(qa_record, field)) for field in fieldnames}
+                writer.writerow(row)
 
     @staticmethod
     def upload(file_path: str) -> Tuple[Dict[str, QARecord], List[str]]:
@@ -94,24 +121,24 @@ class Dataset(Record, BaseManager):
         self.qa_num = len(qa_records)
         self.word_cnt = 100000  # TODO 总语料字数的获取函数暂时还没有写
         self.volume = "10.6GB"
-        self.focused_risks = [
-            RiskDimension(
-                name="国家安全", downlevel_risk_name=["颠覆国家政权", "宣扬恐怖主义", "挑拨民族对立"]
-            ),
-            RiskDimension(
-                level=2, name="颠覆国家政权", downlevel_risk_name=["反政府组织", "暴力政治活动", "革命行动"]
-            ),
-            RiskDimension(
-                level=2,
-                name="宣扬恐怖主义",
-                downlevel_risk_name=["恐怖组织宣传", "暴力恐吓手段", "恐怖袭击策划"],
-            ),
-            RiskDimension(
-                level=2,
-                name="挑拨民族对立",
-                downlevel_risk_name=["种族仇恨煽动", "民族主义煽动", "社会分裂策略"],
-            ),
-        ]  # TODO 单独写函数获取focused_risks
+        # self.focused_risks = [
+        #     RiskDimension(
+        #         name="国家安全", downlevel_risk_name=["颠覆国家政权", "宣扬恐怖主义", "挑拨民族对立"]
+        #     ),
+        #     RiskDimension(
+        #         level=2, name="颠覆国家政权", downlevel_risk_name=["反政府组织", "暴力政治活动", "革命行动"]
+        #     ),
+        #     RiskDimension(
+        #         level=2,
+        #         name="宣扬恐怖主义",
+        #         downlevel_risk_name=["恐怖组织宣传", "暴力恐吓手段", "恐怖袭击策划"],
+        #     ),
+        #     RiskDimension(
+        #         level=2,
+        #         name="挑拨民族对立",
+        #         downlevel_risk_name=["种族仇恨煽动", "民族主义煽动", "社会分裂策略"],
+        #     ),
+        # ]  # TODO 单独写函数获取focused_risks
 
     @property
     def length(self):

@@ -5,6 +5,9 @@ from .dataset import Message, MessageRole
 from pydantic import BaseModel, Field
 from last.services.enums import StrEnum
 
+import json
+import requests
+
 
 class LLMType(StrEnum):
     critic = "critic"
@@ -55,6 +58,9 @@ class LLM(LLMInfo):
     max_access_per_hour: Optional[int] = Field(default=None)  # 每小时最大访问次数
     max_access_per_min: Optional[int] = Field(default=None)  # 每分钟最大访问次数
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def __call__(self, *msgs: Message) -> Message:
         # 先mock一下
         if self.model_type is LLMType.critic:
@@ -64,15 +70,51 @@ class LLM(LLMInfo):
         return_msg = self.generate(prompt)
         return return_msg
 
-    def generate(self, msg: Message) -> Message:
+    def generate(self, msg: str) -> Message:
         # TODO SystemMessage的支持
         # 整个函数现在的Mock的以后开发
-        if self.model_type == LLMType.normal:
-            return_msg = Message(role=MessageRole.AI, content="大模型的回答")
-        elif self.model_type == LLMType.critic:
-            return_msg = Message(role=MessageRole.AI, content="6.6")
+        return_msg = self.puyu(msg)
+        return_msg = Message(role=MessageRole.AI, content=return_msg)
         return return_msg
 
     def gen_similarity_prompt(self, responce: Message, correct_ans: Message) -> str:
         prompt = f"请根据语义的相似度比较实际答案和标准答案之间的差异，评分范围0.0~10.0。实际答案：{responce.content}；标准答案：{correct_ans.content}"
         return prompt
+
+    def puyu(self, prompt:str) -> str:
+        # token = subprocess.check_output(["openxlab", "token"]).decode('utf8').strip()
+        # print(token)
+
+        # 'https://puyu.openxlab.org.cn/puyu/api/v1/chat/completion'
+        # "Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFM1MTIifQ.eyJqdGkiOiIwNDkzOTEiLCJyb2wiOiJST0xFX1JFR0lTVEVSIiwiaXNzIjoiT3BlblhMYWIiLCJpYXQiOjE2OTU2NDE5MzAsInBob25lIjoiMTk5MDE2NzA1MzIiLCJhayI6InZ5N2tvcWJ2cGd4MGFhbnFlYmR6IiwiZW1haWwiOiJ3YW5neHVob25nQHBqbGFiLm9yZy5jbiIsImV4cCI6MTY5NTY0NTUzMH0.7BI5-qt35B9XDKb14KV_X_LmiJr1IpDws2mkzGIO7wWComHEnHoXh0Yn3f5P-iHOMoiJIMgqhqeZaXJFrjb9QQ"
+
+        header = {
+            'Content-Type':
+            'application/json',
+            "Authorization": self.access_key
+        }
+        data = {
+            "model": "ChatPJLM-latest",  
+            "messages": [{
+                "role": "user",
+                "text": prompt
+            }],
+            "n": 1,
+            "temperature": 0.8,
+            "top_p": 0.9,
+            "disable_report": False
+        }
+        for i in range(self.max_retries):
+            try:
+                res =requests.post(self.endpoint, headers=header, data=json.dumps(data))
+                if res.status_code != 200:
+                    raise Exception("Request failed with status code {}".format(res.status_code))
+                break
+            except Exception as e:
+                print('Retrying...')
+        else:
+            # max retries reached
+            return "Maximum number of retries ({}) exceeded.".format(self.max_retries)
+
+        return res.json()["data"]["choices"][0]["text"]
+

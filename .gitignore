@@ -149,3 +149,4 @@ uploads
 
 *.rdb
 /dataset_folder
+dashboard/static/saves

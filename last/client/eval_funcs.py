@@ -1,8 +1,9 @@
 from last.types.dataset import Dataset, QARecord
 from last.types.llm import LLM, LLMType
 from last.types.plan import EvaluationType, Plan
-from last.types.public import ID, Placeholder
+from last.types.public import ID, Placeholder, RiskDimension
 from last.types.task import Task
+import json
 
 
 def AI_eval(
@@ -18,6 +19,9 @@ def AI_eval(
         Dataset(
             name=dataset["name"],
             file=dataset["file"],
+            # focused_risks=[
+            #     RiskDimension(**_) for _ in json.loads(dataset["focused_risks"])
+            # ],
         )
         for dataset in datasets
     ]
@@ -26,7 +30,7 @@ def AI_eval(
         name=plan["name"],
         eval_type=EvaluationType.auto_ai_critique,
         datasets=datasets,
-        focused_risks=reduce(add, [dataset.focused_risks for dataset in datasets]),
+        # focused_risks=reduce(add, [dataset.focused_risks for dataset in datasets]),
     )
 
     llm_model = LLM(
@@ -48,8 +52,8 @@ def AI_eval(
     for qa_record in plan:  #
         question, correct_ans = qa_record.question, qa_record.answer
         responce = llm_model(question)
-        score = critic_model(responce, correct_ans)
-        new_qa_record = QARecord(question=question, answer=responce, score=score)
+        critic = critic_model(responce, correct_ans)
+        new_qa_record = QARecord(question=question, answer=responce, critic=critic)
         new_qa_records[ID()] = new_qa_record
 
     task = Task(
@@ -62,6 +66,7 @@ def AI_eval(
     new_dataset = Dataset(
         name=plan.name,
         qa_records=new_qa_records,
+        file=None
     )
 
     return task, new_dataset
