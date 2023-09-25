@@ -67,7 +67,9 @@ class PermissionProvider(Provider):
         has_permission = False
         for role in admin.roles:
             admin.role_name = role.label
-            if await role.permissions.filter(resource__iexact=resource, permission=permission).exists():
+            if await role.permissions.filter(
+                resource__iexact=resource, permission=permission
+            ).exists():
                 has_permission = True
                 break
         return has_permission
