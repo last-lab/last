@@ -14,7 +14,7 @@ class ModelInfo(Model):
     finetuning_info = fields.CharField(max_length=200, null=True)
     alignment_info = fields.CharField(max_length=200, null=True)
     endpoint = fields.CharField(max_length=200, null=True)
-    access_key = fields.CharField(max_length=200, null=True)
+    access_key = fields.CharField(max_length=2000, null=True)
     secret_key = fields.CharField(max_length=200, null=True)
 
 
