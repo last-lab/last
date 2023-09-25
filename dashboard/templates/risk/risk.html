@@ -1,0 +1,59 @@
+{% extends layout %}
+{% block page_body %}
+<div>
+    <div class="row">
+        <div class="col-2" style="padding-left: 24px">
+            <div class="btn-group-vertical w-100" role="group">
+                {% for risk in risks %}
+                    {% if risk.risk_level == 1 %}
+                        <div style="margin-bottom: 20px; color: rgba(18, 19, 22, 0.5)" onchange="select({{ risk.risk_id }})" onmouseover="mouseover({{ risk.risk_id }})" onmouseout="mouseout({{ risk.risk_id }})">
+                            <input type="radio" class="btn-check" name="btn-radio-vertical" id={{ risk.risk_name }} autocomplete="off">
+                            <label for="{{ risk.risk_name }}" style="font-size: 16px; cursor: pointer" name="{{ risk.risk_id }}">{{ risk.risk_name }}</label>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col">
+            {% for risk in risks %}
+                <div style="display: none" id={{ risk.risk_id }}>
+                    {% for second_risk in risk.second_risks %}
+                        <div style="background: #F9F9F9; margin-bottom: 16px; border-radius: 10px; padding: 12px 16px;" class="row">
+                            <div class="col-2" style="color: #121316">
+                                {{ second_risk.risk_name }}
+                            </div>
+                            <div class="col" style="display: flex; gap: 12px 36px; flex-wrap: wrap; color: rgba(18, 19, 22, 0.80)">
+                                {% for third_risk in second_risk.third_risks %}
+                                    <div>{{ third_risk.risk_name }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script>
+    {# 初始选择 #}
+    var pre_id = 1;
+    function select(id) {
+        if (pre_id) {
+            document.getElementById(pre_id).style.display = 'none';
+            document.getElementsByName(pre_id)[0].style.color = 'rgba(18, 19, 22, 0.5)';
+         }
+        pre_id = id
+        document.getElementById(id).style.display = 'block';
+        document.getElementsByName(id)[0].style.color = '#121316';
+    }
+    select(pre_id)
+    function mouseover(id) {
+        document.getElementsByName(id)[0].style.color = '#121316';
+    }
+    function mouseout(id) {
+        if (id !== pre_id) {
+            document.getElementsByName(id)[0].style.color = 'rgba(18, 19, 22, 0.5)';
+        }
+    }
+</script>
+{% endblock %}
