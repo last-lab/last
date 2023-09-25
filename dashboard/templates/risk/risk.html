@@ -7,7 +7,7 @@
                 {% for risk in risks %}
                     {% if risk.risk_level == 1 %}
                         <div style="margin-bottom: 20px">
-                            <div style="color: rgba(18, 19, 22, 0.5); display: flex; align-items: center" onchange="select({{ risk.risk_id }})" onmouseover="mouseover({{ risk.risk_id }})" onmouseout="mouseout({{ risk.risk_id }})">
+                            <div style="font-weight: 600; color: rgba(18, 19, 22, 0.5); display: flex; align-items: center" onchange="select({{ risk.risk_id }})" onmouseover="mouseover({{ risk.risk_id }})" onmouseout="mouseout({{ risk.risk_id }})">
                                 <input type="radio" class="btn-check" name="btn-radio-vertical" id={{ risk.risk_name }} autocomplete="off">
                                 <label for="{{ risk.risk_name }}" style="font-size: 16px; cursor: pointer" name="{{ risk.risk_id }}">{{ risk.risk_name }}</label>
                                 <img src="/static/assets/DocOutlined.svg" style="margin-left: 5px; cursor: pointer; display: none" id="img{{ risk.risk_id }}" data-bs-toggle="modal" data-bs-target="#detail{{ risk.risk_id }}"/>
@@ -26,12 +26,16 @@
                 <div style="display: none" id={{ risk.risk_id }}>
                     {% for second_risk in risk.second_risks %}
                         <div style="background: #F9F9F9; margin-bottom: 16px; border-radius: 10px; padding: 12px 16px;" class="row">
-                            <div class="col-2" style="color: #121316">
-                                {{ second_risk.risk_name }}
+                            <div class="col-2" style="cursor: pointer" onmouseover="mouseoverOther({{ second_risk.risk_id }})" onmouseout="mouseoutOther({{ second_risk.risk_id }})">
+                                <span style="color: #121316; font-weight: 600;" id="other{{ second_risk.risk_id }}">{{ second_risk.risk_name }}</span>
+                                <img src="/static/assets/DocOutlined.svg" style="margin-left: 5px; cursor: pointer; opacity: 0" id="img{{ second_risk.risk_id }}" data-bs-toggle="modal" data-bs-target="#detail{{ second_risk.risk_id }}"/>
                             </div>
                             <div class="col" style="display: flex; gap: 12px 36px; flex-wrap: wrap; color: rgba(18, 19, 22, 0.80)">
                                 {% for third_risk in second_risk.third_risks %}
-                                    <div>{{ third_risk.risk_name }}</div>
+                                    <div style="cursor: pointer; display: flex; align-items: center" onmouseover="mouseoverOther({{ third_risk.risk_id }})" onmouseout="mouseoutOther({{ third_risk.risk_id }})">
+                                        <span style="color: #121316" id="other{{ third_risk.risk_id }}">{{ third_risk.risk_name }}</span>
+                                        <img src="/static/assets/DocOutlined.svg" style="margin-left: 5px; cursor: pointer; opacity: 0" id="img{{ third_risk.risk_id }}" data-bs-toggle="modal" data-bs-target="#detail{{ third_risk.risk_id }}"/>
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -41,40 +45,19 @@
         </div>
     </div>
     {% for risk in risks %}
-        <div class="modal" id='detail{{ risk.risk_id }}' tabindex="-1">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">风险详情</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3 row">
-                            <div class="col-3">风险类型</div>
-                            <div class="col">{{ risk.risk_name }}</div>
-                        </div>
-                        <div class="mb-3 row">
-                            <div class="col-3">评测集数量</div>
-                            <div class="col">{{ risk.dataset.dataset_count }}</div>
-                        </div>
-                        <div class="mb-3 row">
-                            <div class="col-3">语料数量</div>
-                            <div class="col">{{ risk.dataset.dataset_word_cnt }}</div>
-                        </div>
-                        <div class="mb-3 row">
-                            <div class="col-3">评测集</div>
-                            <div class="col">
-                                <div style="background: #F9F9F9; max-height: 300px; overflow: auto; padding: 8px 12px">
-                                    {% for dataset_name in risk.dataset.dataset_name_list %}
-                                        <div>{{ dataset_name }}</div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include "risk/modal_first.html" %}
+    {% endfor %}
+    {% for first_risk in risks %}
+        {% for risk in first_risk.second_risks %}
+            {% include "risk/modal_second.html" %}
+        {% endfor %}
+    {% endfor %}
+    {% for first_risk in risks %}
+        {% for second_risk in first_risk.second_risks %}
+            {% for risk in second_risk.third_risks %}
+                {% include "risk/modal_third.html" %}
+            {% endfor %}
+        {% endfor %}
     {% endfor %}
 </div>
 <script>
@@ -101,6 +84,14 @@
             document.getElementsByName(id)[0].style.color = 'rgba(18, 19, 22, 0.5)';
         }
         document.getElementById('img'+id).style.display = 'none';
+    }
+    function mouseoverOther(id) {
+        document.getElementById('other'+id).style.color = '#0D53DE';
+        document.getElementById('img'+id).style.opacity = 1;
+    }
+    function mouseoutOther(id) {
+        document.getElementById('other'+id).style.color = '#121316';
+        document.getElementById('img'+id).style.opacity = 0;
     }
 </script>
 {% endblock %}
