@@ -8,7 +8,6 @@ from dashboard import enums
 from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import DataSet, LabelPage, TaskManage  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models.eval_model import Record
-from dashboard.biz_models.risk import Risk
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
 from dashboard.models import Permission as PermissionModel
@@ -16,15 +15,11 @@ from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
 from dashboard.widgets.displays import (
     OperationField,
-    RiskAction,
     ShowAction,
     ShowIp,
     ShowPlanDetail,
     ShowPopover,
-    ShowRisk,
     ShowRiskType,
-    ShowSecondRisk,
-    ShowSecondRiskDesc,
     ShowSecondType,
     ShowStatus,
 )
