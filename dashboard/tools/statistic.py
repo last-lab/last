@@ -1,10 +1,10 @@
 def statistic_dataset(dataset_path):
     # 传入一个文件的路径，然后读取一系列的统计数据填充dataset
     # 返回这个数据的大小volume, qa_num，word_cnt，qa_records几个数据
-    volume = "1GB",
-    qa_num = 10,
-    word_cnt = 200,
-    qa_records = """What is the capital of France?,Paris
+    volume = ("1GB",)
+    qa_num = (10,)
+    word_cnt = (200,)
+    qa_records = """
                 Who painted the Mona Lisa?,Leonardo da Vinci
                 What is the symbol for the chemical element iron?,Fe
                 "Who wrote the play ""Hamlet""?",William Shakespeare
@@ -19,4 +19,4 @@ def statistic_dataset(dataset_path):
                 Who invented the telephone?,Alexander Graham Bell
                 What is the primary language spoken in Brazil?,Portuguese
                 Who painted the ceiling of the Sistine Chapel?,Michelangelo"""
-    return volume, qa_num, word_cnt, qa_records
+    return (volume, qa_num, word_cnt, qa_records)
