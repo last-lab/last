@@ -6,6 +6,6 @@ from .mock_task import create_task
 
 async def create_mock_data():
     await create_labeling_mock_data()
-    await create_mock_dataset()
+    # await create_mock_dataset()
     await create_task()
     await create_mock_risk()

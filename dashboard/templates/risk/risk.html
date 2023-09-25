@@ -6,9 +6,16 @@
             <div class="btn-group-vertical w-100" role="group">
                 {% for risk in risks %}
                     {% if risk.risk_level == 1 %}
-                        <div style="margin-bottom: 20px; color: rgba(18, 19, 22, 0.5)" onchange="select({{ risk.risk_id }})" onmouseover="mouseover({{ risk.risk_id }})" onmouseout="mouseout({{ risk.risk_id }})">
-                            <input type="radio" class="btn-check" name="btn-radio-vertical" id={{ risk.risk_name }} autocomplete="off">
-                            <label for="{{ risk.risk_name }}" style="font-size: 16px; cursor: pointer" name="{{ risk.risk_id }}">{{ risk.risk_name }}</label>
+                        <div style="margin-bottom: 20px">
+                            <div style="color: rgba(18, 19, 22, 0.5); display: flex; align-items: center" onchange="select({{ risk.risk_id }})" onmouseover="mouseover({{ risk.risk_id }})" onmouseout="mouseout({{ risk.risk_id }})">
+                                <input type="radio" class="btn-check" name="btn-radio-vertical" id={{ risk.risk_name }} autocomplete="off">
+                                <label for="{{ risk.risk_name }}" style="font-size: 16px; cursor: pointer" name="{{ risk.risk_id }}">{{ risk.risk_name }}</label>
+                                <img src="/static/assets/DocOutlined.svg" style="margin-left: 5px; cursor: pointer; display: none" id="img{{ risk.risk_id }}" data-bs-toggle="modal" data-bs-target="#detail{{ risk.risk_id }}"/>
+                            </div>
+                            <div style="margin-top: 6px; color: rgba(18, 19, 22, 0.50); display: none" id="dataset{{ risk.risk_id }}">
+                                <div>{{ risk.dataset.dataset_count }} 评测集</div>
+                                <div>{{ risk.dataset.dataset_word_cnt }} 条语料</div>
+                            </div>
                         </div>
                     {% endif %}
                 {% endfor %}
@@ -33,6 +40,42 @@
             {% endfor %}
         </div>
     </div>
+    {% for risk in risks %}
+        <div class="modal" id='detail{{ risk.risk_id }}' tabindex="-1">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">风险详情</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3 row">
+                            <div class="col-3">风险类型</div>
+                            <div class="col">{{ risk.risk_name }}</div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="col-3">评测集数量</div>
+                            <div class="col">{{ risk.dataset.dataset_count }}</div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="col-3">语料数量</div>
+                            <div class="col">{{ risk.dataset.dataset_word_cnt }}</div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="col-3">评测集</div>
+                            <div class="col">
+                                <div style="background: #F9F9F9; max-height: 300px; overflow: auto; padding: 8px 12px">
+                                    {% for dataset_name in risk.dataset.dataset_name_list %}
+                                        <div>{{ dataset_name }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 </div>
 <script>
     {# 初始选择 #}
@@ -41,19 +84,23 @@
         if (pre_id) {
             document.getElementById(pre_id).style.display = 'none';
             document.getElementsByName(pre_id)[0].style.color = 'rgba(18, 19, 22, 0.5)';
+            document.getElementById('dataset' + pre_id).style.display = 'none';
          }
         pre_id = id
         document.getElementById(id).style.display = 'block';
         document.getElementsByName(id)[0].style.color = '#121316';
+        document.getElementById('dataset' + id).style.display = 'block';
     }
     select(pre_id)
     function mouseover(id) {
         document.getElementsByName(id)[0].style.color = '#121316';
+        document.getElementById('img'+id).style.display = 'inline-block';
     }
     function mouseout(id) {
         if (id !== pre_id) {
             document.getElementsByName(id)[0].style.color = 'rgba(18, 19, 22, 0.5)';
         }
+        document.getElementById('img'+id).style.display = 'none';
     }
 </script>
 {% endblock %}
