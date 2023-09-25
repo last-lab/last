@@ -576,7 +576,7 @@ class SwitchLayout(Link):
 
 
 @app.register
-class TaskManage(Dropdown):
+class TaskManagePanel(Dropdown):
     """ """
 
     class CreateTask(Model):

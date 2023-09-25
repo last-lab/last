@@ -9,7 +9,7 @@ from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model
 
-from dashboard.biz_models import DataSet, LabelPage, LabelResult, TaskManage
+from dashboard.biz_models import LabelPage, LabelResult, TaskManage
 from dashboard.tools.statistic import statistic_dataset
 from dashboard.utils.string_utils import split_string_to_list
 from last.services.depends import create_checker, get_model, get_model_resource, get_resources
@@ -86,7 +86,6 @@ async def create_task_callback(
     resource: str = Path(...),
 ):
     json_data = await request.json()
-    print(json_data)
     # TODO，上传的时候，直接将数据的原本内容就直接上传上来就好了？
     # 目前假设管理员和标注员都能访问到某个共享内容，所有的数据集放在这个里面，如cpfs位置，
     # 但是只有管理员才有创建任务的权限
@@ -107,28 +106,29 @@ async def create_task_callback(
 
     dataset_uid = uuid4()
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    await DataSet(
-        name=json_data["fileName"],
-        focused_risks=[{"level1": 1, "name": "国家安全", "description": "null"}],
-        url="null",
-        file="null",  # url和file都是两个意义不明的字段，后面都将raw data放入到了qa_records中，有没有上面两个字段都无意义
-        volume="1GB",
-        used_by=10,  # TODO 这个字段没意义，展示留着
-        qa_num=10,
-        word_cnt=200,
-        updated_at="null",  # TODO, 这个字段没有意义
-        qa_records=json_data["fileContent"],
-        conversation_start_id="0",
-        current_conversation_index=0,
-        current_qa_record_id=0,
-        uid=dataset_uid,  # 这一步意义不明，为什么一个数据集需要用一个uuid作为索引，使用name不行吗
-        description="null",  # 这一步意义不明，为什么需要有数据的描述，
-        creator="root",  # 如果有多个任务创建者，这个字段是有意义的
-        editor="null",  # 目前就没有这个角色，字段意义不明
-        reviewer="null",  # 意义不明的字段
-        created_at=current_time,
-        permissions="null",  # 自相矛盾的字段，意义不明
-    ).save()
+    # await DataSet(
+    #     name=json_data["fileName"],
+    #     focused_risks=[{"level1": 1, "name": "国家安全", "description": "null"}],
+    #     url="null",
+    #     file="null",  # url和file都是两个意义不明的字段，后面都将raw data放入到了qa_records中，有没有上面两个字段都无意义
+    #     volume="1GB",
+    #     used_by=10,  # TODO 这个字段没意义，展示留着
+    #     qa_num=10,
+    #     word_cnt=200,
+    #     updated_at="null",  # TODO, 这个字段没有意义
+    #     qa_records=json_data["fileContent"],
+    #     conversation_start_id="0",
+    #     current_conversation_index=0,
+    #     current_qa_record_id=0,
+    #     uid=dataset_uid,  # 这一步意义不明，为什么一个数据集需要用一个uuid作为索引，使用name不行吗
+    #     description="null",  # 这一步意义不明，为什么需要有数据的描述，
+    #     creator="root",  # 如果有多个任务创建者，这个字段是有意义的
+    #     editor="null",  # 目前就没有这个角色，字段意义不明
+    #     reviewer="null",  # 意义不明的字段
+    #     created_at=current_time,
+    #     permissions="null",  # 自相矛盾的字段，意义不明
+    #     first_risk_id = "null",
+    # ).save()
 
     # # # 将这个表单数据写入到task表中
     task_id = uuid4()
