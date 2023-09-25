@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Path
 from starlette.requests import Request
 
-from dashboard.biz_models import Risk
+from dashboard.biz_models import Risk, DataSet
 from last.services.depends import get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
@@ -63,6 +63,12 @@ async def get_risk(
     for first_risk in risks:
         second_risks = await Risk.all().filter(risk_level=2, parent_risk_id=first_risk.risk_id)
         first_risk.second_risks = second_risks
+        datasets = await DataSet.all().filter(first_risk_id=first_risk.risk_id)
+        first_risk.dataset = {
+            "dataset_count": len(datasets),
+            "dataset_word_cnt": sum([obj.word_cnt for obj in datasets]),
+            "dataset_name_list": [obj.name for obj in datasets]
+        }
         for second_risk in second_risks:
             third_risks = await Risk.all().filter(risk_level=3, parent_risk_id=second_risk.risk_id)
             second_risk.third_risks = third_risks
