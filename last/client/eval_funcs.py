@@ -19,9 +19,9 @@ def AI_eval(
         Dataset(
             name=dataset["name"],
             file=dataset["file"],
-            focused_risks=[
-                RiskDimension(**_) for _ in json.loads(dataset["focused_risks"])
-            ],
+            # focused_risks=[
+            #     RiskDimension(**_) for _ in json.loads(dataset["focused_risks"])
+            # ],
         )
         for dataset in datasets
     ]
@@ -30,7 +30,7 @@ def AI_eval(
         name=plan["name"],
         eval_type=EvaluationType.auto_ai_critique,
         datasets=datasets,
-        focused_risks=reduce(add, [dataset.focused_risks for dataset in datasets]),
+        # focused_risks=reduce(add, [dataset.focused_risks for dataset in datasets]),
     )
 
     llm_model = LLM(

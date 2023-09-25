@@ -66,8 +66,9 @@ class Dataset(Record, BaseManager):
             self.qa_records = Dataset.upload(self.file)
         elif self.qa_records is not None:  # 根据传入的qa_records，保存file文件
             os.makedirs(os.path.join("dashboard", "static", "saves"), exist_ok=True)
-            file_path = os.path.join("dashboard", "static", "saves", self.name)
+            file_path = os.path.join("dashboard", "static", "saves", f'{self.name}.csv')
             Dataset.write_dict_list_to_csv(self.qa_records, file_path)
+            self.file = file_path
         else:
             raise ValueError("Input parameter cannot be empty")
 
