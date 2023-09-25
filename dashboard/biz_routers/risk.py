@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Path
 from starlette.requests import Request
 
-from dashboard.biz_models import DataSet, Risk
+from dashboard.biz_models import Risk
 from dashboard.utils.util import Tool
 from last.services.depends import get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
