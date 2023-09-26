@@ -1,6 +1,8 @@
 # TODO client的部分、ORM的部分没有实现，LLM的调用是MOCK的
 import os
 
+import pytest
+
 from last.types.dataset import Dataset, QARecord
 from last.types.llm import LLM, LLMType
 from last.types.plan import EvaluationType, Plan
@@ -8,6 +10,7 @@ from last.types.public import ID, RiskDimension
 from last.types.task import Task
 
 
+@pytest.mark.skip(reason="puyu Model need PJLAB loacl network")
 def test_pipeline():
     # 如果需要加载新数据集, 则提供file\url，返回数据集对象
     file1_path = os.path.join("docs", "examples", "testset1.csv")

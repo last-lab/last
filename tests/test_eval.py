@@ -2,11 +2,14 @@
 import json
 import os
 
+import pytest
+
 from last.client import AI_eval, Client
 
 # 一个task需要plan+model，plan需要dataset
 
 
+@pytest.mark.skip(reason="puyu Model need PJLAB loacl network")
 def test_create_eval():
     kwargs_json = json.dumps(
         {

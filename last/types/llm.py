@@ -97,9 +97,11 @@ class LLM(LLMInfo):
             "top_p": 0.9,
             "disable_report": False,
         }
-
-        res = requests.post(self.endpoint, headers=header, data=json.dumps(data))
-        if res.status_code == 200:
-            return res.json()["data"]["choices"][0]["text"]
-        else:
-            return res.json()["msg"]
+        try:
+            res = requests.post(self.endpoint, headers=header, data=json.dumps(data))       
+            if res.status_code == 200:
+                return res.json()["data"]["choices"][0]["text"]
+            else:
+                return res.json()["msg"]
+        except:
+            return 'Network Error'
