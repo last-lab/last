@@ -32,7 +32,7 @@ class SearchFilter(Search):
         value = await self.parse_value(request, value)
         first_risk = await Risk.get_or_none(risk_name=value).values()
         if first_risk is None:
-            filters = {self.context.get("name"): ''}
+            filters = {self.context.get("name"): ""}
         else:
             filters = {self.context.get("name"): first_risk["risk_id"]}
         return qs.filter(**filters)
