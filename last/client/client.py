@@ -4,6 +4,7 @@ import json
 from last.types.public import UserInfo, Placeholder
 import asyncio
 
+
 class Client:
     @staticmethod
     def execute(func, kwargs_json, user_info=None):

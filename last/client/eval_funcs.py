@@ -63,10 +63,6 @@ def AI_eval(
         results=new_qa_records,
     )
 
-    new_dataset = Dataset(
-        name=plan.name,
-        qa_records=new_qa_records,
-        file=None
-    )
+    new_dataset = Dataset(name=plan.name, qa_records=new_qa_records, file=None)
 
     return task, new_dataset

@@ -81,32 +81,25 @@ class LLM(LLMInfo):
         prompt = f"请根据语义的相似度比较实际答案和标准答案之间的差异，评分范围0.0~10.0。实际答案：{responce.content}；标准答案：{correct_ans.content}"
         return prompt
 
-    def puyu(self, prompt:str) -> str:
+    def puyu(self, prompt: str) -> str:
         # token = subprocess.check_output(["openxlab", "token"]).decode('utf8').strip()
         # print(token)
 
         # 'https://puyu.openxlab.org.cn/puyu/api/v1/chat/completion'
         # "Bearer eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFM1MTIifQ.eyJqdGkiOiIwNDkzOTEiLCJyb2wiOiJST0xFX1JFR0lTVEVSIiwiaXNzIjoiT3BlblhMYWIiLCJpYXQiOjE2OTU2NDE5MzAsInBob25lIjoiMTk5MDE2NzA1MzIiLCJhayI6InZ5N2tvcWJ2cGd4MGFhbnFlYmR6IiwiZW1haWwiOiJ3YW5neHVob25nQHBqbGFiLm9yZy5jbiIsImV4cCI6MTY5NTY0NTUzMH0.7BI5-qt35B9XDKb14KV_X_LmiJr1IpDws2mkzGIO7wWComHEnHoXh0Yn3f5P-iHOMoiJIMgqhqeZaXJFrjb9QQ"
 
-        header = {
-            'Content-Type':
-            'application/json',
-            "Authorization": self.access_key
-        }
+        header = {"Content-Type": "application/json", "Authorization": self.access_key}
         data = {
-            "model": "ChatPJLM-latest",  
-            "messages": [{
-                "role": "user",
-                "text": prompt
-            }],
+            "model": "ChatPJLM-latest",
+            "messages": [{"role": "user", "text": prompt}],
             "n": 1,
             "temperature": 0.8,
             "top_p": 0.9,
-            "disable_report": False
+            "disable_report": False,
         }
 
         res = requests.post(self.endpoint, headers=header, data=json.dumps(data))
         if res.status_code == 200:
             return res.json()["data"]["choices"][0]["text"]
         else:
-            return res.json()['msg']
+            return res.json()["msg"]

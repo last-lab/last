@@ -32,15 +32,18 @@ def test_pipeline():
     )
 
     # 配置待测模型API
-    llm_model = LLM(model_type=LLMType.normal, endpoint="xxx", access_key="xxx", secret_key="xxx")
+    llm_model = LLM(
+        model_type=LLMType.normal,
+        endpoint="https://puyu.openxlab.org.cn/puyu/api/v1/chat/completion",
+        access_key="xxx",
+    )
 
     if plan.eval_type == EvaluationType.auto_ai_critique:
         # 如果是AI测评，配置评分模型API
         critic_model = LLM(
             model_type=LLMType.critic,
-            endpoint="xxx",
+            endpoint="https://puyu.openxlab.org.cn/puyu/api/v1/chat/completion",
             access_key="xxx",
-            secret_key="xxx",
         )
     # else:
     #   如果是人工测评，则新建标注模块
