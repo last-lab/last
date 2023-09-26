@@ -178,3 +178,6 @@ async def create_mock_risk():
 
     risk_57 = Risk(risk_level=3, risk_id="156", risk_name="其他", parent_risk_id="15")
     await risk_57.save()
+
+    risk_58 = Risk(risk_level=1, risk_id="2", risk_name="数据保护", parent_risk_id="15")
+    await risk_58.save()
