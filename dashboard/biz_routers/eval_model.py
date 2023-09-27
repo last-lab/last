@@ -1,14 +1,12 @@
 import asyncio
 import json
-import threading
 from concurrent.futures import ThreadPoolExecutor
 from functools import reduce
 from operator import add
 from typing import Union
 
-from fastapi import APIRouter, BackgroundTasks, Depends
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from fastapi.concurrency import run_in_threadpool
 from starlette.requests import Request
 from tortoise.expressions import Q
 
@@ -19,8 +17,6 @@ from last.services.app import app
 from last.services.depends import get_resources
 from last.services.i18n import _
 from last.services.template import templates
-import time as _time
-
 
 router = APIRouter()
 executor = ThreadPoolExecutor()
