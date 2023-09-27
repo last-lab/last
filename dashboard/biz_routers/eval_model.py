@@ -1,10 +1,14 @@
+import asyncio
 import json
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from functools import reduce
 from operator import add
 from typing import Union
 
 from fastapi import APIRouter, BackgroundTasks, Depends
 from pydantic import BaseModel
+from fastapi.concurrency import run_in_threadpool
 from starlette.requests import Request
 from tortoise.expressions import Q
 
@@ -15,8 +19,11 @@ from last.services.app import app
 from last.services.depends import get_resources
 from last.services.i18n import _
 from last.services.template import templates
+import time as _time
+
 
 router = APIRouter()
+executor = ThreadPoolExecutor()
 
 
 class ModelView(BaseModel):
@@ -34,8 +41,8 @@ class EvalInfo(BaseModel):
 
 @app.get("/record/add")
 async def create_eval(
-    request: Request,
-    resources=Depends(get_resources),
+        request: Request,
+        resources=Depends(get_resources),
 ):
     eval_plans = await EvaluationPlan.all().limit(10)
     model_list = await ModelInfo.all().limit(10)
@@ -57,15 +64,15 @@ async def create_eval(
 async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
     _, new_dataset = Client.execute(AI_eval, kwargs_json)  # 这里是计算逻辑，执行很慢
     time = (
-        new_dataset.created_at.year
-        + "-"
-        + new_dataset.created_at.month
-        + "-"
-        + new_dataset.created_at.day
-        + " "
-        + new_dataset.created_at.hour
-        + ":"
-        + new_dataset.created_at.minute
+            new_dataset.created_at.year
+            + "-"
+            + new_dataset.created_at.month
+            + "-"
+            + new_dataset.created_at.day
+            + " "
+            + new_dataset.created_at.hour
+            + ":"
+            + new_dataset.created_at.minute
     )
     focused_risks = reduce(add, [dataset["focused_risks"] for dataset in dataset_info]).replace(
         "][", ","
@@ -95,9 +102,8 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
     )
     await Record.filter(id=record.id).update(state=EvalStatus.finish)
 
-
 @router.post("/evaluation/evaluation_create")
-async def evaluation_create(eval_info: EvalInfo, background_tasks: BackgroundTasks):
+async def evaluation_create(eval_info: EvalInfo):
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
     model = await ModelInfo.get_or_none(id=eval_info.llm_id).values()
     record = await Record.create(
@@ -132,10 +138,7 @@ async def evaluation_create(eval_info: EvalInfo, background_tasks: BackgroundTas
             "$plan": {"name": plan["name"]},
         }
     )
-
-    background_tasks.add_task(client_execute, plan, record, dataset_info, AI_eval, kwargs_json)
-    # except:
-    #     await Record.filter(id=record.id).update(state=EvalStatus.error)
+    asyncio.create_task(client_execute(plan, record, dataset_info, AI_eval, kwargs_json))
     return {"status": "ok", "success": 1, "msg": "create eval success"}
 
 
@@ -179,3 +182,5 @@ async def get_model_list():
         return {"status": "ok", "success": 1, "data": model_list}
     except Exception as e:
         return {"status": "error", "success": 0, "msg": e}
+
+
