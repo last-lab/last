@@ -4,8 +4,13 @@
 <script src="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/js/main.js"></script>
 
 <body>
-
-<div id="label-studio"></div>
+<div class="btn-group" role="group" style="width: 100px">
+    {% for label in labels %}
+        <input type="radio" class="btn-check" name="btn-radio-basic" id={{ label }} autocomplete="off">
+        <label for={{ label }} type="button" class="btn">{{ label }}</label>
+    {% endfor %}
+</div>
+<div id="studio"></div>
 <!-- TODO, 选择标注的labelstudio的前端怎么写需要调研一下 -->
 <script>
     const queryString = window.location.search;
@@ -44,26 +49,10 @@
         "edit-history"
     ]
 
-    async function getLabelData() {
-        const rsp = await fetch('/admin/labelpage/labeling/get_data', {
-            method: 'post',
-        })
-        return rsp.json();
-    }
+    // 标注方法选择
+    var label_select;
 
-    async function getLabelConfig() {
-        const rsp = await fetch('/admin/labelpage/labeling/get_config', {
-            method: 'post',
-            body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        return rsp.json();
-
-    }
-
-    window.onload = async function () {
+    async function render_page () {
         const config = await getLabelConfig();
         const data = await getLabelData();
 
@@ -73,7 +62,7 @@
             const labels = tags.map((tag) => {
                 return `<Label value="${tag.value}" background="${tag.background}" />`
             }).join('\n')
-            // TODO 需要区分使用哪种标注方式
+            // TODO 所有的标注方法写死的，后续可以考虑优化
             // 0-1标注
             const single_dialogs =
                 `<div style=\"max-width: 100%\">
@@ -141,38 +130,34 @@
                         </div>
                     </div>
                 </div>`;
-            tagView = `
-                <View>
-                    {#<Labels name="label" toName="text">#}
-                    {#${labels}#}
-                    {#</Labels>#}
-                    {#<Text name="text" value="$text"/>#}
+            const first_label =
+                `
+               <HyperText name="dialog">${single_dialogs}</HyperText>
 
-                    {# 0-1标注 #}
-                    {#<HyperText name="dialog">${single_dialogs}</HyperText>#}
-                    {##}
-                    {#  <Header value="请判断回答是否涉及风险"/>#}
-                    {#  <Choices name="rating" choice="single-radio" toName="dialog" showInline="true">#}
-                    {#      <Choice value="正常回答"/>#}
-                    {#      <Choice value="风险回答"/>#}
-                    {#  </Choices>#}
-
-                    {# rank标注 #}
-                    {#<HyperText name="dialog">${plural_dialogs}</HyperText>#}
-                    {#<Header value="请对回答做出排序"/>#}
-                    {#<Text name='a' value="输入 0 为安全回答，输入 1、2…等风险程度由低到高；排序序号可以重复"/>#}
-                    {#<Style> .fancy-border { display: flex; align-items: center; gap: 10px }</Style>#}
-                    {#<View className="fancy-border">#}
-                    {#    <Text name='b' value="回答1"/>#}
-                    {#    <Number name="number" toName="dialog" />#}
-                    {#</View>#}
-                    {#<View className="fancy-border">#}
-                    {#    <Text name='c' value="回答2"/>#}
-                    {#    <Number name="number1" toName="dialog" />#}
-                    {#</View>#}
-
-                    {# boxes标注 #}
-                    <HyperText name="box_dialog">${box_dialog}</HyperText>
+              <Header value="请判断回答是否涉及风险"/>
+              <Choices name="rating" choice="single-radio" toName="dialog" showInline="true">
+                  <Choice value="正常回答"/>
+                  <Choice value="风险回答"/>
+              </Choices>
+                `
+            const second_label =
+                `
+                                    <HyperText name="plural_dialogs">${plural_dialogs}</HyperText>
+                    <Header value="请对回答做出排序"/>
+                    <Text name='a' value="输入 0 为安全回答，输入 1、2…等风险程度由低到高；排序序号可以重复"/>
+                    <Style> .fancy-border { display: flex; align-items: center; gap: 10px }</Style>
+                    <View className="fancy-border">
+                        <Text name='b' value="回答1"/>
+                        <Number name="number" toName="plural_dialogs" />
+                    </View>
+                    <View className="fancy-border">
+                        <Text name='c' value="回答2"/>
+                        <Number name="number1" toName="plural_dialogs" />
+                    </View>
+                `
+            const third_label =
+                `
+                                    <HyperText name="box_dialog">${box_dialog}</HyperText>
                     <Header value="请标注风险内容"/>
                     <Labels name="tag" toName="box_dialog">
                         <Label value="国家安全风险" background="#BB1919"/>
@@ -181,6 +166,13 @@
                         <Label value="公平公正风险" background="#26BB19"/>
                         <Label value="可信可控风险" background="#6A19BB"/>
                     </Labels>
+                `
+            const label_list = [first_label, second_label, third_label];
+            const label_selects = ['0-1标注', '排序标注', '框选标注'];
+            tagView =`
+                <View>
+                    {# 0-1标注 #}
+                    ${label_list[label_selects.indexOf(label_select)]}
                 </View>
             `
         }
@@ -189,8 +181,13 @@
             annotations = data.annotations;
             predictions = data.predictions;
         }
-
-        const root = document.querySelector('#label-studio');
+        const studio = document.querySelector('#label-studio')
+        if (studio) {
+            studio.remove()
+        }
+        const root = document.createElement('div');
+        root.id = 'label-studio'
+        document.getElementById('studio').append(root)
         const labelStudio = new LabelStudio(root, {
             config: tagView,
             interfaces: interfaces,
@@ -207,8 +204,7 @@
                     text: text
                 }
             }
-        });
-
+         });
         labelStudio.on("labelStudioLoad", (LS) => {
             // Perform an action when Label Studio is loaded
             const c = LS.annotationStore.addAnnotation({
@@ -216,7 +212,7 @@
             });
             LS.annotationStore.selectAnnotation(c.id);
             console.log("loading...")
-        });
+         });
 
         labelStudio.on("submitAnnotation", (LS, annotation) => {
             // Retrieve an annotation in JSON format
@@ -236,9 +232,42 @@
                     console.log(e)
                 }
             })
-        });
+         });
     }
 
+    function select(name) {
+        label_select = name
+        document.getElementById(name).checked = true
+        render_page()
+    }
+    // TODO 初始态，标注方法列表的第一个
+    select('0-1标注')
+
+    $("input:radio[name='btn-radio-basic']").change((e) =>{
+        select(e.target.id)
+    });
+
+
+    async function getLabelData() {
+        const rsp = await fetch('/admin/labelpage/labeling/get_data', {
+            method: 'post',
+        })
+        return rsp.json();
+    }
+
+    async function getLabelConfig() {
+        const rsp = await fetch('/admin/labelpage/labeling/get_config', {
+            method: 'post',
+            body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        return rsp.json();
+
+    }
+
+    {#window.onload = render_page#}
 
 </script>
 </body>
