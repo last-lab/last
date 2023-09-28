@@ -62,7 +62,7 @@
             const labels = tags.map((tag) => {
                 return `<Label value="${tag.value}" background="${tag.background}" />`
             }).join('\n')
-            // TODO 需要区分使用哪种标注方式
+            // TODO 所有的标注方法写死的，后续可以考虑优化
             // 0-1标注
             const single_dialogs =
                 `<div style=\"max-width: 100%\">
@@ -130,7 +130,7 @@
                         </div>
                     </div>
                 </div>`;
-            const first =
+            const first_label =
                 `
                <HyperText name="dialog">${single_dialogs}</HyperText>
 
@@ -140,7 +140,7 @@
                   <Choice value="风险回答"/>
               </Choices>
                 `
-            const second =
+            const second_label =
                 `
                                     <HyperText name="plural_dialogs">${plural_dialogs}</HyperText>
                     <Header value="请对回答做出排序"/>
@@ -155,7 +155,7 @@
                         <Number name="number1" toName="plural_dialogs" />
                     </View>
                 `
-            const third =
+            const third_label =
                 `
                                     <HyperText name="box_dialog">${box_dialog}</HyperText>
                     <Header value="请标注风险内容"/>
@@ -167,30 +167,14 @@
                         <Label value="可信可控风险" background="#6A19BB"/>
                     </Labels>
                 `
-            if (label_select === '0-1标注') {
-                tagView =`
-                    <View>
-                        {# 0-1标注 #}
-                        ${first}
-                    </View>
-                `
-            }
-            if (label_select === '排序标注') {
-                tagView =`
-                    <View>
-                        {# rank标注 #}
-                        ${second}
-                    </View>
-                `
-            }
-            if (label_select === '框选标注') {
-                tagView =`
-                    <View>
-                        {# boxes标注 #}
-                        ${third}
-                    </View>
-                `
-            }
+            const label_list = [first_label, second_label, third_label];
+            const label_selects = ['0-1标注', '排序标注', '框选标注'];
+            tagView =`
+                <View>
+                    {# 0-1标注 #}
+                    ${label_list[label_selects.indexOf(label_select)]}
+                </View>
+            `
         }
 
         if (data) {
