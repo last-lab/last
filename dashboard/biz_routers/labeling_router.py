@@ -22,6 +22,8 @@ async def labeling_view(
     resources=Depends(get_resources),
     model: Type[Model] = Depends(get_model),
 ):
+    # TODO mock的数据
+    labels = ["0-1标注", "排序标注"]
     context = {
         "request": request,
         "resources": resources,
@@ -31,6 +33,7 @@ async def labeling_view(
         "model_resource": model_resource,
         "page_title": model_resource.page_title,
         "page_pre_title": model_resource.page_pre_title,
+        "labels": labels,
     }
     # 点击了标注之后，需要根据传回来的参数，主要是数据集的名称，标注方式
     # 载入数据，丢一个新的界面出去
