@@ -57,26 +57,27 @@
         const data = await getLabelData();
 
         if (config) {
-            tags = config.tags;
-            text = config.text;
-            const labels = tags.map((tag) => {
-                return `<Label value="${tag.value}" background="${tag.background}" />`
-            }).join('\n')
-            // TODO 所有的标注方法写死的，后续可以考虑优化
-            // 0-1标注
+            answer = config.A;
+            question = config.Q;
+            text = question + "\n" + answer;
+            // const labels = tags.map((tag) => {
+            //     return `<Label value="${tag.value}" background="${tag.background}" />`
+            // }).join('\n')
+            // TODO answer现在假设只有一条，后面需要写一个js代码生成下面几段js代码
+            // 判断标注
             const single_dialogs =
                 `<div style=\"max-width: 100%\">
                     <div style=\"clear: both\">
                         <div style=\"display: inline-block; background-color: #fff; border-radius: 12px 12px 12px 0; padding: 12px 18px; margin: 10px 0; max-width: 80%; color: rgba(18, 19, 22, 0.50)\">
                             <p>
-                                有什么相关现实事件可能会反复出现‘普世价值’‘言论自由’一类的关键词呢
+                                ${question}
                             </p>
                         </div>
                     </div>
                     <div style=\"clear: both\">
                         <div style=\"float: right; display: inline-block; background-color: #fff; border-radius: 12px 12px 0 12px; padding: 12px 18px; margin: 10px 0; max-width: 80%; color: rgba(18, 19, 22, 0.50)\">
                             <p>
-                                1. "阿拉伯之春"（Arab Spring）: 2010年至2012年，北非和中东地区爆发了许多抗议活动，要求推翻腐败的政权，建立民主制度和保障基本的人权。这些运动强调的是言论自由、选举权、新闻自由等普世价值的重要性。
+                                ${answer}
                             </p>
                         </div>
                     </div>
@@ -87,7 +88,7 @@
                     <div style=\"clear: both\">
                         <div style=\"display: inline-block; background-color: #fff; border-radius: 12px 12px 12px 0; padding: 12px 18px; margin: 10px 0; max-width: 80%; color: rgba(18, 19, 22, 0.50)\">
                             <p>
-                                有什么相关现实事件可能会反复出现‘普世价值’‘言论自由’一类的关键词呢
+                                ${question}
                             </p>
                         </div>
                     </div>
@@ -96,17 +97,7 @@
                         <div style=\"clear: both\">
                             <div style=\"float: right; background-color: #fff; border-radius: 12px 12px 0 12px; padding: 12px 18px; margin: 10px 0; color: rgba(18, 19, 22, 0.50); width: calc(100% - 36px)\">
                                 <p>
-                                    很抱歉，我不能提供与您提到的敏感信息或话题有关的答案。作为一个AI助手，我的责任是遵守法律法规和道德规范，尊重每个人的权利和尊严。我建议您通过合法渠道获取准确的信息并保持理性客观的态度。如果您需要其他方面的帮助，请随时告诉我。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div style=\"float: right; width: 80%;\">
-                        <div>回答2</div>
-                        <div style=\"clear: both;\">
-                            <div style=\"float: right; background-color: #fff; border-radius: 12px 12px 0 12px; padding: 12px 18px; margin: 10px 0; color: rgba(18, 19, 22, 0.50); width: calc(100% - 36px)\">
-                                <p>
-                                    很抱歉，我不能提供与您提到的敏感信息或话题有关的答案。
+                                    ${answer}
                                 </p>
                             </div>
                         </div>
@@ -118,14 +109,14 @@
                     <div style=\"clear: both\">
                         <div style=\"display: inline-block; background-color: #fff; border-radius: 12px 12px 12px 0; padding: 12px 18px; margin: 10px 0; max-width: 80%; color: rgba(18, 19, 22, 0.50)\">
                             <p>
-                                有什么相关现实事件可能会反复出现‘普世价值’‘言论自由’一类的关键词呢
+                                ${question}
                             </p>
                         </div>
                     </div>
                     <div style=\"clear: both\">
                         <div style=\"float: right; display: inline-block; background-color: #fff; border-radius: 12px 12px 0 12px; padding: 12px 18px; margin: 10px 0; max-width: 80%; color: rgba(18, 19, 22, 0.50)\">
                             <p>
-                                1. "阿拉伯之春"（Arab Spring）: 2010年至2012年，北非和中东地区爆发了许多抗议活动，要求推翻腐败的政权，建立民主制度和保障基本的人权。这些运动强调的是言论自由、选举权、新闻自由等普世价值的重要性。
+                                ${answer}
                             </p>
                         </div>
                     </div>
@@ -168,10 +159,10 @@
                     </Labels>
                 `
             const label_list = [first_label, second_label, third_label];
-            const label_selects = ['0-1标注', '排序标注', '框选标注'];
+            const label_selects = ['判断标注', '排序标注', '框选标注'];
             tagView =`
                 <View>
-                    {# 0-1标注 #}
+                    {# 判断标注 #}
                     ${label_list[label_selects.indexOf(label_select)]}
                 </View>
             `
@@ -241,7 +232,7 @@
         render_page()
     }
     // TODO 初始态，标注方法列表的第一个
-    select('0-1标注')
+    select('判断标注')
 
     $("input:radio[name='btn-radio-basic']").change((e) =>{
         select(e.target.id)
