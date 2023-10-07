@@ -53,7 +53,7 @@ async def AI_eval(
         question, correct_ans = qa_record.question, qa_record.answer
         responce = await llm_model(question)
         critic = await critic_model(responce, correct_ans)
-        new_qa_record = QARecord(question=question, answer=responce, critic=critic)
+        new_qa_record = QARecord(question=question, answer=critic, critic=critic)
         new_qa_records[ID()] = new_qa_record
 
     task = Task(

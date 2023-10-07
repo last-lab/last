@@ -1,4 +1,3 @@
-import asyncio
 import json
 from concurrent.futures import ThreadPoolExecutor
 from functools import reduce
@@ -58,7 +57,7 @@ async def create_eval(
 
 
 async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
-    # await asyncio.sleep(10) 
+    # await asyncio.sleep(10)
     print("kaishi")
     _, new_dataset = await Client.execute(AI_eval, kwargs_json)  # 这里是计算逻辑，执行很慢
     print("wancheng")
@@ -138,7 +137,7 @@ async def create_model(model_view: ModelView):
     # TODO: @wangxuhong 写一个接口，输入是endpoint, AK, SK.
     # 输出是一个LLM类 类的定义 from last.types.llm import LLM
     model_info = {
-        "name": f"name-{model_view.endpoint}",
+        "name": f"{model_view.endpoint}",
         "model_type": "聊天机器人、自然语言处理助手",
         "version": "1.3.0",
         "base_model": "GShard-v2-xlarge",
