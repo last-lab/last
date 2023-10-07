@@ -30,6 +30,7 @@ httpx = "*"
 pendulum = "*"
 requests = "*"
 pycryptodome = "*"
+pydantic = "*"
 
 [tool.poetry.dev-dependencies]
 # test
