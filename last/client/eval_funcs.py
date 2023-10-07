@@ -4,9 +4,9 @@ from last.types.plan import EvaluationType, Plan
 from last.types.public import ID, Placeholder, RiskDimension
 from last.types.task import Task
 import json
+import asyncio
 
-
-def AI_eval(
+async def AI_eval(
     datasets=Placeholder(parser=lambda x: x),
     llm_model=Placeholder(parser=lambda x: x),
     critic_model=Placeholder(parser=lambda x: x),
@@ -51,8 +51,8 @@ def AI_eval(
     new_qa_records = {}
     for qa_record in plan:  #
         question, correct_ans = qa_record.question, qa_record.answer
-        responce = llm_model(question)
-        critic = critic_model(responce, correct_ans)
+        responce = await llm_model(question)
+        critic = await critic_model(responce, correct_ans)
         new_qa_record = QARecord(question=question, answer=responce, critic=critic)
         new_qa_records[ID()] = new_qa_record
 

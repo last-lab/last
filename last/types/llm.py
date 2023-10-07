@@ -4,7 +4,7 @@ from .public import ReturnCode
 from .dataset import Message, MessageRole
 from pydantic import BaseModel, Field
 from last.services.enums import StrEnum
-
+import asyncio
 import json
 import requests
 
@@ -61,19 +61,19 @@ class LLM(LLMInfo):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def __call__(self, *msgs: Message) -> Message:
+    async def __call__(self, *msgs: Message) -> Message:
         # 先mock一下
         if self.model_type is LLMType.critic:
             prompt = self.gen_similarity_prompt(*msgs)
         else:
             prompt = msgs[0].content
-        return_msg = self.generate(prompt)
+        return_msg = await self.generate(prompt)
         return return_msg
 
-    def generate(self, msg: str) -> Message:
+    async def generate(self, msg: str) -> Message:
         # TODO SystemMessage的支持
         # 整个函数现在的Mock的以后开发
-        return_msg = self.puyu(msg)
+        return_msg = await self.puyu(msg)
         return_msg = Message(role=MessageRole.AI, content=return_msg)
         return return_msg
 
@@ -81,7 +81,7 @@ class LLM(LLMInfo):
         prompt = f"请根据语义的相似度比较实际答案和标准答案之间的差异，评分范围0.0~10.0。实际答案：{responce.content}；标准答案：{correct_ans.content}"
         return prompt
 
-    def puyu(self, prompt: str) -> str:
+    async def puyu(self, prompt: str) -> str:
         # token = subprocess.check_output(["openxlab", "token"]).decode('utf8').strip()
         # print(token)
 
@@ -98,7 +98,7 @@ class LLM(LLMInfo):
             "disable_report": False,
         }
         try:
-            res = requests.post(self.endpoint, headers=header, data=json.dumps(data))       
+            res = await requests.post(self.endpoint, headers=header, data=json.dumps(data))       
             if res.status_code == 200:
                 return res.json()["data"]["choices"][0]["text"]
             else:

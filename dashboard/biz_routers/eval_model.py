@@ -58,18 +58,10 @@ async def create_eval(
 
 
 async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
-    _, new_dataset = Client.execute(AI_eval, kwargs_json)  # 这里是计算逻辑，执行很慢
-    time = (
-        new_dataset.created_at.year
-        + "-"
-        + new_dataset.created_at.month
-        + "-"
-        + new_dataset.created_at.day
-        + " "
-        + new_dataset.created_at.hour
-        + ":"
-        + new_dataset.created_at.minute
-    )
+    # await asyncio.sleep(10) 
+    print("kaishi")
+    _, new_dataset = await Client.execute(AI_eval, kwargs_json)  # 这里是计算逻辑，执行很慢
+    print("wancheng")
     focused_risks = reduce(add, [dataset["focused_risks"] for dataset in dataset_info]).replace(
         "][", ","
     )
@@ -91,8 +83,8 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
         creator=str(new_dataset.creator),
         editor=new_dataset.editor,
         reviewer=new_dataset.reviewer,
-        created_at=time,
-        updated_at=time,
+        created_at=new_dataset.created_at,
+        updated_at=new_dataset.created_at,
         permissions=new_dataset.permissions,
         first_risk_id="1",  # 这里的逻辑不正确，TODO 改掉
     )
@@ -135,7 +127,8 @@ async def evaluation_create(eval_info: EvalInfo):
             "$plan": {"name": plan["name"]},
         }
     )
-    asyncio.create_task(client_execute(plan, record, dataset_info, AI_eval, kwargs_json))
+    # asyncio.create_task(client_execute(plan, record, dataset_info, AI_eval, kwargs_json))
+    await client_execute(plan, record, dataset_info, AI_eval, kwargs_json)
     return {"status": "ok", "success": 1, "msg": "create eval success"}
 
 
