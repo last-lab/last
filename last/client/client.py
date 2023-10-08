@@ -2,11 +2,12 @@ import ast
 from dataclasses import dataclass
 import json
 from last.types.public import UserInfo, Placeholder
+import asyncio
 
 
 class Client:
     @staticmethod
-    def execute(func, kwargs_json, user_info=None):
+    async def execute(func, kwargs_json, user_info=None):
         # Parse the JSON string to a dictionary
         kwargs = json.loads(kwargs_json)
 
@@ -38,4 +39,5 @@ class Client:
             transformed_kwargs[key] = value
 
         # Execute the function with the transformed arguments
-        return func(**transformed_kwargs)
+        ret = await func(**transformed_kwargs)
+        return ret

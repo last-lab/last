@@ -23,13 +23,16 @@ bcrypt = "*"
 captcha = "*"
 fastapi = { version = "*", extras = ["all"] }
 jinja2 = "*"
-python = ">=3.8,<4.0"
+python = ">=3.8.1,<4.0"
 python-multipart = "*"
 tortoise-orm = "*"
 httpx = "*"
 pendulum = "*"
 requests = "*"
 pycryptodome = "*"
+pydantic = "*"
+langchain = ">=0.0.310" 
+openai = "*"
 
 [tool.poetry.dev-dependencies]
 # test

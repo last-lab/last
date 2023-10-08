@@ -8,7 +8,8 @@ from tortoise import Tortoise
 
 from last.services import enums
 from last.services.exceptions import InvalidResource
-from last.services.providers.admin_log import AdminLogProvider
+
+# from last.services.providers.admin_log import AdminLogProvider
 from last.services.providers.permission import PermissionProvider
 from last.services.resources import Dropdown, Link, Model, Resource
 

@@ -1,4 +1,5 @@
 import json
+from concurrent.futures import ThreadPoolExecutor
 from functools import reduce
 from operator import add
 from typing import Union
@@ -17,6 +18,7 @@ from last.services.i18n import _
 from last.services.template import templates
 
 router = APIRouter()
+executor = ThreadPoolExecutor()
 
 
 class ModelView(BaseModel):
@@ -54,10 +56,42 @@ async def create_eval(
     )
 
 
+async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
+    # await asyncio.sleep(10)
+    print("kaishi")
+    _, new_dataset = await Client.execute(AI_eval, kwargs_json)  # 这里是计算逻辑，执行很慢
+    print("wancheng")
+    focused_risks = reduce(add, [dataset["focused_risks"] for dataset in dataset_info]).replace(
+        "][", ","
+    )
+    await DataSet.create(
+        name=plan["name"] + "_Result",
+        focused_risks=focused_risks,
+        volume=new_dataset.volume,
+        qa_num=new_dataset.qa_num,
+        word_cnt=new_dataset.word_cnt,
+        url=new_dataset.url,
+        file=new_dataset.file,
+        used_by=new_dataset.used_by,
+        qa_records=str(new_dataset.qa_records),
+        conversation_start_id=str(new_dataset.conversation_start_id),
+        current_conversation_index=new_dataset.current_conversation_index,
+        current_qa_record_id=new_dataset.current_qa_record_id,
+        uid=new_dataset.uid,
+        description=new_dataset.description,
+        creator=str(new_dataset.creator),
+        editor=new_dataset.editor,
+        reviewer=new_dataset.reviewer,
+        created_at=new_dataset.created_at,
+        updated_at=new_dataset.created_at,
+        permissions=new_dataset.permissions,
+        first_risk_id="1",  # 这里的逻辑不正确，TODO 改掉
+    )
+    await Record.filter(id=record.id).update(state=EvalStatus.finish)
+
+
 @router.post("/evaluation/evaluation_create")
-async def evaluation_create(
-    eval_info: EvalInfo,
-):
+async def evaluation_create(eval_info: EvalInfo):
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
     model = await ModelInfo.get_or_none(id=eval_info.llm_id).values()
     record = await Record.create(
@@ -85,55 +119,15 @@ async def evaluation_create(
                 "access_key": model["access_key"],
             },
             "$critic_model": {
-                "name": "GPT-3.5-Turbo",
-                "endpoint": "xxx",
-                "access_key": "xxx",
+                "name": model["name"],
+                "endpoint": model["endpoint"],
+                "access_key": model["access_key"],
             },
             "$plan": {"name": plan["name"]},
         }
     )
-
-    _, new_dataset = Client.execute(AI_eval, kwargs_json)
-    time = (
-        new_dataset.created_at.year
-        + "-"
-        + new_dataset.created_at.month
-        + "-"
-        + new_dataset.created_at.day
-        + " "
-        + new_dataset.created_at.hour
-        + ":"
-        + new_dataset.created_at.minute
-    )
-    focused_risks = reduce(add, [dataset["focused_risks"] for dataset in dataset_info]).replace(
-        "][", ","
-    )
-    await DataSet.create(
-        name=plan["name"] + "_Result",
-        focused_risks=focused_risks,
-        volume=new_dataset.volume,
-        qa_num=new_dataset.qa_num,
-        word_cnt=new_dataset.word_cnt,
-        url=new_dataset.url,
-        file=new_dataset.file,
-        used_by=new_dataset.used_by,
-        qa_records=str(new_dataset.qa_records),
-        conversation_start_id=str(new_dataset.conversation_start_id),
-        current_conversation_index=new_dataset.current_conversation_index,
-        current_qa_record_id=new_dataset.current_qa_record_id,
-        uid=new_dataset.uid,
-        description=new_dataset.description,
-        creator=str(new_dataset.creator),
-        editor=new_dataset.editor,
-        reviewer=new_dataset.reviewer,
-        created_at=time,
-        updated_at=time,
-        permissions=new_dataset.permissions,
-        first_risk_id="1",  # 这里的逻辑不正确，TODO 改掉
-    )
-    await Record.filter(id=record.id).update(state=EvalStatus.finish)
-    # except:
-    #     await Record.filter(id=record.id).update(state=EvalStatus.error)
+    # asyncio.create_task(client_execute(plan, record, dataset_info, AI_eval, kwargs_json))
+    await client_execute(plan, record, dataset_info, AI_eval, kwargs_json)
     return {"status": "ok", "success": 1, "msg": "create eval success"}
 
 
@@ -143,7 +137,7 @@ async def create_model(model_view: ModelView):
     # TODO: @wangxuhong 写一个接口，输入是endpoint, AK, SK.
     # 输出是一个LLM类 类的定义 from last.types.llm import LLM
     model_info = {
-        "name": f"name-{model_view.endpoint}",
+        "name": f"{model_view.endpoint}",
         "model_type": "聊天机器人、自然语言处理助手",
         "version": "1.3.0",
         "base_model": "GShard-v2-xlarge",

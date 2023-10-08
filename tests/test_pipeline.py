@@ -1,6 +1,8 @@
 # TODO client的部分、ORM的部分没有实现，LLM的调用是MOCK的
 import os
 
+import pytest
+
 from last.types.dataset import Dataset, QARecord
 from last.types.llm import LLM, LLMType
 from last.types.plan import EvaluationType, Plan
@@ -8,6 +10,7 @@ from last.types.public import ID, RiskDimension
 from last.types.task import Task
 
 
+@pytest.mark.skip(reason="puyu Model need PJLAB loacl network")
 def test_pipeline():
     # 如果需要加载新数据集, 则提供file\url，返回数据集对象
     file1_path = os.path.join("docs", "examples", "testset1.csv")
@@ -32,15 +35,18 @@ def test_pipeline():
     )
 
     # 配置待测模型API
-    llm_model = LLM(model_type=LLMType.normal, endpoint="xxx", access_key="xxx", secret_key="xxx")
+    llm_model = LLM(
+        model_type=LLMType.normal,
+        endpoint="https://puyu.openxlab.org.cn/puyu/api/v1/chat/completion",
+        access_key="xxx",
+    )
 
     if plan.eval_type == EvaluationType.auto_ai_critique:
         # 如果是AI测评，配置评分模型API
         critic_model = LLM(
             model_type=LLMType.critic,
-            endpoint="xxx",
+            endpoint="https://puyu.openxlab.org.cn/puyu/api/v1/chat/completion",
             access_key="xxx",
-            secret_key="xxx",
         )
     # else:
     #   如果是人工测评，则新建标注模块

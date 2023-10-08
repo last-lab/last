@@ -66,7 +66,7 @@ class Dataset(Record, BaseManager):
             self.qa_records = Dataset.upload(self.file)
         elif self.qa_records is not None:  # 根据传入的qa_records，保存file文件
             os.makedirs(os.path.join("dashboard", "static", "saves"), exist_ok=True)
-            file_path = os.path.join("dashboard", "static", "saves", f'{self.name}.csv')
+            file_path = os.path.join("dashboard", "static", "saves", f"{self.name}.csv")
             Dataset.write_dict_list_to_csv(self.qa_records, file_path)
             self.file = file_path
         else:
@@ -82,7 +82,7 @@ class Dataset(Record, BaseManager):
             set(vars(qa_records[list(qa_records.keys())[0]]))
         )
         # 写入CSV文件
-        with open(filename, mode="w", newline="") as file:
+        with open(filename, mode="w", newline="", encoding="utf-8-sig") as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
 
             # 写入字段名
@@ -99,7 +99,7 @@ class Dataset(Record, BaseManager):
         # 通过上传文件创建数据集
         qa_records = {}
         # predecessor_uid = None # 关联上一条Message记录的id
-        with open(file_path, "r") as file:
+        with open(file_path, "r", encoding="utf-8-sig") as file:
             reader = csv.DictReader(file)
             for row in reader:
                 self_uid = ID()
