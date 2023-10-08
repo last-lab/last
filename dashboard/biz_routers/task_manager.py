@@ -162,9 +162,11 @@ async def create_task_callback(
             task_id=task_id,
             dataset_id=dataset_uid,
             creator="root",
+            labeling_method=json_data["annotationTypes"],
             question_id=index + 1,
             question=question,
             answer=answer,
+            status="未标注",
         ).save()
     return "success"
 

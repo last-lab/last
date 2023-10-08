@@ -14,8 +14,10 @@ class LabelPage(Model):
 class LabelResult(Model):
     task_id = fields.CharField(max_length=50)  # 任务ID
     dataset_id = fields.CharField(max_length=50)
+    labeling_method = fields.CharField(max_length=255)
     creator = fields.CharField(max_length=50)  # 创建人
     question_id = fields.IntField(null=True)
     question = fields.CharField(max_length=200, null=True)
     answer = fields.CharField(max_length=200, null=True)
+    status = fields.CharField(max_length=200, null=True, default=None)
     labeling_result = fields.CharField(max_length=200, null=True, default=None)

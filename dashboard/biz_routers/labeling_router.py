@@ -1,3 +1,4 @@
+import ast
 from typing import Type
 
 from fastapi import APIRouter, Depends, Path
@@ -5,7 +6,7 @@ from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model
 
-from dashboard.biz_models.labeling_model import LabelResult
+from dashboard.biz_models import LabelResult
 from last.services.depends import get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
@@ -18,23 +19,18 @@ async def labeling_view(
     request: Request,
     resource: str = Path(...),
     pk: str = Path(...),
-    model_resource: ModelResource = Depends(get_model_resource),
-    resources=Depends(get_resources),
-    model: Type[Model] = Depends(get_model),
 ):
+    # TODO 标注方法从数据库中读取出来，或者直接在brief_dataset页面直接传
+
     context = {
         "request": request,
-        "resources": resources,
-        "resource_label": model_resource.label,
         "resource": resource,
-        "pk": 1,
-        "model_resource": model_resource,
-        "page_title": model_resource.page_title,
-        "page_pre_title": model_resource.page_pre_title,
+        "pk": pk,
+        "labels": ast.literal_eval(request.query_params["labeling_method"]),
     }
     # 点击了标注之后，需要根据传回来的参数，主要是数据集的名称，标注方式
     # 载入数据，丢一个新的界面出去
-
+    print(context)
     try:
         return templates.TemplateResponse(
             f"{resource}/label.html",
@@ -59,6 +55,7 @@ async def display(
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     # 获取得到对应task的id
     task_id = obj.task_id
+    labeling_method = obj.labeling_method
     context = {
         "request": request,
         "resources": resources,
@@ -69,6 +66,7 @@ async def display(
         "page_title": model_resource.page_title,
         "page_pre_title": model_resource.page_pre_title,
         "task_id": task_id,
+        "labeling_method": labeling_method,
     }
     try:
         return templates.TemplateResponse(
@@ -92,16 +90,19 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
     task_id = json_data["taskID"]
     # 从result表中获取所有的question字段的结果
     # 获取result表中给定task_id的所有记录
-    results = await LabelResult.filter(task_id=task_id).values("question_id", "question")
+    results = await LabelResult.filter(task_id=task_id).values(
+        "question_id", "question", "status", "labeling_method"
+    )
     res_list = []
     for result in results:
         res_list.append(
             {
                 "question_id": result["question_id"],
                 "question": result["question"],
-                "status": "未标注",
-                "action": "标注",
+                "status": result["status"],
+                "action": "标注" if result["status"] == "未标注" else "查看",
                 "task_id": task_id,
+                "labeling_method": result["labeling_method"],
             }
         )
 
@@ -123,10 +124,10 @@ async def get_config_from_db(request: Request, resource: str):
     # 查找默认得到一个列表，尽管只有一个元素
     data = await LabelResult.filter(task_id=task_id, question_id=question_id)
     assert len(data) == 1
-    # TODO, 根据request中的参数查找数据库，生成如下形式的数据返回给前端
-    mock_data = {"tags": [{"value": data[0].answer, "background": "red"}], "text": data[0].question}
-    # return "test"
-    return mock_data
+    labeling_method = data[0].labeling_method
+    # 查找出来标注方法，根据不同的标注方法定义不同的返回结果,如answer字段
+    query_data = {"Q": data[0].question, "A": data[0].answer, "labeling_method": labeling_method}
+    return query_data
 
 
 @router.post("/{resource}/labeling/get_data")
@@ -146,4 +147,13 @@ async def get_annotatoin_and_predict_data(request: Request, resource: str):
 async def submit_callback(request: Request, resource: str, pk: str):
     json_data = await request.json()
     # TODO，对返回回来的结果进行处理，塞进LabelResult数据库中即可
+    question_id = json_data["question_id"]
+    task_id = json_data["task_id"]
+    annotation = json_data["annotation"]
+    labeling_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
+    assert len(labeling_row) == 1
+    labeling_row[0].labeling_result = annotation
+    labeling_row[0].status = "标注完成"
+    await labeling_row[0].save()
+    # 修改task表中这一条数据的状态
     print(json_data)
