@@ -108,12 +108,12 @@
                     alert('新建评测成功')
                     window.location.href = '/admin/record/list'
                 } else {
-                    alert('新建评测失败')
+                    alert(data.msg)
                 }
             },
             error: function (data) {
                 console.log(data)
-                alert('新建评测失败')
+                alert(data.msg)
             }
         })
     }

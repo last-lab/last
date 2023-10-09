@@ -33,6 +33,7 @@ pycryptodome = "*"
 pydantic = "*"
 langchain = ">=0.0.310" 
 openai = "*"
+aiohttp = "*"
 
 [tool.poetry.dev-dependencies]
 # test

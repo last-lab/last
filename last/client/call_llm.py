@@ -20,8 +20,6 @@ ALLES_CHAT_LLM = [
     "puyu",
 ]
 
-
-
 async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
     if model in CHAT_LLM_GPT:
         chat = ChatOpenAI(
@@ -61,7 +59,7 @@ async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": human_prompt})
 
-        output = chat(
+        output = await chat(
             prompt="",
             messages=messages,
         )
