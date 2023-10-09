@@ -57,7 +57,11 @@ class AllesChatGPTAPILLMModel(HTTPAPILLMModel):
             "messages": messages,
             **kwargs,
         }
-        return requests.post(self.url, headers=self.headers, data=json.dumps(payload)).json()
+        result = requests.post(self.url, headers=self.headers, data=json.dumps(payload))
+        if result.status_code == 200:
+            return result.json()
+        else:
+            raise ValueError(result.text)
 
     def parse(self, response):
         return (

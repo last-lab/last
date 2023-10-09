@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+import aiohttp
+import asyncio
 
 
 class BaseLLMModel(ABC):
@@ -62,3 +64,10 @@ class HTTPAPILLMModel(BaseLLMModel):
         super().__init__(*args, **kwargs)
         self.url = None
         self.headers = None
+            
+    async def async_post(self, url, headers, data):
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, headers=headers, data=data) as response:
+                # 处理响应
+                response_text = await response.text()
+        return response_text

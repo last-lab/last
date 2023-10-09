@@ -126,10 +126,12 @@ async def evaluation_create(eval_info: EvalInfo):
             "$plan": {"name": plan["name"]},
         }
     )
-    # asyncio.create_task(client_execute(plan, record, dataset_info, AI_eval, kwargs_json))
-    await client_execute(plan, record, dataset_info, AI_eval, kwargs_json)
-    return {"status": "ok", "success": 1, "msg": "create eval success"}
-
+    try:
+        await client_execute(plan, record, dataset_info, AI_eval, kwargs_json)
+        return {"status": "ok", "success": 1, "msg": "create eval success"}
+    except Exception as e:
+        return {"status": "error", "success": 0, "msg": str(e)}
+    
 
 # 用来创建model的接口
 @router.post("/model/model_create")
