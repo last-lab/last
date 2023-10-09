@@ -57,10 +57,7 @@ async def create_eval(
 
 
 async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
-    # await asyncio.sleep(10)
-    print("kaishi")
     _, new_dataset = await Client.execute(AI_eval, kwargs_json)  # 这里是计算逻辑，执行很慢
-    print("wancheng")
     focused_risks = reduce(add, [dataset["focused_risks"] for dataset in dataset_info]).replace(
         "][", ","
     )
