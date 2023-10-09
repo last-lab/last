@@ -12,16 +12,10 @@ async def AI_eval(
     critic_model=Placeholder(parser=lambda x: x),
     plan=Placeholder(parser=lambda x: x),
 ):
-    from functools import reduce
-    from operator import add
-
     datasets = [
         Dataset(
             name=dataset["name"],
             file=dataset["file"],
-            # focused_risks=[
-            #     RiskDimension(**_) for _ in json.loads(dataset["focused_risks"])
-            # ],
         )
         for dataset in datasets
     ]
@@ -30,7 +24,6 @@ async def AI_eval(
         name=plan["name"],
         eval_type=EvaluationType.auto_ai_critique,
         datasets=datasets,
-        # focused_risks=reduce(add, [dataset.focused_risks for dataset in datasets]),
     )
 
     llm_model = LLM(
@@ -49,7 +42,7 @@ async def AI_eval(
         )
 
     new_qa_records = {}
-    for qa_record in plan:  #
+    for qa_record in plan:  
         question, correct_ans = qa_record.question, qa_record.answer
         responce = await llm_model(question)
         critic = await critic_model(responce, correct_ans)
