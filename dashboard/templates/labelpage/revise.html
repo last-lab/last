@@ -188,7 +188,12 @@
                 lastName: "Dean"
             },
             task: {
-                annotations: annotations,
+                // https://labelstud.io/guide/export#Label-Studio-JSON-format-of-annotated-tasks
+                annotations: [
+                    {
+                        result: JSON.parse(result.replace(/'/g, '"'))
+                    }
+                ],
                 predictions: predictions,
                 id: 1,
                 data: {
