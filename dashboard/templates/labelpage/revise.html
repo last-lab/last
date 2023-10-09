@@ -28,7 +28,7 @@
     let annotations = [];
     const interfaces = [
         "panel",
-        "submit",
+        "update",
         "controls",
         "side-column",
         "skip",
@@ -54,7 +54,8 @@
     async function render_page () {
         const config = await getLabelConfig();
         const data = await getLabelData();
-
+        const result = await getLabelResult();
+        console.log(result);
         if (config) {
             answer = config.A;
             question = config.Q;
@@ -204,11 +205,11 @@
             console.log("loading...")
          });
 
-        labelStudio.on("submitAnnotation", (LS, annotation) => {
+        labelStudio.on("updateAnnotation", (LS, annotation) => {
             // Retrieve an annotation in JSON format
             console.log(annotation.serializeAnnotation())
             $.ajax({
-                url: '/admin/labelpage/labeling/{item}/submit',
+                url: '/admin/labelpage/labeling/{item}/update',
                 method: 'post',
                 data: JSON.stringify({
                     "annotation": annotation.serializeAnnotation(),
@@ -260,7 +261,18 @@
         return rsp.json();
 
     }
+
+    async function getLabelResult(){
+        const rsp = await fetch('/admin/labelpage/labeling/get_label_result', {
+            method: 'post',
+            body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        return rsp.json();
+    }
+
 </script>
 </body>
-
 {% endblock %}

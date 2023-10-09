@@ -30,7 +30,6 @@ async def labeling_view(
     }
     # 点击了标注之后，需要根据传回来的参数，主要是数据集的名称，标注方式
     # 载入数据，丢一个新的界面出去
-    print(context)
     try:
         return templates.TemplateResponse(
             f"{resource}/label.html",
@@ -39,6 +38,25 @@ async def labeling_view(
     except TemplateNotFound:
         return templates.TemplateResponse(
             "label.html",
+            context=context,
+        )
+
+
+@router.get("/{resource}/revise")
+async def revise_label_resut(request: Request, resource):
+    context = {
+        "request": request,
+        "resource": resource,
+        "labels": ast.literal_eval(request.query_params["labeling_method"]),
+    }
+    try:
+        return templates.TemplateResponse(
+            f"{resource}/revise.html",
+            context=context,
+        )
+    except TemplateNotFound:
+        return templates.TemplateResponse(
+            "revise.html",
             context=context,
         )
 
@@ -143,6 +161,17 @@ async def get_annotatoin_and_predict_data(request: Request, resource: str):
     return mock_data
 
 
+@router.post("/{resource}/labeling/get_label_result")
+async def get_label_reset(request: Request, resource: str):
+    json_data = await request.json()
+    task_id = json_data["task_id"]
+    question_id = json_data["question_id"]
+    # 查找数据结果表，得到标注结果
+    data = await LabelResult.filter(task_id=task_id, question_id=question_id)
+    labeling_result = data[0].labeling_result
+    return labeling_result
+
+
 @router.post("/{resource}/labeling/{pk}/submit")
 async def submit_callback(request: Request, resource: str, pk: str):
     json_data = await request.json()
@@ -157,3 +186,15 @@ async def submit_callback(request: Request, resource: str, pk: str):
     await labeling_row[0].save()
     # 修改task表中这一条数据的状态
     print(json_data)
+
+
+@router.post("/{resource}/labeling/{pk}/update")
+async def update_result_callback(request: Request, resource: str, pk: str):
+    json_data = await request.json()
+    # 将返回的结果覆盖掉数据库即可
+    question_id = json_data["question_id"]
+    task_id = json_data["task_id"]
+    annotation = json_data["annotation"]
+    labeling_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
+    labeling_row[0].labeling_result = annotation
+    await labeling_row[0].save()
