@@ -1,3 +1,4 @@
+import asyncio
 import json
 from concurrent.futures import ThreadPoolExecutor
 from functools import reduce
@@ -57,10 +58,9 @@ async def create_eval(
 
 
 async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
-    # await asyncio.sleep(10)
-    print("kaishi")
+    print("start")
     _, new_dataset = await Client.execute(AI_eval, kwargs_json)  # 这里是计算逻辑，执行很慢
-    print("wancheng")
+    print("end")
     focused_risks = reduce(add, [dataset["focused_risks"] for dataset in dataset_info]).replace(
         "][", ","
     )
@@ -91,7 +91,7 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
 
 
 @router.post("/evaluation/evaluation_create")
-async def evaluation_create(eval_info: EvalInfo):
+async def evaluation_create(eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
     model = await ModelInfo.get_or_none(id=eval_info.llm_id).values()
     record = await Record.create(
@@ -126,8 +126,13 @@ async def evaluation_create(eval_info: EvalInfo):
             "$plan": {"name": plan["name"]},
         }
     )
-    # asyncio.create_task(client_execute(plan, record, dataset_info, AI_eval, kwargs_json))
-    await client_execute(plan, record, dataset_info, AI_eval, kwargs_json)
+    try:
+        # client_execute(plan, record, dataset_info, AI_eval, kwargs_json)
+        asyncio.create_task(client_execute(plan, record, dataset_info, AI_eval, kwargs_json))
+        # await task
+    except Exception as e:
+        await Record.filter(id=record.id).update(state=EvalStatus.error)
+        return {"status": "error", "success": 0, "msg": str(e)}
     return {"status": "ok", "success": 1, "msg": "create eval success"}
 
 

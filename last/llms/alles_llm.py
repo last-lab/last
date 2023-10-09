@@ -1,13 +1,11 @@
 import os
 from typing import Any, List, Mapping, Optional, Dict
-
-from langchain.callbacks.manager import CallbackManagerForLLMRun
-from langchain.llms.base import LLM
+from pydantic import BaseModel
 from .model.http_alles_api_model import AllesMinimaxAPILLMModel, AllesChatGPTAPILLMModel, AllesGPT4APILLMModel, AllesPalmAPILLMModel, AllesClaudeAPILLMModel, AllesWenxinAPILLMModel, AllesSparkAPILLMModel, AllesBaiduTranslateAPILLMModel
 from .model.http_puyu_api_model import PuyuAPILLMModel
 
 
-class AllesChatLLM(LLM):
+class AllesChatLLM(BaseModel):
     model: str = None
     """Model name to use."""
     model_kwargs: Dict[str, Any] = None
@@ -17,16 +15,17 @@ class AllesChatLLM(LLM):
     max_tokens: Optional[int] = None
     """Maximum number of tokens to generate."""
 
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+
     @property
     def _llm_type(self) -> str:
         return "custom"
 
-    def _call(
+    async def __call__(
         self,
         prompt: str,
         messages: Optional[List[dict]] = None,
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Any,
     ) -> str:
         if self.model.startswith("alles"):
@@ -56,7 +55,7 @@ class AllesChatLLM(LLM):
         else:
             raise NotImplementedError()
 
-        response = model.response(
+        response = await model.response(
             prompt=prompt,
             messages=messages,
             **{

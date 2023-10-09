@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+import aiohttp
+import asyncio
 
 
 class BaseLLMModel(ABC):
@@ -16,7 +18,7 @@ class BaseLLMModel(ABC):
     def parse(self, response):
         raise NotImplementedError()
 
-    def response(
+    async def response(
         self,
         prompt,
         messages,
@@ -32,7 +34,7 @@ class BaseLLMModel(ABC):
         while (not success) and (trials < num_trials):
             try:
                 response = None
-                response = self.generate(prompt, messages, *args, **kwargs)
+                response = await self.generate(prompt, messages, *args, **kwargs)
                 success, generated_text = self.parse(response)
                 if not success:
                     raise Exception("An error occured!")
@@ -62,3 +64,10 @@ class HTTPAPILLMModel(BaseLLMModel):
         super().__init__(*args, **kwargs)
         self.url = None
         self.headers = None
+            
+    async def async_post(self, url, headers, data):
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, headers=headers, data=data) as response:
+                # 处理响应
+                result = await response.json()
+        return result
