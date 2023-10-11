@@ -2,7 +2,7 @@ import re
 
 
 def split_string_to_list(qa_records):
-    pattern = r"<BOS>(.+?)<EOS><BOS>(.+?)<EOS>"  # 匹配问题和答案的模式
+    pattern = r"<BOS>(.+?)<EOS>，<BOS>(.+?)<EOS>"  # 匹配问题和答案的模式
     matches = re.findall(pattern, qa_records, re.DOTALL)
 
     questions_answers_list = []
