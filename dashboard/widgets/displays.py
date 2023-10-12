@@ -261,3 +261,14 @@ class ShowSecondRiskDesc(Display):
             request,
             {"content": description},
         )
+
+
+class ShowPlan(Display):
+    template = "evaluationplan/update_plan.html"
+
+    async def render(self, request: Request, value: any):
+        info = await EvaluationPlan.get_or_none(name=value).values()
+        return await super().render(
+            request,
+            {"content": info["id"], "name": value, "id": info["id"]},
+        )

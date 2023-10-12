@@ -7,9 +7,7 @@
 <span style="cursor: pointer; color: #0D53DE; margin-right: 10px;">
   导出
 </span>
-<span data-bs-toggle="modal" data-bs-target="#{{ value.name }}" style="cursor: pointer; color: #F5483B;">
-  删除
-</span>
+{% include "delete.html" %}
 <div class="modal" id={{ value.uid }} tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -73,21 +71,6 @@
   </div>
 </div>
 
-<div class="modal" id={{ value.name }} tabindex="-1">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header" style="border-bottom: none">
-        <h5 class="modal-title">确认删除此评测集</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-footer">
-          <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">取消</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Close" onclick="deleteDataset({{ value.id }})">删除</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="modal" id={{ value.name + value.uid }} tabindex="-1" style="width: auto; left: 50%; transform: translateX(-50%)">
   <div class="modal-dialog" role="document" style="max-width: 100%">
     <div class="modal-content">
@@ -127,7 +110,7 @@
 
 
 <script>
-    function deleteDataset(id) {
+    function deleteData(id) {
         $.ajax({
             url: `/admin/dataset/delete/${id}`,
             type: 'DELETE',
