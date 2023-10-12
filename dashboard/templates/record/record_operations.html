@@ -1,4 +1,4 @@
-<button type="button" class="btn btn-ghost-primary">
+<button type="button" class="btn btn-ghost-primary" onclick="jumpReport({{ value.id }})">
     评测报告
 </button>
 {% include "record/model_detail_modal.html" %}
@@ -24,3 +24,9 @@
         </div>
     </div>
 </div>
+
+<script>
+    function jumpReport(id) {
+        window.location.href = `/admin/record/report/${id}`
+    }
+</script>

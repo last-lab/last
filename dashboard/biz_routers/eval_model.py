@@ -5,7 +5,7 @@ from functools import reduce
 from operator import add
 from typing import Union
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Path
 from pydantic import BaseModel
 from starlette.requests import Request
 from tortoise.expressions import Q
@@ -14,9 +14,10 @@ from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Record
 from dashboard.enums import EvalStatus
 from last.client import AI_eval, Client
 from last.services.app import app
-from last.services.depends import get_resources
+from last.services.depends import get_resources, get_model_resource
 from last.services.i18n import _
 from last.services.template import templates
+from last.services.resources import Model as ModelResource
 
 router = APIRouter()
 executor = ThreadPoolExecutor()
@@ -176,3 +177,28 @@ async def get_model_list():
         return {"status": "ok", "success": 1, "data": model_list}
     except Exception as e:
         return {"status": "error", "success": 0, "msg": e}
+
+
+@router.get("/{resource}/report/{pk}")
+async def get_report(
+    request: Request,
+    resource: str = Path(...),
+    resources=Depends(get_resources),
+    model_resource: ModelResource = Depends(get_model_resource),
+    pk: str = Path(...),
+):
+    base_info = await Record.get_or_none(id=pk).values()
+
+    return templates.TemplateResponse(
+        f"{resource}/get_report.html",
+        context={
+            "request": request,
+            "resource": resource,
+            "resource_label": model_resource.label,
+            "resources": resources,
+            "model_resource": model_resource,
+            "pk": pk,
+            "page_title": _("模型评测报告"),
+            "base_info": base_info
+        },
+    )
