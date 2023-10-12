@@ -17,13 +17,13 @@ from dashboard.widgets.displays import (
     OperationField,
     ShowAction,
     ShowIp,
+    ShowLabel,
     ShowPlan,
     ShowPlanDetail,
     ShowPopover,
     ShowRiskType,
     ShowSecondType,
     ShowStatus,
-    ShowLabel,
 )
 from dashboard.widgets.filters import SearchFilter
 from last.services import enums as _enums
@@ -277,8 +277,13 @@ class DataManager(Dropdown):
         model = LabelPage
         filters = [filters.Search(name="task_type", label="Task Type")]
         fields = [
-            "id", "task_id", "task_type", "labeling_method", "end_time", "current_status",
-            Field(name="task_id", label="操作", display=ShowLabel())
+            "id",
+            "task_id",
+            "task_type",
+            "labeling_method",
+            "end_time",
+            "current_status",
+            Field(name="task_id", label="操作", display=ShowLabel()),
         ]
 
         async def get_actions(self, request: Request) -> List[Action]:

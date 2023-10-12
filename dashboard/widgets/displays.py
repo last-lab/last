@@ -3,7 +3,7 @@ import json
 
 from starlette.requests import Request
 
-from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Risk, LabelPage
+from dashboard.biz_models import DataSet, EvaluationPlan, LabelPage, ModelInfo, Risk
 from dashboard.enums import EvalStatus
 from dashboard.utils.converter import DataSetTool
 from last.services.resources import ComputeField
