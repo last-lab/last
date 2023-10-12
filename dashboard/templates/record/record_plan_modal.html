@@ -1,7 +1,14 @@
-<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal"
+{% if value.plan_detail.name %}
+    <button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal"
         data-bs-target="#record-plan-detail-{{ value.plan_detail.name }}">
-    {{ value.plan_detail.name }}
-</button>
+        {{ value.plan_detail.name }}
+    </button>
+{% else %}
+    <button type="button" class="btn btn-ghost-primary disabled">
+        未找到关联项
+    </button>
+{% endif %}
+
 <div class="modal" id="record-plan-detail-{{ value.plan_detail.name }}" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">

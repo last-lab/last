@@ -17,6 +17,7 @@ from dashboard.widgets.displays import (
     OperationField,
     ShowAction,
     ShowIp,
+    ShowPlan,
     ShowPlanDetail,
     ShowPopover,
     ShowRiskType,
@@ -199,30 +200,31 @@ class DataManager(Dropdown):
                     enums.EvaluationType, default=enums.EvaluationType.auto_ai_critique
                 ),
             ),
+            Field(name="name", label="操作", display=ShowPlan()),
         ]
 
         async def get_actions(self, request: Request) -> List[Action]:
             return [
-                Action(
-                    label=_("update"),
-                    icon="ti ti-edit",
-                    name="epm_update",
-                    method=_enums.Method.GET,
-                    ajax=False,
-                ),
-                Action(
-                    label=_("复制并新建"),
-                    icon="ti ti-toggle-left",
-                    name="epm_copy_create",
-                    method=_enums.Method.GET,
-                    ajax=False,
-                ),
-                Action(
-                    label=_("delete"),
-                    icon="ti ti-trash",
-                    name="delete",
-                    method=_enums.Method.DELETE,
-                ),
+                # Action(
+                #     label=_("update"),
+                #     icon="ti ti-edit",
+                #     name="epm_update",
+                #     method=_enums.Method.GET,
+                #     ajax=False,
+                # ),
+                # Action(
+                #     label=_("复制并新建"),
+                #     icon="ti ti-toggle-left",
+                #     name="epm_copy_create",
+                #     method=_enums.Method.GET,
+                #     ajax=False,
+                # ),
+                # Action(
+                #     label=_("delete"),
+                #     icon="ti ti-trash",
+                #     name="delete",
+                #     method=_enums.Method.DELETE,
+                # ),
             ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:

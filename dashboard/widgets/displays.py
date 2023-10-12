@@ -49,27 +49,34 @@ class ShowPlanDetail(Display):
 
     async def render(self, request: Request, value: str):
         eval_plan = await EvaluationPlan.get_or_none(id=value)
-        dataset_ids = eval_plan.dataset_ids.split(",")
-        datasets = await DataSet.filter(id__in=dataset_ids)
-        eval_type = "系统评分⭐"
-        plan_content = eval_plan.dimensions.split(",")
-        if eval_plan.eval_type == 1:
-            eval_type = "人工评分 👤️"
 
-        dataset_schema = await DataSetTool.ds_model_to_eval_model_schema(datasets)
+        # 判空
+        if eval_plan is not None:
+            dataset_ids = eval_plan.dataset_ids.split(",")
+            datasets = await DataSet.filter(id__in=dataset_ids)
+            eval_type = "系统评分⭐"
+            plan_content = eval_plan.dimensions.split(",")
+            if eval_plan.eval_type == 1:
+                eval_type = "人工评分 👤️"
 
-        plan_detail = {
-            "name": eval_plan.name,
-            "score_way": eval_type,
-            "plan_content": plan_content,
-            "dataset_names": dataset_schema.dataset_names,
-            "risk_detail": dataset_schema.risk_detail,
-        }
+            dataset_schema = await DataSetTool.ds_model_to_eval_model_schema(datasets)
+            plan_detail = {
+                "name": eval_plan.name,
+                "score_way": eval_type,
+                "plan_content": plan_content,
+                "dataset_names": dataset_schema.dataset_names,
+                "risk_detail": dataset_schema.risk_detail,
+            }
 
-        return await super().render(
-            request,
-            {"plan_detail": plan_detail},
-        )
+            return await super().render(
+                request,
+                {"plan_detail": plan_detail},
+            )
+        else:
+            return await super().render(
+                request,
+                {"plan_detail": {}},
+            )
 
 
 class OperationField(ComputeField):
@@ -187,8 +194,8 @@ class ShowRiskType(Display):
         return await super().render(request, {"content": label})
 
 
-class ShowSecondType(Display):
-    template = "dataset/risk_second.html"
+class ShowSecondType(Popover):
+    # template = "dataset/risk_second.html"
 
     async def render(self, request: Request, value: any):
         label = []
@@ -199,7 +206,7 @@ class ShowSecondType(Display):
                     label.append(res["risk_name"])
         return await super().render(
             request,
-            {"content": ",".join([d for d in label])},
+            {"content": ",".join([d for d in label]), "popover": ",".join([d for d in label])},
         )
 
 
@@ -253,4 +260,15 @@ class ShowSecondRiskDesc(Display):
         return await super().render(
             request,
             {"content": description},
+        )
+
+
+class ShowPlan(Display):
+    template = "evaluationplan/update_plan.html"
+
+    async def render(self, request: Request, value: any):
+        info = await EvaluationPlan.get_or_none(name=value).values()
+        return await super().render(
+            request,
+            {"content": info["id"], "name": value, "id": info["id"]},
         )
