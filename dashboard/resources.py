@@ -23,6 +23,7 @@ from dashboard.widgets.displays import (
     ShowRiskType,
     ShowSecondType,
     ShowStatus,
+    ShowLabel,
 )
 from dashboard.widgets.filters import SearchFilter
 from last.services import enums as _enums
@@ -275,7 +276,10 @@ class DataManager(Dropdown):
         label = _("Labeling Record")
         model = LabelPage
         filters = [filters.Search(name="task_type", label="Task Type")]
-        fields = ["id", "task_id", "task_type", "labeling_method", "end_time", "current_status"]
+        fields = [
+            "id", "task_id", "task_type", "labeling_method", "end_time", "current_status",
+            Field(name="task_id", label="操作", display=ShowLabel())
+        ]
 
         async def get_actions(self, request: Request) -> List[Action]:
             return [
@@ -286,13 +290,13 @@ class DataManager(Dropdown):
                 #     method=Method.GET,
                 #     ajax=False,
                 # ),
-                Action(
-                    label=_("标注任务详情"),
-                    icon="ti ti-edit",
-                    name="display",
-                    method=Method.GET,
-                    ajax=False,
-                ),
+                # Action(
+                #     label=_("标注任务详情"),
+                #     icon="ti ti-edit",
+                #     name="display",
+                #     method=Method.GET,
+                #     ajax=False,
+                # ),
             ]
 
         async def get_bulk_actions(self, request: Request) -> List[Action]:

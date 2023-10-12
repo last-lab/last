@@ -3,7 +3,7 @@ import json
 
 from starlette.requests import Request
 
-from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Risk
+from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Risk, LabelPage
 from dashboard.enums import EvalStatus
 from dashboard.utils.converter import DataSetTool
 from last.services.resources import ComputeField
@@ -271,4 +271,15 @@ class ShowPlan(Display):
         return await super().render(
             request,
             {"content": info["id"], "name": value, "id": info["id"]},
+        )
+
+
+class ShowLabel(Display):
+    template = "labelpage/label_detail.html"
+
+    async def render(self, request: Request, value: any):
+        info = await LabelPage.get_or_none(task_id=value).values()
+        return await super().render(
+            request,
+            {"content": info["id"]},
         )
