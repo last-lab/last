@@ -16,6 +16,7 @@ from dashboard.models import Role as RoleModel
 from dashboard.widgets.displays import (
     OperationField,
     ShowAction,
+    ShowAdmin,
     ShowIp,
     ShowLabel,
     ShowPlan,
@@ -484,7 +485,11 @@ class Auth(Dropdown):
             "is_superuser",
             "is_active",
             "created_at",
+            Field(name="username", label="操作", display=ShowAdmin()),
         ]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return []
 
     class Resource(Model):
         label = _("Resource")

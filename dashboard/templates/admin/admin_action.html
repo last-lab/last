@@ -1,0 +1,20 @@
+<button class="btn btn-ghost-primary" onclick="jumpUpdate({{ value.content }})">更新</button>
+{% include "delete.html" %}
+<script>
+    function jumpUpdate(id) {
+        window.location.href = `/admin/admin/update/${id}`
+    }
+    function deleteData(id) {
+        $.ajax({
+            url: `/admin/admin/delete/${id}`,
+            type: 'DELETE',
+            contentType: "application/json;charset=UTF-8",
+            data: JSON.stringify({
+                pk: id
+            }),
+            success: function () {
+                location.reload();
+            }
+        })
+    }
+</script>
