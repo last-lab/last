@@ -24,6 +24,7 @@ from dashboard.widgets.displays import (
     ShowRiskType,
     ShowSecondType,
     ShowStatus,
+    ShowTime,
 )
 from dashboard.widgets.filters import SearchFilter
 from last.services import enums as _enums
@@ -123,7 +124,7 @@ class Evaluation(Dropdown):
         fields = [
             Field(name="llm_name", label="评测模型", display=ShowPopover()),
             Field(name="plan_id", label="评测方案", display=ShowPlanDetail()),
-            Field(name="created_at", label="提交时间"),
+            Field(name="created_at", label="提交时间", display=ShowTime()),
             Field(name="state", label="评测状态", display=ShowStatus()),
             OperationField(name="llm_id", label="操作"),
         ]

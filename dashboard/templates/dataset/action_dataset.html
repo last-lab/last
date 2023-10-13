@@ -1,12 +1,12 @@
-<span data-bs-toggle="modal" data-bs-target="#{{ value.uid }}" style="cursor: pointer; color: #0D53DE; margin-right: 10px;">
+<button data-bs-toggle="modal" data-bs-target="#{{ value.uid }}" class="btn btn-ghost-primary">
   详细信息
-</span>
-<span data-bs-toggle="modal" data-bs-target="#{{ value.name + value.uid }}" style="cursor: pointer; color: #0D53DE; margin-right: 10px;">
+</button>
+<button data-bs-toggle="modal" data-bs-target="#{{ value.name + value.uid }}" class="btn btn-ghost-primary">
     标注信息
-</span>
-<span style="cursor: pointer; color: #0D53DE; margin-right: 10px;">
+</button>
+<button class="btn btn-ghost-primary">
   导出
-</span>
+</button>
 {% include "delete.html" %}
 <div class="modal" id={{ value.uid }} tabindex="-1">
   <div class="modal-dialog" role="document">

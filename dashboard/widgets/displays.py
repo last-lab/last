@@ -283,3 +283,14 @@ class ShowLabel(Display):
             request,
             {"content": info["id"]},
         )
+
+
+class ShowTime(Display):
+    template = "record/time_format.html"
+
+    async def render(self, request: Request, value: any):
+        format_time = value.strftime("%Y-%m-%d %H:%M:%S")
+        return await super().render(
+            request,
+            {"content": format_time},
+        )
