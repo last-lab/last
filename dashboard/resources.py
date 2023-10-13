@@ -16,12 +16,16 @@ from dashboard.models import Role as RoleModel
 from dashboard.widgets.displays import (
     OperationField,
     ShowAction,
+    ShowAdmin,
     ShowIp,
+    ShowLabel,
+    ShowPlan,
     ShowPlanDetail,
     ShowPopover,
     ShowRiskType,
     ShowSecondType,
     ShowStatus,
+    ShowTime,
 )
 from dashboard.widgets.filters import SearchFilter
 from last.services import enums as _enums
@@ -121,7 +125,7 @@ class Evaluation(Dropdown):
         fields = [
             Field(name="llm_name", label="评测模型", display=ShowPopover()),
             Field(name="plan_id", label="评测方案", display=ShowPlanDetail()),
-            Field(name="created_at", label="提交时间"),
+            Field(name="created_at", label="提交时间", display=ShowTime()),
             Field(name="state", label="评测状态", display=ShowStatus()),
             OperationField(name="llm_id", label="操作"),
         ]
@@ -199,30 +203,31 @@ class DataManager(Dropdown):
                     enums.EvaluationType, default=enums.EvaluationType.auto_ai_critique
                 ),
             ),
+            Field(name="name", label="操作", display=ShowPlan()),
         ]
 
         async def get_actions(self, request: Request) -> List[Action]:
             return [
-                Action(
-                    label=_("update"),
-                    icon="ti ti-edit",
-                    name="epm_update",
-                    method=_enums.Method.GET,
-                    ajax=False,
-                ),
-                Action(
-                    label=_("复制并新建"),
-                    icon="ti ti-toggle-left",
-                    name="epm_copy_create",
-                    method=_enums.Method.GET,
-                    ajax=False,
-                ),
-                Action(
-                    label=_("delete"),
-                    icon="ti ti-trash",
-                    name="delete",
-                    method=_enums.Method.DELETE,
-                ),
+                # Action(
+                #     label=_("update"),
+                #     icon="ti ti-edit",
+                #     name="epm_update",
+                #     method=_enums.Method.GET,
+                #     ajax=False,
+                # ),
+                # Action(
+                #     label=_("复制并新建"),
+                #     icon="ti ti-toggle-left",
+                #     name="epm_copy_create",
+                #     method=_enums.Method.GET,
+                #     ajax=False,
+                # ),
+                # Action(
+                #     label=_("delete"),
+                #     icon="ti ti-trash",
+                #     name="delete",
+                #     method=_enums.Method.DELETE,
+                # ),
             ]
 
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
@@ -273,7 +278,15 @@ class DataManager(Dropdown):
         label = _("Labeling Record")
         model = LabelPage
         filters = [filters.Search(name="task_type", label="Task Type")]
-        fields = ["id", "task_id", "task_type", "labeling_method", "end_time", "current_status"]
+        fields = [
+            "id",
+            "task_id",
+            "task_type",
+            "labeling_method",
+            "end_time",
+            "current_status",
+            Field(name="task_id", label="操作", display=ShowLabel()),
+        ]
 
         async def get_actions(self, request: Request) -> List[Action]:
             return [
@@ -284,13 +297,13 @@ class DataManager(Dropdown):
                 #     method=Method.GET,
                 #     ajax=False,
                 # ),
-                Action(
-                    label=_("标注任务详情"),
-                    icon="ti ti-edit",
-                    name="display",
-                    method=Method.GET,
-                    ajax=False,
-                ),
+                # Action(
+                #     label=_("标注任务详情"),
+                #     icon="ti ti-edit",
+                #     name="display",
+                #     method=Method.GET,
+                #     ajax=False,
+                # ),
             ]
 
         async def get_bulk_actions(self, request: Request) -> List[Action]:
@@ -472,7 +485,11 @@ class Auth(Dropdown):
             "is_superuser",
             "is_active",
             "created_at",
+            Field(name="username", label="操作", display=ShowAdmin()),
         ]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return []
 
     class Resource(Model):
         label = _("Resource")
