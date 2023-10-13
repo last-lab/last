@@ -74,6 +74,7 @@ async def display(
     # 获取得到对应task的id
     task_id = obj.task_id
     labeling_method = obj.labeling_method
+
     context = {
         "request": request,
         "resources": resources,
@@ -103,26 +104,28 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
     # 需要有task id的名字，然后根据这个名字从task table中获取得到对应的dataset的名字
     # 再从dataset表中取出来dataset的文件路径
     # 读取这个文件的路径获取得到文件的数据
-
     json_data = await request.json()
     task_id = json_data["taskID"]
+    # 获取用户的id
+    user_id = str(request.state.admin).split("#")[1]
     # 从result表中获取所有的question字段的结果
     # 获取result表中给定task_id的所有记录
     results = await LabelResult.filter(task_id=task_id).values(
-        "question_id", "question", "status", "labeling_method"
+        "question_id", "question", "status", "labeling_method", "assign_user"
     )
     res_list = []
     for result in results:
-        res_list.append(
-            {
-                "question_id": result["question_id"],
-                "question": result["question"],
-                "status": result["status"],
-                "action": "标注" if result["status"] == "未标注" else "查看",
-                "task_id": task_id,
-                "labeling_method": result["labeling_method"],
-            }
-        )
+        if user_id in result["assign_user"]:
+            res_list.append(
+                {
+                    "question_id": result["question_id"],
+                    "question": result["question"],
+                    "status": result["status"],
+                    "action": "标注" if result["status"] == "未标注" else "查看",
+                    "task_id": task_id,
+                    "labeling_method": result["labeling_method"],
+                }
+            )
 
     return res_list
 
@@ -181,11 +184,10 @@ async def submit_callback(request: Request, resource: str, pk: str):
     annotation = json_data["annotation"]
     labeling_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
     assert len(labeling_row) == 1
+    # TODO 下个版本需要支持多用户进行标注，将不同人的标注结果进行合并操作
     labeling_row[0].labeling_result = annotation
     labeling_row[0].status = "标注完成"
     await labeling_row[0].save()
-    # 修改task表中这一条数据的状态
-    print(json_data)
 
 
 @router.post("/{resource}/labeling/{pk}/update")

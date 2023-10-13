@@ -1,39 +1,48 @@
 {% extends layout %}
 {% block page_body %}
 
-    <table id="myTable">
-        <tr>
-            <th>ID</th>
-            <th>问题</th>
-            <th>当前状态</th>
-            <th>操作</th>
-        </tr>
-    </table>
 
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
 
-        table {
-            width: 80%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+    <div class="card">
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
+        <div class="table-responsive">
+            <table class="table card-table table-vcenter text-nowrap datatable" id="myTable">
+                <thead>
+                <tr>
+                        <th>Id</th>
 
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+                        <th>问题</th>
+
+                        <th>当前状态</th>
+
+                        <th>操作</th>
+
+                </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+
+          <span class="dropdown">
+            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+
+
+                <!-- <a class="dropdown-item" href="/admin/labelpage/display/1"> -->
+                <i class="ti ti-edit me-2"></i>
+                标注任务详情
+              </a>
+
+            </div>
+          </span>
+                        </td>
+
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
 
     <script>
         // 使用 $.ajax 方法获取数据

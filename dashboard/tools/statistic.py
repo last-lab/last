@@ -20,3 +20,16 @@ def statistic_dataset(dataset_path):
                 What is the primary language spoken in Brazil?,Portuguese
                 Who painted the ceiling of the Sistine Chapel?,Michelangelo"""
     return (volume, qa_num, word_cnt, qa_records)
+
+
+def distribute_labeling_task(len_dataset: int, assign_user_list):
+    # 采用某种算法，给不同的用户分配不同的item进行标注
+    # 返回的结果为 {0: ['user1', 'user2'], ...}
+    # 暂时返回每个用户都要标注所有的item
+    item_assign_dict = {}
+    for index in range(len_dataset):
+        if index // 2 == 0:
+            item_assign_dict[index] = [assign_item["annotator"] for assign_item in assign_user_list]
+        else:
+            item_assign_dict[index] = []
+    return item_assign_dict

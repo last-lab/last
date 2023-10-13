@@ -3,125 +3,228 @@
 
     <h1>标注任务</h1>
 
-    <div class="form-group">
-        <label for="file">标注数据集合：</label>
-        <input type="file" id="file" name="file">
-    </div>
+    <style>
+        .form-table {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text {
+            float: left;
+            width: 50%;
+            padding-right: 20px;
+            }
+
+        table {
+            float: left;
+            border-collapse: collapse;
+            width: 300px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .button {
+            width: 80px; /* 设置按钮宽度为80px */
+            height: 40px;
+            padding: 10px;
+            font-size: 16px;
+            }
+        </style>
+
 
     <div class="form-group">
-        <label>标注方式：</label>
+        <label for="file">标注数据集</label>
+        <input type="file" id="file" name="file" value="请选择文件">
+    </div>
+
+
+    <div class="form-group">
         <div>
+          <span>标注方式 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          <div>
             <input type="checkbox" id="judgment" name="annotationType" value="判断标注">
             <label class="checkbox-label" for="judgment">判断标注</label>
-        </div>
-        <div>
+            </div>
+            <div>
             <input type="checkbox" id="sorting" name="annotationType" value="排序标注">
             <label class="checkbox-label" for="sorting">排序标注</label>
-        </div>
-        <div>
+            </div>
+            <div>
             <input type="checkbox" id="boundingBox" name="annotationType" value="框选标注">
             <label class="checkbox-label" for="boundingBox">框选标注</label>
+            </div>
         </div>
-    </div>
+      </div>
 
-    <div class="form-group">
-        <label for="deadline">截止时间：</label>
-        <input type="datetime-local" id="deadline" name="deadline">
-    </div>
+      <div class="form-date">
+        <div class="form-group">
+            <label for="deadline">截止时间：</label>
+            <input type="datetime-local" id="deadline" name="deadline" value="请输入时间">
+        </div>
+      </div>
 
-    <div class="form-group">
-        <label>任务分配：</label>
-        <table>
-            <thead>
-                <tr>
-                    <th>标注员</th>
-                    <th>题目数量</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>标注员1</td>
-                    <td>10</td>
-                </tr>
-                <tr>
-                    <td>标注员2</td>
-                    <td>15</td>
-                </tr>
-                <tr>
-                    <td>标注员3</td>
-                    <td>20</td>
-                </tr>
-            </tbody>
+
+    <div class="form-table">
+        <div class = "text">
+            <span>任务分配：</span>
+        </div>
+        <table id="assignTable"
+        <thead>
+            <tr>
+              <th>标注员</th>
+              <th>题目数量</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+
+          </tbody>
         </table>
     </div>
 
-    <button type="submit" onclick="submitForm()">提交</button>
+    <div>
+        <label for="username">标注员：</label>
+        <select id="username">
+          <option value="">请选择标注员</option>
+        </select>
+        <label for="quantity">题目数量：</label>
+        <input type="number" id="quantity" value="百分比">
+        <button onclick="addRow()">添加</button>
+      </div>
+
+    <button class="button" type="submit" onclick="submitForm()">提交</button>
 
     <script>
-        function submitForm() {
-    var fileInput = document.getElementById('file');
-    var file = fileInput.files[0];
-    var reader = new FileReader();
-    var fileName = file.name; // 获取文件的路径
 
-    // 读取文件内容
-    reader.onload = function(e) {
-        var fileContent = e.target.result;
-        // 在这里对文件内容进行处理
-        console.log(fileContent);
+    // 获取下拉框选项值
+    async function fetchUserOptions() {
+      // 调用 task/user_ge 接口获取标注员列表
+      var userList = await getUserList();
+    //   var userList = ['标注员A', '标注员B', '标注员C'];
 
-        var annotationTypes = [];
-        var checkboxes = document.getElementsByName('annotationType');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i].checked) {
-                annotationTypes.push(checkboxes[i].value);
-            }
+      var dropdown = document.getElementById('username');
+      dropdown.innerHTML = '<option value="">请选择标注员</option>';
+
+      userList.forEach(function(user) {
+        var option = document.createElement('option');
+        option.value = user;
+        option.text = user;
+        dropdown.appendChild(option);
+      });
+    }
+
+    // 添加新行
+    function addRow() {
+      var table = document.getElementById('assignTable');
+      var username = document.getElementById('username').value;
+      var quantity = document.getElementById('quantity').value;
+
+      if (username && quantity) {
+        var row = table.insertRow(-1);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+
+        cell1.innerHTML = username;
+        cell2.innerHTML = quantity;
+        cell3.innerHTML = '<button onclick="deleteRow(this)">删除</button>';
+
+        // 清空输入框
+        document.getElementById('username').value = '';
+        document.getElementById('quantity').value = '';
+      }
+    }
+
+    // 删除行
+    function deleteRow(btn) {
+        var row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
         }
 
-        var deadlineInput = document.getElementById('deadline');
-        var deadline = deadlineInput.value;
-
-        var tableRows = document.querySelectorAll('table tbody tr');
-        var taskAssignments = [];
-        for (var i = 0; i < tableRows.length; i++) {
-            var cells = tableRows[i].querySelectorAll('td');
-            var annotator = cells[0].textContent;
-            var taskCount = cells[1].textContent;
-            taskAssignments.push({ annotator: annotator, taskCount: taskCount });
-        }
-
-        var formData = {
-            fileName: fileName,
-            fileContent: fileContent, // 将文件内容添加到表单数据中
-            annotationTypes: annotationTypes,
-            deadline: deadline,
-            taskAssignments: taskAssignments
+        // 页面加载时获取下拉框选项值
+        window.onload = function() {
+        fetchUserOptions();
         };
 
-        // 调用回调函数，将数据传递给它进行处理
-        // 使用 $.ajax 发送数据到特定的 URL
-        $.ajax({
-            type: 'POST',
-            url: '/admin/taskmanage/create_task_callback',
-            data: JSON.stringify(formData),
-            contentType: 'application/json',
-            success: function(response) {
-                // 请求成功的处理
-                history.back();
-                location.href='/admin/taskmanage/list';
+    function submitForm() {
+        var fileInput = document.getElementById('file');
+        var file = fileInput.files[0];
+        var reader = new FileReader();
+        var fileName = file.name; // 获取文件的路径
 
-                // alert(success);
-            },
-            error: function(error) {
-                // 请求失败的处理
-                console.log(error);
+        // 读取文件内容
+        reader.onload = function(e) {
+            var fileContent = e.target.result;
+            // 在这里对文件内容进行处理
+            console.log(fileContent);
+
+            var annotationTypes = [];
+            var checkboxes = document.getElementsByName('annotationType');
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    annotationTypes.push(checkboxes[i].value);
+                }
             }
-        });
-    };
 
-    // 以文本格式读取文件内容
-    reader.readAsText(file);
-}
+            var deadlineInput = document.getElementById('deadline');
+            var deadline = deadlineInput.value;
+
+            var assignTable = document.getElementById('assignTable');
+            var taskAssignments = [];
+            for (var i = 1; i < assignTable.rows.length; i++) {
+                var cells = assignTable.rows[i].cells;
+                var annotator = cells[0].textContent;
+                var taskCount = cells[1].textContent;
+                taskAssignments.push({ annotator: annotator, taskCount: taskCount });
+            }
+
+            var formData = {
+                fileName: fileName,
+                fileContent: fileContent, // 将文件内容添加到表单数据中
+                annotationTypes: annotationTypes,
+                deadline: deadline,
+                taskAssignments: taskAssignments
+            };
+
+            // 调用回调函数，将数据传递给它进行处理
+            // 使用 $.ajax 发送数据到特定的 URL
+            $.ajax({
+                type: 'POST',
+                url: '/admin/taskmanage/create_task_callback',
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function(response) {
+                    // 请求成功的处理
+                    history.back();
+                    location.href='/admin/taskmanage/list';
+
+                    // alert(success);
+                },
+                error: function(error) {
+                    // 请求失败的处理
+                    console.log(error);
+                }
+            });
+        };
+
+        // 以文本格式读取文件内容
+        reader.readAsText(file);
+    }
+
+    async function getUserList() {
+        const rsp = await fetch('/admin/taskmanage/get_user_list', {
+            method: 'get',
+        })
+        return rsp.json();
+    }
 
     </script>
 </body>

@@ -10,7 +10,8 @@ from starlette.requests import Request
 from tortoise import Model
 
 from dashboard.biz_models import LabelPage, LabelResult, TaskManage
-from dashboard.tools.statistic import statistic_dataset
+from dashboard.resources import Admin
+from dashboard.tools.statistic import distribute_labeling_task, statistic_dataset
 from dashboard.utils.string_utils import split_string_to_list
 from last.services.depends import create_checker, get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
@@ -156,6 +157,7 @@ async def create_task_callback(
     ).save()
 
     qa_list = split_string_to_list(json_data["fileContent"])
+    assign_result = distribute_labeling_task(len(qa_list), json_data["taskAssignments"])
     # 创建一个task res表，将这个任务的结果存放起来
     for index, (question, answer) in enumerate(qa_list):
         await LabelResult(
@@ -167,6 +169,7 @@ async def create_task_callback(
             question=question,
             answer=answer,
             status="未标注",
+            assign_user=assign_result[index],
         ).save()
     return "success"
 
@@ -174,3 +177,11 @@ async def create_task_callback(
 @router.get("/{resource}/get_datasets_name")
 async def get_datasets_name(request: Request, resources=Depends(get_resources)):
     return ["test1", "test2"]
+
+
+@router.get("/{resource}/get_user_list")
+async def get_labeling_user_list(request: Request):
+    admin_table = await Admin.all()
+    user_list = [user.username for user in admin_table]
+    return user_list
+    # return {"user_list" : user_list }

@@ -20,4 +20,5 @@ class LabelResult(Model):
     question = fields.CharField(max_length=200, null=True)
     answer = fields.CharField(max_length=200, null=True)
     status = fields.CharField(max_length=200, null=True, default=None)
+    assign_user = fields.CharField(max_length=30, null=True)
     labeling_result = fields.CharField(max_length=1000, null=True, default=None)
