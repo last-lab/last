@@ -1,5 +1,6 @@
 import csv
 import json
+import time
 
 from starlette.requests import Request
 
@@ -289,8 +290,9 @@ class ShowLabel(Display):
 class ShowTime(Display):
     template = "record/time_format.html"
 
-    async def render(self, request: Request, value: any):
-        format_time = value.strftime("%Y-%m-%d %H:%M:%S")
+    async def render(self, request: Request, value: int):
+        time_array = time.localtime(value / 1000)
+        format_time = time.strftime("%Y-%m-%d %H:%M:%S", time_array)
         return await super().render(
             request,
             {"content": format_time},
