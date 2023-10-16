@@ -99,7 +99,7 @@ async def evaluation_create(eval_info: EvalInfo):  # TODO 加一个按钮，可�
         plan_id=eval_info.plan_id,
         llm_name=model["name"],
         llm_id=eval_info.llm_id,
-        created_at=eval_info.created_at
+        created_at=eval_info.created_at,
     )
     # try:
     dataset_ids = [int(_) for _ in plan["dataset_ids"].split(",")]
