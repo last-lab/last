@@ -96,7 +96,7 @@
         const data = {
             "llm_id": $('#model').val(),
             "plan_id": $('#eval_plan').val(),
-            "created_at": new Date().toUTCString()
+            "created_at": new Date().getTime()
         }
         $.ajax({
             url: '/admin/evaluation/evaluation_create',
