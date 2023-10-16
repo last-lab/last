@@ -1,32 +1,30 @@
 {% extends layout %}
 {% block page_body %}
 <div class="row row-deck row-cards" style="padding-left: 34px; padding-right: 34px">
-    <div class="col-3">
-        <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px; height: 325px">
-            <div class="card-body">
-                <h3 class="card-title">基本信息</h3>
-                <div class="mb-3 row">
-                    <label class="col-4 col-form-label">模型名称</label>
-                    <div class="col col-form-label">{{ base_info.llm_name }}</div>
-                </div>
-                <div class="mb-3 row">
-                    <label class="col-4 col-form-label">评测方案</label>
-                    <div class="col col-form-label">{{ base_info.eval_plan }}</div>
-                </div>
-                <div class="mb-3 row">
-                    <label class="col-4 col-form-label">评测时间</label>
-                    <div class="col col-form-label">{{ base_info.created_at }}</div>
-                </div>
-                <div class="mb-3 row">
-                    <label class="col-4 col-form-label">评测方</label>
-                    <div class="col col-form-label">123</div>
-                </div>
+    <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px;">
+        <div class="card-body" style="display: flex">
+            <div class="mb-3 row">
+                <label class="col-4 col-form-label">模型名称</label>
+                <div class="col col-form-label">{{ base_info.llm_name }}</div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-4 col-form-label">评测方案</label>
+                <div class="col col-form-label">{{ base_info.eval_plan }}</div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-4 col-form-label">评测时间</label>
+                <div class="col col-form-label">{{ base_info.created_at }}</div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-4 col-form-label">评测方</label>
+                <div class="col col-form-label">123</div>
             </div>
         </div>
     </div>
-    <div class="col-9">
-        <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px; height: 325px">
+    <div class="col-12">
+        <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px; height: 376px">
             <div class="card-body">
+                <h3 class="card-title">评测结果</h3>
                 456
             </div>
         </div>
@@ -34,13 +32,7 @@
     <div class="col-12">
         <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px; height: 376px">
             <div class="card-body">
-                456
-            </div>
-        </div>
-    </div>
-    <div class="col-12">
-        <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px; height: 376px">
-            <div class="card-body">
+                <h3 class="card-title">典型风险案例</h3>
                 456
             </div>
         </div>
