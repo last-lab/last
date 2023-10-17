@@ -132,6 +132,7 @@ function getResult(id, type_id) {
             columns.forEach(item => {
                 const th = document.createElement('th');
                 th.innerText = item
+                th.style.textTransform = 'none'
                 document.getElementById('table-th').append(th)
             })
 
