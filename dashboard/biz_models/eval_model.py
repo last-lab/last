@@ -41,4 +41,3 @@ class ModelResult(Model):
     eval_type_id = fields.IntField()
     score = fields.IntField()
     eval_data_set_score_json = fields.TextField(null=True)
-

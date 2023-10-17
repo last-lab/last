@@ -17,10 +17,10 @@ from dashboard.enums import EvalStatus
 from dashboard.utils.converter import DataSetTool
 from last.client import AI_eval, Client
 from last.services.app import app
-from last.services.depends import get_resources, get_model_resource
+from last.services.depends import get_model_resource, get_resources
 from last.services.i18n import _
-from last.services.template import templates
 from last.services.resources import Model as ModelResource
+from last.services.template import templates
 
 router = APIRouter()
 executor = ThreadPoolExecutor()
@@ -42,6 +42,7 @@ class EvalInfo(BaseModel):
 class ModelResultProp(BaseModel):
     llm_id: int
     eval_type_id: int
+
 
 @app.get("/record/add")
 async def create_eval(
@@ -225,7 +226,6 @@ async def get_report(
         risk_info = await Risk.get_or_none(risk_name=risk_name).values()
         risks_info.append(risk_info)
 
-
     return templates.TemplateResponse(
         f"{resource}/get_report.html",
         context={
@@ -238,10 +238,8 @@ async def get_report(
             "page_title": _("模型评测报告"),
             "base_info": base_info,
             "format_time": format_time,
-            "value": {
-                "plan_detail": plan_detail
-            },
-            "risks_info": risks_info
+            "value": {"plan_detail": plan_detail},
+            "risks_info": risks_info,
         },
     )
 
@@ -251,7 +249,11 @@ async def get_result(request: Request, result: ModelResultProp):
     if result.eval_type_id == 0:
         results = await ModelResult.all().filter(llm_id=result.llm_id).values()
     else:
-        results = await ModelResult.all().filter(llm_id=result.llm_id, eval_type_id=result.eval_type_id).values()
+        results = (
+            await ModelResult.all()
+            .filter(llm_id=result.llm_id, eval_type_id=result.eval_type_id)
+            .values()
+        )
     # 添加风险Name
     for item in results:
         if item["eval_type_id"] == 0:
