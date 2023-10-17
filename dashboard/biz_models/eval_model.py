@@ -27,3 +27,18 @@ class Record(Model):
     created_at = fields.IntField(null=True, auto_now_add=True)
     state: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress, null=True)
     report = fields.BinaryField(null=True)
+
+
+# id 行记录id
+# llm_id 评测报告id
+# eval_model_name 评测模型名字
+# eval_type 评测类型id, 综合默认为0
+# score 评分
+# eval_data_set_score_json json类型 [{评测集得分信息}] 综合评分留空字段
+class ModelResult(Model):
+    llm_id = fields.IntField()
+    eval_model_name = fields.CharField(max_length=200)
+    eval_type_id = fields.IntField()
+    score = fields.IntField()
+    eval_data_set_score_json = fields.TextField(null=True)
+

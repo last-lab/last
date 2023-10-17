@@ -1,5 +1,6 @@
 import asyncio
 import json
+import time
 from concurrent.futures import ThreadPoolExecutor
 from functools import reduce
 from operator import add
@@ -10,8 +11,10 @@ from pydantic import BaseModel
 from starlette.requests import Request
 from tortoise.expressions import Q
 
-from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Record
+from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Record, Risk
+from dashboard.biz_models.eval_model import ModelResult
 from dashboard.enums import EvalStatus
+from dashboard.utils.converter import DataSetTool
 from last.client import AI_eval, Client
 from last.services.app import app
 from last.services.depends import get_resources, get_model_resource
@@ -35,6 +38,10 @@ class EvalInfo(BaseModel):
     llm_id: int
     created_at: int
 
+
+class ModelResultProp(BaseModel):
+    llm_id: int
+    eval_type_id: int
 
 @app.get("/record/add")
 async def create_eval(
@@ -188,7 +195,36 @@ async def get_report(
     model_resource: ModelResource = Depends(get_model_resource),
     pk: str = Path(...),
 ):
+    # 评测方案信息
     base_info = await Record.get_or_none(id=pk).values()
+    # 时间格式化
+    time_array = time.localtime(base_info["created_at"] / 1000)
+    format_time = time.strftime("%Y-%m-%d %H:%M:%S", time_array)
+    # 评测方案详情
+    eval_plan = await EvaluationPlan.get_or_none(id=base_info["plan_id"])
+    dataset_ids = eval_plan.dataset_ids.split(",")
+    datasets = await DataSet.filter(id__in=dataset_ids)
+    eval_type = "系统评分⭐"
+    plan_content = eval_plan.dimensions.split(",")
+    if eval_plan.eval_type == 1:
+        eval_type = "人工评分 👤️"
+
+    dataset_schema = await DataSetTool.ds_model_to_eval_model_schema(datasets)
+    plan_detail = {
+        "name": eval_plan.name,
+        "score_way": eval_type,
+        "plan_content": plan_content,
+        "dataset_names": dataset_schema.dataset_names,
+        "risk_detail": dataset_schema.risk_detail,
+    }
+    # risk
+    risks_info = []
+    risks = eval_plan.dimensions.split(",")
+    for risk in risks:
+        risk_name = risk.split("/")[0]
+        risk_info = await Risk.get_or_none(risk_name=risk_name).values()
+        risks_info.append(risk_info)
+
 
     return templates.TemplateResponse(
         f"{resource}/get_report.html",
@@ -200,6 +236,32 @@ async def get_report(
             "model_resource": model_resource,
             "pk": pk,
             "page_title": _("模型评测报告"),
-            "base_info": base_info
+            "base_info": base_info,
+            "format_time": format_time,
+            "value": {
+                "plan_detail": plan_detail
+            },
+            "risks_info": risks_info
         },
     )
+
+
+@router.post("/{resource}/report/result")
+async def get_result(request: Request, result: ModelResultProp):
+    if result.eval_type_id == 0:
+        results = await ModelResult.all().filter(llm_id=result.llm_id).values()
+    else:
+        results = await ModelResult.all().filter(llm_id=result.llm_id, eval_type_id=result.eval_type_id).values()
+    # 添加风险Name
+    for item in results:
+        if item["eval_type_id"] == 0:
+            item["eval_type_name"] = "综合评分"
+        else:
+            name = await Risk.get_or_none(id=item["eval_type_id"]).values()
+            item["eval_type_name"] = name["risk_name"] + "评分"
+            item["eval_data_set_score_json_list"] = json.loads(item["eval_data_set_score_json"])
+            # 添加评测集名称
+            for ele in item["eval_data_set_score_json_list"]:
+                dataset_info = await DataSet.get_or_none(id=ele["id"]).values()
+                ele["name"] = dataset_info["name"]
+    return {"result": results}

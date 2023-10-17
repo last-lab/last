@@ -1,31 +1,48 @@
 {% extends layout %}
 {% block page_body %}
 <div class="row row-deck row-cards" style="padding-left: 34px; padding-right: 34px">
+    <div id="llm_id" style="display: none">{{ base_info.llm_id }}</div>
     <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px;">
-        <div class="card-body" style="display: flex">
-            <div class="mb-3 row">
-                <label class="col-4 col-form-label">模型名称</label>
-                <div class="col col-form-label">{{ base_info.llm_name }}</div>
+        <div class="card-body" style="display: flex; gap: 32px">
+            <div style="display: flex; align-items: center; gap: 6px">
+                <img src="/static/assets/RepoOutlined.svg" />
+                <span>评测方案</span>
+                <span>{{ base_info.eval_plan }}</span>
+                {% include "record/record_plan_icon_detail.html" %}
             </div>
-            <div class="mb-3 row">
-                <label class="col-4 col-form-label">评测方案</label>
-                <div class="col col-form-label">{{ base_info.eval_plan }}</div>
+            <div style="display: flex; align-items: center; gap: 6px">
+                <img src="/static/assets/DataPreparationOutlined.svg" />
+                <span>提交时间</span>
+                <span>{{ format_time }}</span>
             </div>
-            <div class="mb-3 row">
-                <label class="col-4 col-form-label">评测时间</label>
-                <div class="col col-form-label">{{ base_info.created_at }}</div>
-            </div>
-            <div class="mb-3 row">
-                <label class="col-4 col-form-label">评测方</label>
-                <div class="col col-form-label">123</div>
+            <div style="display: flex; align-items: center; gap: 6px">
+                <img src="/static/assets/PersonalOutlined.svg" />
+                <span>评测方</span>
+                <span>123</span>
             </div>
         </div>
     </div>
     <div class="col-12">
-        <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px; height: 376px">
+        <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px; min-height: 376px">
             <div class="card-body">
                 <h3 class="card-title">评测结果</h3>
-                456
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="btn-radio-basic" id=0 autocomplete="off" checked>
+                    <label for=0 type="button" class="btn">综合</label>
+                    {% for risk in risks_info %}
+                        <input type="radio" class="btn-check" name="btn-radio-basic" id={{ risk.risk_id }} autocomplete="off">
+                        <label for={{ risk.risk_id }} type="button" class="btn">{{ risk.risk_name }}</label>
+                    {% endfor %}
+                </div>
+                <div id="chart"></div>
+                <div class="table-responsive">
+                    <table class="table table-vcenter card-table">
+                        <thead>
+                            <tr id="table-th"></tr>
+                        </thead>
+                        <tbody id="table-td"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -33,9 +50,134 @@
         <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px; height: 376px">
             <div class="card-body">
                 <h3 class="card-title">典型风险案例</h3>
-                456
             </div>
         </div>
     </div>
 </div>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/libs/apexcharts/dist/apexcharts.min.js" defer></script>
+<script>
+const current_id = Number(document.getElementById("llm_id").innerText)
+function getResult(id, type_id) {
+    $.ajax({
+        url: '/admin/record/report/result',
+        type: 'POST',
+        data: JSON.stringify({
+            "llm_id": id,
+            "eval_type_id": type_id
+        }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (value) {
+            // Chart渲染
+            const categories = Array.from(new Set(value.result.map(item => item.eval_model_name)));
+            const series = [];
+            value.result.forEach(item => {
+                if (item.eval_type_id === Number(type_id)) {
+                    series.push(item.score)
+                }
+            })
+            function get_chart() {
+                const chart = document.getElementById('chart-demo-bar')
+                if (chart) {
+                    chart.remove()
+                }
+                const root = document.createElement('div');
+                root.id = 'chart-demo-bar'
+                document.getElementById('chart').append(root)
+                window.ApexCharts && (new ApexCharts(document.getElementById('chart-demo-bar'), {
+                    series: [{
+                        data: series
+                    }],
+                    chart: {
+                        type: 'bar',
+                        height: 90+categories.length*20
+                    },
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 4,
+                            horizontal: true,
+                            distributed: true,
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true
+                    },
+                    colors: ["#415176", "#8D96AC", "#417656", "#8FAC8D"],
+                    xaxis: {
+                        categories: categories,
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                })).render();
+            }
+            // 页面第一次渲染
+            document.addEventListener("DOMContentLoaded", get_chart);
+            get_chart()
+
+            // Table渲染
+            // 表头渲染
+            const table_th_dom = document.getElementById("table-th");
+            let child_th = table_th_dom.lastElementChild;
+            while (child_th) {
+                child_th.remove();
+                child_th = table_th_dom.lastElementChild;
+            }
+            let columns;
+            if (Number(type_id) === 0) {
+                columns = ['评测模型'].concat(Array.from(new Set(value.result.map(item => item.eval_type_name))))
+            } else {
+                columns = ['评测模型', value.result?.[0]?.eval_type_name].concat(value.result?.[0]?.eval_data_set_score_json_list.map(item => item.name))
+            }
+            columns.forEach(item => {
+                const th = document.createElement('th');
+                th.innerText = item
+                document.getElementById('table-th').append(th)
+            })
+
+            // 数据渲染
+            const table_td_dom = document.getElementById("table-td");
+            let child_td = table_td_dom.lastElementChild;
+            while (child_td) {
+                child_td.remove();
+                child_td = table_td_dom.lastElementChild;
+            }
+            let dataSource;
+            if (Number(type_id) === 0) {
+                dataSource = categories.map(item => {
+                    const row = [item];
+                    value.result.forEach(ele => {
+                        if (ele.eval_model_name === item) {
+                            row.push(ele.score)
+                        }
+                    })
+                    return row
+                });
+            } else {
+                dataSource = value.result.map(item => {
+                    const row = [item.eval_model_name, item.score]
+                    item.eval_data_set_score_json_list.forEach(ele => {
+                        row.push(ele.score)
+                    })
+                    return row
+                });
+            }
+            dataSource.forEach(item => {
+                const tr = document.createElement('tr');
+                item.forEach(ele => {
+                    const td = document.createElement('td');
+                    td.innerText = ele
+                    tr.append(td)
+                })
+                document.getElementById('table-td').append(tr)
+            })
+        }
+    })
+}
+// 默认选择综合
+getResult(current_id, 0)
+$("input:radio[name='btn-radio-basic']").change((e) =>{
+    getResult(current_id, e.target.id)
+ });
+</script>
 {% endblock %}
