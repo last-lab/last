@@ -216,10 +216,22 @@
                     "task_id": task_id,
                 }),
                 success: function (e) {
-                    history.back();
+                    // 如果成功，就直接下一个题目，判断一下当前的question_id是不是到了末尾，否则直接返回
+
+                    const labelingUrl = '/admin/labelpage/labeling/' + task_id + '_' + (1+question_id);
+                        // 在链接中添加参数
+                        const params = {
+                            question_id: question_id+1,
+                            task_id: task_id,
+                            labeling_method: "{{labels}}",
+                            // 添加其他参数
+                        };
+                        const queryString = $.param(params);
+                        actionLink.attr('href', labelingUrl + '?' + queryString);
+                    // history.back();
                 },
                 error: function (e) {
-                    console.log(e)
+                    history.back();
                 }
             })
          });

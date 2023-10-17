@@ -144,6 +144,7 @@ async def get_config_from_db(request: Request, resource: str):
     question_id = json_data["question_id"]
     # 查找默认得到一个列表，尽管只有一个元素
     data = await LabelResult.filter(task_id=task_id, question_id=question_id)
+    # 将下一个题目的id也返回回去，如果这个标注已经结束了，值就用null返回
     assert len(data) == 1
     labeling_method = data[0].labeling_method
     # 查找出来标注方法，根据不同的标注方法定义不同的返回结果,如answer字段

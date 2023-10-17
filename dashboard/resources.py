@@ -586,7 +586,15 @@ class TaskManagePanel(Dropdown):
         fields = ["id", "task_id", "labeling_method", "dateset", "create_time", "current_status"]
 
         async def get_actions(self, request: Request) -> List[Action]:
-            return []
+            return [
+                Action(
+                    label=_("下载标注结果"),
+                    icon="ti ti-edit",
+                    name="download",
+                    method=Method.GET,
+                    ajax=False,
+                ),
+            ]
 
         async def get_bulk_actions(self, request: Request) -> List[Action]:
             return []

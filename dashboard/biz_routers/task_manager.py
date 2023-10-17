@@ -185,3 +185,12 @@ async def get_labeling_user_list(request: Request):
     user_list = [user.username for user in admin_table]
     return user_list
     # return {"user_list" : user_list }
+
+
+# TODO, 这个位置是提供一个下载选项，将标注结果进行下载
+@router.get("/{resource}/download/{pk}")
+async def download_labeling_result(
+    request: Request,
+    pk: str = Path(...),
+    ):
+    print("receive download demand")

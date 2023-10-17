@@ -10,7 +10,7 @@ class LabelPage(Model):
     dataset_uid = fields.CharField(max_length=255)  # 每一个数据集有唯一的uid
     end_time = fields.DateField()
 
-
+# TODO 这个标注结果仅仅是针对于一个数据库的task而言的，对于单个标注员而言，需要自己的标注结果表
 class LabelResult(Model):
     task_id = fields.CharField(max_length=50)  # 任务ID
     dataset_id = fields.CharField(max_length=50)
