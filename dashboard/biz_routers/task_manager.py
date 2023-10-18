@@ -145,6 +145,9 @@ async def create_task_callback(
         assign_user=json_data["taskAssignments"],
     ).save()
 
+    qa_list = split_string_to_list(json_data["fileContent"])
+    item_assign_user_dict, assign_user_item_dict, assign_user_item_length = distribute_labeling_task(len(qa_list), json_data["taskAssignments"])
+
     # 将task写入到labelpage中
     await LabelPage(
         task_id=task_id,
@@ -154,10 +157,10 @@ async def create_task_callback(
         dateset=json_data["fileName"],
         dataset_uid=dataset_uid,
         end_time=json_data["deadline"],
+        assign_user = assign_user_item_dict,
+        assign_length = assign_user_item_length
     ).save()
 
-    qa_list = split_string_to_list(json_data["fileContent"])
-    assign_result = distribute_labeling_task(len(qa_list), json_data["taskAssignments"])
     # 创建一个task res表，将这个任务的结果存放起来
     for index, (question, answer) in enumerate(qa_list):
         await LabelResult(
@@ -169,7 +172,7 @@ async def create_task_callback(
             question=question,
             answer=answer,
             status="未标注",
-            assign_user=assign_result[index],
+            assign_user=item_assign_user_dict[index],
         ).save()
     return "success"
 
