@@ -20,8 +20,8 @@ class ModelInfo(Model):
 
 class Record(Model):
     eval_models = fields.CharField(max_length=200, null=True)
-    llm_name = fields.CharField(max_length=200, null=True)
-    llm_id = fields.IntField(null=True)
+    llm_name = fields.CharField(max_length=2000, null=True)
+    llm_id = fields.CharField(max_length=2000, null=True)
     eval_plan = fields.CharField(description="Choose evaluation plan", max_length=200, null=True)
     plan_id = fields.IntField(null=True)
     created_at = fields.IntField(null=True, auto_now_add=True)

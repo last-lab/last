@@ -101,13 +101,19 @@ class ShowOperation(Display):
         super().__init__(**context)
 
     async def render(self, request: Request, value: any):
-        model_detail = await ModelInfo.get_or_none(id=value["llm_id"]).values()
+        model_ids = []
+        llm_ids = value["llm_id"].split(",")
+        for i in llm_ids:
+            info = await ModelInfo.get_or_none(id=int(i)).values()
+            model_ids.append({"id": i, "name": info["name"], "model_detail": info})
+
         # TODO: 下面的 record_file(备案文件) 需要替换为查询得到文件列表
         record_file = ["书生·浦语 1.3.0", "送评模型1 1.0", "送评模型1 1.4"]
         return await super().render(
             request,
             {
-                "model_detail": model_detail,
+                "id": value["id"],
+                "model_ids": model_ids,
                 "record_file": record_file,
                 "report": value["report"],
             },
