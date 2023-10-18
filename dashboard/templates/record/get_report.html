@@ -1,7 +1,7 @@
 {% extends layout %}
 {% block page_body %}
 <div class="row row-deck row-cards" style="padding-left: 34px; padding-right: 34px">
-    <div id="llm_id" style="display: none">{{ base_info.llm_id }}</div>
+    <div id="record_id" style="display: none">{{ base_info.id }}</div>
     <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px;">
         <div class="card-body" style="display: flex; gap: 32px">
             <div style="display: flex; align-items: center; gap: 6px">
@@ -18,7 +18,7 @@
             <div style="display: flex; align-items: center; gap: 6px">
                 <img src="/static/assets/PersonalOutlined.svg" />
                 <span>评测方</span>
-                <span>123</span>
+                <span>{{ base_info.created_user_id }}</span>
             </div>
         </div>
     </div>
@@ -56,13 +56,13 @@
 </div>
     <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/libs/apexcharts/dist/apexcharts.min.js" defer></script>
 <script>
-const current_id = Number(document.getElementById("llm_id").innerText)
-function getResult(id, type_id) {
+const current_id = Number(document.getElementById("record_id").innerText)
+function getResult(type_id) {
     $.ajax({
         url: '/admin/record/report/result',
         type: 'POST',
         data: JSON.stringify({
-            "llm_id": id,
+            "record_id": current_id,
             "eval_type_id": type_id
         }),
         contentType: "application/json; charset=utf-8",
@@ -176,9 +176,9 @@ function getResult(id, type_id) {
     })
 }
 // 默认选择综合
-getResult(current_id, 0)
+getResult(0)
 $("input:radio[name='btn-radio-basic']").change((e) =>{
-    getResult(current_id, e.target.id)
+    getResult(e.target.id)
  });
 </script>
 {% endblock %}

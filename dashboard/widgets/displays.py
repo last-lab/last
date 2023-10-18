@@ -116,7 +116,6 @@ class ShowOperation(Display):
                 "model_ids": model_ids,
                 "record_file": record_file,
                 "report": value["report"],
-                "id": value["llm_id"],
             },
         )
 

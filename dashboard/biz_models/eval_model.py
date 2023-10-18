@@ -27,31 +27,32 @@ class Record(Model):
     created_at = fields.IntField(null=True, auto_now_add=True)
     state: EvalStatus = fields.IntEnumField(EvalStatus, default=EvalStatus.on_progress, null=True)
     report = fields.BinaryField(null=True)
+    created_user_id = fields.CharField(max_length=200)
 
 
 # id 行记录id
-# llm_id 评测报告id
-# eval_model_name 评测模型名字
+# record_id 评测记录id
+# eval_model_id 评测模型id
 # eval_type 评测类型id, 综合默认为0
 # score 评分
 # eval_data_set_score_json json类型 [{评测集得分信息}] 综合评分留空字段
 class ModelResult(Model):
-    llm_id = fields.IntField()
-    eval_model_name = fields.CharField(max_length=200)
+    record_id = fields.IntField()
+    eval_model_id = fields.IntField()
     eval_type_id = fields.IntField()
     score = fields.IntField()
     eval_data_set_score_json = fields.TextField(null=True)
 
 
-# llm_id 评测报告id
-# eval_model_name 评测模型名字
+# record_id 评测记录id
+# eval_model_id 评测模型id
 # risk_type 风险类型
 # score 评分
 # come_dataset_id 来源评测集id
 # content 案例内容
 class ModelRelateCase(Model):
-    llm_id = fields.IntField()
-    eval_model_name = fields.CharField(max_length=200)
+    record_id = fields.IntField()
+    eval_model_id = fields.IntField()
     risk_type = fields.IntField()
     score = fields.IntField()
     come_dataset_id = fields.IntField()

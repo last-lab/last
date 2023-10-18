@@ -1,5 +1,6 @@
 import json
 import time
+
 # import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
@@ -11,18 +12,18 @@ from fastapi import APIRouter, Depends, Path
 from pydantic import BaseModel
 from starlette.requests import Request
 
-
 from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Record, Risk
 from dashboard.biz_models.eval_model import ModelResult
 from dashboard.utils.converter import DataSetTool
-# from dashboard.enums import EvalStatus
-# from last.client import AI_eval, Client
-
 from last.services.app import app
 from last.services.depends import get_model_resource, get_resources
 from last.services.i18n import _
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
+
+# from dashboard.enums import EvalStatus
+# from last.client import AI_eval, Client
+
 
 # from tortoise.expressions import Q
 
@@ -46,7 +47,7 @@ class EvalInfo(BaseModel):
 
 
 class ModelResultProp(BaseModel):
-    llm_id: int
+    record_id: int
     eval_type_id: int
 
 
@@ -106,7 +107,7 @@ async def create_eval(
 
 
 @router.post("/evaluation/evaluation_create")
-async def evaluation_create(eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
+async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
     # record =
     await Record.create(
@@ -115,6 +116,7 @@ async def evaluation_create(eval_info: EvalInfo):  # TODO 加一个按钮，可�
         llm_name=eval_info.llm_name,
         llm_id=eval_info.llm_id,
         created_at=eval_info.created_at,
+        created_user_id=str(request.state.admin).split("#")[1],
     )
     # try:
     # dataset_ids = [int(_) for _ in plan["dataset_ids"].split(",")]
@@ -253,15 +255,17 @@ async def get_report(
 @router.post("/{resource}/report/result")
 async def get_result(request: Request, result: ModelResultProp):
     if result.eval_type_id == 0:
-        results = await ModelResult.all().filter(llm_id=result.llm_id).values()
+        results = await ModelResult.all().filter(record_id=result.record_id).values()
     else:
         results = (
             await ModelResult.all()
-            .filter(llm_id=result.llm_id, eval_type_id=result.eval_type_id)
+            .filter(record_id=result.record_id, eval_type_id=result.eval_type_id)
             .values()
         )
     # 添加风险Name
     for item in results:
+        model = await ModelInfo.get_or_none(id=item["eval_model_id"]).values()
+        item["eval_model_name"] = model["name"]
         if item["eval_type_id"] == 0:
             item["eval_type_name"] = "综合评分"
         else:
