@@ -12,11 +12,12 @@
         </div>
         <div class="mb-3">
             <label class="form-label required">{{ _('Evaluation Model') }}</label>
-            <select required class="form-select" id="model">
-                {% for item in model_list %}
-                <option value="{{ item.id }}">{{ item.name }}</option>
-                {% endfor %}
-            </select>
+{#            <select required class="form-select" id="model">#}
+{#                {% for item in model_list %}#}
+{#                <option value="{{ item.id }}">{{ item.name }}</option>#}
+{#                {% endfor %}#}
+{#            </select>#}
+            {% include "record/mult_select.html" %}
             <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modelModal">
                 {{ _('Add Model')}}
             </button>
@@ -91,12 +92,12 @@
             }
         })
     }
-
     const handleCreateEvaluation = function () {
         const data = {
-            "llm_id": $('#model').val(),
+            "llm_id": values_id.join(','),
             "plan_id": $('#eval_plan').val(),
-            "created_at": new Date().getTime()
+            "created_at": new Date().getTime(),
+            "llm_name": $('#model').val()
         }
         $.ajax({
             url: '/admin/evaluation/evaluation_create',
@@ -115,7 +116,7 @@
                 console.log(data)
                 alert(data.msg)
             }
-        })
+         })
     }
 
     const model_form = document.getElementById('model-form')
