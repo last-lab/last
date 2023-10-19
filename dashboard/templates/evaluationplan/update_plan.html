@@ -1,0 +1,24 @@
+<button class="btn btn-ghost-primary" onclick="jumpUpdate({{ value.content }})">更新</button>
+<button class="btn btn-ghost-primary" onclick="jumpCopy({{ value.content }})">复制并新建</button>
+{% include "delete.html" %}
+<script>
+    function jumpUpdate(id) {
+        window.location.href = `/admin/evaluationplan/epm_update/${id}`
+    }
+    function jumpCopy(id) {
+        window.location.href = `/admin/evaluationplan/epm_copy_create/${id}`
+    }
+    function deleteData(id) {
+        $.ajax({
+            url: `/admin/evaluationplan/delete/${id}`,
+            type: 'DELETE',
+            contentType: "application/json;charset=UTF-8",
+            data: JSON.stringify({
+                pk: id
+            }),
+            success: function () {
+                location.reload();
+            }
+        })
+    }
+</script>

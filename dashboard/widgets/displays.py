@@ -1,10 +1,12 @@
 import csv
 import json
+import time
 
 from starlette.requests import Request
 
-from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Risk
+from dashboard.biz_models import DataSet, EvaluationPlan, LabelPage, ModelInfo, Risk
 from dashboard.enums import EvalStatus
+from dashboard.models import Admin
 from dashboard.utils.converter import DataSetTool
 from last.services.resources import ComputeField
 from last.services.widgets.displays import Display, Popover, Status
@@ -49,27 +51,34 @@ class ShowPlanDetail(Display):
 
     async def render(self, request: Request, value: str):
         eval_plan = await EvaluationPlan.get_or_none(id=value)
-        dataset_ids = eval_plan.dataset_ids.split(",")
-        datasets = await DataSet.filter(id__in=dataset_ids)
-        eval_type = "系统评分⭐"
-        plan_content = eval_plan.dimensions.split(",")
-        if eval_plan.eval_type == 1:
-            eval_type = "人工评分 👤️"
 
-        dataset_schema = await DataSetTool.ds_model_to_eval_model_schema(datasets)
+        # 判空
+        if eval_plan is not None:
+            dataset_ids = eval_plan.dataset_ids.split(",")
+            datasets = await DataSet.filter(id__in=dataset_ids)
+            eval_type = "系统评分⭐"
+            plan_content = eval_plan.dimensions.split(",")
+            if eval_plan.eval_type == 1:
+                eval_type = "人工评分 👤️"
 
-        plan_detail = {
-            "name": eval_plan.name,
-            "score_way": eval_type,
-            "plan_content": plan_content,
-            "dataset_names": dataset_schema.dataset_names,
-            "risk_detail": dataset_schema.risk_detail,
-        }
+            dataset_schema = await DataSetTool.ds_model_to_eval_model_schema(datasets)
+            plan_detail = {
+                "name": eval_plan.name,
+                "score_way": eval_type,
+                "plan_content": plan_content,
+                "dataset_names": dataset_schema.dataset_names,
+                "risk_detail": dataset_schema.risk_detail,
+            }
 
-        return await super().render(
-            request,
-            {"plan_detail": plan_detail},
-        )
+            return await super().render(
+                request,
+                {"plan_detail": plan_detail},
+            )
+        else:
+            return await super().render(
+                request,
+                {"plan_detail": {}},
+            )
 
 
 class OperationField(ComputeField):
@@ -92,13 +101,19 @@ class ShowOperation(Display):
         super().__init__(**context)
 
     async def render(self, request: Request, value: any):
-        model_detail = await ModelInfo.get_or_none(id=value["llm_id"]).values()
+        model_ids = []
+        llm_ids = value["llm_id"].split(",")
+        for i in llm_ids:
+            info = await ModelInfo.get_or_none(id=int(i)).values()
+            model_ids.append({"id": i, "name": info["name"], "model_detail": info})
+
         # TODO: 下面的 record_file(备案文件) 需要替换为查询得到文件列表
         record_file = ["书生·浦语 1.3.0", "送评模型1 1.0", "送评模型1 1.4"]
         return await super().render(
             request,
             {
-                "model_detail": model_detail,
+                "id": value["id"],
+                "model_ids": model_ids,
                 "record_file": record_file,
                 "report": value["report"],
             },
@@ -187,8 +202,8 @@ class ShowRiskType(Display):
         return await super().render(request, {"content": label})
 
 
-class ShowSecondType(Display):
-    template = "dataset/risk_second.html"
+class ShowSecondType(Popover):
+    # template = "dataset/risk_second.html"
 
     async def render(self, request: Request, value: any):
         label = []
@@ -199,7 +214,7 @@ class ShowSecondType(Display):
                     label.append(res["risk_name"])
         return await super().render(
             request,
-            {"content": ",".join([d for d in label])},
+            {"content": ",".join([d for d in label]), "popover": ",".join([d for d in label])},
         )
 
 
@@ -253,4 +268,49 @@ class ShowSecondRiskDesc(Display):
         return await super().render(
             request,
             {"content": description},
+        )
+
+
+class ShowPlan(Display):
+    template = "evaluationplan/update_plan.html"
+
+    async def render(self, request: Request, value: any):
+        info = await EvaluationPlan.get_or_none(name=value).values()
+        return await super().render(
+            request,
+            {"content": info["id"], "name": value, "id": info["id"]},
+        )
+
+
+class ShowLabel(Display):
+    template = "labelpage/label_detail.html"
+
+    async def render(self, request: Request, value: any):
+        info = await LabelPage.get_or_none(task_id=value).values()
+        return await super().render(
+            request,
+            {"content": info["id"]},
+        )
+
+
+class ShowTime(Display):
+    template = "record/time_format.html"
+
+    async def render(self, request: Request, value: int):
+        time_array = time.localtime(value / 1000)
+        format_time = time.strftime("%Y-%m-%d %H:%M:%S", time_array)
+        return await super().render(
+            request,
+            {"content": format_time},
+        )
+
+
+class ShowAdmin(Display):
+    template = "admin/admin_action.html"
+
+    async def render(self, request: Request, value: any):
+        info = await Admin.get_or_none(username=value).values()
+        return await super().render(
+            request,
+            {"content": info["id"], "name": value, "id": info["id"]},
         )

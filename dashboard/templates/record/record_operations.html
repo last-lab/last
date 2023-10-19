@@ -1,11 +1,12 @@
 <button type="button" class="btn btn-ghost-primary">
     评测报告
 </button>
-{% include "record/model_detail_modal.html" %}
+<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#modelSelect-{{ value.id }}">
+    模型详情
+</button>
 <button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#recordFile">
     备案文件
 </button>
-
 
 <div class="modal" id="recordFile" tabindex="-1">
     <div class="modal-dialog" role="document">
@@ -24,3 +25,78 @@
         </div>
     </div>
 </div>
+
+<div class="modal" id="modelSelect-{{ value.id }}" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">模型详情</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="recover()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group list-group-flush">
+                    {% for item in value.model_ids %}
+                        <div class="list-group-item list-group-item-action" style="cursor: pointer" onclick="clickBtn({{ item.id }})" id="btn">
+                            {{ item.model_detail.name }}
+                        </div>
+                        <div class="datagrid" id="detail-{{ item.id }}" style="display: none">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">模型名称</div>
+                                <div class="datagrid-content">{{ item.model_detail.name }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">模型类型</div>
+                                <div class="datagrid-content">{{ item.model_detail.model_type }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">模型版本</div>
+                                <div class="datagrid-content">{{ item.model_detail.version }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">基模型</div>
+                                <div class="datagrid-content">{{ item.model_detail.base_model }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">模型参数</div>
+                                <div class="datagrid-content">{{ item.model_detail.parameter_volume }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">预训练信息</div>
+                                <div class="datagrid-content">{{ item.model_detail.pretraining_info }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">微调信息</div>
+                                <div class="datagrid-content">{{ item.model_detail.finetuning_info }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">对齐信息</div>
+                                <div class="datagrid-content">{{ item.model_detail.alignment_info }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var current_id;
+    function clickBtn(id) {
+        current_id = id;
+        let obj = document.querySelectorAll('#btn')
+        for (let i = 0; i < obj.length; i++) {
+          obj[i].style.display = 'none';
+        }
+        document.getElementById(`detail-${id}`).style.display = 'block';
+    }
+    function recover() {
+        let obj = document.querySelectorAll('#btn')
+        for (let i = 0; i < obj.length; i++) {
+          obj[i].style.display = 'block';
+        }
+        if (current_id) {
+            document.getElementById(`detail-${current_id}`).style.display = 'none';
+        }
+    }
+</script>
