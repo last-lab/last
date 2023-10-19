@@ -1,3 +1,7 @@
+import ast
+import html
+
+
 def statistic_dataset(dataset_path):
     # 传入一个文件的路径，然后读取一系列的统计数据填充dataset
     # 返回这个数据的大小volume, qa_num，word_cnt，qa_records几个数据
@@ -31,17 +35,55 @@ def distribute_labeling_task(len_dataset: int, assign_user_list):
     assign_user_item_dict = {}
     for index in range(len_dataset):
         if index % 2 == 0:
-            item_assign_user_dict[index] = [assign_item["annotator"] for assign_item in assign_user_list]
+            item_assign_user_dict[index] = [
+                assign_item["annotator"] for assign_item in assign_user_list
+            ]
         else:
             item_assign_user_dict[index] = []
     # 对这个item_assign_user_dict 进行反序遍历
     for index, assign_user_list in item_assign_user_dict.items():
-        if len(assign_user_list) !=0:
+        if len(assign_user_list) != 0:
             for _assign_user in assign_user_list:
                 if _assign_user not in assign_user_item_dict:
                     assign_user_item_dict[_assign_user] = [index]
                 else:
                     assign_user_item_dict[_assign_user].append(index)
     # 返回{"user1": 10, "user2": 20, ...}
-    assign_user_item_length = {assign_user: len(assign_user_item_dict[assign_user]) for assign_user in assign_user_item_dict}
+    assign_user_item_length = {
+        assign_user: len(assign_user_item_dict[assign_user])
+        for assign_user in assign_user_item_dict
+    }
     return item_assign_user_dict, assign_user_item_dict, assign_user_item_length
+
+
+def convert_labelstudio_result_to_string(labeling_method, labeling_result):
+    # TODO，目前就实现了当使用了判断标注的流程
+    _labeling_method = eval(html.unescape(labeling_method))
+    if _labeling_method == ["判断标注"]:
+        # TODO，这个函数需要修改
+        refine_result = labeling_result[0]["value"]["choices"]
+        return refine_result[0]
+    elif _labeling_method == ["选择标注"]:
+        pass
+
+    elif _labeling_method == ["框选标注"]:
+        pass
+
+    else:
+        pass
+
+
+def update_labeling_result(user_id: str, new_labeling_result: str, current_labeling_result: str):
+    string_result_to_dict = ast.literal_eval(current_labeling_result)
+    string_result_to_dict[user_id] = new_labeling_result
+    return string_result_to_dict
+
+
+def concat_labeling_result(user_id, new_labeling_result, current_labeling_result):
+    # 这个函数是将两个标注结果合并起来
+    pass
+
+
+def convert_table_to_csv(table):
+    # 这个函数是将标注结果变成csv文件，然后返回
+    pass

@@ -1,4 +1,5 @@
 import ast
+import html
 from typing import Type
 
 from fastapi import APIRouter, Depends, Path
@@ -6,7 +7,12 @@ from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model
 
-from dashboard.biz_models import LabelResult, LabelPage
+from dashboard.biz_models import LabelPage, LabelResult
+from dashboard.tools.statistic import (
+    concat_labeling_result,
+    convert_labelstudio_result_to_string,
+    update_labeling_result,
+)
 from last.services.depends import get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
@@ -21,12 +27,14 @@ async def labeling_view(
     pk: str = Path(...),
 ):
     # TODO 标注方法从数据库中读取出来，或者直接在brief_dataset页面直接传
-
+    task_pk_value = request.query_params["task_pk_value"]
     context = {
         "request": request,
         "resource": resource,
         "pk": pk,
-        "labels": ast.literal_eval(request.query_params["labeling_method"]),
+        "task_pk_value": task_pk_value,
+        "labels": ["判断标注"],
+        # "labels": ast.literal_eval(request.query_params["labeling_method"]),
     }
     # 点击了标注之后，需要根据传回来的参数，主要是数据集的名称，标注方式
     # 载入数据，丢一个新的界面出去
@@ -139,6 +147,7 @@ async def get_config_from_db(request: Request, resource: str):
         request (Request): _description_
         resource (str): _description_
     """
+    user_id = str(request.state.admin).split("#")[1]
     json_data = await request.json()
     task_id = json_data["task_id"]
     question_id = json_data["question_id"]
@@ -148,7 +157,12 @@ async def get_config_from_db(request: Request, resource: str):
     assert len(data) == 1
     labeling_method = data[0].labeling_method
     # 查找出来标注方法，根据不同的标注方法定义不同的返回结果,如answer字段
-    query_data = {"Q": data[0].question, "A": data[0].answer, "labeling_method": labeling_method}
+    query_data = {
+        "Q": data[0].question,
+        "A": data[0].answer,
+        "labeling_method": labeling_method,
+        "user_id": user_id,
+    }
     return query_data
 
 
@@ -172,34 +186,60 @@ async def get_label_reset(request: Request, resource: str):
     question_id = json_data["question_id"]
     # 查找数据结果表，得到标注结果
     data = await LabelResult.filter(task_id=task_id, question_id=question_id)
-    labeling_result = data[0].labeling_result
-    return labeling_result
+    raw_labeling_result = data[0].raw_labeling_result
+    return raw_labeling_result
 
 
 @router.post("/{resource}/labeling/{pk}/submit")
 async def submit_callback(request: Request, resource: str, pk: str):
+    user_id = str(request.state.admin).split("#")[1]
     json_data = await request.json()
     # TODO，对返回回来的结果进行处理，塞进LabelResult数据库中即可
     question_id = json_data["question_id"]
     task_id = json_data["task_id"]
     annotation = json_data["annotation"]
+    labeling_method = json_data["labeling_method"]
     labeling_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
     assert len(labeling_row) == 1
-    # TODO 下个版本需要支持多用户进行标注，将不同人的标注结果进行合并操作
-    labeling_row[0].labeling_result = annotation
+    # 进行多人标注结果的合并
+    labeling_result = labeling_row[0].labeling_result
+    # 将labelstudio的标注结果进行提取操作
+    refine_labeling_result = convert_labelstudio_result_to_string(labeling_method, annotation)
+    # 逻辑，如果当前user_id不在这个annotation中，就插入{'user_id': annotation}
+    if labeling_result is None:
+        new_labeling_result = {user_id: refine_labeling_result}
+    else:
+        # 将新的标注结果和已经有的标注结果合并起来
+        new_labeling_result = concat_labeling_result(
+            user_id, refine_labeling_result, labeling_result
+        )
+    labeling_row[0].labeling_result = new_labeling_result
     labeling_row[0].status = "标注完成"
+    # TODO，暂时摆烂了，一个task的每一个题目只会到一个人手上
+    labeling_row[0].raw_labeling_result = annotation
     await labeling_row[0].save()
 
 
 @router.post("/{resource}/labeling/{pk}/update")
 async def update_result_callback(request: Request, resource: str, pk: str):
+    user_id = str(request.state.admin).split("#")[1]
     json_data = await request.json()
-    # 将返回的结果覆盖掉数据库即可
     question_id = json_data["question_id"]
     task_id = json_data["task_id"]
     annotation = json_data["annotation"]
+    labeling_method = json_data["labeling_method"]
     labeling_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
-    labeling_row[0].labeling_result = annotation
+    assert len(labeling_row) == 1
+    # 进行多人标注结果的合并
+    labeling_result = labeling_row[0].labeling_result
+    # 将labelstudio的标注结果进行提取操作
+    refine_labeling_result = convert_labelstudio_result_to_string(labeling_method, annotation)
+    # 逻辑，如果当前user_id不在这个annotation中，就插入{'user_id': annotation}
+    assert labeling_result is not None
+    # 更新已经有的结果
+    update_result = update_labeling_result(user_id, refine_labeling_result, labeling_result)
+    labeling_row[0].labeling_result = update_result
+    labeling_row[0].raw_labeling_result = annotation
     await labeling_row[0].save()
 
 
@@ -209,13 +249,19 @@ async def labeling_next_callback(request: Request):
     json_data = await request.json()
     task_id = json_data["task_id"]
     current_question_index = json_data["current_question_index"]
+    labeling_method = eval(html.unescape(json_data["labeling_method"]))
     # 从labelpage这个表中，基于user_id, question_id, task_id找到对应的记录
-    labelpage_task_row = await LabelPage.filter(task_id = task_id)
+    labelpage_task_row = await LabelPage.filter(task_id=task_id)
     assert len(labelpage_task_row) == 1
     assign_user_item_list = ast.literal_eval(labelpage_task_row[0].assign_user)[user_id]
     assert current_question_index in assign_user_item_list
     index = assign_user_item_list.index(current_question_index)
-    if index == len(assign_user_item_list) -1:
-        return None
+    if index == len(assign_user_item_list) - 1:
+        # 如果当前id在最后面，则返回下一个值返回None
+        return {"question_id": "null", "task_id": task_id, "labeling_method": labeling_method}
     else:
-        return assign_user_item_list[index+1]
+        return {
+            "question_id": assign_user_item_list[index + 1] + 1,
+            "task_id": task_id,
+            "labeling_method": labeling_method,
+        }

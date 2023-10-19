@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Type
 
 # from typing import Type
 # from urllib.parse import parse_qs
@@ -146,7 +147,11 @@ async def create_task_callback(
     ).save()
 
     qa_list = split_string_to_list(json_data["fileContent"])
-    item_assign_user_dict, assign_user_item_dict, assign_user_item_length = distribute_labeling_task(len(qa_list), json_data["taskAssignments"])
+    (
+        item_assign_user_dict,
+        assign_user_item_dict,
+        assign_user_item_length,
+    ) = distribute_labeling_task(len(qa_list), json_data["taskAssignments"])
 
     # 将task写入到labelpage中
     await LabelPage(
@@ -157,8 +162,8 @@ async def create_task_callback(
         dateset=json_data["fileName"],
         dataset_uid=dataset_uid,
         end_time=json_data["deadline"],
-        assign_user = assign_user_item_dict,
-        assign_length = assign_user_item_length
+        assign_user=assign_user_item_dict,
+        assign_length=assign_user_item_length,
     ).save()
 
     # 创建一个task res表，将这个任务的结果存放起来
@@ -195,5 +200,19 @@ async def get_labeling_user_list(request: Request):
 async def download_labeling_result(
     request: Request,
     pk: str = Path(...),
-    ):
-    print("receive download demand")
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
+):
+    # 首先获取得到所有的标注结果，然后变成一个json数据返回给前端，前端完成数据的下载
+    # 基于taskID进行过滤
+    obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
+    # 获取得到对应task的id
+    task_id = obj.task_id
+    task_result = await LabelResult.filter(task_id=task_id).values(
+        "question", "answer", "labeling_result"
+    )
+    # 这里添加数据装换操作
+    # csv_data = convert_table_to_csv(task_result)
+    # print(csv_data)
+    return task_result
