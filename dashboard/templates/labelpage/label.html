@@ -218,6 +218,33 @@
                 success: function (e) {
                     // 如果成功，就对后端发送next请求？并且将当前的用户id发送回去
                     // history.back();
+                    // 访问一下后端的一个标注函数
+                    console.log(question_id)
+                    $.ajax({
+                        url: '/admin/labelpage/labeling/next',
+                        method: 'post',
+                        data: JSON.stringify({
+                            "current_question_index": question_id - 1,
+                            "task_id": task_id,
+                        }),
+                    success: function(e){
+                        console.log(e);
+                        if (e== null){
+                            history.back();
+                        } else{
+                            var url = "/admin/labelpage/labeling/" + task_id + '_' + e;
+                            var params = {
+                            question_id: e,
+                            task_id: task_id,
+                            labeling_method: {labels},
+                            // 添加其他参数
+                        };
+                        var queryString = $.param(params);
+                        url += "?" + queryString;
+                        windo.l
+                        }
+                    }
+                    })
                 },
                 error: function (e) {
                     history.back();

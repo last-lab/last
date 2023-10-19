@@ -6,7 +6,7 @@ from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model
 
-from dashboard.biz_models import LabelResult
+from dashboard.biz_models import LabelResult, LabelPage
 from last.services.depends import get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
@@ -201,3 +201,21 @@ async def update_result_callback(request: Request, resource: str, pk: str):
     labeling_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
     labeling_row[0].labeling_result = annotation
     await labeling_row[0].save()
+
+
+@router.post("/{resource}/labeling/next")
+async def labeling_next_callback(request: Request):
+    user_id = str(request.state.admin).split("#")[1]
+    json_data = await request.json()
+    task_id = json_data["task_id"]
+    current_question_index = json_data["current_question_index"]
+    # 从labelpage这个表中，基于user_id, question_id, task_id找到对应的记录
+    labelpage_task_row = await LabelPage.filter(task_id = task_id)
+    assert len(labelpage_task_row) == 1
+    assign_user_item_list = ast.literal_eval(labelpage_task_row[0].assign_user)[user_id]
+    assert current_question_index in assign_user_item_list
+    index = assign_user_item_list.index(current_question_index)
+    if index == len(assign_user_item_list) -1:
+        return None
+    else:
+        return assign_user_item_list[index+1]
