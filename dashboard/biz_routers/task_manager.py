@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Type
 
 # from typing import Type
 # from urllib.parse import parse_qs
@@ -10,7 +11,8 @@ from starlette.requests import Request
 from tortoise import Model
 
 from dashboard.biz_models import LabelPage, LabelResult, TaskManage
-from dashboard.tools.statistic import statistic_dataset
+from dashboard.resources import Admin
+from dashboard.tools.statistic import distribute_labeling_task, statistic_dataset
 from dashboard.utils.string_utils import split_string_to_list
 from last.services.depends import create_checker, get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
@@ -144,6 +146,13 @@ async def create_task_callback(
         assign_user=json_data["taskAssignments"],
     ).save()
 
+    qa_list = split_string_to_list(json_data["fileContent"])
+    (
+        item_assign_user_dict,
+        assign_user_item_dict,
+        assign_user_item_length,
+    ) = distribute_labeling_task(len(qa_list), json_data["taskAssignments"])
+
     # 将task写入到labelpage中
     await LabelPage(
         task_id=task_id,
@@ -153,9 +162,10 @@ async def create_task_callback(
         dateset=json_data["fileName"],
         dataset_uid=dataset_uid,
         end_time=json_data["deadline"],
+        assign_user=assign_user_item_dict,
+        assign_length=assign_user_item_length,
     ).save()
 
-    qa_list = split_string_to_list(json_data["fileContent"])
     # 创建一个task res表，将这个任务的结果存放起来
     for index, (question, answer) in enumerate(qa_list):
         await LabelResult(
@@ -167,6 +177,7 @@ async def create_task_callback(
             question=question,
             answer=answer,
             status="未标注",
+            assign_user=item_assign_user_dict[index],
         ).save()
     return "success"
 
@@ -174,3 +185,34 @@ async def create_task_callback(
 @router.get("/{resource}/get_datasets_name")
 async def get_datasets_name(request: Request, resources=Depends(get_resources)):
     return ["test1", "test2"]
+
+
+@router.get("/{resource}/get_user_list")
+async def get_labeling_user_list(request: Request):
+    admin_table = await Admin.all()
+    user_list = [user.username for user in admin_table]
+    return user_list
+    # return {"user_list" : user_list }
+
+
+# TODO, 这个位置是提供一个下载选项，将标注结果进行下载
+@router.get("/{resource}/download/{pk}")
+async def download_labeling_result(
+    request: Request,
+    pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
+):
+    # 首先获取得到所有的标注结果，然后变成一个json数据返回给前端，前端完成数据的下载
+    # 基于taskID进行过滤
+    obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
+    # 获取得到对应task的id
+    task_id = obj.task_id
+    task_result = await LabelResult.filter(task_id=task_id).values(
+        "question", "answer", "labeling_result"
+    )
+    # 这里添加数据装换操作
+    # csv_data = convert_table_to_csv(task_result)
+    # print(csv_data)
+    return task_result
