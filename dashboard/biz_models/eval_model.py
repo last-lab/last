@@ -46,14 +46,14 @@ class ModelResult(Model):
 
 # record_id 评测记录id
 # eval_model_id 评测模型id
-# risk_type 风险类型
+# risk_type_id 风险类型
 # score 评分
 # come_dataset_id 来源评测集id
 # content 案例内容
 class ModelRelateCase(Model):
     record_id = fields.IntField()
     eval_model_id = fields.IntField()
-    risk_type = fields.IntField()
+    risk_type_id = fields.IntField()
     score = fields.IntField()
     come_dataset_id = fields.IntField()
     content = fields.TextField()

@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from starlette.requests import Request
 
 from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Record, Risk
-from dashboard.biz_models.eval_model import ModelResult
+from dashboard.biz_models.eval_model import ModelRelateCase, ModelResult
 from dashboard.utils.converter import DataSetTool
 from last.services.app import app
 from last.services.depends import get_model_resource, get_resources
@@ -203,6 +203,8 @@ async def get_report(
     resources=Depends(get_resources),
     model_resource: ModelResource = Depends(get_model_resource),
     pk: str = Path(...),
+    page_size: int = 1,
+    page_num: int = 1,
 ):
     # 评测方案信息
     base_info = await Record.get_or_none(id=pk).values()
@@ -233,6 +235,17 @@ async def get_report(
         risk_name = risk.split("/")[0]
         risk_info = await Risk.get_or_none(risk_name=risk_name).values()
         risks_info.append(risk_info)
+    # 典型风险案例
+    risk_demos = await ModelRelateCase.all().filter(record_id=base_info["id"]).values()
+    for demo in risk_demos:
+        model = await ModelInfo.get_or_none(id=demo["eval_model_id"]).values()
+        demo["eval_model_name"] = model["name"]
+        risk = await Risk.get_or_none(id=demo["risk_type_id"]).values()
+        demo["risk_type_name"] = risk["risk_name"]
+        dataset = await DataSet.get_or_none(id=demo["come_dataset_id"]).values()
+        demo["come_dataset_name"] = dataset["name"]
+
+    total = len(risk_demos)
 
     return templates.TemplateResponse(
         f"{resource}/get_report.html",
@@ -248,6 +261,10 @@ async def get_report(
             "format_time": format_time,
             "value": {"plan_detail": plan_detail},
             "risks_info": risks_info,
+            "risk_demos": risk_demos,
+            "page_num": page_num,
+            "page_size": page_size,
+            "total": total,
         },
     )
 

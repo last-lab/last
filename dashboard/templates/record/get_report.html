@@ -47,9 +47,71 @@
         </div>
     </div>
     <div class="col-12">
-        <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px; height: 376px">
+        <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px; min-height: 376px">
             <div class="card-body">
                 <h3 class="card-title">典型风险案例</h3>
+                <div class="table-responsive">
+                    <table class="table table-vcenter table-nowrap">
+                        <thead>
+                            <tr id="table-th">
+                                <th>评测模型</th>
+                                <th>风险类型</th>
+                                <th>评分</th>
+                                <th>来源评测集</th>
+                                <th>案例内容</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-td">
+                            {% for risk_demo in risk_demos[(page_num-1)*page_size:page_num*page_size] %}
+                                <tr>
+                                    <td>{{ risk_demo.eval_model_name }}</td>
+                                    <td>{{ risk_demo.risk_type_name }}</td>
+                                    <td>{{ risk_demo.score }}</td>
+                                    <td>{{ risk_demo.come_dataset_name }}</td>
+                                    <td>{{ risk_demo.content }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer d-flex align-items-center">
+                    <ul class="pagination m-0 ms-auto">
+                        <li class="page-item {% if page_num <= 1 %} disabled {% endif %}">
+                            <a
+                                class="page-link"
+                                href="{{ {'page_num':page_num - 1}|current_page_with_params }}"
+                                tabindex="-1"
+                                aria-disabled="true"
+                            >
+                                <i class="fas fa-chevron-left"></i>
+                                {{ _('prev_page') }}
+                            </a>
+                        </li>
+                        {% with total_page = (total/page_size)|round(0,'ceil')|int,start_page =
+                            (1 if page_num <=3 else page_num - 2 ) %} {% for i in
+                            range(start_page,[start_page + 5,total_page + 1]|min) %}
+                            <li class="page-item {% if i == (page_num or 1) %} active {% endif %}">
+                                <a
+                                        class="page-link"
+                                        href="{{ {'page_num':i}|current_page_with_params }}"
+                                >{{ i }}</a
+                                >
+                            </li>
+                        {% endfor %}
+                            <li
+                                    class="page-item {% if page_num >= total_page %} disabled {% endif %}"
+                            >
+                                <a
+                                        class="page-link"
+                                        href="{{ {'page_num':page_num + 1}|current_page_with_params }}"
+                                >
+                                    {{ _('next_page') }}
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% endwith %}
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
