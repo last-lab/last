@@ -54,11 +54,12 @@
     async function render_page () {
         const config = await getLabelConfig();
         const data = await getLabelData();
-
+        const nextPageConfig = await getNextPageConfig();
         if (config) {
             answer = config.A;
             question = config.Q;
             text = question + "\n" + answer;
+            userID = config.user_id;
             // const labels = tags.map((tag) => {
             //     return `<Label value="${tag.value}" background="${tag.background}" />`
             // }).join('\n')
@@ -183,8 +184,8 @@
             interfaces: interfaces,
             user: {
                 pk: 1,
-                firstName: "James",
-                lastName: "Dean"
+                firstName: userID,
+                lastName: ' ',
             },
             task: {
                 annotations: annotations,
@@ -202,7 +203,7 @@
             });
             LS.annotationStore.selectAnnotation(c.id);
             console.log("loading...")
-         });
+        });
 
         labelStudio.on("submitAnnotation", (LS, annotation) => {
             // Retrieve an annotation in JSON format
@@ -214,12 +215,32 @@
                     "annotation": annotation.serializeAnnotation(),
                     "question_id": question_id,
                     "task_id": task_id,
+                    "labeling_method": '{{labels}}',
                 }),
                 success: function (e) {
-                    history.back();
-                },
+                    // 如果成功，就对后端发送next请求？并且将当前的用户id发送回去
+                    // 访问一下后端的一个标注函数
+                    console.log(nextPageConfig);
+                    if (nextPageConfig.question_id == 'null'){
+                        const briefDataUrl = '/admin/labelpage/display/' + '{{task_pk_value}}';
+                        window.location.href = briefDataUrl;
+                    }else{
+                        const labelingUrl = '/admin/labelpage/labeling/' + nextPageConfig.task_id + '_' + nextPageConfig.question_id;
+                        // 在链接中添加参数
+                        const params = {
+                            question_id: nextPageConfig.question_id,
+                            task_id: nextPageConfig.task_id,
+                            labeling_method: nextPageConfig.labeling_method,
+                            task_pk_value: '{{task_pk_value}}',
+                            // 添加其他参数
+                        };
+                        const queryString = $.param(params);
+                        const urlWithParams = labelingUrl + '?' + queryString;
+                        window.location.href=urlWithParams;
+                    }
+                    },
                 error: function (e) {
-                    console.log(e)
+                    history.back();
                 }
             })
          });
@@ -260,6 +281,23 @@
         return rsp.json();
 
     }
+
+
+    async function getNextPageConfig(){
+        const rsp = await fetch('/admin/labelpage/labeling/next',{
+            method: 'post',
+            body: JSON.stringify({
+                        "current_question_index": question_id - 1,
+                        "task_id": task_id,
+                        "labeling_method": '{{labels}}',
+                    }),
+            headers: {
+                'Content-Type': 'application/json'
+                }
+        })
+        return rsp.json();
+    }
+
 </script>
 </body>
 

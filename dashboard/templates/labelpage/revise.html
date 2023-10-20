@@ -59,6 +59,7 @@
         if (config) {
             answer = config.A;
             question = config.Q;
+            userID = config.user_id;
             text = question + "\n" + answer;
             // const labels = tags.map((tag) => {
             //     return `<Label value="${tag.value}" background="${tag.background}" />`
@@ -184,8 +185,8 @@
             interfaces: interfaces,
             user: {
                 pk: 1,
-                firstName: "James",
-                lastName: "Dean"
+                firstName: userID,
+                lastName: " "
             },
             task: {
                 // https://labelstud.io/guide/export#Label-Studio-JSON-format-of-annotated-tasks
