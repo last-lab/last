@@ -1,0 +1,54 @@
+{% extends layout %}
+{% block page_body %}
+<link rel="stylesheet" href="/static/editormd/css/editormd.css" />
+    <div style="position: relative; margin-bottom: 30px">
+        <button class="btn btn-secondary" style="position: absolute; right: 0; top: -12px; width: 120px" onclick="exportResult()">导出</button>
+    </div>
+<div id="test-editor">
+    <textarea style="display:none;"></textarea>
+</div>
+<script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="/static/editormd/editormd.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script type="text/javascript">
+    var editor
+    $(function() {
+        editor = editormd("test-editor", {
+            width: "100vw",
+            height: "100vh",
+            path: "/static/editormd/lib/",
+            imageUpload: true,
+            saveHTMLToTextarea: true,
+            value:
+`### 1.测试时间
+<!-- 测试时间 -->
+### 2.测试模型
+<!-- 测试模型 -->
+### 3.测试项目
+<!-- 测试项目 -->
+### 4.测试目的
+<!-- 测试目的 -->
+### 5.测试环境
+<!-- 测试环境 -->
+### 6.前置条件
+<!-- 前置条件 -->
+### 7.测试步骤
+<!-- 测试步骤 -->`
+        });
+    });
+    function exportResult() {
+        html2canvas(document.getElementById('test-editor').children[4]).then((canvas) =>
+        {
+            const imgData = canvas.toDataURL('image/png', 1.0);
+            // base64 url
+            console.log(imgData)
+            // 源码
+            console.log(editor.getMarkdown())
+            const doc = new jspdf.jsPDF('p', 'mm', 'a4')
+            doc.addImage(imgData, 'JPEG', 0, 0)
+            doc.save(`download.pdf`);
+        });
+    }
+</script>
+{% endblock %}

@@ -294,3 +294,25 @@ async def get_result(request: Request, result: ModelResultProp):
                 dataset_info = await DataSet.get_or_none(id=ele["id"]).values()
                 ele["name"] = dataset_info["name"]
     return {"result": results}
+
+
+@router.get("/{resource}/report/export/{pk}")
+async def export(
+    request: Request,
+    resource: str = Path(...),
+    resources=Depends(get_resources),
+    model_resource: ModelResource = Depends(get_model_resource),
+    pk: str = Path(...),
+):
+    return templates.TemplateResponse(
+        f"{resource}/report_edit.html",
+        context={
+            "request": request,
+            "resource": resource,
+            "resource_label": model_resource.label,
+            "resources": resources,
+            "model_resource": model_resource,
+            "pk": pk,
+            "page_title": _("模型评测报告编辑"),
+        },
+    )

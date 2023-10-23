@@ -1,5 +1,8 @@
 {% extends layout %}
 {% block page_body %}
+    <div style="position: relative">
+        <button class="btn btn-primary" style="position: absolute; right: 45px; top: -12px; width: 120px" onclick="editReport({{ pk }})">编辑并导出</button>
+    </div>
 <div class="row row-deck row-cards" style="padding-left: 34px; padding-right: 34px">
     <div id="record_id" style="display: none">{{ base_info.id }}</div>
     <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px;">
@@ -242,5 +245,9 @@ getResult(0)
 $("input:radio[name='btn-radio-basic']").change((e) =>{
     getResult(e.target.id)
  });
+
+function editReport(id) {
+    window.location.href = `/admin/record/report/export/${id}`
+}
 </script>
 {% endblock %}
