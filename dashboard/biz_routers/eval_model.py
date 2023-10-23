@@ -1,24 +1,29 @@
+import json
+import time
+
 # import asyncio
-# import json
 from concurrent.futures import ThreadPoolExecutor
 
 # from functools import reduce
 # from operator import add
 from typing import Union
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Path
 from pydantic import BaseModel
 from starlette.requests import Request
 
-from dashboard.biz_models import EvaluationPlan, ModelInfo, Record
+from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Record, Risk
+from dashboard.biz_models.eval_model import ModelRelateCase, ModelResult
+from dashboard.utils.converter import DataSetTool
+from last.services.app import app
+from last.services.depends import get_model_resource, get_resources
+from last.services.i18n import _
+from last.services.resources import Model as ModelResource
+from last.services.template import templates
 
-# from dashboard.biz_models import DataSet
 # from dashboard.enums import EvalStatus
 # from last.client import AI_eval, Client
-from last.services.app import app
-from last.services.depends import get_resources
-from last.services.i18n import _
-from last.services.template import templates
+
 
 # from tortoise.expressions import Q
 
@@ -39,6 +44,11 @@ class EvalInfo(BaseModel):
     llm_id: str
     llm_name: str
     created_at: int
+
+
+class ModelResultProp(BaseModel):
+    record_id: int
+    eval_type_id: int
 
 
 @app.get("/record/add")
@@ -97,7 +107,7 @@ async def create_eval(
 
 
 @router.post("/evaluation/evaluation_create")
-async def evaluation_create(eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
+async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
     # record =
     await Record.create(
@@ -106,6 +116,7 @@ async def evaluation_create(eval_info: EvalInfo):  # TODO 加一个按钮，可�
         llm_name=eval_info.llm_name,
         llm_id=eval_info.llm_id,
         created_at=eval_info.created_at,
+        created_user_id=str(request.state.admin).split("#")[1],
     )
     # try:
     # dataset_ids = [int(_) for _ in plan["dataset_ids"].split(",")]
@@ -183,3 +194,103 @@ async def get_model_list():
         return {"status": "ok", "success": 1, "data": model_list}
     except Exception as e:
         return {"status": "error", "success": 0, "msg": e}
+
+
+@router.get("/{resource}/report/{pk}")
+async def get_report(
+    request: Request,
+    resource: str = Path(...),
+    resources=Depends(get_resources),
+    model_resource: ModelResource = Depends(get_model_resource),
+    pk: str = Path(...),
+    page_size: int = 1,
+    page_num: int = 1,
+):
+    # 评测方案信息
+    base_info = await Record.get_or_none(id=pk).values()
+    # 时间格式化
+    time_array = time.localtime(base_info["created_at"] / 1000)
+    format_time = time.strftime("%Y-%m-%d %H:%M:%S", time_array)
+    # 评测方案详情
+    eval_plan = await EvaluationPlan.get_or_none(id=base_info["plan_id"])
+    dataset_ids = eval_plan.dataset_ids.split(",")
+    datasets = await DataSet.filter(id__in=dataset_ids)
+    eval_type = "系统评分⭐"
+    plan_content = eval_plan.dimensions.split(",")
+    if eval_plan.eval_type == 1:
+        eval_type = "人工评分 👤️"
+
+    dataset_schema = await DataSetTool.ds_model_to_eval_model_schema(datasets)
+    plan_detail = {
+        "name": eval_plan.name,
+        "score_way": eval_type,
+        "plan_content": plan_content,
+        "dataset_names": dataset_schema.dataset_names,
+        "risk_detail": dataset_schema.risk_detail,
+    }
+    # risk
+    risks_info = []
+    risks = eval_plan.dimensions.split(",")
+    for risk in risks:
+        risk_name = risk.split("/")[0]
+        risk_info = await Risk.get_or_none(risk_name=risk_name).values()
+        risks_info.append(risk_info)
+    # 典型风险案例
+    risk_demos = await ModelRelateCase.all().filter(record_id=base_info["id"]).values()
+    for demo in risk_demos:
+        model = await ModelInfo.get_or_none(id=demo["eval_model_id"]).values()
+        demo["eval_model_name"] = model["name"]
+        risk = await Risk.get_or_none(id=demo["risk_type_id"]).values()
+        demo["risk_type_name"] = risk["risk_name"]
+        dataset = await DataSet.get_or_none(id=demo["come_dataset_id"]).values()
+        demo["come_dataset_name"] = dataset["name"]
+
+    total = len(risk_demos)
+
+    return templates.TemplateResponse(
+        f"{resource}/get_report.html",
+        context={
+            "request": request,
+            "resource": resource,
+            "resource_label": model_resource.label,
+            "resources": resources,
+            "model_resource": model_resource,
+            "pk": pk,
+            "page_title": _("模型评测报告"),
+            "base_info": base_info,
+            "format_time": format_time,
+            "value": {"plan_detail": plan_detail},
+            "risks_info": risks_info,
+            "risk_demos": risk_demos,
+            "page_num": page_num,
+            "page_size": page_size,
+            "total": total,
+        },
+    )
+
+
+@router.post("/{resource}/report/result")
+async def get_result(request: Request, result: ModelResultProp):
+    if result.eval_type_id == 0:
+        results = await ModelResult.all().filter(record_id=result.record_id).values()
+    else:
+        results = (
+            await ModelResult.all()
+            .filter(record_id=result.record_id, eval_type_id=result.eval_type_id)
+            .values()
+        )
+    # 添加风险Name
+    for item in results:
+        model = await ModelInfo.get_or_none(id=item["eval_model_id"]).values()
+        item["eval_model_name"] = model["name"]
+        if item["eval_type_id"] == 0:
+            item["eval_type_name"] = "综合评分"
+        else:
+            name = await Risk.get_or_none(id=item["eval_type_id"]).values()
+            item["eval_type_name"] = name["risk_name"] + "评分"
+            item["eval_data_set_score_json_list"] = json.loads(item["eval_data_set_score_json"])
+            # 添加评测集名称
+            for ele in item["eval_data_set_score_json_list"]:
+                dataset_info = await DataSet.get_or_none(id=ele["id"]).values()
+                ele["name"] = dataset_info["name"]
+    return {"result": results}
