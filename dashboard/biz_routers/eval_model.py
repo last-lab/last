@@ -1,9 +1,7 @@
+import asyncio
 import json
 import time
-
-import asyncio
 from concurrent.futures import ThreadPoolExecutor
-
 from functools import reduce
 from operator import add
 from typing import Union
@@ -11,22 +9,18 @@ from typing import Union
 from fastapi import APIRouter, Depends, Path
 from pydantic import BaseModel
 from starlette.requests import Request
+from tortoise.expressions import Q
 
 from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Record, Risk
 from dashboard.biz_models.eval_model import ModelRelateCase, ModelResult
+from dashboard.enums import EvalStatus
 from dashboard.utils.converter import DataSetTool
+from last.client import AI_eval, Client
 from last.services.app import app
 from last.services.depends import get_model_resource, get_resources
 from last.services.i18n import _
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
-
-from dashboard.enums import EvalStatus
-from last.client import AI_eval, Client
-
-
-from tortoise.expressions import Q
-
 
 router = APIRouter()
 executor = ThreadPoolExecutor()
@@ -109,7 +103,9 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
 @router.post("/evaluation/evaluation_create")
 async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
-    models = await ModelInfo.filter(Q(id__in=[int(x) for x in eval_info.llm_id.split(',')])).values()
+    models = await ModelInfo.filter(
+        Q(id__in=[int(x) for x in eval_info.llm_id.split(",")])
+    ).values()
     record = await Record.create(
         eval_plan=plan["name"],
         plan_id=eval_info.plan_id,
