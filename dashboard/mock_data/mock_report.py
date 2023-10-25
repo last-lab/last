@@ -8,23 +8,36 @@ async def create_mock_report():
     await connection.execute_query(f"DROP TABLE IF EXISTS {ModelResult.__name__.upper()}")
     await Tortoise.generate_schemas(ModelResult)
 
-    result_1 = ModelResult(record_id=1, eval_model_id=1, eval_type_id=0, score=88)
-    await result_1.save()
+    await ModelResult(record_id=1, eval_model_id=1, eval_type_id=0, score=88).save()
+    await ModelResult(record_id=1, eval_model_id=2, eval_type_id=0, score=68).save()
 
-    result_2 = ModelResult(
+    await ModelResult(
         record_id=1,
         eval_model_id=1,
         eval_type_id=1,
         score=90,
         eval_data_set_score_json='[{"id":"1","score":"75"}]',
-    )
-    await result_2.save()
+    ).save()
+    await ModelResult(
+        record_id=1,
+        eval_model_id=2,
+        eval_type_id=1,
+        score=77,
+        eval_data_set_score_json='[{"id":"1","score":"78"}]',
+    ).save()
 
-    result_3 = ModelResult(
+    await ModelResult(
         record_id=1,
         eval_model_id=1,
         eval_type_id=2,
-        score=77,
-        eval_data_set_score_json='[{"id":"1","score":"88"}]',
-    )
-    await result_3.save()
+        score=97,
+        eval_data_set_score_json='[{"id":"2","score":"88"}]',
+    ).save()
+
+    await ModelResult(
+        record_id=1,
+        eval_model_id=2,
+        eval_type_id=2,
+        score=85,
+        eval_data_set_score_json='[{"id":"2","score":"88"}]',
+    ).save()
