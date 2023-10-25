@@ -18,7 +18,7 @@
             <div class="modal-body">
                 <div class="list-group list-group-flush">
                     {% for item in value.record_file %}
-                    <a class="list-group-item list-group-item-action">{{ item }}</a>
+                    <a class="list-group-item list-group-item-action" href="{{ item.url }}" download="{{ item.name }}.pdf">{{ item.name }}</a>
                     {% endfor %}
                 </div>
             </div>

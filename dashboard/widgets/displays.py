@@ -107,8 +107,13 @@ class ShowOperation(Display):
             info = await ModelInfo.get_or_none(id=int(i)).values()
             model_ids.append({"id": i, "name": info["name"], "model_detail": info})
 
-        # TODO: 下面的 record_file(备案文件) 需要替换为查询得到文件列表
-        record_file = ["书生·浦语 1.3.0", "送评模型1 1.0", "送评模型1 1.4"]
+        # TODO: 下面的 record(备案文件) 需要替换为查询得到文件列表
+        record_file = []
+        record = ["chatgpt"]
+        # 找到对应的pdf
+        for item in record:
+            record_file.append({"name": item, "url": "/static/reg/" + item + ".pdf"})
+
         return await super().render(
             request,
             {
