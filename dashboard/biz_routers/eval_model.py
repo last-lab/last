@@ -1,4 +1,5 @@
 import json
+import os
 import time
 
 # import asyncio
@@ -14,6 +15,7 @@ from starlette.requests import Request
 
 from dashboard.biz_models import DataSet, EvaluationPlan, ModelInfo, Record, Risk
 from dashboard.biz_models.eval_model import ModelRelateCase, ModelResult
+from dashboard.constants import BASE_DIR
 from dashboard.utils.converter import DataSetTool
 from last.services.app import app
 from last.services.depends import get_model_resource, get_resources
@@ -316,3 +318,25 @@ async def export(
             "page_title": _("模型评测报告编辑"),
         },
     )
+
+
+@router.post("/{resource}/report/read")
+async def read_md(request: Request):
+    # init.md为mock的初始md
+    file_path = os.path.join(BASE_DIR, "static", "init.md")
+    file = open(file_path, "r", encoding="utf-8")
+    line = file.readlines()
+    return line
+
+
+class ISave(BaseModel):
+    name: str
+    content: str
+
+
+@router.post("/{resource}/report/save")
+async def save_pdf(request: Request, data: ISave):
+    file_path = os.path.join(BASE_DIR, "static", "md")
+    file_handle = open(file_path + "//" + data.name + ".md", "w", encoding="utf-8")
+    file_handle.write(data.content)
+    file_handle.close()
