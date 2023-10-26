@@ -67,7 +67,7 @@
             url: '/admin/record/report/save',
             type: 'POST',
             data: JSON.stringify({
-                name: `download-${id}`,
+                name: `download-${id}.md`,
                 content: stringData
             }),
             contentType: "application/json;charset=UTF-8",
@@ -83,7 +83,7 @@
             url: '/admin/record/report/save/md',
             type: 'POST',
             data: JSON.stringify({
-                name: `download-${id}`,
+                name: `download-${id}.md`,
                 content: editor.getMarkdown()
             }),
             contentType: "application/json;charset=UTF-8",
