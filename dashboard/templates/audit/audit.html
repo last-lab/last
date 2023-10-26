@@ -1,0 +1,114 @@
+{% extends layout %}
+{% block page_body %}
+
+
+
+    <div class="card">
+
+        <div class="table-responsive">
+            <table class="table card-table table-vcenter text-nowrap datatable" id="myTable">
+                <thead>
+                <tr>
+                        <th>Id</th>
+
+                        <th>标注方式</th>
+
+                        <th>截止时间</th>
+
+                        <th>标注状态</th>
+
+                        <th>审核状态</th>
+
+                        <th>操作</th>
+
+                </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+
+          <span class="dropdown">
+            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+
+
+                <!-- <a class="dropdown-item" href="/admin/labelpage/display/1"> -->
+                <i class="ti ti-edit me-2"></i>
+                标注任务详情
+              </a>
+
+            </div>
+          </span>
+                        </td>
+
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        // 使用 $.ajax 方法获取数据
+        $.ajax({
+            url: '/admin/audit/get_audit_data', // 替换为您实际的数据获取 URL
+            method: 'POST',
+            data: JSON.stringify({"taskID": "{{task_id}}"}),
+            contentType: 'application/json',
+            success: function(data) {
+                const table = $('#myTable');
+
+                // 遍历数据并添加到表格中
+                data.forEach(function(item) {
+                    const row = $('<tr></tr>');
+
+                    const idCell = $('<td></td>').text(item.question_id);
+                    row.append(idCell);
+
+                    const questionCell = $('<td></td>').text(item.question);
+                    row.append(questionCell);
+
+                    const statusCell = $('<td></td>').text(item.status);
+                    row.append(statusCell);
+
+                    const actionCell = $('<td></td>');
+                    const actionLink = $('<a></a>').text(item.action);
+                    // 添加条件判断来设置不同的跳转链接和参数
+                    if (item.action === '标注') {
+                        const labelingUrl = '/admin/labelpage/labeling/' + item.task_id + '_' + item.question_id;
+
+                        // 在链接中添加参数
+                        const params = {
+                            question_id: item.question_id,
+                            task_id: item.task_id,
+                            labeling_method: item.labeling_method,
+                            task_pk_value: '{{pk}}',
+                            // 添加其他参数
+                        };
+                        const queryString = $.param(params);
+                        actionLink.attr('href', labelingUrl + '?' + queryString);
+                    } else {
+                        // 设置其他页面的跳转链接
+                        const labelingUrl = '/admin/labelpage/revise/';
+                        // 链接中添加参数
+                        const params = {
+                            labeling_method: item.labeling_method,
+                            task_id: item.task_id,
+                            question_id: item.question_id,
+                        };
+                        const queryString = $.param(params)
+                        actionLink.attr('href', labelingUrl +'?' + queryString);
+                    }
+                    actionCell.append(actionLink);
+                    row.append(actionCell);
+
+                    table.append(row);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+            }
+        });
+    </script>
+
+{% endblock %}

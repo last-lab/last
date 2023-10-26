@@ -53,7 +53,16 @@ def distribute_labeling_task(len_dataset: int, assign_user_list):
         assign_user: len(assign_user_item_dict[assign_user])
         for assign_user in assign_user_item_dict
     }
-    return item_assign_user_dict, assign_user_item_dict, assign_user_item_length
+
+    # 配置一个标注进度字典 {"user1": 0, "user2": 0}等
+    assign_user_labeling_progress = {assign_user: 0 for assign_user in assign_user_item_dict}
+
+    return (
+        item_assign_user_dict,
+        assign_user_item_dict,
+        assign_user_item_length,
+        assign_user_labeling_progress,
+    )
 
 
 def convert_labelstudio_result_to_string(labeling_method, labeling_result):

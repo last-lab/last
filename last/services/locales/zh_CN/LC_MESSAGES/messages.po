@@ -469,4 +469,3 @@ msgstr ""
 
 #~ msgid "Evaluation Record"
 #~ msgstr "评测记录"
-

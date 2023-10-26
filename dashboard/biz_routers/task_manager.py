@@ -144,6 +144,7 @@ async def create_task_callback(
         create_time=current_time,
         end_time=json_data["deadline"],
         assign_user=json_data["taskAssignments"],
+        audit_user=json_data["auditAssignments"],
     ).save()
 
     qa_list = split_string_to_list(json_data["fileContent"])
@@ -151,6 +152,7 @@ async def create_task_callback(
         item_assign_user_dict,
         assign_user_item_dict,
         assign_user_item_length,
+        assign_user_labeling_progress,
     ) = distribute_labeling_task(len(qa_list), json_data["taskAssignments"])
 
     # 将task写入到labelpage中
@@ -158,12 +160,12 @@ async def create_task_callback(
         task_id=task_id,
         task_type="数据集标注",
         labeling_method=json_data["annotationTypes"],
-        current_status="未标注",
         dateset=json_data["fileName"],
         dataset_uid=dataset_uid,
         end_time=json_data["deadline"],
         assign_user=assign_user_item_dict,
         assign_length=assign_user_item_length,
+        labeling_progress=assign_user_labeling_progress,
     ).save()
 
     # 创建一个task res表，将这个任务的结果存放起来
