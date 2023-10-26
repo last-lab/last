@@ -2,6 +2,7 @@
 {% block page_body %}
 <link rel="stylesheet" href="/static/editormd/css/editormd.css" />
     <div style="position: relative; margin-bottom: 30px">
+        <button class="btn btn-primary" style="position: absolute; right: 140px; top: -12px; width: 120px" onclick="saveResult({{ pk }})">保存</button>
         <button class="btn btn-secondary" style="position: absolute; right: 0; top: -12px; width: 120px" onclick="exportResult({{ pk }})">导出</button>
     </div>
 <div id="test-editor">
@@ -13,11 +14,17 @@
 {#<script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>#}
 {#<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>#}
 <script type="text/javascript">
-    var editor
+    var editor;
+    const queryString = window.location.href.split('/');
+    const current_id = queryString[queryString.length - 1];
     $(function() {
         $.ajax({
             url: '/admin/record/report/read',
             type: 'POST',
+            data: JSON.stringify({
+                url: `download-${current_id}.md`,
+            }),
+            contentType: "application/json;charset=UTF-8",
             success: function (value) {
                 console.log(value.join(''))
                 editor = editormd("test-editor", {
@@ -60,10 +67,31 @@
             url: '/admin/record/report/save',
             type: 'POST',
             data: JSON.stringify({
-                name: `download-${id}`,
+                name: `download-${id}.md`,
                 content: stringData
             }),
-            contentType: "application/json;charset=UTF-8"
+            contentType: "application/json;charset=UTF-8",
+            success: function (value) {
+                if (value.mes === 1) {
+                    history.back();
+                }
+            }
+        })
+    }
+    function saveResult(id) {
+        $.ajax({
+            url: '/admin/record/report/save/md',
+            type: 'POST',
+            data: JSON.stringify({
+                name: `download-${id}.md`,
+                content: editor.getMarkdown()
+            }),
+            contentType: "application/json;charset=UTF-8",
+            success: function (value) {
+                if (value.mes === 1) {
+                    history.back();
+                }
+            }
         })
     }
 </script>

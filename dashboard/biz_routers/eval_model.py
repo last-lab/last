@@ -314,10 +314,19 @@ async def export(
     )
 
 
+class ISaveInit(BaseModel):
+    url: str
+
+
 @router.post("/{resource}/report/read")
-async def read_md(request: Request):
-    # init.md为mock的初始md
-    file_path = os.path.join(BASE_DIR, "static", "init.md")
+async def read_md(request: Request, data: ISaveInit):
+    file_init = os.path.join(BASE_DIR, "static", "mdSave", data.url)
+    # 判断是否存在保存的md
+    if os.path.exists(file_init):
+        file_path = file_init
+    else:
+        # init.md为mock的初始md
+        file_path = os.path.join(BASE_DIR, "static", "mdSave", "init.md")
     file = open(file_path, "r", encoding="utf-8")
     line = file.readlines()
     return line
@@ -330,7 +339,21 @@ class ISave(BaseModel):
 
 @router.post("/{resource}/report/save")
 async def save_pdf(request: Request, data: ISave):
-    file_path = os.path.join(BASE_DIR, "static", "md")
-    file_handle = open(file_path + "//" + data.name + ".md", "w", encoding="utf-8")
+    file_path = os.path.join(BASE_DIR, "static", "md", data.name)
+    file_handle = open(file_path, "w", encoding="utf-8")
     file_handle.write(data.content)
     file_handle.close()
+    # 导出之后，删除之前保存的文件
+    file_exist = os.path.join(BASE_DIR, "static", "mdSave", data.name)
+    if os.path.exists(file_exist):
+        os.remove(file_exist)
+    return {"mes": 1}
+
+
+@router.post("/{resource}/report/save/md")
+async def save_md(request: Request, data: ISave):
+    file_path = os.path.join(BASE_DIR, "static", "mdSave", data.name)
+    file_handle = open(file_path, "w", encoding="utf-8")
+    file_handle.write(data.content)
+    file_handle.close()
+    return {"mes": 1}
