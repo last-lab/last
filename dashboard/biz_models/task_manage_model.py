@@ -11,3 +11,4 @@ class TaskManage(Model):
     create_time = fields.DateField()
     end_time = fields.DateField()
     assign_user = fields.CharField(max_length=255)
+    audit_user = fields.CharField(max_length=255)

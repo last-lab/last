@@ -5,8 +5,9 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
+from dashboard.biz_models import AuditResult  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
-from dashboard.biz_models import DataSet, LabelPage, TaskManage  # EvaluationPlan,; Evaluation,
+from dashboard.biz_models import DataSet, LabelPage, TaskManage
 from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
@@ -19,12 +20,14 @@ from dashboard.widgets.displays import (
     ShowAdmin,
     ShowIp,
     ShowLabel,
+    ShowLabelProgress,
     ShowPlan,
     ShowPlanDetail,
     ShowPopover,
     ShowRiskType,
     ShowSecondType,
     ShowStatus,
+    ShowTaskLabelingProgress,
     ShowTime,
 )
 from dashboard.widgets.filters import SearchFilter
@@ -61,31 +64,6 @@ class Administartor(Dropdown):
         icon = "far fa-bell"
         url = "/admin/notification"
 
-    # class RiskManage(Model):
-    #     label = _("风险维度管理")
-    #     model = Risk
-    #     page_title = _("风险维度管理")
-    #     fields = [
-    #         Field(name="risk_id", label="一级维度", display=ShowRisk()),
-    #         Field(name="risk_id", label="二级维度", display=ShowSecondRisk()),
-    #         Field(name="risk_id", label="具体描述", display=ShowSecondRiskDesc()),
-    #         Field(name="risk_id", label="操作", display=RiskAction()),
-    #     ]
-    #
-    #     async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
-    #         return [
-    #             ToolbarAction(
-    #                 label=_("新建维度"),
-    #                 icon="fas fa-plus",
-    #                 name="risk_create",
-    #                 method=_enums.Method.GET,
-    #                 ajax=False,
-    #                 class_="btn-primary",
-    #             )
-    #         ]
-    #
-    #     async def get_actions(self, request: Request) -> List[Action]:
-    #         return []
     class RiskManage(Link):
         label = _("风险维度")
         icon = "fas fa-tag"
@@ -148,40 +126,6 @@ class Evaluation(Dropdown):
     label = _("模型评测")
     icon = "fas fa-user"
     resources = [Record, Create]
-
-
-# @app.register
-# class Dataset(Dropdown):
-#     class LabelingRecord(Model):
-#         label = _("Labeling Record")
-#         model = LabelPage
-#         filters = [filters.Search(name="task_type", label="Task Type")]
-#         fields = ["id", "task_type", "labeling_method", "release_time", "current_status"]
-#
-#         async def get_actions(self, request: Request) -> List[Action]:
-#             return [
-#                 Action(
-#                     label=_("labeling"),
-#                     icon="ti ti-edit",
-#                     name="labeling",
-#                     method=Method.GET,
-#                     ajax=False,
-#                 )
-#             ]
-#
-#         async def get_bulk_actions(self, request: Request) -> List[Action]:
-#             return []
-#
-#     class Labeling(Link):
-#         """Label Studio Embedding"""
-#
-#         label = _("Labeling")
-#         icon = "fas fa-tag"
-#         url = "/admin/label"
-#
-#     label = _("Dataset")
-#     icon = "fas fa-bars"
-#     resources = [LabelingRecord, Labeling]
 
 
 @app.register
@@ -284,7 +228,7 @@ class DataManager(Dropdown):
             "task_type",
             "labeling_method",
             "end_time",
-            "current_status",
+            Field(name="task_id", label="标注进展", display=ShowLabelProgress()),
             Field(name="task_id", label="操作", display=ShowLabel()),
         ]
 
@@ -314,88 +258,7 @@ class DataManager(Dropdown):
 
     label = _("datamanager")
     icon = "fas fa-bars"
-    resources = [DatasetResource, EvaluationPlanResource, LabelingRecord]
-
-
-# @app.register
-# class Content(Dropdown):
-#     class CategoryResource(Model):
-#         label = "Category"
-#         model = Category
-#         filters = [filters.Search(name="name", label="Name")]
-#         fields = ["id", "name", "slug", "created_at"]
-#
-#         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
-#             actions = await super().get_toolbar_actions(request)
-#             actions.append(import_export_provider.import_action)
-#             actions.append(import_export_provider.export_action)
-#             return actions
-#
-#     class ProductResource(Model):
-#         label = "Product"
-#         model = Product
-#         filters = [
-#             filters.Enum(enum=enums.ProductType, name="type", label="ProductType"),
-#             filters.Datetime(name="created_at", label="CreatedAt"),
-#         ]
-#         fields = [
-#             "id",
-#             "name",
-#             "view_num",
-#             "sort",
-#             "is_reviewed",
-#             "type",
-#             Field(name="image", label="Image", display=displays.Image(width="40")),
-#             Field(name="body", label="Body", input_=inputs.Editor()),
-#             "created_at",
-#         ]
-#
-#     label = "Content"
-#     icon = "fas fa-bars"
-#     resources = [ProductResource, CategoryResource]
-#
-#
-# @app.register
-# class ConfigResource(Model):
-#     label = "Config"
-#     model = Config
-#     icon = "fas fa-cogs"
-#     filters = [
-#         filters.Enum(
-#             enum=enums.Status,
-#             name="status",
-#             label="Status",
-#         ),
-#         filters.Search(name="key", label="Key", search_mode="equal"),
-#     ]
-#     fields = [
-#         "id",
-#         "label",
-#         "key",
-#         "value",
-#         Field(
-#             name="status",
-#             label="Status",
-#             input_=inputs.RadioEnum(enums.Status, default=enums.Status.on),
-#         ),
-#     ]
-#
-#     async def row_attributes(self, request: Request, obj: dict) -> dict:
-#         if obj.get("status") == enums.Status.on:
-#             return {"class": "bg-green text-white"}
-#         return await super().row_attributes(request, obj)
-#
-#     async def get_actions(self, request: Request) -> List[Action]:
-#         actions = await super().get_actions(request)
-#         switch_status = Action(
-#             label="Switch Status",
-#             icon="ti ti-toggle-left",
-#             name="switch_status",
-#             method=Method.PUT,
-#         )
-#         actions.append(switch_status)
-#         return actions
-#
+    resources = [DatasetResource, EvaluationPlanResource]
 
 
 @app.register
@@ -533,58 +396,6 @@ class Amount(ComputeField):
         return f'{obj.get("currency")}{v}'
 
 
-# TODO: SponsorResource是一个从外部地址获取信息的例子
-# class SponsorUsernameDisplay(displays.Display):
-#     template = "sponsor_username.html"
-
-# @app.register
-# class SponsorResource(Model):
-#     label = "Sponsor"
-#     model = Sponsor
-#     page_pre_title = "Sponsor"
-#     page_title = "Thanks for all the sponsors!"
-#     icon = "far fa-heart"
-#     filters = ["username", filters.Date("sponsor_date", label="Sponsor Date")]
-#     fields = [
-#         "id",
-#         Field(name="username", label="username", display=SponsorUsernameDisplay()),
-#         "sponsor_date",
-#         Field(name="amount", display=displays.InputOnly()),
-#         Field(name="currency", display=displays.InputOnly()),
-#         Amount(name="amount", label="Amount"),
-#     ]
-#
-#     async def get_actions(self, request: Request) -> List[Action]:
-#         return [
-#             Action(
-#                 label=_("update"),
-#                 icon="ti ti-edit",
-#                 name="update",
-#                 method=Method.GET,
-#                 ajax=False,
-#             ),
-#         ]
-#
-#     async def get_bulk_actions(self, request: Request) -> List[Action]:
-#         return []
-
-
-# @app.register
-# class GithubLink(Link):
-#     label = "Github"
-#     url = "https://github.com/fastapi-admin/fastapi-admin"
-#     icon = "fab fa-github"
-#     target = "_blank"
-
-
-# @app.register
-# class DocumentationLink(Link):
-#     label = "Documentation"
-#     url = "https://fastapi-admin-docs.long2ice.io"
-#     icon = "fas fa-file-code"
-#     target = "_blank"
-
-
 @app.register
 class SwitchLayout(Link):
     label = _("Switch Layout")
@@ -600,7 +411,15 @@ class TaskManagePanel(Dropdown):
         label = _("任务看板")
         model = TaskManage
         filters = [filters.Search(name="task_type", label="Task Type")]
-        fields = ["id", "task_id", "labeling_method", "dateset", "create_time", "current_status"]
+        fields = [
+            "id",
+            "task_id",
+            "labeling_method",
+            "dateset",
+            "create_time",
+            "current_status",
+            Field(name="task_id", label="标注进展", display=ShowTaskLabelingProgress()),
+        ]
 
         async def get_actions(self, request: Request) -> List[Action]:
             return [
@@ -627,14 +446,103 @@ class TaskManagePanel(Dropdown):
                     class_="btn-primary",
                 ),
                 ToolbarAction(
-                    label=_("分配评测任务"),
+                    label=_("上传已标注数据"),
                     icon="fas fa-upload",
-                    name="assign_test_task",
+                    name="upload_labeled_data",
                     method=_enums.Method.POST,
                     class_="btn-primary",
                 ),
             ]
 
+    class LabelingRecord(Model):
+        label = _("Labeling Record")
+        model = LabelPage
+        filters = [filters.Search(name="task_type", label="Task Type")]
+        fields = [
+            "id",
+            "task_id",
+            "task_type",
+            "labeling_method",
+            "end_time",
+            Field(name="task_id", label="标注进展", display=ShowLabelProgress()),
+            Field(name="task_id", label="操作", display=ShowLabel()),
+        ]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return []
+
+        async def get_bulk_actions(self, request: Request) -> List[Action]:
+            return []
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return []
+
+    class AuditRecord(Model):
+        label = _("Audit Record")
+        model = AuditResult
+        filters = [filters.Search(name="task_id", label="任务id")]
+        fields = [
+            "id",
+            "task_id",
+        ]
+
+        async def get_actions(self, request: Request) -> List[Action]:
+            return []
+
+        async def get_bulk_actions(self, request: Request) -> List[Action]:
+            return []
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return []
+
     label = _("任务管理")
     icon = "fas fa-bars"
-    resources = [CreateTask]
+    resources = [CreateTask, LabelingRecord, AuditRecord]
+
+
+# @app.register
+# class AuditTaskPanel(Dropdown):
+#     """ """
+
+#     class CreateTask(Model):
+#         label = _("任务看板")
+#         model = AuditModel
+#         filters = [filters.Search(name="task_type", label="Task Type")]
+#         fields = ["id", "task_id", "labeling_method", "dateset", "create_time", "current_status"]
+
+#         async def get_actions(self, request: Request) -> List[Action]:
+#             return [
+#                 Action(
+#                     label=_("下载标注结果"),
+#                     icon="ti ti-edit",
+#                     name="download",
+#                     method=Method.GET,
+#                     ajax=False,
+#                 ),
+#             ]
+
+#         async def get_bulk_actions(self, request: Request) -> List[Action]:
+#             return []
+
+#         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+#             return [
+#                 ToolbarAction(
+#                     label=_("创建标注任务"),
+#                     icon="fas fa-upload",
+#                     name="create_task",
+#                     method=_enums.Method.GET,
+#                     ajax=False,
+#                     class_="btn-primary",
+#                 ),
+#                 ToolbarAction(
+#                     label=_("分配评测任务"),
+#                     icon="fas fa-upload",
+#                     name="assign_test_task",
+#                     method=_enums.Method.POST,
+#                     class_="btn-primary",
+#                 ),
+#             ]
+
+#     label = _("任务管理")
+#     icon = "fas fa-bars"
+#     resources = [CreateTask]
