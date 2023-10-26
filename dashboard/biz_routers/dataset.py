@@ -50,6 +50,7 @@ async def upload_dataset(
         )
 
 
+# 上传解析操作
 @router.post("/dataset/json")
 async def json(request: Request, file: UploadFile = File(...)):
     await upload.upload(file)
@@ -63,6 +64,7 @@ class Item(Dataset):
     first_risk_id: str
 
 
+# 提交操作
 @router.post("/dataset/conform")
 async def conform(request: Request, item: Item):
     result = await DataSet.all().filter(name=item.name)

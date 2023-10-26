@@ -265,11 +265,14 @@ async def get_report(
     )
 
 
+# 获取该记录的评测结果
 @router.post("/{resource}/report/result")
 async def get_result(request: Request, result: ModelResultProp):
+    # 综合信息需获取该record_id下所有信息
     if result.eval_type_id == 0:
         results = await ModelResult.all().filter(record_id=result.record_id).values()
     else:
+        # 维度信息还需要限制维度
         results = (
             await ModelResult.all()
             .filter(record_id=result.record_id, eval_type_id=result.eval_type_id)
@@ -318,6 +321,7 @@ class ISaveInit(BaseModel):
     url: str
 
 
+# 获取初始md内容
 @router.post("/{resource}/report/read")
 async def read_md(request: Request, data: ISaveInit):
     file_init = os.path.join(BASE_DIR, "static", "mdSave", data.url)
@@ -337,21 +341,25 @@ class ISave(BaseModel):
     content: str
 
 
+# 导出之后保存操作和清除操作
 @router.post("/{resource}/report/save")
 async def save_pdf(request: Request, data: ISave):
+    # TODO 导出的md文件暂时保存在/static/md中
     file_path = os.path.join(BASE_DIR, "static", "md", data.name)
     file_handle = open(file_path, "w", encoding="utf-8")
     file_handle.write(data.content)
     file_handle.close()
-    # 导出之后，删除之前保存的文件
+    # TODO 导出之后，删除之前保存在/static/mdSave的文件
     file_exist = os.path.join(BASE_DIR, "static", "mdSave", data.name)
     if os.path.exists(file_exist):
         os.remove(file_exist)
     return {"mes": 1}
 
 
+# 保存操作
 @router.post("/{resource}/report/save/md")
 async def save_md(request: Request, data: ISave):
+    # TODO 保存的md文件暂时保存在/static/mdSave中
     file_path = os.path.join(BASE_DIR, "static", "mdSave", data.name)
     file_handle = open(file_path, "w", encoding="utf-8")
     file_handle.write(data.content)

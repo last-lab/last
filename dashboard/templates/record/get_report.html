@@ -123,6 +123,7 @@
 <script>
 const current_id = Number(document.getElementById("record_id").innerText)
 function getResult(type_id) {
+    // 获取结果数据
     $.ajax({
         url: '/admin/record/report/result',
         type: 'POST',
@@ -141,6 +142,7 @@ function getResult(type_id) {
                     series.push(item.score)
                 }
             })
+            // chart插件 https://apexcharts.com/
             function get_chart() {
                 const chart = document.getElementById('chart-demo-bar')
                 if (chart) {
@@ -245,7 +247,7 @@ getResult(0)
 $("input:radio[name='btn-radio-basic']").change((e) =>{
     getResult(e.target.id)
  });
-
+// 跳转mk编辑页
 function editReport(id) {
     window.location.href = `/admin/record/report/export/${id}`
 }
