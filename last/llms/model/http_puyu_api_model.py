@@ -12,7 +12,7 @@ class PuyuAPILLMModel(HTTPAPILLMModel):
             "Authorization": api_key,
         }
 
-    def generate(self, prompt, messages, *args, **kwargs):
+    async def generate(self, prompt, messages, *args, **kwargs):
         formatted_messages = [{
             "role": item["role"],
             "text": item["content"],

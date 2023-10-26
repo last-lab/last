@@ -30,7 +30,6 @@ class BaseLLMModel(ABC):
             self.initialize()
 
         success, trials, errors = False, 0, []
-
         while (not success) and (trials < num_trials):
             try:
                 response = None
