@@ -106,7 +106,6 @@ async def create_mock_llms():
         alignment_info="RLHF对齐",
     )
 
-
     await ModelInfo.create(
         name="puyu",
         endpoint="puyu",
