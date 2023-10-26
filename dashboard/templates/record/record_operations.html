@@ -1,4 +1,4 @@
-<button type="button" class="btn btn-ghost-primary">
+<button type="button" class="btn btn-ghost-primary" onclick="jumpReport({{ value.id }})">
     评测报告
 </button>
 <button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#modelSelect-{{ value.id }}">
@@ -98,5 +98,8 @@
         if (current_id) {
             document.getElementById(`detail-${current_id}`).style.display = 'none';
         }
+    }
+    function jumpReport(id) {
+        window.location.href = `/admin/record/report/${id}`
     }
 </script>
