@@ -3,6 +3,9 @@ from typing import Any, List, Mapping, Optional, Dict
 from pydantic import BaseModel
 from .model.http_alles_api_model import AllesMinimaxAPILLMModel, AllesChatGPTAPILLMModel, AllesGPT4APILLMModel, AllesPalmAPILLMModel, AllesClaudeAPILLMModel, AllesWenxinAPILLMModel, AllesSparkAPILLMModel, AllesBaiduTranslateAPILLMModel
 from .model.http_puyu_api_model import PuyuAPILLMModel
+from .model.http_tigerbot_api_model import TigerbotAPILLMModel
+from .model.http_mita_api_model import MitaAPILLMModel
+from .model.http_jieyue_api_model import JieyueAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -32,26 +35,38 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["ALLES_API_TOKEN"]
         elif self.model.startswith("puyu"):
             api_key = os.environ["PUYU_API_TOKEN"]
+        elif self.model.lower().startswith("tigerbot"):
+            api_key = os.environ["TIGERBOT_API_TOKEN"]
+        elif self.model.lower().startswith("mita"):
+            api_key = os.environ["MITA_API_TOKEN"]
+        elif self.model.lower().startswith("jieyue"):
+            api_key = os.environ["JIEYUE_API_TOKEN"]
         
         params = {
             "api_key": api_key,
         }
-        if self.model == "alles-minimax":
+        if self.model.lower() == "alles-minimax":
             model = AllesMinimaxAPILLMModel(**params)
-        elif self.model == "alles-chatgpt":
+        elif self.model.lower() == "alles-chatgpt":
             model = AllesChatGPTAPILLMModel(**params)
-        elif self.model == "alles-gpt4":
+        elif self.model.lower() == "alles-gpt4":
             model = AllesGPT4APILLMModel(**params)
-        elif self.model == "alles-palm":
+        elif self.model.lower() == "alles-palm":
             model = AllesPalmAPILLMModel(**params)
-        elif self.model == "alles-claude":
+        elif self.model.lower() == "alles-claude":
             model = AllesClaudeAPILLMModel(**params)
-        elif self.model == "alles-wenxin":
+        elif self.model.lower() == "alles-wenxin":
             model = AllesWenxinAPILLMModel(**params)
-        elif self.model == "alles-spark":
+        elif self.model.lower() == "alles-spark":
             model = AllesSparkAPILLMModel(**params)
-        elif self.model == "puyu":
+        elif self.model.lower() == "puyu":
             model = PuyuAPILLMModel(**params)
+        elif self.model.lower() == "tigerbot":
+            model = TigerbotAPILLMModel(**params)
+        elif self.model.lower() == "mita":
+            model = MitaAPILLMModel(**params)
+        elif self.model.lower() == "jieyue":
+            model = JieyueAPILLMModel(**params)
         else:
             raise NotImplementedError()
 
