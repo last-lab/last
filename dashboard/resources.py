@@ -5,7 +5,7 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
-from dashboard.biz_models import AuditResult  # EvaluationPlan,; Evaluation,
+from dashboard.biz_models import AuditPage  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import DataSet, LabelPage, TaskManage
 from dashboard.biz_models.eval_model import Record
@@ -14,7 +14,7 @@ from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
-from dashboard.widgets.displays import (
+from dashboard.widgets.displays import (  # ShowAudit,; ShowAuditProgress,
     OperationField,
     ShowAction,
     ShowAdmin,
@@ -479,11 +479,15 @@ class TaskManagePanel(Dropdown):
 
     class AuditRecord(Model):
         label = _("Audit Record")
-        model = AuditResult
+        model = AuditPage
         filters = [filters.Search(name="task_id", label="任务id")]
         fields = [
             "id",
             "task_id",
+            "labeling_method",
+            "end_time",
+            # Field(name="task_id", label="审核进展", display=ShowAuditProgress()),
+            # Field(name="task_id", label="操作", display=ShowAudit()),
         ]
 
         async def get_actions(self, request: Request) -> List[Action]:

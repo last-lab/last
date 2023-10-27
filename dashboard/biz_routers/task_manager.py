@@ -10,9 +10,10 @@ from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model
 
-from dashboard.biz_models import LabelPage, LabelResult, TaskManage
+from dashboard.biz_models import AuditPage, AuditResult, LabelPage, LabelResult, TaskManage
 from dashboard.resources import Admin
-from dashboard.tools.statistic import distribute_labeling_task, statistic_dataset
+from dashboard.tools.allocate_task import distribute_audit_task, distribute_labeling_task
+from dashboard.tools.statistic import statistic_dataset
 from dashboard.utils.string_utils import split_string_to_list
 from last.services.depends import create_checker, get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
@@ -148,12 +149,13 @@ async def create_task_callback(
     ).save()
 
     qa_list = split_string_to_list(json_data["fileContent"])
+    assign_dict = {user["annotator"]: user["taskCount"] for user in json_data["taskAssignments"]}
     (
         item_assign_user_dict,
         assign_user_item_dict,
         assign_user_item_length,
         assign_user_labeling_progress,
-    ) = distribute_labeling_task(len(qa_list), json_data["taskAssignments"])
+    ) = distribute_labeling_task(len(qa_list), assign_dict)
 
     # 将task写入到labelpage中
     await LabelPage(
@@ -181,6 +183,35 @@ async def create_task_callback(
             status="未标注",
             assign_user=item_assign_user_dict[index],
         ).save()
+
+    # 创建一个audit res表，存放审核结果
+    audit_dict = {user["auditor"]: user["taskCount"] for user in json_data["auditAssignments"]}
+    (
+        item_audit_user_dict,
+        audit_user_item_dict,
+        audit_user_item_length,
+        audit_progress,
+    ) = distribute_audit_task(len(qa_list), audit_dict)
+    # 生成Audit任务
+    await AuditPage(
+        task_id=task_id,
+        end_time=json_data["deadline"],
+        labeling_method=json_data["annotationTypes"],
+        audit_user=audit_user_item_dict,
+        audit_length=audit_user_item_length,
+        audit_progress=audit_progress,
+    ).save()
+    # 插入数据，
+    for index, (question, answer) in enumerate(qa_list):
+        await AuditResult(
+            task_id=task_id,
+            status="未审核",
+            question_id=index + 1,
+            audit_user=item_audit_user_dict[index],
+            question=question,
+            answer=answer,
+        ).save()
+
     return "success"
 
 

@@ -263,6 +263,7 @@ async def labeling_next_callback(request: Request):
     assign_user_item_list = ast.literal_eval(labelpage_task_row[0].assign_user)[user_id]
     assert current_question_index in assign_user_item_list
     index = assign_user_item_list.index(current_question_index)
+    # TODO, 如果中间断开增加标注会出现标注循环
     if index == len(assign_user_item_list) - 1:
         # 如果当前id在最后面，则返回下一个值返回None
         return {"question_id": "null", "task_id": task_id, "labeling_method": labeling_method}
