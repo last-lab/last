@@ -1,6 +1,6 @@
-'''
+"""
     Before running this test, please add the API key to the os.environ.
-'''
+"""
 import asyncio
 import os
 import time
@@ -39,7 +39,7 @@ async def generation_test(prompt, model):
         stop_sequence,
         top_p,
         frequence_penalty,
-        presence_penalty
+        presence_penalty,
     )
 
     return generated_text
@@ -47,9 +47,7 @@ async def generation_test(prompt, model):
 
 @unittest.skip("Need apikey")
 class TestLLMAPI(unittest.TestCase):
-
     def test_tigerbot_api(self):
-
         generated_text = asyncio.run(generation_test(prompt="中国的首都在哪里", model="tigerbot"))
         # print(generated_text)
         assert generated_text.startswith("北京")
@@ -78,13 +76,13 @@ class TestLLMAPI(unittest.TestCase):
         ]
 
         for model in ALLES_CHAT_LLM:
-
-            generated_text = asyncio.run(generation_test(prompt="Introduce your self!", model=model))
+            generated_text = asyncio.run(
+                generation_test(prompt="Introduce your self!", model=model)
+            )
             time.sleep(1)  # waiting for the release of resources
 
             assert generated_text is not None
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     unittest.main()
