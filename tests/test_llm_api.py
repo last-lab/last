@@ -16,6 +16,7 @@ os.environ["PUYU_API_TOKEN"] = ""
 os.environ["TIGERBOT_API_TOKEN"] = ""
 os.environ["JIEYUE_API_TOKEN"] = ""
 os.environ["MITA_API_TOKEN"] = ""
+os.environ["WUYA_API_TOKEN"] = ""
 
 
 async def generation_test(prompt, model):
@@ -61,6 +62,12 @@ class TestLLMAPI(unittest.TestCase):
         generated_text = asyncio.run(generation_test(prompt="生日快乐", model="JieYue"))
         # 大小写都可以， eg. JIEYUE、jieyue
 
+        assert generated_text is not None
+
+    def test_wuya_api(self):
+        generated_text = asyncio.run(generation_test(prompt="投资目标是什么？", model="Wuya"))
+        # 大小写都可以， eg. wuya
+        print(generated_text)
         assert generated_text is not None
 
     def test_alles_chat_llm_api(self):
