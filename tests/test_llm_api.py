@@ -66,8 +66,8 @@ class TestLLMAPI(unittest.TestCase):
 
     def test_wuya_api(self):
         generated_text = asyncio.run(generation_test(prompt="投资目标是什么？", model="Wuya"))
-        # 大小写都可以， eg. wuya
-        print(generated_text)
+        # 大小写都可以， eg. wuya, WUYA
+
         assert generated_text is not None
 
     def test_alles_chat_llm_api(self):
