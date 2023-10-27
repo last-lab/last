@@ -10,6 +10,7 @@ from last.services.template import templates
 router = APIRouter()
 
 
+# 新建风险维度的路由（尚未开发）
 @router.get("/{resource}/risk_create")
 async def risk_create(
     request: Request,
@@ -31,6 +32,7 @@ async def risk_create(
     )
 
 
+# 编辑风险维度的路由（尚未开发）
 @router.get("/{resource}/edit/{pk}")
 async def edit(
     request: Request,
@@ -55,6 +57,7 @@ async def edit(
     )
 
 
+# 风险维度的路由
 @router.get("/risk")
 async def get_risk(
     request: Request,

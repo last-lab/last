@@ -15,6 +15,7 @@ from last.types.dataset import Dataset
 router = APIRouter()
 
 
+# 上传评测集页面的路由
 @router.get("/{resource}/upload_dataset", dependencies=[Depends(create_checker)])
 async def upload_dataset(
     request: Request,

@@ -19,6 +19,7 @@ class ModelInfo(Model):
     secret_key = fields.CharField(max_length=200, null=True)
 
 
+# 每个评测记录的信息
 class Record(Model):
     eval_models = fields.CharField(max_length=200, null=True)
     llm_name = fields.CharField(max_length=2000, null=True)

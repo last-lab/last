@@ -28,6 +28,7 @@ router = APIRouter()
 executor = ThreadPoolExecutor()
 
 
+# 创建模型Class
 class ModelView(BaseModel):
     endpoint: str
     access_key: str
@@ -35,6 +36,7 @@ class ModelView(BaseModel):
     evaluation_plan: Union[str, None] = None
 
 
+# 评测记录Class
 class EvalInfo(BaseModel):
     plan_id: int
     llm_id: str
@@ -42,11 +44,13 @@ class EvalInfo(BaseModel):
     created_at: int
 
 
+# 评测结果Class
 class ModelResultProp(BaseModel):
     record_id: int
     eval_type_id: int
 
 
+# 创建评测的路由
 @app.get("/record/add")
 async def create_eval(
     request: Request,
@@ -69,6 +73,7 @@ async def create_eval(
     )
 
 
+# TODO WangXunhong
 async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
     print("start")
     _, new_dataset = await Client.execute(AI_eval, kwargs_json)  # 这里是计算逻辑，执行很慢
@@ -102,6 +107,7 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
     await Record.filter(id=record.id).update(state=EvalStatus.finish)
 
 
+# 创建评测记录接口
 @router.post("/evaluation/evaluation_create")
 async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
@@ -192,6 +198,7 @@ async def get_model_list():
         return {"status": "error", "success": 0, "msg": e}
 
 
+# 评测报告页面的路由
 @router.get("/{resource}/report/{pk}")
 async def get_report(
     request: Request,
@@ -295,6 +302,7 @@ async def get_result(request: Request, result: ModelResultProp):
     return {"result": results}
 
 
+# mk编辑页面的路由
 @router.get("/{resource}/report/export/{pk}")
 async def export(
     request: Request,
