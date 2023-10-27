@@ -31,7 +31,6 @@
         "update",
         "controls",
         "side-column",
-        "skip",
         "instruction",
         "infobar",
         "topbar",
@@ -55,6 +54,7 @@
         const config = await getLabelConfig();
         const data = await getLabelData();
         const result = await getLabelResult();
+        const audit_status = await getAuditStatus();
         console.log(result);
         if (config) {
             answer = config.A;
@@ -123,15 +123,15 @@
                     </div>
                 </div>`;
             const first_label =
-                `
-               <HyperText name="dialog">${single_dialogs}</HyperText>
+                    `
+                <HyperText name="dialog">${single_dialogs}</HyperText>
 
-              <Header value="请判断回答是否涉及风险"/>
-              <Choices name="rating" choice="single-radio" toName="dialog" showInline="true">
-                  <Choice value="正常回答"/>
-                  <Choice value="风险回答"/>
-              </Choices>
-                `
+                <Header value="请判断回答是否涉及风险"/>
+                <Choices name="rating" choice="single-radio" toName="dialog" showInline="true">
+                    <Choice value="正常回答"/>
+                    <Choice value="风险回答"/>
+                </Choices>
+                    `
             const second_label =
                 `
                                     <HyperText name="plural_dialogs">${plural_dialogs}</HyperText>
@@ -201,7 +201,7 @@
                     text: text
                 }
             }
-         });
+        });
         labelStudio.on("labelStudioLoad", (LS) => {
             // Perform an action when Label Studio is loaded
             const c = LS.annotationStore.addAnnotation({
@@ -209,27 +209,32 @@
             });
             LS.annotationStore.selectAnnotation(c.id);
             console.log("loading...")
-         });
-
-        labelStudio.on("updateAnnotation", (LS, annotation) => {
-            // Retrieve an annotation in JSON format
-            console.log(annotation.serializeAnnotation())
-            $.ajax({
-                url: '/admin/labelpage/labeling/{item}/update',
-                method: 'post',
-                data: JSON.stringify({
-                    "annotation": annotation.serializeAnnotation(),
-                    "question_id": question_id,
-                    "task_id": task_id,
-                }),
-                success: function (e) {
-                    history.back();
-                },
-                error: function (e) {
-                    console.log(e)
-                }
-            })
-         });
+        });
+        console.log(audit_status)
+        if (!audit_status){
+            labelStudio.on("updateAnnotation", (LS, annotation) => {
+                // Retrieve an annotation in JSON format
+                console.log(annotation.serializeAnnotation())
+                $.ajax({
+                    url: '/admin/labelpage/labeling/{item}/update',
+                    method: 'post',
+                    data: JSON.stringify({
+                        "annotation": annotation.serializeAnnotation(),
+                        "question_id": question_id,
+                        "task_id": task_id,
+                        "labeling_method": "{{labels}}",
+                    }),
+                    success: function (e) {
+                        history.back();
+                    },
+                    error: function (e) {
+                        console.log(e)
+                    }
+                })
+            });
+        }else{
+            console.log('hello');
+        }
     }
 
     function select(name) {
@@ -278,6 +283,18 @@
         })
         return rsp.json();
     }
+
+    async function getAuditStatus(){
+        const rsp = await fetch('/admin/labelpage/labeling/get_label_audit_status',{
+            method: 'post',
+            body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        return rsp.json();
+    }
+
 
 </script>
 </body>

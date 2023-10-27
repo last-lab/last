@@ -4,7 +4,7 @@ import time
 
 from starlette.requests import Request
 
-from dashboard.biz_models import DataSet, EvaluationPlan, LabelPage, ModelInfo, Risk
+from dashboard.biz_models import DataSet, EvaluationPlan, LabelPage, LabelResult, ModelInfo, Risk
 from dashboard.enums import EvalStatus
 from dashboard.models import Admin
 from dashboard.utils.converter import DataSetTool
@@ -296,6 +296,52 @@ class ShowLabel(Display):
             request,
             {"content": info["id"]},
         )
+
+
+class ShowLabelProgress(Display):
+    template = "labelpage/progress_show.html"
+
+    async def render(self, request: Request, value: any):
+        user_id = str(request.state.admin).split("#")[1]
+        info = await LabelPage.get_or_none(task_id=value).values()
+        assign_length_dict = eval(info["assign_length"])
+        assign_labeling_progress = eval(info["labeling_progress"])
+        # 已经标注了的题目数量
+        labeled_question_count = assign_labeling_progress[user_id]
+        total_question_count = assign_length_dict[user_id]
+        # return content
+        if labeled_question_count == total_question_count:
+            return_content = "已完成"
+        else:
+            return_content = f"标注中 \n {labeled_question_count}/{total_question_count}"
+
+        return await super().render(request, {"content": return_content})
+
+
+class ShowTaskLabelingProgress(Display):
+    template = "taskmanage/labeling_progress_show.html"
+
+    async def render(self, request: Request, value: any):
+        info_list = await LabelResult.filter(task_id=value)
+        total_question = len(info_list)
+        labeled_count = 0
+        for info in info_list:
+            if info.status == "标注完成":
+                labeled_count += 1
+
+        if labeled_count == total_question:
+            return_content = "已完成"
+        else:
+            return_content = f"标注中 \n {labeled_count}/{total_question}"
+        return await super().render(request, {"content": return_content})
+
+
+class ShowTaskAuditProgress(Display):
+    template = "taskmanage/audit_progress_show.html"
+
+    async def render(self, request: Request, value: any):
+        user_id = str(request.state.admin).split("#")[1]
+        return user_id
 
 
 class ShowTime(Display):

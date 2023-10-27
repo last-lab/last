@@ -218,6 +218,13 @@ async def submit_callback(request: Request, resource: str, pk: str):
     # TODO，暂时摆烂了，一个task的每一个题目只会到一个人手上
     labeling_row[0].raw_labeling_result = annotation
     await labeling_row[0].save()
+    # 修改一下标注进展
+    labelpage_row = await LabelPage.filter(task_id=task_id)
+    assert len(labelpage_row) == 1
+    current_labeling_progress = eval(labelpage_row[0].labeling_progress)
+    current_labeling_progress[user_id] += 1
+    labelpage_row[0].labeling_progress = current_labeling_progress
+    await labelpage_row[0].save()
 
 
 @router.post("/{resource}/labeling/{pk}/update")
@@ -265,3 +272,17 @@ async def labeling_next_callback(request: Request):
             "task_id": task_id,
             "labeling_method": labeling_method,
         }
+
+
+@router.post("/{resource}/labeling/get_label_audit_status")
+async def get_label_audit_status(request: Request):
+    json_data = await request.json()
+    task_id = json_data["task_id"]
+    question_id = json_data["question_id"]
+    # 查找数据结果表，得到标注结果
+    data = await LabelResult.filter(task_id=task_id, question_id=question_id)
+    data_status = data[0].status
+    if data_status == "已审核":
+        return True
+    else:
+        return False
