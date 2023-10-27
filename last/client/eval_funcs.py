@@ -43,12 +43,15 @@ async def AI_eval(
         )
 
     new_qa_records = {}
-    for qa_record in tqdm(plan):  
+    progress_bar = tqdm(total=None, desc=llm_model.name+"的评测进度", leave=False)
+    for qa_record in plan:  
         question, correct_ans = qa_record.question, qa_record.answer
         responce = await llm_model(question)
         critic = await critic_model(responce, correct_ans)
         new_qa_record = QARecord(question=question, answer=responce, critic=critic)
         new_qa_records[ID()] = new_qa_record
+        progress_bar.update(1)
+    progress_bar.close()
 
     task = Task(
         plan=plan,
