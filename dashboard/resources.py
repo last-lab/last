@@ -495,7 +495,7 @@ class TaskManagePanel(Dropdown):
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return []
 
-    label = _("任务管理")
+    label = _("标注管理")
     icon = "fas fa-bars"
     resources = [CreateTask, LabelingRecord, AuditRecord]
 
