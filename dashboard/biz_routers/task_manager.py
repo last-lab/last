@@ -156,7 +156,7 @@ async def create_task_callback(
         assign_user_item_length,
         assign_user_labeling_progress,
     ) = distribute_labeling_task(len(qa_list), assign_dict)
-
+    labeling_flag = {user : [False for _ in range(len(assign_user_item_dict[user]))] for user in assign_user_item_dict}
     # 将task写入到labelpage中
     await LabelPage(
         task_id=task_id,
@@ -168,6 +168,7 @@ async def create_task_callback(
         assign_user=assign_user_item_dict,
         assign_length=assign_user_item_length,
         labeling_progress=assign_user_labeling_progress,
+        labeling_flag = labeling_flag,
     ).save()
 
     # 创建一个task res表，将这个任务的结果存放起来

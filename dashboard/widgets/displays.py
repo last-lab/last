@@ -4,7 +4,7 @@ import time
 
 from starlette.requests import Request
 
-from dashboard.biz_models import DataSet, EvaluationPlan, LabelPage, LabelResult, ModelInfo, Risk
+from dashboard.biz_models import DataSet, EvaluationPlan, LabelPage, LabelResult, ModelInfo, Risk, AuditPage, AuditResult
 from dashboard.enums import EvalStatus
 from dashboard.models import Admin
 from dashboard.utils.converter import DataSetTool
@@ -334,6 +334,20 @@ class ShowTaskLabelingProgress(Display):
         else:
             return_content = f"标注中 \n {labeled_count}/{total_question}"
         return await super().render(request, {"content": return_content})
+
+
+class ShowAudit(Display):
+    template = "audit/audit_detail.html"
+
+    async def render(self, request: Request, value: any):
+        info = await AuditPage.get_or_none(task_id=value).values()
+        return await super().render(
+            request,
+            {"content": info["id"]}
+        )
+
+
+
 
 
 class ShowTaskAuditProgress(Display):

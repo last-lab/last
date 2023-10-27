@@ -224,6 +224,10 @@ async def submit_callback(request: Request, resource: str, pk: str):
     current_labeling_progress = eval(labelpage_row[0].labeling_progress)
     current_labeling_progress[user_id] += 1
     labelpage_row[0].labeling_progress = current_labeling_progress
+    # 修改一下labeling_flag
+    labeling_flag = eval(labelpage_row[0].labeling_flag)
+    labeling_flag[user_id][int(question_id) - 1] = True
+    labelpage_row[0].labeling_flag = labeling_flag
     await labelpage_row[0].save()
 
 
@@ -262,14 +266,18 @@ async def labeling_next_callback(request: Request):
     assert len(labelpage_task_row) == 1
     assign_user_item_list = ast.literal_eval(labelpage_task_row[0].assign_user)[user_id]
     assert current_question_index in assign_user_item_list
+    # 获取current_question_index在assign_user_item_list中的索引
     index = assign_user_item_list.index(current_question_index)
-    # TODO, 如果中间断开增加标注会出现标注循环
-    if index == len(assign_user_item_list) - 1:
-        # 如果当前id在最后面，则返回下一个值返回None
+    # 下一条标注的question_id
+    next_question_index = assign_user_item_list[(index + 1) % len(assign_user_item_list)]
+    # TODO 判断下一道题有没有被标注过，如果下一道题被标注了，就继续往下跳直到遇到False，或者回到最开始
+    labeling_flag = eval(labelpage_task_row[0].labeling_flag)
+    if labeling_flag[user_id][next_question_index]:
         return {"question_id": "null", "task_id": task_id, "labeling_method": labeling_method}
+
     else:
         return {
-            "question_id": assign_user_item_list[index + 1] + 1,
+            "question_id": next_question_index + 1,
             "task_id": task_id,
             "labeling_method": labeling_method,
         }
