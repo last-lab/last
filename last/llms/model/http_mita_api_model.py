@@ -63,7 +63,7 @@ class MitaAPILLMModel(HTTPAPILLMModel):
 
                 data = self.get_result(response)
                 if data == False:
-                    time.sleep(5)
+                    time.sleep(1)
                 else:
                     return(
                         True,
