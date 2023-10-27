@@ -29,6 +29,9 @@ from dashboard.widgets.displays import (  # ShowAudit,; ShowAuditProgress,
     ShowStatus,
     ShowTaskLabelingProgress,
     ShowTime,
+    ShowAudit,
+    ShowTaskAuditProgress,
+    ShowAuditProgress,
 )
 from dashboard.widgets.filters import SearchFilter
 from last.services import enums as _enums
@@ -419,6 +422,7 @@ class TaskManagePanel(Dropdown):
             "create_time",
             "current_status",
             Field(name="task_id", label="标注进展", display=ShowTaskLabelingProgress()),
+            Field(name="task_id", label="审核进展", display=ShowTaskAuditProgress()),
         ]
 
         async def get_actions(self, request: Request) -> List[Action]:
@@ -486,8 +490,8 @@ class TaskManagePanel(Dropdown):
             "task_id",
             "labeling_method",
             "end_time",
-            # Field(name="task_id", label="审核进展", display=ShowAuditProgress()),
-            # Field(name="task_id", label="操作", display=ShowAudit()),
+            Field(name="task_id", label="审核进展", display=ShowAuditProgress()),
+            Field(name="task_id", label="操作", display=ShowAudit()),
         ]
 
         async def get_actions(self, request: Request) -> List[Action]:

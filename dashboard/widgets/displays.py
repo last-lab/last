@@ -347,7 +347,8 @@ class ShowAudit(Display):
         )
 
 
-
+class ShowAuditProgress(Display):
+    pass
 
 
 class ShowTaskAuditProgress(Display):

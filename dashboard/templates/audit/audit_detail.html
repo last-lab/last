@@ -1,0 +1,7 @@
+<button class="btn btn-ghost-primary" onclick="jumpDetail({{ value.content }})">标注任务详情</button>
+
+<script>
+    function jumpDetail(id) {
+        window.location.href = `/admin/audit/display/${id}`
+    }
+</script>
