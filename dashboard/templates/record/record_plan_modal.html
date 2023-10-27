@@ -8,61 +8,8 @@
         未找到关联项
     </button>
 {% endif %}
+{% include "record/record_plan_detail.html" %}
 
-<div class="modal" id="record-plan-detail-{{ value.plan_detail.name }}" tabindex="-1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">方案信息</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="datagrid">
-                    <div class="datagrid-item">
-                        <div class="datagrid-title">方案名称</div>
-                        <div class="datagrid-content">{{ value.plan_detail.name }}</div>
-                    </div>
-                    <div class="datagrid-item">
-                        <div class="datagrid-title">评分方式</div>
-                        <div class="datagrid-content">{{ value.plan_detail.score_way }}</div>
-                    </div>
-                    <div class="datagrid-item">
-                        <div class="datagrid-title">风险类型</div>
-                        <div class="datagrid-content">
-                            {% for item in value.plan_detail.plan_content %}
-                                <div class="badge bg-azure-lt">{{ item }}</div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="datagrid-item">
-                        <div class="datagrid-title">评测集</div>
-                        <div class="datagrid-content">
-                            {% for item in value.plan_detail.dataset_names %}
-                                <code>{{ item }}</code>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    <div class="datagrid-item">
-                        <div class="datagrid-title">风险详情</div>
-                        <div class="datagrid-content">
-                            {% for item in value.plan_detail.risk_detail %}
-                                {% for f_item in item %}
-                                    <strong>{{ f_item.name }}</strong>
-                                    {% for s_item in f_item.children %}
-                                        <div>{{ s_item.name }}</div>
-                                            {% for t_item in s_item.children %}
-                                                <code>{{ t_item.name }}</code>
-                                            {% endfor %}
-                                    {% endfor %}
-                                {% endfor %}
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
     const a = [

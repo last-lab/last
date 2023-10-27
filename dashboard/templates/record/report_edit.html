@@ -1,0 +1,98 @@
+{% extends layout %}
+{% block page_body %}
+<link rel="stylesheet" href="/static/editormd/css/editormd.css" />
+    <div style="position: relative; margin-bottom: 30px">
+        <button class="btn btn-primary" style="position: absolute; right: 140px; top: -12px; width: 120px" onclick="saveResult({{ pk }})">保存</button>
+        <button class="btn btn-secondary" style="position: absolute; right: 0; top: -12px; width: 120px" onclick="exportResult({{ pk }})">导出</button>
+    </div>
+<div id="test-editor">
+    <textarea style="display:none;"></textarea>
+</div>
+<script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="/static/editormd/editormd.min.js"></script>
+{# 导出pdf需要的插件 #}
+{#<script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>#}
+{#<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>#}
+<script type="text/javascript">
+    var editor;
+    const queryString = window.location.href.split('/');
+    const current_id = queryString[queryString.length - 1];
+    $(function() {
+        $.ajax({
+            url: '/admin/record/report/read',
+            type: 'POST',
+            data: JSON.stringify({
+                url: `download-${current_id}.md`,
+            }),
+            contentType: "application/json;charset=UTF-8",
+            success: function (value) {
+                console.log(value.join(''))
+                editor = editormd("test-editor", {
+                    width: "100vw",
+                    height: "100vh",
+                    path: "/static/editormd/lib/",
+                    imageUpload: true,
+                    saveHTMLToTextarea: true,
+                    value: value.join('')
+                });
+            }
+        })
+    });
+    function exportResult(id) {
+        // 导出md文件
+        const stringData = editor.getMarkdown();
+        const blob = new Blob([stringData], {
+            type: 'text/markdown'
+        });
+        const objectURL = URL.createObjectURL(blob);
+        const aTag = document.createElement('a');
+        aTag.href = objectURL;
+        aTag.download = `download-${id}.md`;
+        aTag.click();
+        URL.revokeObjectURL(objectURL);
+        // 导出pdf
+        {#html2canvas(document.getElementById('test-editor').children[4]).then((canvas) =>#}
+        {#{#}
+        {#    const imgData = canvas.toDataURL('image/png', 1.0);#}
+        {#    // base64 url#}
+        {#    console.log(imgData)#}
+        {#    // 源码#}
+        {#    console.log(editor.getMarkdown())#}
+        {#    const doc = new jspdf.jsPDF('p', 'mm', 'a4')#}
+        {#    doc.addImage(imgData, 'JPEG', 0, 0)#}
+        {#    doc.save(`download.pdf`);#}
+        {# });#}
+        // 保存md到本地
+        $.ajax({
+            url: '/admin/record/report/save',
+            type: 'POST',
+            data: JSON.stringify({
+                name: `download-${id}.md`,
+                content: stringData
+            }),
+            contentType: "application/json;charset=UTF-8",
+            success: function (value) {
+                if (value.mes === 1) {
+                    history.back();
+                }
+            }
+        })
+    }
+    function saveResult(id) {
+        $.ajax({
+            url: '/admin/record/report/save/md',
+            type: 'POST',
+            data: JSON.stringify({
+                name: `download-${id}.md`,
+                content: editor.getMarkdown()
+            }),
+            contentType: "application/json;charset=UTF-8",
+            success: function (value) {
+                if (value.mes === 1) {
+                    history.back();
+                }
+            }
+        })
+    }
+</script>
+{% endblock %}

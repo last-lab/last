@@ -1,3 +1,4 @@
+import asyncio
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
 from last.llms.alles_llm import AllesChatLLM
@@ -18,6 +19,9 @@ ALLES_CHAT_LLM = [
     "alles-wenxin",
     "alles-spark",
     "puyu",
+    "jieyue",
+    "tigerbot",
+    "mita",
 ]
 
 async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
@@ -41,7 +45,7 @@ async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
         output = chat(
             messages,
         ).content
-    elif model in ALLES_CHAT_LLM:
+    elif model.lower() in ALLES_CHAT_LLM:
         chat = AllesChatLLM(
             model=model,
             temperature=temperature,
@@ -98,3 +102,32 @@ async def generate(
         traceback.print_exc()
         raise ex
     return str(outputs)
+
+# async def _main():
+#     prompt = "How do you measure a year?"
+#     model = "tigerbot"
+#     system_prompt = None
+#     maximum_length = 1000
+#     temperature = 0.9 
+#     stop_sequence = None  
+#     top_p = 0.9
+#     frequence_penalty = 0.0
+#     presence_penalty = 0.0
+
+#     generated_text = await generate(
+#         prompt,
+#         model,
+#         system_prompt,
+#         maximum_length,
+#         temperature,
+#         stop_sequence,
+#         top_p,
+#         frequence_penalty,
+#         presence_penalty
+#     )
+
+#     print("生成的文本：", generated_text)
+
+# if __name__ == "__main__":
+
+#     asyncio.run(_main())

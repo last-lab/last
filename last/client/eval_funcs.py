@@ -3,6 +3,7 @@ from last.types.llm import LLM, LLMType
 from last.types.plan import EvaluationType, Plan
 from last.types.public import ID, Placeholder, RiskDimension
 from last.types.task import Task
+from tqdm import tqdm
 import json
 import asyncio
 
@@ -42,11 +43,11 @@ async def AI_eval(
         )
 
     new_qa_records = {}
-    for qa_record in plan:  
+    for qa_record in tqdm(plan):  
         question, correct_ans = qa_record.question, qa_record.answer
         responce = await llm_model(question)
         critic = await critic_model(responce, correct_ans)
-        new_qa_record = QARecord(question=question, answer=critic, critic=critic)
+        new_qa_record = QARecord(question=question, answer=responce, critic=critic)
         new_qa_records[ID()] = new_qa_record
 
     task = Task(

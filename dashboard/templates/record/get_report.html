@@ -1,0 +1,253 @@
+{% extends layout %}
+{% block page_body %}
+    <div style="position: relative">
+        <button class="btn btn-primary" style="position: absolute; right: 45px; top: -12px; width: 120px" onclick="editReport({{ pk }})">编辑并导出</button>
+    </div>
+<div class="row row-deck row-cards" style="padding-left: 34px; padding-right: 34px">
+    <div id="record_id" style="display: none">{{ base_info.id }}</div>
+    <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px;">
+        <div class="card-body" style="display: flex; gap: 32px">
+            <div style="display: flex; align-items: center; gap: 6px">
+                <img src="/static/assets/RepoOutlined.svg" />
+                <span>评测方案</span>
+                <span>{{ base_info.eval_plan }}</span>
+                {% include "record/record_plan_icon_detail.html" %}
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px">
+                <img src="/static/assets/DataPreparationOutlined.svg" />
+                <span>提交时间</span>
+                <span>{{ format_time }}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px">
+                <img src="/static/assets/PersonalOutlined.svg" />
+                <span>评测方</span>
+                <span>{{ base_info.created_user_id }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px; min-height: 376px">
+            <div class="card-body">
+                <h3 class="card-title">评测结果</h3>
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="btn-radio-basic" id=0 autocomplete="off" checked>
+                    <label for=0 type="button" class="btn">综合</label>
+                    {% for risk in risks_info %}
+                        <input type="radio" class="btn-check" name="btn-radio-basic" id={{ risk.risk_id }} autocomplete="off">
+                        <label for={{ risk.risk_id }} type="button" class="btn">{{ risk.risk_name }}</label>
+                    {% endfor %}
+                </div>
+                <div id="chart"></div>
+                <div class="table-responsive">
+                    <table class="table table-vcenter table-nowrap">
+                        <thead>
+                            <tr id="table-th"></tr>
+                        </thead>
+                        <tbody id="table-td"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card" style="border: 1px solid #DFE2EF; border-radius: 12px; min-height: 376px">
+            <div class="card-body">
+                <h3 class="card-title">典型风险案例</h3>
+                <div class="table-responsive">
+                    <table class="table table-vcenter table-nowrap">
+                        <thead>
+                            <tr id="table-th">
+                                <th>评测模型</th>
+                                <th>风险类型</th>
+                                <th>评分</th>
+                                <th>来源评测集</th>
+                                <th>案例内容</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-td">
+                            {% for risk_demo in risk_demos[(page_num-1)*page_size:page_num*page_size] %}
+                                <tr>
+                                    <td>{{ risk_demo.eval_model_name }}</td>
+                                    <td>{{ risk_demo.risk_type_name }}</td>
+                                    <td>{{ risk_demo.score }}</td>
+                                    <td>{{ risk_demo.come_dataset_name }}</td>
+                                    <td>{{ risk_demo.content }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer d-flex align-items-center">
+                    <ul class="pagination m-0 ms-auto">
+                        <li class="page-item {% if page_num <= 1 %} disabled {% endif %}">
+                            <a
+                                class="page-link"
+                                href="{{ {'page_num':page_num - 1}|current_page_with_params }}"
+                                tabindex="-1"
+                                aria-disabled="true"
+                            >
+                                <i class="fas fa-chevron-left"></i>
+                                {{ _('prev_page') }}
+                            </a>
+                        </li>
+                        {% with total_page = (total/page_size)|round(0,'ceil')|int,start_page =
+                            (1 if page_num <=3 else page_num - 2 ) %} {% for i in
+                            range(start_page,[start_page + 5,total_page + 1]|min) %}
+                            <li class="page-item {% if i == (page_num or 1) %} active {% endif %}">
+                                <a
+                                        class="page-link"
+                                        href="{{ {'page_num':i}|current_page_with_params }}"
+                                >{{ i }}</a
+                                >
+                            </li>
+                        {% endfor %}
+                            <li
+                                    class="page-item {% if page_num >= total_page %} disabled {% endif %}"
+                            >
+                                <a
+                                        class="page-link"
+                                        href="{{ {'page_num':page_num + 1}|current_page_with_params }}"
+                                >
+                                    {{ _('next_page') }}
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% endwith %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/libs/apexcharts/dist/apexcharts.min.js" defer></script>
+<script>
+const current_id = Number(document.getElementById("record_id").innerText)
+function getResult(type_id) {
+    $.ajax({
+        url: '/admin/record/report/result',
+        type: 'POST',
+        data: JSON.stringify({
+            "record_id": current_id,
+            "eval_type_id": type_id
+        }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (value) {
+            // Chart渲染
+            const categories = Array.from(new Set(value.result.map(item => item.eval_model_name)));
+            const series = [];
+            value.result.forEach(item => {
+                if (item.eval_type_id === Number(type_id)) {
+                    series.push(item.score)
+                }
+            })
+            function get_chart() {
+                const chart = document.getElementById('chart-demo-bar')
+                if (chart) {
+                    chart.remove()
+                }
+                const root = document.createElement('div');
+                root.id = 'chart-demo-bar'
+                document.getElementById('chart').append(root)
+                window.ApexCharts && (new ApexCharts(document.getElementById('chart-demo-bar'), {
+                    series: [{
+                        data: series
+                    }],
+                    chart: {
+                        type: 'bar',
+                        height: 90+categories.length*20
+                    },
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 4,
+                            horizontal: true,
+                            distributed: true,
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true
+                    },
+                    colors: ["#415176", "#8D96AC", "#417656", "#8FAC8D"],
+                    xaxis: {
+                        categories: categories,
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                })).render();
+            }
+            // 页面第一次渲染
+            document.addEventListener("DOMContentLoaded", get_chart);
+            get_chart()
+
+            // Table渲染
+            // 表头渲染
+            const table_th_dom = document.getElementById("table-th");
+            let child_th = table_th_dom.lastElementChild;
+            while (child_th) {
+                child_th.remove();
+                child_th = table_th_dom.lastElementChild;
+            }
+            let columns;
+            if (Number(type_id) === 0) {
+                columns = ['评测模型'].concat(Array.from(new Set(value.result.map(item => item.eval_type_name))))
+            } else {
+                columns = ['评测模型', value.result?.[0]?.eval_type_name].concat(value.result?.[0]?.eval_data_set_score_json_list.map(item => item.name))
+            }
+            columns.forEach(item => {
+                const th = document.createElement('th');
+                th.innerText = item
+                th.style.textTransform = 'none'
+                document.getElementById('table-th').append(th)
+            })
+
+            // 数据渲染
+            const table_td_dom = document.getElementById("table-td");
+            let child_td = table_td_dom.lastElementChild;
+            while (child_td) {
+                child_td.remove();
+                child_td = table_td_dom.lastElementChild;
+            }
+            let dataSource;
+            if (Number(type_id) === 0) {
+                dataSource = categories.map(item => {
+                    const row = [item];
+                    value.result.forEach(ele => {
+                        if (ele.eval_model_name === item) {
+                            row.push(ele.score)
+                        }
+                    })
+                    return row
+                });
+            } else {
+                dataSource = value.result.map(item => {
+                    const row = [item.eval_model_name, item.score]
+                    item.eval_data_set_score_json_list.forEach(ele => {
+                        row.push(ele.score)
+                    })
+                    return row
+                });
+            }
+            dataSource.forEach(item => {
+                const tr = document.createElement('tr');
+                item.forEach(ele => {
+                    const td = document.createElement('td');
+                    td.innerText = ele
+                    tr.append(td)
+                })
+                document.getElementById('table-td').append(tr)
+            })
+        }
+    })
+}
+// 默认选择综合
+getResult(0)
+$("input:radio[name='btn-radio-basic']").change((e) =>{
+    getResult(e.target.id)
+ });
+
+function editReport(id) {
+    window.location.href = `/admin/record/report/export/${id}`
+}
+</script>
+{% endblock %}
