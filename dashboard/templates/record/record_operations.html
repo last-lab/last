@@ -82,6 +82,7 @@
 
 <script>
     var current_id;
+    // 选择模型查看详情
     function clickBtn(id) {
         current_id = id;
         let obj = document.querySelectorAll('#btn')
@@ -90,6 +91,7 @@
         }
         document.getElementById(`detail-${id}`).style.display = 'block';
     }
+    // 关闭弹窗重置页面
     function recover() {
         let obj = document.querySelectorAll('#btn')
         for (let i = 0; i < obj.length; i++) {
@@ -99,6 +101,7 @@
             document.getElementById(`detail-${current_id}`).style.display = 'none';
         }
     }
+    // 跳转评测报告页
     function jumpReport(id) {
         window.location.href = `/admin/record/report/${id}`
     }

@@ -224,6 +224,7 @@
 
         let checkbox = $('#checkbox-select-all');
 
+        // 监听checkbox-select-all变化
         checkbox.change(function () {
             let checked = checkbox.prop('checked');
             $('.checkbox-select-item').prop("checked", checked);
