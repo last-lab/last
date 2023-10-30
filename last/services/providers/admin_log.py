@@ -16,9 +16,7 @@ class AdminLogProvider(Provider):
     def __init__(self, log_model: Type[Model] = AbstractLog):
         self.log_model = log_model
 
-    async def log(
-        self, request: Request, resource: str, admin: AbstractAdmin, action: str
-    ):
+    async def log(self, request: Request, resource: str, admin: AbstractAdmin, action: str):
         pk = request.path_params.get("pk")
         content = {"content": {}}
         if pk:

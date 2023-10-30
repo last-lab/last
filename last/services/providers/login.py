@@ -12,11 +12,7 @@ from redis.asyncio import Redis
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, StreamingResponse
-from starlette.status import (
-    HTTP_303_SEE_OTHER,
-    HTTP_401_UNAUTHORIZED,
-    HTTP_412_PRECONDITION_FAILED,
-)
+from starlette.status import HTTP_303_SEE_OTHER, HTTP_401_UNAUTHORIZED, HTTP_412_PRECONDITION_FAILED
 from tortoise import signals
 
 from last.services import constants, utils
@@ -139,8 +135,7 @@ class UsernamePasswordProvider(Provider):
             captcha_id = request.cookies.get("captcha_id")
             if (
                 not captcha
-                or await redis.get(constants.CAPTCHA_ID.format(captcha_id=captcha_id))
-                != captcha
+                or await redis.get(constants.CAPTCHA_ID.format(captcha_id=captcha_id)) != captcha
             ):
                 return templates.TemplateResponse(
                     self.template,
@@ -175,9 +170,7 @@ class UsernamePasswordProvider(Provider):
                 context={"request": request, "error": _("login_failed")},
             )
         request.state.admin = admin
-        response = RedirectResponse(
-            url=request.app.admin_path, status_code=HTTP_303_SEE_OTHER
-        )
+        response = RedirectResponse(url=request.app.admin_path, status_code=HTTP_303_SEE_OTHER)
         if remember_me == "on":
             expire = constants.LOGIN_EXPIRE
             response.set_cookie("remember_me", "on")
@@ -220,17 +213,13 @@ class UsernamePasswordProvider(Provider):
         request.state.admin = admin
 
         if path == self.login_path and admin:
-            return RedirectResponse(
-                url=request.app.admin_path, status_code=HTTP_303_SEE_OTHER
-            )
+            return RedirectResponse(url=request.app.admin_path, status_code=HTTP_303_SEE_OTHER)
 
         response = await call_next(request)
         return response
 
     async def create_user(self, username: str, password: str, **kwargs):
-        return await self.admin_model.create(
-            username=username, password=password, **kwargs
-        )
+        return await self.admin_model.create(username=username, password=password, **kwargs)
 
     async def init_view(self, request: Request):
         exists = await self.admin_model.all().limit(1).exists()
@@ -328,15 +317,11 @@ class OAuth2Provider(Provider):
         )
         return obj
 
-    async def login(
-        self, request: Request, code: str, redis: Redis = Depends(get_redis)
-    ):
+    async def login(self, request: Request, code: str, redis: Redis = Depends(get_redis)):
         user_info = await self.get_user_info(code)
         admin = await self.get_admin(user_info)
         request.state.admin = admin
-        response = RedirectResponse(
-            url=request.app.admin_path, status_code=HTTP_303_SEE_OTHER
-        )
+        response = RedirectResponse(url=request.app.admin_path, status_code=HTTP_303_SEE_OTHER)
         token = uuid.uuid4().hex
         response.set_cookie(
             constants.ACCESS_TOKEN,
@@ -360,12 +345,8 @@ class OAuth2Provider(Provider):
         app.get(f"/oauth2/{self.name}")(self.login)
 
     async def get_access_token(self, code: str) -> str:
-        async with httpx.AsyncClient(
-            headers={"Accept": "application/json"}, timeout=30
-        ) as client:
-            res = await client.post(
-                self.token_url, data=self.get_access_token_params(code)
-            )
+        async with httpx.AsyncClient(headers={"Accept": "application/json"}, timeout=30) as client:
+            res = await client.post(self.token_url, data=self.get_access_token_params(code))
             ret = res.json()
             return ret.get("access_token")
 
@@ -604,9 +585,7 @@ class SSOOAuth2Provider(OAuth2Provider):
         async with httpx.AsyncClient(
             headers={"Content-Type": "application/json"}, timeout=30
         ) as client:
-            res = await client.post(
-                self.cipher_url, data=json.dumps(self.get_public_key_params())
-            )
+            res = await client.post(self.cipher_url, data=json.dumps(self.get_public_key_params()))
             ret = res.json()
             return ret.get("data")["pubKey"]
 

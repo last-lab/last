@@ -4,12 +4,7 @@ from pydantic import BaseModel, validator
 from starlette.datastructures import FormData
 from starlette.requests import Request
 from tortoise.fields import BooleanField, DateField, DatetimeField, JSONField
-from tortoise.fields.data import (
-    CharEnumFieldInstance,
-    IntEnumFieldInstance,
-    IntField,
-    TextField,
-)
+from tortoise.fields.data import CharEnumFieldInstance, IntEnumFieldInstance, IntField, TextField
 from tortoise.fields.relational import ForeignKeyFieldInstance, ManyToManyFieldInstance
 from tortoise.models import Model as TortoiseModel
 from tortoise.queryset import QuerySet
@@ -286,9 +281,7 @@ class Model(Resource):
                 help_text=field.description,
             )
         elif isinstance(field, JSONField):
-            display, input_ = displays.Json(), inputs.Json(
-                null=null, help_text=field.description
-            )
+            display, input_ = displays.Json(), inputs.Json(null=null, help_text=field.description)
         elif isinstance(field, TextField):
             display, input_ = displays.Display(), inputs.TextArea(
                 placeholder=placeholder,
@@ -315,9 +308,7 @@ class Model(Resource):
             display, input_ = displays.InputOnly(), inputs.ManyToMany(
                 field.related_model, help_text=field.description
             )
-        return Field(
-            name=field_name, label=label.title(), display=display, input_=input_
-        )
+        return Field(name=field_name, label=label.title(), display=display, input_=input_)
 
     @classmethod
     def get_fields(cls, is_display: bool = True):
@@ -339,8 +330,7 @@ class Model(Resource):
                     continue
             if (
                 field.name in cls.model._meta.fetch_fields
-                and field.name
-                not in cls.model._meta.fk_fields | cls.model._meta.m2m_fields
+                and field.name not in cls.model._meta.fk_fields | cls.model._meta.m2m_fields
             ):
                 continue
             ret.append(field)

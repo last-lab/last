@@ -52,22 +52,16 @@ class MaintenanceMiddleware:
 
 
 class LoginPasswordMaxTryMiddleware(BaseHTTPMiddleware):
-    def __init__(
-        self, app: ASGIApp, max_times: int = 3, after_seconds: int = 900
-    ) -> None:
+    def __init__(self, app: ASGIApp, max_times: int = 3, after_seconds: int = 900) -> None:
         super().__init__(app)
         self.max_times = max_times
         self.after_seconds = after_seconds
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         path = request.scope["path"]
         redis = request.app.redis
         ip = utils.get_client_ip(request)
-        is_login_path = (
-            path == request.app.login_provider.login_path and request.method == "POST"
-        )
+        is_login_path = path == request.app.login_provider.login_path and request.method == "POST"
         key = constants.LOGIN_ERROR_TIMES.format(ip=ip)
         if is_login_path:
             ttl = await redis.ttl(key)

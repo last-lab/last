@@ -36,9 +36,7 @@ class FileUpload:
         content = await file.read()
         file_size = len(content)
         if file_size > self.max_size:
-            raise FileMaxSizeLimit(
-                f"File size {file_size} exceeds max size {self.max_size}"
-            )
+            raise FileMaxSizeLimit(f"File size {file_size} exceeds max size {self.max_size}")
         if self.allow_extensions:
             for ext in self.allow_extensions:
                 if filename.endswith(ext):

@@ -22,6 +22,4 @@ class Widget:
             value = ""
         if not self.template:
             return value
-        return self.templates.get_template(self.template).render(
-            value=value, **self.context
-        )
+        return self.templates.get_template(self.template).render(value=value, **self.context)

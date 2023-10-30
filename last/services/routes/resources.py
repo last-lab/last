@@ -43,9 +43,7 @@ async def list_view(
     fields_label = model_resource.get_fields_label()
     fields = model_resource.get_fields()
     qs = model.all()
-    params, qs = await model_resource.resolve_query_params(
-        request, dict(request.query_params), qs
-    )
+    params, qs = await model_resource.resolve_query_params(request, dict(request.query_params), qs)
     filters = await model_resource.get_filters(request, params)
     total = await qs.count()
     if page_size:
@@ -270,9 +268,7 @@ async def create(
 async def delete_view(request: Request, pk: str, model: Model = Depends(get_model)):
     obj = await model.get(pk=pk)
     await obj.delete()
-    return RedirectResponse(
-        url=request.headers.get("referer"), status_code=HTTP_303_SEE_OTHER
-    )
+    return RedirectResponse(url=request.headers.get("referer"), status_code=HTTP_303_SEE_OTHER)
 
 
 @router.delete(
@@ -281,6 +277,4 @@ async def delete_view(request: Request, pk: str, model: Model = Depends(get_mode
 )
 async def bulk_delete(request: Request, ids: str, model: Model = Depends(get_model)):
     await model.filter(pk__in=ids.split(",")).delete()
-    return RedirectResponse(
-        url=request.headers.get("referer"), status_code=HTTP_303_SEE_OTHER
-    )
+    return RedirectResponse(url=request.headers.get("referer"), status_code=HTTP_303_SEE_OTHER)

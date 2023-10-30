@@ -59,9 +59,7 @@ class PermissionProvider(Provider):
                         )
 
     @classmethod
-    async def check(
-        cls, admin: AbstractAdmin, resource: str, permission: enums.Permission
-    ) -> bool:
+    async def check(cls, admin: AbstractAdmin, resource: str, permission: enums.Permission) -> bool:
         if admin.is_superuser:
             return True
         if not admin.is_active:

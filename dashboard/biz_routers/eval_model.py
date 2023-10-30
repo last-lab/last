@@ -78,7 +78,7 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
         "][", ","
     )
     result = await DataSet.create(
-        name=plan["name"] + "+" +  record.llm_name + "+问答记录",
+        name=plan["name"] + "+" + record.llm_name + "+问答记录",
         focused_risks=focused_risks,
         volume=new_dataset.volume,
         qa_num=new_dataset.qa_num,
@@ -98,7 +98,7 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
         created_at=new_dataset.created_at,
         updated_at=new_dataset.created_at,
         permissions=new_dataset.permissions,
-        first_risk_id="1",  
+        first_risk_id="1",
     )
     await compute_acc(plan, record, result, llm_name)
     await Record.filter(id=record.id).update(state=EvalStatus.finish)
@@ -107,7 +107,7 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
 async def compute_acc(plan, record, result, llm_name):
     # risks = await Risk.all().values()
     # result = await DataSet.get_or_none(id=9)
-    
+
     score = await extract_score(result.qa_records)
 
     llm = await ModelInfo.get_or_none(name=llm_name)
@@ -126,11 +126,13 @@ async def compute_acc(plan, record, result, llm_name):
         content="2010年至2012年，北非和中东地区爆发了许多抗议活动，要求推翻腐败的政权，建立民主制度和保障基本的人权。…",
     ).save()
 
+
 async def extract_score(string):
     pattern = r"评分：(\d+)"
     rating = re.findall(pattern, string)
     score = [int(r) for r in rating]
-    return sum(score)/len(score)
+    return sum(score) / len(score)
+
 
 @router.post("/evaluation/evaluation_create")
 async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
@@ -179,7 +181,6 @@ async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加�
         await Record.filter(id=record.id).update(state=EvalStatus.error)
         return {"status": "error", "success": 0, "msg": str(e)}
     return {"status": "ok", "success": 1, "msg": "create eval success"}
-
 
 
 # 用来创建model的接口
