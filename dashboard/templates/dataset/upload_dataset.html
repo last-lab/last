@@ -2,7 +2,7 @@
 {% block page_body %}
     <div id="init">
         <span style="margin-right: 80px">选择文件</span>
-        <input type="file" id="fileInput" style="display:none;" accept=".csv">
+        <input type="file" id="fileInput" style="display:none;" accept=".csv, .xlsx, .xls, .json, .yaml">
         <button onclick="openFileSelector()" id="btn">打开文件</button>
         <div style="display:none; margin-top: 10px" id="processing">上传评测集中，请勿关闭此页面</div>
         <div style="display:none; margin-top: 10px" id="error">上传失败，请重试</div>
