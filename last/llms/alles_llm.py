@@ -1,7 +1,16 @@
 import os
 from typing import Any, List, Mapping, Optional, Dict
 from pydantic import BaseModel
-from .model.http_alles_api_model import AllesMinimaxAPILLMModel, AllesChatGPTAPILLMModel, AllesGPT4APILLMModel, AllesPalmAPILLMModel, AllesClaudeAPILLMModel, AllesWenxinAPILLMModel, AllesSparkAPILLMModel, AllesBaiduTranslateAPILLMModel
+from .model.http_alles_api_model import (
+    AllesMinimaxAPILLMModel,
+    AllesChatGPTAPILLMModel,
+    AllesGPT4APILLMModel,
+    AllesPalmAPILLMModel,
+    AllesClaudeAPILLMModel,
+    AllesWenxinAPILLMModel,
+    AllesSparkAPILLMModel,
+    AllesBaiduTranslateAPILLMModel,
+)
 from .model.http_puyu_api_model import PuyuAPILLMModel
 from .model.http_tigerbot_api_model import TigerbotAPILLMModel
 from .model.http_mita_api_model import MitaAPILLMModel
@@ -41,7 +50,7 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["MITA_API_TOKEN"]
         elif self.model.lower().startswith("jieyue"):
             api_key = os.environ["JIEYUE_API_TOKEN"]
-        
+
         params = {
             "api_key": api_key,
         }

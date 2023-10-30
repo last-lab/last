@@ -13,7 +13,12 @@ from last.services.widgets.inputs import Input
 
 class Filter(Input):
     def __init__(
-        self, name: str, label: str = None, placeholder: str = "", null: bool = True, **context
+        self,
+        name: str,
+        label: str = None,
+        placeholder: str = "",
+        null: bool = True,
+        **context
     ):
         """
         Parent class for all filters
@@ -21,7 +26,11 @@ class Filter(Input):
         :param label:
         """
         super().__init__(
-            name=name, label=label or name.title(), placeholder=placeholder, null=null, **context
+            name=name,
+            label=label or name.title(),
+            placeholder=placeholder,
+            null=null,
+            **context
         )
 
     async def get_queryset(self, request: Request, value: Any, qs: QuerySet):
@@ -80,7 +89,9 @@ class Datetime(Filter):
             ranges = value.split(" - ")
             return pendulum.parse(ranges[0]), pendulum.parse(ranges[1])
 
-    async def render(self, request: Request, value: Tuple[pendulum.DateTime, pendulum.DateTime]):
+    async def render(
+        self, request: Request, value: Tuple[pendulum.DateTime, pendulum.DateTime]
+    ):
         format_ = self.context.get("format")
         if value is not None:
             value = value[0].format(format_) + " - " + value[1].format(format_)
@@ -148,7 +159,9 @@ class Enum(Select):
 
 
 class DistinctColumn(Select):
-    def __init__(self, model: Type[Model], name: str, label: str = None, null: bool = True):
+    def __init__(
+        self, model: Type[Model], name: str, label: str = None, null: bool = True
+    ):
         super().__init__(name=name, label=label, null=null)
         self.model = model
         self.name = name
@@ -171,7 +184,9 @@ class DistinctColumn(Select):
 
 
 class ForeignKey(Select):
-    def __init__(self, model: Type[Model], name: str, label: str = None, null: bool = True):
+    def __init__(
+        self, model: Type[Model], name: str, label: str = None, null: bool = True
+    ):
         super().__init__(name=name, label=label, null=null)
         self.model = model
 

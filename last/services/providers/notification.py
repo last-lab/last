@@ -19,7 +19,9 @@ class NotificationProvider(Provider):
         self.manager = ConnectionManager()
 
     async def broadcast(self, data: dict):
-        content = templates.get_template("providers/notification/item.html").render(**data)
+        content = templates.get_template("providers/notification/item.html").render(
+            **data
+        )
         await self.manager.broadcast(content)
 
     async def register(self, app: "FastAPIAdmin"):

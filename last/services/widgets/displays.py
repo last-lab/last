@@ -61,7 +61,9 @@ class Popover(Display):
 class Image(Display):
     template = "widgets/displays/image.html"
 
-    def __init__(self, width: Optional[str] = None, height: Optional[str] = None, **context):
+    def __init__(
+        self, width: Optional[str] = None, height: Optional[str] = None, **context
+    ):
         super().__init__(width=width, height=height, **context)
 
 

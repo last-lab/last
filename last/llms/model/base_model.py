@@ -38,7 +38,9 @@ class BaseLLMModel(ABC):
                 if not success:
                     raise Exception("An error occured!")
             except Exception as ex:
-                generated_text = f"\n[Error] {type(ex).__name__}: {ex}\n[Response] {response}\n"
+                generated_text = (
+                    f"\n[Error] {type(ex).__name__}: {ex}\n[Response] {response}\n"
+                )
                 errors.append(generated_text)
                 print(generated_text)
                 raise ex
@@ -56,14 +58,14 @@ class BaseLLMModel(ABC):
             "messages": messages,
             "generated_text": generated_text,
         }
-    
+
 
 class HTTPAPILLMModel(BaseLLMModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.url = None
         self.headers = None
-            
+
     async def async_post(self, url, headers, data):
         async with aiohttp.ClientSession() as session:
             async with session.post(url, headers=headers, data=data) as response:

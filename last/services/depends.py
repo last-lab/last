@@ -3,7 +3,11 @@ from typing import List, Optional, Type
 from fastapi import Depends, HTTPException
 from fastapi.params import Path
 from starlette.requests import Request
-from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN, HTTP_404_NOT_FOUND
+from starlette.status import (
+    HTTP_401_UNAUTHORIZED,
+    HTTP_403_FORBIDDEN,
+    HTTP_404_NOT_FOUND,
+)
 from tortoise import Tortoise
 
 from last.services import enums
@@ -49,7 +53,9 @@ class PermissionsChecker:
         if not permission_provider:
             return
         await admin.fetch_related("roles")
-        has_permission = await permission_provider.check(admin, resource, self.permission)
+        has_permission = await permission_provider.check(
+            admin, resource, self.permission
+        )
         if not has_permission:
             raise HTTPException(status_code=HTTP_403_FORBIDDEN)
 
@@ -98,7 +104,9 @@ async def _get_resources(
     return ret
 
 
-async def get_resources(request: Request, admin=Depends(get_current_admin)) -> List[dict]:
+async def get_resources(
+    request: Request, admin=Depends(get_current_admin)
+) -> List[dict]:
     resources = request.app.resources
     await admin.fetch_related("roles")
     return await _get_resources(resources, admin, request.app.permission_provider)
@@ -121,23 +129,31 @@ async def get_model_resource(
         admin, resource, enums.Permission.create
     ):
         create_action = list(
-            filter(lambda x: x.name in [enums.Permission.create, "import"], toolbar_actions)
+            filter(
+                lambda x: x.name in [enums.Permission.create, "import"], toolbar_actions
+            )
         )
         if create_action:
             toolbar_actions.remove(create_action[0])
     if permission_provider and not await permission_provider.check(
         admin, resource, enums.Permission.update
     ):
-        update_action = list(filter(lambda x: x.name == enums.Permission.update, actions))
+        update_action = list(
+            filter(lambda x: x.name == enums.Permission.update, actions)
+        )
         if update_action:
             actions.remove(update_action[0])
     if permission_provider and not await permission_provider.check(
         admin, resource, enums.Permission.delete
     ):
-        delete_action = list(filter(lambda x: x.name == enums.Permission.delete, actions))
+        delete_action = list(
+            filter(lambda x: x.name == enums.Permission.delete, actions)
+        )
         if delete_action:
             actions.remove(delete_action[0])
-        delete_bulk_action = list(filter(lambda x: x.name == enums.Permission.delete, bulk_actions))
+        delete_bulk_action = list(
+            filter(lambda x: x.name == enums.Permission.delete, bulk_actions)
+        )
         if delete_bulk_action:
             bulk_actions.remove(delete_bulk_action[0])
     setattr(model_resource, "actions", actions)

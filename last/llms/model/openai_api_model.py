@@ -1,4 +1,3 @@
-
 import openai
 from .base_model import BaseLLMModel
 
@@ -17,7 +16,7 @@ class OpenaiAPILLMModel(BaseLLMModel):
         self.model = models["data"][0]["id"]
         # print("Models:", models)
         super().initialize(*args, **kwargs)
-        
+
     def generate(self, prompt, messages, **kwargs):
         if len(messages) > 0:
             chat_completion = openai.ChatCompletion.create(

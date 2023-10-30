@@ -8,6 +8,7 @@ import csv
 from enum import Enum
 from last.services.enums import StrEnum
 import os
+import pandas as pd
 
 DatasetTyping = TypeVar("DatasetTyping", bound="Dataset")
 
@@ -98,21 +99,48 @@ class Dataset(Record, BaseManager):
         # TODO 注释掉的部分是为了给多轮对话准备的，目前还没有经过测试，故不写
         # 通过上传文件创建数据集
         qa_records = {}
-        # predecessor_uid = None # 关联上一条Message记录的id
-        with open(file_path, "r", encoding="utf-8-sig") as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                self_uid = ID()
-                question = Message(role=MessageRole.Human, content=row["question"])
-                correct_ans = Message(role=MessageRole.AI, content=row["correct_ans"])
-                # successor_uid = ID() # 提前安排好下一条数据的ID
-                qa_records[self_uid] = QARecord(
-                    predecessor_uid=None,
-                    successor_uid=None,
-                    question=question,
-                    answer=correct_ans,
-                )
+        if file_path.endswith("csv"):
+            # predecessor_uid = None # 关联上一条Message记录的id
+            with open(file_path, "r", encoding="utf-8-sig") as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    self_uid = ID()
+                    question = Message(role=MessageRole.Human, content=row["question"])
+                    correct_ans = Message(
+                        role=MessageRole.AI, content=row["correct_ans"]
+                    )
+                    # successor_uid = ID() # 提前安排好下一条数据的ID
+                    qa_records[self_uid] = QARecord(
+                        predecessor_uid=None,
+                        successor_uid=None,
+                        question=question,
+                        answer=correct_ans,
+                    )
                 # predecessor_uid = self_uid
+        elif file_path.endswith("xlsx"):
+            qa_records = Dataset.read_csv(file_path)
+        return qa_records
+
+    @staticmethod
+    def read_csv(filename: str) -> Tuple[Dict[str, QARecord], List[str]]:
+        qa_records = {}
+        querys = []
+        xls = pd.ExcelFile(filename)
+        length = []
+        sheet_names = xls.sheet_names
+        # Loop through all the sheets
+        for sheet_name in xls.sheet_names:
+            # Read the sheet into a DataFrame
+            df = pd.read_excel(xls, sheet_name=sheet_name)
+
+            key = df.keys()[0]  ### change for complex
+            ####### change togather ####
+            querys.append(key)
+            tmp_length = len(df) + 1
+            ############################
+            length.append(tmp_length)
+            for i in range(tmp_length - 1):
+                querys.append(df.iloc[i][key])
         return qa_records
 
     # TODO 根据qa_records填充其他属性, 现在是mock的
@@ -120,7 +148,7 @@ class Dataset(Record, BaseManager):
         self.conversation_start_id = list(self.qa_records.keys())
         self.qa_num = len(qa_records)
         self.word_cnt = Dataset.word_counting(qa_records)
-        self.volume = str(os.path.getsize(self.file)) + 'bytes'
+        self.volume = str(os.path.getsize(self.file)) + "bytes"
 
     @staticmethod
     def word_counting(qa_records: Dict[str, QARecord]) -> int:

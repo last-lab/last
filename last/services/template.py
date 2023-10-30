@@ -31,7 +31,9 @@ def current_page_with_params(context: dict, params: dict):
 
 def diff_for_humans(time: datetime.datetime):
     return (
-        pendulum.now().subtract(seconds=(pendulum.now() - time).total_seconds()).diff_for_humans()
+        pendulum.now()
+        .subtract(seconds=(pendulum.now() - time).total_seconds())
+        .diff_for_humans()
     )
 
 

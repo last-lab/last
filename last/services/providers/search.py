@@ -39,7 +39,9 @@ class SearchProvider(Provider):
                         )
                     )
             if type_ == "dropdown":
-                self._resolve_resources(results, request, r.get("resources"), search_text)
+                self._resolve_resources(
+                    results, request, r.get("resources"), search_text
+                )
 
     async def search_page(
         self,

@@ -11,7 +11,12 @@ from starlette.responses import Response
 from tortoise import Model
 
 from last.services import enums
-from last.services.depends import admin_log_create, get_model, get_model_resource, get_resources
+from last.services.depends import (
+    admin_log_create,
+    get_model,
+    get_model_resource,
+    get_resources,
+)
 from last.services.enums import Method
 from last.services.i18n import _
 from last.services.providers import Provider
@@ -156,7 +161,9 @@ class ImportExportProvider(Provider):
             model_resource: ModelResource = Depends(get_model_resource),
             model=Depends(get_model),
         ):
-            values = await ImportExportResource.get_values_by_format(request, import_, format_)
+            values = await ImportExportResource.get_values_by_format(
+                request, import_, format_
+            )
             import_export_resource = self._import_export_resources.get(model)
             format_values = []
             if import_export_resource:
@@ -166,7 +173,9 @@ class ImportExportProvider(Provider):
                         if isinstance(field, str):
                             field = Field(field_name=field)
 
-                        item[field.field_name] = await field.get_import_value(request, value)
+                        item[field.field_name] = await field.get_import_value(
+                            request, value
+                        )
                     format_values.append(item)
 
             objs = [model(**value) for value in format_values]
@@ -243,12 +252,16 @@ class ImportExportProvider(Provider):
                 for value in values:
                     item = {}
                     for field in import_export_resource.fields:
-                        item[field.title_name] = await field.get_export_value(request, value)
+                        item[field.title_name] = await field.get_export_value(
+                            request, value
+                        )
                     format_values.append(item)
             content = await ImportExportResource.get_content_by_format(
                 request, format_values, format_
             )
-            content_disposition = f'attachment; filename="{model_resource.label}.{format_}"'
+            content_disposition = (
+                f'attachment; filename="{model_resource.label}.{format_}"'
+            )
             return Response(
                 content,
                 media_type=format_.media_type,

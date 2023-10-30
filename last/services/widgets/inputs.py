@@ -15,7 +15,11 @@ class Input(Widget):
     template = "widgets/inputs/input.html"
 
     def __init__(
-        self, help_text: Optional[str] = None, default: Any = None, null: bool = False, **context
+        self,
+        help_text: Optional[str] = None,
+        default: Any = None,
+        null: bool = False,
+        **context
     ):
         super().__init__(null=null, help_text=help_text, **context)
         self.default = default
@@ -71,7 +75,9 @@ class Select(Input):
         null: bool = False,
         disabled: bool = False,
     ):
-        super().__init__(help_text=help_text, null=null, default=default, disabled=disabled)
+        super().__init__(
+            help_text=help_text, null=null, default=default, disabled=disabled
+        )
 
     @abc.abstractmethod
     async def get_options(self):
@@ -98,7 +104,9 @@ class ForeignKey(Select):
         disabled: bool = False,
         help_text: Optional[str] = None,
     ):
-        super().__init__(help_text=help_text, default=default, null=null, disabled=disabled)
+        super().__init__(
+            help_text=help_text, default=default, null=null, disabled=disabled
+        )
         self.model = model
 
     async def get_options(self):
@@ -152,7 +160,9 @@ class Enum(Select):
         disabled: bool = False,
         help_text: Optional[str] = None,
     ):
-        super().__init__(help_text=help_text, default=default, null=null, disabled=disabled)
+        super().__init__(
+            help_text=help_text, default=default, null=null, disabled=disabled
+        )
         self.enum = enum
         self.enum_type = enum_type
 

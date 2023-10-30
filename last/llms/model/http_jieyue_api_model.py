@@ -1,10 +1,10 @@
-'''
+"""
    Jieyue API WIP
-'''
+"""
 import requests
 from .base_model import HTTPAPILLMModel
 
-        
+
 class JieyueAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -12,13 +12,12 @@ class JieyueAPILLMModel(HTTPAPILLMModel):
         self.api_key = api_key
         self.headers = {
             "Content-Type": "application/json",
-            "Authorization": 'Bearer ' + self.api_key,
-            "X-Request-Orgcode": "wxb"
+            "Authorization": "Bearer " + self.api_key,
+            "X-Request-Orgcode": "wxb",
         }
 
     async def generate(self, prompt, messages, *args, **kwargs):
         try:
-
             payload = {
                 "model": "open_prod_jy_model",
                 "messages": messages,

@@ -2,11 +2,9 @@ import json
 import requests
 from .base_model import HTTPAPILLMModel
 
-        
+
 class AllesMinimaxAPILLMModel(HTTPAPILLMModel):
-    map_dict = {
-        "user": "USER"
-    }
+    map_dict = {"user": "USER"}
 
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -17,24 +15,26 @@ class AllesMinimaxAPILLMModel(HTTPAPILLMModel):
         }
 
     async def generate(self, prompt, messages, *args, **kwargs):
-        formatted_messages = [{
-            "sender_type": self.map_dict[item["role"]],
-            "text": item["content"],
-        } for item in messages]
+        formatted_messages = [
+            {
+                "sender_type": self.map_dict[item["role"]],
+                "text": item["content"],
+            }
+            for item in messages
+        ]
 
         payload = {
             "model": "abab5-chat",
-            "prompt": " ",    # TODO
+            "prompt": " ",  # TODO
             "messages": formatted_messages,
-            "role_meta": {
-                "user_name": "user",
-                "bot_name": "assistant"
-            },
+            "role_meta": {"user_name": "user", "bot_name": "assistant"},
             "type": "json",
             **kwargs,
         }
-        result = await self.async_post(self.url, headers=self.headers, data=json.dumps(payload))
-        if result['msgCode'] == '10000':
+        result = await self.async_post(
+            self.url, headers=self.headers, data=json.dumps(payload)
+        )
+        if result["msgCode"] == "10000":
             return result
         else:
             raise ValueError(result.text)
@@ -45,7 +45,7 @@ class AllesMinimaxAPILLMModel(HTTPAPILLMModel):
             response["data"]["choices"][0]["text"],
         )
 
-        
+
 class AllesChatGPTAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -61,8 +61,10 @@ class AllesChatGPTAPILLMModel(HTTPAPILLMModel):
             "messages": messages,
             **kwargs,
         }
-        result = await self.async_post(self.url, headers=self.headers, data=json.dumps(payload))
-        if result['msgCode'] == '10000':
+        result = await self.async_post(
+            self.url, headers=self.headers, data=json.dumps(payload)
+        )
+        if result["msgCode"] == "10000":
             return result
         else:
             raise ValueError(result.text)
@@ -73,7 +75,7 @@ class AllesChatGPTAPILLMModel(HTTPAPILLMModel):
             response["data"]["choices"][0]["message"]["content"],
         )
 
-        
+
 class AllesGPT4APILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -89,8 +91,10 @@ class AllesGPT4APILLMModel(HTTPAPILLMModel):
             "messages": messages,
             **kwargs,
         }
-        result = await self.async_post(self.url, headers=self.headers, data=json.dumps(payload))
-        if result['msgCode'] == '10000':
+        result = await self.async_post(
+            self.url, headers=self.headers, data=json.dumps(payload)
+        )
+        if result["msgCode"] == "10000":
             return result
         else:
             raise ValueError(result.text)
@@ -101,7 +105,7 @@ class AllesGPT4APILLMModel(HTTPAPILLMModel):
             response["data"]["choices"][0]["message"]["content"],
         )
 
-        
+
 class AllesPalmAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -112,10 +116,13 @@ class AllesPalmAPILLMModel(HTTPAPILLMModel):
         }
 
     async def generate(self, prompt, messages, *args, **kwargs):
-        formatted_messages = [{
-            "author": item["role"],
-            "content": item["content"],
-        } for item in messages]
+        formatted_messages = [
+            {
+                "author": item["role"],
+                "content": item["content"],
+            }
+            for item in messages
+        ]
 
         payload = {
             "model": "chat-bison-001",
@@ -125,8 +132,10 @@ class AllesPalmAPILLMModel(HTTPAPILLMModel):
             "temperature": kwargs["temperature"],
             "candidate_count": 1,
         }
-        result = await self.async_post(self.url, headers=self.headers, data=json.dumps(payload))
-        if result['msgCode'] == '10000':
+        result = await self.async_post(
+            self.url, headers=self.headers, data=json.dumps(payload)
+        )
+        if result["msgCode"] == "10000":
             return result
         else:
             raise ValueError(result.text)
@@ -137,7 +146,7 @@ class AllesPalmAPILLMModel(HTTPAPILLMModel):
             response["data"]["candidates"][0]["content"],
         )
 
-        
+
 class AllesClaudeAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -148,18 +157,23 @@ class AllesClaudeAPILLMModel(HTTPAPILLMModel):
         }
 
     async def generate(self, prompt, messages, *args, **kwargs):
-        formatted_messages = [{
-            "role": item["role"],
-            "content": item["content"],
-        } for item in messages]
+        formatted_messages = [
+            {
+                "role": item["role"],
+                "content": item["content"],
+            }
+            for item in messages
+        ]
 
         payload = {
             "model": "claude-1",
             "messages": messages,
             **kwargs,
         }
-        result = await self.async_post(self.url, headers=self.headers, data=json.dumps(payload))
-        if result['msgCode'] == '10000':
+        result = await self.async_post(
+            self.url, headers=self.headers, data=json.dumps(payload)
+        )
+        if result["msgCode"] == "10000":
             return result
         else:
             raise ValueError(result.text)
@@ -170,11 +184,13 @@ class AllesClaudeAPILLMModel(HTTPAPILLMModel):
             response["data"]["completion"],
         )
 
-        
+
 class AllesWenxinAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.url = "https://openxlab.org.cn/gw/alles-apin/v1/baidu/v1/wenxinworkshop/chat"
+        self.url = (
+            "https://openxlab.org.cn/gw/alles-apin/v1/baidu/v1/wenxinworkshop/chat"
+        )
         self.headers = {
             "Content-Type": "application/json",
             "alles-apin-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo4LCJ1c2VybmFtZSI6ImxpdWt1aWt1biIsImFwcGx5X2F0IjoxNjg1NTE4OTY0MjA4LCJleHAiOjE4NjY5NTg5NjR9.Rb1jHeoPiYqplsn1Qk1rgPbOiNeovtCFwHa92YPR3Xo",
@@ -187,8 +203,10 @@ class AllesWenxinAPILLMModel(HTTPAPILLMModel):
             "user": "pjlab-alles-apin",
             # **kwargs,
         }
-        result = await self.async_post(self.url, headers=self.headers, data=json.dumps(payload))
-        if result['msgCode'] == '10000':
+        result = await self.async_post(
+            self.url, headers=self.headers, data=json.dumps(payload)
+        )
+        if result["msgCode"] == "10000":
             return result
         else:
             raise ValueError(result.text)
@@ -199,7 +217,7 @@ class AllesWenxinAPILLMModel(HTTPAPILLMModel):
             response["data"],
         )
 
-        
+
 class AllesSparkAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -214,18 +232,16 @@ class AllesSparkAPILLMModel(HTTPAPILLMModel):
             "parameter": {
                 "chat": {
                     "temperature": kwargs["temperature"],
-                    "max_tokens":  kwargs["max_tokens"],
-                    "chat_id": "user"
+                    "max_tokens": kwargs["max_tokens"],
+                    "chat_id": "user",
                 }
             },
-            "payload": {
-                "message": {
-                    "text": messages
-                }
-            },
+            "payload": {"message": {"text": messages}},
         }
-        result = await self.async_post(self.url, headers=self.headers, data=json.dumps(payload))
-        if result['msgCode'] == '10000':
+        result = await self.async_post(
+            self.url, headers=self.headers, data=json.dumps(payload)
+        )
+        if result["msgCode"] == "10000":
             return result
         else:
             raise ValueError(result.text)
@@ -236,7 +252,7 @@ class AllesSparkAPILLMModel(HTTPAPILLMModel):
             response["data"],
         )
 
-        
+
 class AllesBaiduTranslateAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -247,13 +263,11 @@ class AllesBaiduTranslateAPILLMModel(HTTPAPILLMModel):
         }
 
     async def generate(self, prompt, messages, *args, **kwargs):
-        payload = {
-            "q": prompt,
-            "frm": "auto",
-            "to": "en"
-        }
-        result = await self.async_post(self.url, headers=self.headers, data=json.dumps(payload))
-        if result['msgCode'] == '10000':
+        payload = {"q": prompt, "frm": "auto", "to": "en"}
+        result = await self.async_post(
+            self.url, headers=self.headers, data=json.dumps(payload)
+        )
+        if result["msgCode"] == "10000":
             return result
         else:
             raise ValueError(result.text)

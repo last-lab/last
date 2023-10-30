@@ -11,13 +11,17 @@ router = APIRouter()
 
 @router.get("/maintenance")
 async def maintenance(request: Request):
-    return templates.TemplateResponse("errors/maintenance.html", context={"request": request})
+    return templates.TemplateResponse(
+        "errors/maintenance.html", context={"request": request}
+    )
 
 
 @router.get("/layout")
 async def switch_layout(request: Request):
     layout = enums.Layout(get_global_env("layout"))
-    response = RedirectResponse(url=request.headers.get("referer"), status_code=HTTP_303_SEE_OTHER)
+    response = RedirectResponse(
+        url=request.headers.get("referer"), status_code=HTTP_303_SEE_OTHER
+    )
     if layout == enums.Layout.layout:
         set_global_env("layout", str(enums.Layout.layout_navbar))
         response.set_cookie("layout", enums.Layout.layout_navbar)

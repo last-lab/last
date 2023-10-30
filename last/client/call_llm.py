@@ -24,6 +24,7 @@ ALLES_CHAT_LLM = [
     "mita",
 ]
 
+
 async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
     if model in CHAT_LLM_GPT:
         chat = ChatOpenAI(
@@ -73,7 +74,6 @@ async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
     return "".join(list(output))
 
 
-
 async def generate(
     prompt: str,
     model: str,
@@ -89,7 +89,7 @@ async def generate(
         outputs = await call_llm(
             model=model,
             temperature=temperature,
-            system_prompt=system_prompt, # TODO 目前不支持system prompt
+            system_prompt=system_prompt,  # TODO 目前不支持system prompt
             human_prompt=prompt,
             maximum_length=maximum_length,
             stop_sequence=stop_sequence,
@@ -99,17 +99,19 @@ async def generate(
         )
     except Exception as ex:
         import traceback
+
         traceback.print_exc()
         raise ex
     return str(outputs)
+
 
 # async def _main():
 #     prompt = "How do you measure a year?"
 #     model = "tigerbot"
 #     system_prompt = None
 #     maximum_length = 1000
-#     temperature = 0.9 
-#     stop_sequence = None  
+#     temperature = 0.9
+#     stop_sequence = None
 #     top_p = 0.9
 #     frequence_penalty = 0.0
 #     presence_penalty = 0.0
