@@ -139,6 +139,9 @@ class AllesPalmAPILLMModel(HTTPAPILLMModel):
 
         
 class AllesClaudeAPILLMModel(HTTPAPILLMModel):
+    '''
+        Only support English
+    '''
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.url = "http://ecs.sv.us.alles-apin.openxlab.org.cn/v1/claude/v1/text/chat"
@@ -172,6 +175,9 @@ class AllesClaudeAPILLMModel(HTTPAPILLMModel):
 
         
 class AllesWenxinAPILLMModel(HTTPAPILLMModel):
+    '''
+        2023-10-27: This request is blocked by Alles-APIN due to auth failed.
+    '''
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.url = "https://openxlab.org.cn/gw/alles-apin/v1/baidu/v1/wenxinworkshop/chat"
@@ -183,7 +189,7 @@ class AllesWenxinAPILLMModel(HTTPAPILLMModel):
     async def generate(self, prompt, messages, *args, **kwargs):
         payload = {
             "messages": messages,
-            # "stream": False,
+            "stream": False,
             "user": "pjlab-alles-apin",
             # **kwargs,
         }

@@ -63,7 +63,7 @@ class MitaAPILLMModel(HTTPAPILLMModel):
 
                 data = self.get_result(response)
                 if data == False:
-                    time.sleep(5)
+                    time.sleep(1)
                 else:
                     return(
                         True,
@@ -74,11 +74,3 @@ class MitaAPILLMModel(HTTPAPILLMModel):
                 False,
                 'make order error:'+str(response)
             ) 
-
-
-# if __name__ == "__main__":
-#     hb = MitaAPILLMModel("47d10a183d75b780")
-#     resp = await hb.generate(prompt="", messages="妙手本手俗手")
-
-#     print(resp)
-#     print(hb.parse(resp))
