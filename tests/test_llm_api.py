@@ -3,7 +3,6 @@
 """
 import asyncio
 import os
-import time
 
 import unittest
 
@@ -17,6 +16,7 @@ os.environ["TIGERBOT_API_TOKEN"] = ""
 os.environ["JIEYUE_API_TOKEN"] = ""
 os.environ["MITA_API_TOKEN"] = ""
 os.environ["WUYA_API_TOKEN"] = ""
+os.environ["SOUL_API_TOKEN"] = ""
 
 
 async def generation_test(prompt, model):
@@ -24,7 +24,7 @@ async def generation_test(prompt, model):
     model = model
     system_prompt = None
     maximum_length = 1000
-    temperature = 0.9
+    temperature = 0.00001
     stop_sequence = None
     top_p = 0.9
     frequence_penalty = 0.0
@@ -49,13 +49,19 @@ async def generation_test(prompt, model):
 class TestLLMAPI(unittest.TestCase):
     def test_tigerbot_api(self):
         generated_text = asyncio.run(generation_test(prompt="中国的首都在哪里", model="tigerbot"))
-        # print(generated_text)
+
         assert generated_text.startswith("北京")
+
+    def test_soul_api(self):
+        generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="soul"))
+        # 大小写都可以， eg. SOUL, Soul
+        # print("\nSoul: %s\n" % generated_text)
+        assert generated_text is not None
 
     def test_mita_api(self):
         generated_text = asyncio.run(generation_test(prompt="生日快乐", model="Mita"))
         # 大小写都可以， eg. MITA、mita
-        # print(generated_text)
+
         assert generated_text.startswith("生日快乐")
 
     def test_jieyue_api(self):
@@ -82,10 +88,8 @@ class TestLLMAPI(unittest.TestCase):
         ]
 
         for model in ALLES_CHAT_LLM:
-            generated_text = asyncio.run(
-                generation_test(prompt="Introduce your self!", model=model)
-            )
-            time.sleep(1)  # waiting for the release of resources
+            generated_text = asyncio.run(generation_test(prompt="Happy Birthday", model=model))
+            # time.sleep(1)  # waiting for the release of resources
 
             assert generated_text is not None
 
