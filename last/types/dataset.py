@@ -129,23 +129,21 @@ class Dataset(Record, BaseManager):
     @staticmethod
     def read_excel(filename: str) -> Tuple[Dict[str, QARecord], List[str]]:
         qa_records = {}
-        querys = []
         xls = pd.ExcelFile(filename)
-        length = []
         sheet_names = xls.sheet_names
         # Loop through all the sheets
         for sheet_name in xls.sheet_names:
             # Read the sheet into a DataFrame
             df = pd.read_excel(xls, sheet_name=sheet_name)
-
-            key = df.keys()[0]  ### change for complex
+            for index, row in df.iterrows():
+                qa_records[ID()] = QARecord(
+                    predecessor_uid=None,
+                    successor_uid=None,
+                    question=Message(role=MessageRole.Human, content=row[0]),
+                    answer=Message(role=MessageRole.Human, content=row[1]),
+                )
+            # key = df.keys()[0]  ### change for complex
             ####### change togather ####
-            querys.append(key)
-            tmp_length = len(df) + 1
-            ############################
-            length.append(tmp_length)
-            for i in range(tmp_length - 1):
-                querys.append(df.iloc[i][key])
         return qa_records
 
     # TODO 根据qa_records填充其他属性, 现在是mock的

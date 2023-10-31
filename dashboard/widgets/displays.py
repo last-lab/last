@@ -1,6 +1,7 @@
 import csv
 import json
 import time
+import pandas as pd
 
 from starlette.requests import Request
 
@@ -183,15 +184,28 @@ class ShowAction(Display):
                                     "risk_description": res["risk_description"],
                                 }
                             )
-            with open(dataset["file"], "r") as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    info = row
-                    label_info.append(info)
-            del label_info[0]
+            if dataset["file"].endswith("csv"):
+                with open(dataset["file"], "r", encoding="utf-8-sig") as file:
+                    reader = csv.reader(file)
+                    for row in reader:
+                        info = row
+                        label_info.append(info)
+                del label_info[0]
+            elif dataset["file"].endswith("xlsx"):
+                xls = pd.ExcelFile(dataset["file"])
+                for sheet_name in xls.sheet_names:
+                    # Read the sheet into a DataFrame
+                    df = pd.read_excel(xls, sheet_name=sheet_name)
+                    for index, row in df.iterrows():
+                        label_info.append(list(row))
+            else:
+                raise NotImplementedError("We only support csv or xlsx file.")
+                
         return await super().render(
             request, {**dataset, "focused_risks": content, "label_info": label_info}
         )
+
+
 
 
 class ShowRiskType(Display):
