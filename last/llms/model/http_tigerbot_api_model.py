@@ -32,11 +32,3 @@ class TigerbotAPILLMModel(HTTPAPILLMModel):
             True,
             response["result"],
         )
-
-
-# if __name__ == "__main__":
-#     hb = TigerbotAPILLMModel("2dc003e5bd4ad9c66fbf05c4c9afd61922526dcfabe79d7673d66e1e51e901e9")
-#     resp = hb.generate(prompt="", messages="印度尼西亚的首都在哪里")
-
-#     print(resp)
-#     print(hb.parse(resp))

@@ -15,6 +15,8 @@ from .model.http_puyu_api_model import PuyuAPILLMModel
 from .model.http_tigerbot_api_model import TigerbotAPILLMModel
 from .model.http_mita_api_model import MitaAPILLMModel
 from .model.http_jieyue_api_model import JieyueAPILLMModel
+from .model.http_wuya_api_model import WuyaAPILLMModel
+from .model.http_soul_api_model import SoulAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -76,6 +78,10 @@ class AllesChatLLM(BaseModel):
             model = MitaAPILLMModel(**params)
         elif self.model.lower() == "jieyue":
             model = JieyueAPILLMModel(**params)
+        elif self.model.lower() == "wuya":
+            model = WuyaAPILLMModel(**params)
+        elif self.model.lower() == "soul":
+            model = SoulAPILLMModel(**params)
         else:
             raise NotImplementedError()
 

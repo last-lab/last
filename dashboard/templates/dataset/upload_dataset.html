@@ -72,6 +72,7 @@
     <script>
         var jsonvalue = {}
         var pre_id
+        // 解析上传文件
         function openFileSelector() {
             const inputObj = document.getElementById('fileInput');
             inputObj.onchange = (event) => {
@@ -80,6 +81,7 @@
                     const file =  $('#fileInput')[0].files[0];
                     formData.append("file", file);
                     document.getElementById("processing").style.display = 'block';
+                    // formdata方案上传
                     $.ajax({
                         url: '/admin/dataset/json',
                         type: 'POST',
@@ -118,6 +120,7 @@
             }
             inputObj.click();
         }
+        // 上传提交函数
         function uploadSubmit (info) {
             if (!$("#name").val()) {
                 alert('请输入评测集名称')
@@ -160,6 +163,7 @@
                 }
              })
          }
+         // 二级风险级联三级风险
         function getValue(id) {
              if ($('#' + id)[0].checked) {
                 $(`input[name=${$('#' + id)[0].id}]`).prop("disabled", false);
@@ -168,6 +172,7 @@
                 $(`input[name=${$('#' + id)[0].id}]`).prop("disabled", true);
              }
         }
+        // 选择一级风险类型，展示对应二级三级风险
         function radioSelect(id) {
             if (pre_id) {
                 document.getElementById(pre_id).style.display = 'none';

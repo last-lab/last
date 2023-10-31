@@ -10,6 +10,7 @@ from last.services.template import templates
 router = APIRouter()
 
 
+# 新建风险维度的路由（尚未开发）
 @router.get("/{resource}/risk_create")
 async def risk_create(
     request: Request,
@@ -31,6 +32,7 @@ async def risk_create(
     )
 
 
+# 编辑风险维度的路由（尚未开发）
 @router.get("/{resource}/edit/{pk}")
 async def edit(
     request: Request,
@@ -55,6 +57,7 @@ async def edit(
     )
 
 
+# 风险维度的路由
 @router.get("/risk")
 async def get_risk(
     request: Request,
@@ -62,10 +65,12 @@ async def get_risk(
 ):
     risks = await Risk.all().filter(risk_level=1)
     for first_risk in risks:
+        # 获取二级风险
         second_risks = await Risk.all().filter(risk_level=2, parent_risk_id=first_risk.risk_id)
         first_risk.second_risks = second_risks
         first_risk.dataset = await Tool.get_dataset_match_risk(first_risk)
         for second_risk in second_risks:
+            # 获取三级风险
             third_risks = await Risk.all().filter(risk_level=3, parent_risk_id=second_risk.risk_id)
             second_risk.third_risks = third_risks
             second_risk.dataset = await Tool.get_dataset_match_risk(second_risk)

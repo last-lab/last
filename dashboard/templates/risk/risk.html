@@ -63,6 +63,7 @@
 <script>
     {# 初始选择 #}
     var pre_id = 1;
+    // 选择一级维度,展示对应内容
     function select(id) {
         if (pre_id) {
             document.getElementById(pre_id).style.display = 'none';
@@ -75,6 +76,7 @@
         document.getElementById('dataset' + id).style.display = 'block';
     }
     select(pre_id)
+    // mouseover，mouseout，mouseoverOther，mouseoutOther处理hover样式
     function mouseover(id) {
         document.getElementsByName(id)[0].style.color = '#121316';
         document.getElementById('img'+id).style.display = 'inline-block';
