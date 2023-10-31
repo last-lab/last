@@ -23,6 +23,7 @@ ALLES_CHAT_LLM = [
     "tigerbot",
     "mita",
     "wuya",
+    "soul",
 ]
 
 async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):

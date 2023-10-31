@@ -1,4 +1,6 @@
 import json
+from openai import Completion
+import openai
 import requests
 import sseclient
 from .base_model import HTTPAPILLMModel
@@ -36,7 +38,7 @@ class TigerAPILLMModel(HTTPAPILLMModel):
                     else:
                         break
 
-                generated_text = completion["choices"][0]["text"]
+                generated_text = Completion["choices"][0]["text"]
                 success = True
             except Exception as ex:
                 generated_text = f"\n[Error] {type(ex).__name__}: {ex}\n"
