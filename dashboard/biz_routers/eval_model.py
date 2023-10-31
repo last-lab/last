@@ -109,7 +109,6 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
     await Record.filter(id=record.id).update(state=EvalStatus.finish)
 
 
-
 async def compute_acc(plan, record, result, llm_name):
     # risks = await Risk.all().values()
     # result = await DataSet.get_or_none(id=9)
@@ -140,8 +139,8 @@ async def extract_score(string):
     return sum(score) / len(score)
 
 
-
 # 创建评测记录接口
+
 
 @router.post("/evaluation/evaluation_create")
 async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
