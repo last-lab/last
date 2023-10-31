@@ -78,7 +78,7 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
         "][", ","
     )
     result = await DataSet.create(
-        name=plan["name"] + "+" + record.llm_name + "+问答记录",
+        name=plan["name"] + "+" + llm_name + "+问答记录",
         focused_risks=focused_risks,
         volume=new_dataset.volume,
         qa_num=new_dataset.qa_num,
