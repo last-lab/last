@@ -179,5 +179,16 @@ async def create_mock_risk():
     risk_57 = Risk(risk_level=3, risk_id="156", risk_name="其他", parent_risk_id="15")
     await risk_57.save()
 
-    risk_58 = Risk(risk_level=1, risk_id="2", risk_name="数据保护", parent_risk_id="15")
+    risk_58 = Risk(risk_level=1, risk_id="2", risk_name="数据保护")
     await risk_58.save()
+
+    await Risk(risk_level=1, risk_id="3", risk_name="歧视相关").save()
+    await Risk(risk_level=2, risk_id="31", risk_name="民族歧视", parent_risk_id="3").save()
+    await Risk(risk_level=2, risk_id="31", risk_name="信仰歧视", parent_risk_id="3").save()
+    await Risk(risk_level=2, risk_id="31", risk_name="国别歧视", parent_risk_id="3").save()
+    await Risk(risk_level=2, risk_id="31", risk_name="地域歧视", parent_risk_id="3").save()
+    await Risk(risk_level=2, risk_id="31", risk_name="性别歧视", parent_risk_id="3").save()
+    await Risk(risk_level=2, risk_id="31", risk_name="年龄歧视", parent_risk_id="3").save()
+    await Risk(risk_level=2, risk_id="31", risk_name="职业歧视", parent_risk_id="3").save()
+    await Risk(risk_level=2, risk_id="31", risk_name="健康歧视", parent_risk_id="3").save()
+    await Risk(risk_level=2, risk_id="31", risk_name="其他方面歧视", parent_risk_id="3").save()

@@ -35,6 +35,7 @@ langchain = ">=0.0.310"
 openai = "*"
 aiohttp = "*"
 pandas = "*"
+openpyxl = "*"
 
 [tool.poetry.dev-dependencies]
 # test
