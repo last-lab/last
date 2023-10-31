@@ -13,15 +13,15 @@ from last.client.call_llm import generate
 
 os.environ[
     "ALLES_API_TOKEN"
-] = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6Inh1anVuIiwiYXBwbHlfYXQiOjE2ODU0MzIyNTEwNTMsImV4cCI6MTg2Njg3MjI1MX0.J5gCD0yLYkKOmQKDNzidG3FsPz1V0TErn3xASA6m0-0"
+] = ""
 os.environ["PUYU_API_TOKEN"] = ""
 os.environ[
     "TIGERBOT_API_TOKEN"
-] = "2dc003e5bd4ad9c66fbf05c4c9afd61922526dcfabe79d7673d66e1e51e901e9"
-os.environ["JIEYUE_API_TOKEN"] = "AI-ONE-b435cad86e273c97b08278dd34ecc378"
-os.environ["MITA_API_TOKEN"] = "47d10a183d75b780"
+] = ""
+os.environ["JIEYUE_API_TOKEN"] = ""
+os.environ["MITA_API_TOKEN"] = ""
 os.environ["WUYA_API_TOKEN"] = ""
-os.environ["SOUL_API_TOKEN"] = "5BYMg48N1iYimDsr5kOT"
+os.environ["SOUL_API_TOKEN"] = ""
 
 
 async def generation_test(prompt, model):
