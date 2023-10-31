@@ -1,8 +1,8 @@
 import csv
 import json
 import time
-import pandas as pd
 
+import pandas as pd
 from starlette.requests import Request
 
 from dashboard.biz_models import DataSet, EvaluationPlan, LabelPage, LabelResult, ModelInfo, Risk
@@ -200,12 +200,10 @@ class ShowAction(Display):
                         label_info.append(list(row))
             else:
                 raise NotImplementedError("We only support csv or xlsx file.")
-                
+
         return await super().render(
             request, {**dataset, "focused_risks": content, "label_info": label_info}
         )
-
-
 
 
 class ShowRiskType(Display):
