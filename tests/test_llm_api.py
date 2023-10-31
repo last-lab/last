@@ -11,13 +11,9 @@ from last.client.call_llm import generate
 
 # set the API key
 
-os.environ[
-    "ALLES_API_TOKEN"
-] = ""
+os.environ["ALLES_API_TOKEN"] = ""
 os.environ["PUYU_API_TOKEN"] = ""
-os.environ[
-    "TIGERBOT_API_TOKEN"
-] = ""
+os.environ["TIGERBOT_API_TOKEN"] = ""
 os.environ["JIEYUE_API_TOKEN"] = ""
 os.environ["MITA_API_TOKEN"] = ""
 os.environ["WUYA_API_TOKEN"] = ""
@@ -29,7 +25,7 @@ async def generation_test(prompt, model):
     model = model
     system_prompt = None
     maximum_length = 1000
-    temperature = 0.1
+    temperature = 0.00001
     stop_sequence = None
     top_p = 0.9
     frequence_penalty = 0.0
