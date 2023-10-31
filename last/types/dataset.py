@@ -98,31 +98,36 @@ class Dataset(Record, BaseManager):
     def upload(file_path: str) -> Tuple[Dict[str, QARecord], List[str]]:
         # TODO 注释掉的部分是为了给多轮对话准备的，目前还没有经过测试，故不写
         # 通过上传文件创建数据集
-        qa_records = {}
         if file_path.endswith("csv"):
-            # predecessor_uid = None # 关联上一条Message记录的id
-            with open(file_path, "r", encoding="utf-8-sig") as file:
-                reader = csv.DictReader(file)
-                for row in reader:
-                    self_uid = ID()
-                    question = Message(role=MessageRole.Human, content=row["question"])
-                    correct_ans = Message(
-                        role=MessageRole.AI, content=row["correct_ans"]
-                    )
-                    # successor_uid = ID() # 提前安排好下一条数据的ID
-                    qa_records[self_uid] = QARecord(
-                        predecessor_uid=None,
-                        successor_uid=None,
-                        question=question,
-                        answer=correct_ans,
-                    )
-                # predecessor_uid = self_uid
-        elif file_path.endswith("xlsx"):
             qa_records = Dataset.read_csv(file_path)
+        elif file_path.endswith("xlsx"):
+            qa_records = Dataset.read_excel(file_path)
         return qa_records
 
     @staticmethod
-    def read_csv(filename: str) -> Tuple[Dict[str, QARecord], List[str]]:
+    def read_csv(file_path):
+        qa_records = {}
+        # predecessor_uid = None # 关联上一条Message记录的id
+        with open(file_path, "r", encoding="utf-8-sig") as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                self_uid = ID()
+                question = Message(role=MessageRole.Human, content=row["question"])
+                correct_ans = Message(
+                    role=MessageRole.AI, content=row["correct_ans"]
+                )
+                # successor_uid = ID() # 提前安排好下一条数据的ID
+                qa_records[self_uid] = QARecord(
+                    predecessor_uid=None,
+                    successor_uid=None,
+                    question=question,
+                    answer=correct_ans,
+                )
+                # predecessor_uid = self_uid
+        return qa_records
+
+    @staticmethod
+    def read_excel(filename: str) -> Tuple[Dict[str, QARecord], List[str]]:
         qa_records = {}
         querys = []
         xls = pd.ExcelFile(filename)
