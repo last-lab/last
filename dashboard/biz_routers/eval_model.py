@@ -108,6 +108,7 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
     await compute_acc(plan, record, result, llm_name)
     await Record.filter(id=record.id).update(state=EvalStatus.finish)
 
+
 # TODO compute_acc功能暂时还没写完 一些结果是mock的
 async def compute_acc(plan, record, result, llm_name):
     score = await extract_score(result.qa_records)
