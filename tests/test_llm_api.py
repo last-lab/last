@@ -3,7 +3,6 @@
 """
 import asyncio
 import os
-
 import unittest
 
 from last.client.call_llm import generate

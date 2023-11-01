@@ -157,7 +157,10 @@ class UsernamePasswordProvider(Provider):
                     return templates.TemplateResponse(
                         self.template,
                         status_code=HTTP_412_PRECONDITION_FAILED,
-                        context={"request": request, "error": _("Google recaptcha verify failed")},
+                        context={
+                            "request": request,
+                            "error": _("Google recaptcha verify failed"),
+                        },
                     )
         admin = await self.admin_model.get_or_none(username=username)
         if not admin or not check_password(password, admin.password):
@@ -328,7 +331,9 @@ class OAuth2Provider(Provider):
             httponly=True,
         )
         await redis.set(
-            constants.LOGIN_USER.format(token=token), admin.pk, ex=constants.LOGIN_EXPIRE
+            constants.LOGIN_USER.format(token=token),
+            admin.pk,
+            ex=constants.LOGIN_EXPIRE,
         )
         return response
 
@@ -349,7 +354,11 @@ class OAuth2Provider(Provider):
         raise NotImplementedError
 
     def get_access_token_params(self, code: str):
-        return {"client_id": self.client_id, "client_secret": self.client_secret, "code": code}
+        return {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "code": code,
+        }
 
     def get_authorize_url(self):
         params = {"client_id": self.client_id}
@@ -368,7 +377,11 @@ class GitHubOAuth2Provider(OAuth2Provider):
     user_url = "https://api.github.com/user"
 
     def __init__(
-        self, admin_model: Type[AbstractAdmin], client_id: str, client_secret: str, **kwargs
+        self,
+        admin_model: Type[AbstractAdmin],
+        client_id: str,
+        client_secret: str,
+        **kwargs,
     ):
         super().__init__(
             admin_model,
@@ -509,7 +522,11 @@ class SSOOAuth2Provider(OAuth2Provider):
     public_key = ""
 
     def __init__(
-        self, admin_model: Type[AbstractAdmin], client_id: str, client_secret: str, **kwargs
+        self,
+        admin_model: Type[AbstractAdmin],
+        client_id: str,
+        client_secret: str,
+        **kwargs,
     ):
         super().__init__(
             admin_model,
@@ -547,14 +564,19 @@ class SSOOAuth2Provider(OAuth2Provider):
             headers={"Content-Type": "application/json"}, timeout=30
         ) as client:
             res = await client.post(
-                self.token_url, data=json.dumps(await self.get_access_token_params(code))
+                self.token_url,
+                data=json.dumps(await self.get_access_token_params(code)),
             )
             ret = res.json()
             return ret.get("data").get("jwt")
 
     async def get_access_token_params(self, code: str):
         public_key = await self.get_public_key()
-        return {"clientId": self.client_id, "d": self.get_d_params(public_key), "code": code}
+        return {
+            "clientId": self.client_id,
+            "d": self.get_d_params(public_key),
+            "code": code,
+        }
 
     async def get_public_key(self) -> str:
         if self.public_key:
@@ -576,4 +598,8 @@ class SSOOAuth2Provider(OAuth2Provider):
 
     async def get_user_info_params(self, token: str):
         public_key = await self.get_public_key()
-        return {"clientId": self.client_id, "d": self.get_d_params(public_key), "token": token}
+        return {
+            "clientId": self.client_id,
+            "d": self.get_d_params(public_key),
+            "token": token,
+        }

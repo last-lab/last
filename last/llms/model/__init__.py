@@ -1,21 +1,19 @@
-
-
-
 def init_api_models(settings):
-    
     model_list = {}
 
     for setting in settings:
         if setting["type"] == "openai":
             from .openai_api_model import OpenaiAPILLMModel
+
             params = {
                 "api_key": setting["api_key"],
                 "api_base": setting["api_base"],
             }
             model = OpenaiAPILLMModel(**params)
-        
+
         elif setting["type"] == "tiger":
             from .http_tiger_api_model import TigerAPILLMModel
+
             params = {
                 "api_key": setting["api_key"],
                 "api_base": setting["api_base"],
@@ -24,6 +22,7 @@ def init_api_models(settings):
 
         elif setting["type"] == "puyu":
             from .http_puyu_api_model import PuyuAPILLMModel
+
             params = {
                 "api_key": setting["api_key"],
             }
@@ -31,7 +30,17 @@ def init_api_models(settings):
                 model = PuyuAPILLMModel(**params)
 
         elif setting["type"] == "alles":
-            from .http_alles_api_model import AllesMinimaxAPILLMModel, AllesChatGPTAPILLMModel, AllesGPT4APILLMModel, AllesPalmAPILLMModel, AllesClaudeAPILLMModel, AllesWenxinAPILLMModel, AllesSparkAPILLMModel, AllesBaiduTranslateAPILLMModel
+            from .http_alles_api_model import (
+                AllesMinimaxAPILLMModel,
+                AllesChatGPTAPILLMModel,
+                AllesGPT4APILLMModel,
+                AllesPalmAPILLMModel,
+                AllesClaudeAPILLMModel,
+                AllesWenxinAPILLMModel,
+                AllesSparkAPILLMModel,
+                AllesBaiduTranslateAPILLMModel,
+            )
+
             params = {
                 "api_key": setting["api_key"],
             }
@@ -56,7 +65,7 @@ def init_api_models(settings):
 
         else:
             raise NotImplementedError()
-        
+
         model_list[setting["index"]] = model
 
     return model_list

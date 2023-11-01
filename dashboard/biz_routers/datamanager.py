@@ -283,11 +283,11 @@ async def epm_ds_query(
     """
     datasets = []
     if ds_name is not None:
-        datasets = await DataSet.all().filter(name=ds_name).order_by("id").limit(10)
+        datasets = await DataSet.all().filter(name=ds_name).order_by("id")
     if ds_content is not None:
-        datasets = await DataSet.all().filter(name=ds_content).order_by("id").limit(10)
+        datasets = await DataSet.all().filter(name=ds_content).order_by("id")
     if not datasets:
-        datasets = await DataSet.all().order_by("id").limit(10)
+        datasets = await DataSet.all().order_by("id")
     dataset_schemas = await DataSetTool.ds_model_to_eval_plan_schema(datasets)
     return dataset_schemas
 

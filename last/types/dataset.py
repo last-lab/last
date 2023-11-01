@@ -8,6 +8,7 @@ import csv
 from enum import Enum
 from last.services.enums import StrEnum
 import os
+import pandas as pd
 
 DatasetTyping = TypeVar("DatasetTyping", bound="Dataset")
 
@@ -97,6 +98,14 @@ class Dataset(Record, BaseManager):
     def upload(file_path: str) -> Tuple[Dict[str, QARecord], List[str]]:
         # TODO 注释掉的部分是为了给多轮对话准备的，目前还没有经过测试，故不写
         # 通过上传文件创建数据集
+        if file_path.endswith("csv"):
+            qa_records = Dataset.read_csv(file_path)
+        elif file_path.endswith("xlsx"):
+            qa_records = Dataset.read_excel(file_path)
+        return qa_records
+
+    @staticmethod
+    def read_csv(file_path):
         qa_records = {}
         # predecessor_uid = None # 关联上一条Message记录的id
         with open(file_path, "r", encoding="utf-8-sig") as file:
@@ -104,7 +113,9 @@ class Dataset(Record, BaseManager):
             for row in reader:
                 self_uid = ID()
                 question = Message(role=MessageRole.Human, content=row["question"])
-                correct_ans = Message(role=MessageRole.AI, content=row["correct_ans"])
+                correct_ans = Message(
+                    role=MessageRole.AI, content=row["correct_ans"]
+                )
                 # successor_uid = ID() # 提前安排好下一条数据的ID
                 qa_records[self_uid] = QARecord(
                     predecessor_uid=None,
@@ -115,12 +126,32 @@ class Dataset(Record, BaseManager):
                 # predecessor_uid = self_uid
         return qa_records
 
+    @staticmethod
+    def read_excel(filename: str) -> Tuple[Dict[str, QARecord], List[str]]:
+        qa_records = {}
+        xls = pd.ExcelFile(filename)
+        sheet_names = xls.sheet_names
+        # Loop through all the sheets
+        for sheet_name in xls.sheet_names:
+            # Read the sheet into a DataFrame
+            df = pd.read_excel(xls, sheet_name=sheet_name)
+            for index, row in df.iterrows():
+                qa_records[ID()] = QARecord(
+                    predecessor_uid=None,
+                    successor_uid=None,
+                    question=Message(role=MessageRole.Human, content=row[0]),
+                    answer=Message(role=MessageRole.Human, content=row[1]),
+                )
+            # key = df.keys()[0]  ### change for complex
+            ####### change togather ####
+        return qa_records
+
     # TODO 根据qa_records填充其他属性, 现在是mock的
     def fill_attributes(self, qa_records: Dict[str, QARecord]) -> None:
         self.conversation_start_id = list(self.qa_records.keys())
         self.qa_num = len(qa_records)
         self.word_cnt = Dataset.word_counting(qa_records)
-        self.volume = str(os.path.getsize(self.file)) + 'bytes'
+        self.volume = str(os.path.getsize(self.file)) + "bytes"
 
     @staticmethod
     def word_counting(qa_records: Dict[str, QARecord]) -> int:
