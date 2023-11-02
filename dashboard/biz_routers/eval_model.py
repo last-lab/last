@@ -105,7 +105,7 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
         permissions=new_dataset.permissions,
         first_risk_id="1",
     )
-    # await compute_acc(plan, record, result, llm_name)
+    await compute_acc(plan, record, result, llm_name)
     await Record.filter(id=record.id).update(state=EvalStatus.finish)
 
 

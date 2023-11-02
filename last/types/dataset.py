@@ -120,8 +120,8 @@ class Dataset(Record, BaseManager):
                 qa_records[self_uid] = QARecord(
                     predecessor_uid=None,
                     successor_uid=None,
-                    question=question,
-                    answer=correct_ans,
+                    question=str(question),
+                    answer=str(correct_ans),
                 )
                 # predecessor_uid = self_uid
         return qa_records
@@ -139,8 +139,8 @@ class Dataset(Record, BaseManager):
                 qa_records[ID()] = QARecord(
                     predecessor_uid=None,
                     successor_uid=None,
-                    question=Message(role=MessageRole.Human, content=row[0]),
-                    answer=Message(role=MessageRole.Human, content=row[1]),
+                    question=Message(role=MessageRole.Human, content=str(row[0])),
+                    answer=Message(role=MessageRole.Human, content=str(row[1])),
                 )
             # key = df.keys()[0]  ### change for complex
             ####### change togather ####
