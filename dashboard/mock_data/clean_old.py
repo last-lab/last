@@ -3,6 +3,7 @@ from tortoise import Tortoise
 from dashboard.biz_models import Record
 from dashboard.enums import EvalStatus
 
+
 async def clean_old_record():
     connection = Tortoise.get_connection("default")
     # await connection.execute_query(f"DROP TABLE IF EXISTS {Record.__name__.upper()}")

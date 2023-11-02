@@ -1,11 +1,9 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <button data-bs-toggle="modal" data-bs-target="#{{ value.uid }}" class="btn btn-ghost-primary">
   详细信息
 </button>
 <button data-bs-toggle="modal" data-bs-target="#{{ value.name + value.uid }}" class="btn btn-ghost-primary">
     评测集内容
-</button>
-<button class="btn btn-ghost-primary">
-  导出
 </button>
 {% include "delete.html" %}
 <div class="modal" id={{ value.uid }} tabindex="-1">
@@ -77,17 +75,23 @@
       <div class="modal-header" style="border-bottom: none">
         <h5 class="modal-title">评测集内容</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
       </div>
+
         <div class="modal-body">
+          <div>
+        <button onclick="downloadFile({{value.name + value.uid}})" id=button{{ value.name + value.uid }} class="btn btn-primary">下载Excel</button>
+      </div>
+
             <div class="table-responsive">
-              <table class="table table-vcenter">
+              <table class="table table-vcenter" id=table{{ value.name + value.uid }}>
                 <thead>
                   <tr>
                     <th>问题</th>
                     <th>回复</th>
                     <th>评判</th>
-                      <th>标注</th>
-                      <th>更新时间</th>
+                      <th>操作</th>
+                      <!-- <th>更新时间</th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -102,8 +106,8 @@
                             <td style="max-width: 350px; word-wrap:break-word; word-break:break-all; white-space:normal;">
                                 {{ item[2] }}
                             </td>
-                            <td><button class="btn btn-primary">标注</button></td>
-                            <td>2022-10-10 10:10:10</td>
+                            <td><button class="btn btn-primary">修改</button></td>
+                            <!-- <td>2022-10-10 10:10:10</td> -->
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -134,4 +138,56 @@
         navigator.clipboard.writeText(copyText);
         alert('复制成功');
     }
+    function downloadFile(id) {
+    console.log("downloadFile running")
+    const downloadICON = document.getElementById("button" + id);
+    const dataTable = document.getElementById("table" + id);
+    // 状态标识
+    downloadICON.addEventListener('click', async () => {
+        // 输入文件名
+        const filename = prompt('请输入文件名');
+        // 等待下一个点击事件触发选择文件夹
+        //选择文件夹
+        // 拼接完整路径
+        const path = filename + '.xlsx';
+        // 生成工作表
+        const ws = XLSX.utils.table_to_sheet(dataTable);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        // 用完整路径保存文件
+        XLSX.writeFile(wb, path);
+
+    });
+  }
+    // function downloadFile(csv_string) {
+    //   const csvData = csv_string; 
+    //   console.log(csv_string);
+    //   const blob = new Blob([csvData], {
+    //     type: 'text/csv'
+    //   });
+
+    //   const objectURL = URL.createObjectURL(blob);
+
+    //   const aTag = document.createElement('a');
+    //   aTag.href = objectURL;
+    //   aTag.download = `download.csv`;
+    //   aTag.click();
+
+    //   URL.revokeObjectURL(objectURL);
+    //   }
+	// 	const fs = require('fs');
+	// 	function readCSVFile(filePath) {
+	// 		try {
+	// 			const csvData = fs.readFileSync(filePath, 'utf-8');
+	// 			return csvData;
+	// 		} catch (error) {
+	// 			console.error('Error reading CSV file:', error);
+	// 			return null;
+	// 		}
+	// 		}
+
+	// // 导出CSV文件
+	// 	const filePath = '/home/wangxuhong/last/dashboard/static/saves/plan1.csv';
+	// 	const csvData = readCSVFile(filePath); 
+
 </script>

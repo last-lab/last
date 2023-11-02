@@ -187,10 +187,14 @@ class ShowAction(Display):
             if dataset["file"].endswith("csv"):
                 with open(dataset["file"], "r", encoding="utf-8-sig") as file:
                     reader = csv.reader(file)
+                    # rows = []
                     for row in reader:
-                        info = row
-                        label_info.append(info)
+                        label_info.append(row)
+                        # row_string = ",".join(row)
+                        # rows.append(row_string)
+                    # csv_string = "\n".join(rows)
                 del label_info[0]
+
             elif dataset["file"].endswith("xlsx"):
                 xls = pd.ExcelFile(dataset["file"])
                 for sheet_name in xls.sheet_names:
@@ -198,11 +202,13 @@ class ShowAction(Display):
                     df = pd.read_excel(xls, sheet_name=sheet_name)
                     for index, row in df.iterrows():
                         label_info.append(list(row))
+                # csv_string = ""
             else:
                 raise NotImplementedError("We only support csv or xlsx file.")
 
         value = await super().render(
-            request, {**dataset, "focused_risks": content, "label_info": label_info}
+            request,
+            {**dataset, "focused_risks": content, "label_info": label_info},
         )
         return value
 
