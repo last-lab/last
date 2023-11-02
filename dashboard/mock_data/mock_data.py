@@ -15,4 +15,4 @@ async def create_mock_data():
     await create_mock_risk_demo()
     await create_mock_llms()
 
-    await clean_old_record()
+    # await clean_old_record()
