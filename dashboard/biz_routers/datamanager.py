@@ -43,7 +43,7 @@ async def create_view(
     output example: {resource}/create.html
     """
     inputs = await model_resource.get_inputs(request)
-    datasets = await DataSet.all().order_by("id").limit(10)
+    datasets = await DataSet.all().order_by("id").limit(50)
     dataset_schemas = await DataSetTool.ds_model_to_eval_plan_schema(datasets)
     context = {
         "request": request,
@@ -159,7 +159,7 @@ async def update_view(
     """
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
-    datasets = await DataSet.filter(id__in=obj.dataset_ids.split(",")).order_by("id").limit(10)
+    datasets = await DataSet.filter(id__in=obj.dataset_ids.split(",")).order_by("id").limit(50)
     dataset_schemas = await DataSetTool.ds_model_to_eval_plan_schema(datasets)
     context = {
         "request": request,
@@ -198,7 +198,7 @@ async def copy_create_view(
     """
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     inputs = await model_resource.get_inputs(request, obj)
-    datasets = await DataSet.all().order_by("id").limit(10)
+    datasets = await DataSet.all().order_by("id").limit(50)
     dataset_schemas = await DataSetTool.ds_model_to_eval_plan_schema(datasets)
     context = {
         "request": request,

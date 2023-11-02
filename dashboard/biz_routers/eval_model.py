@@ -57,8 +57,8 @@ async def create_eval(
     request: Request,
     resources=Depends(get_resources),
 ):
-    eval_plans = await EvaluationPlan.all().limit(10)
-    model_list = await ModelInfo.all().limit(10)
+    eval_plans = await EvaluationPlan.all().limit(50)
+    model_list = await ModelInfo.all().limit(50)
 
     return templates.TemplateResponse(
         "record/create_eval.html",

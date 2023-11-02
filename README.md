@@ -43,6 +43,8 @@ by visiting http://127.0.0.1:8000/admin/init
 
 For more detail, checkout Dockfile and docker-compose.yml in case I miss something.
 
+如果遇到redis服务出错的情况，使用 sudo /etc/init.d/redis-server restart 命令重启redis
+
 # Locales
 当需要使用中文时，使用`from last.services.i18n import _`代替`_`，并在需要翻译的字符串前加上`_`，例如：
 ```python
