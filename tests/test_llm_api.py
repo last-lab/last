@@ -54,13 +54,13 @@ class TestLLMAPI(unittest.TestCase):
     def test_soul_api(self):
         generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="soul"))
         # 大小写都可以， eg. SOUL, Soul
-        print("Soul: %s\n" % generated_text)
+        print("Soul: %s" % generated_text)
         assert generated_text is not None
 
     def test_mita_api(self):
         generated_text = asyncio.run(generation_test(prompt="生日快乐", model="Mita"))
         # 大小写都可以， eg. MITA、mita
-        print("Mita: %s\n" % generated_text)
+        print("Mita: %s" % generated_text)
         assert generated_text.startswith("生日快乐")
 
     @unittest.skip("API key has expired")

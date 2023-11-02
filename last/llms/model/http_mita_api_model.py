@@ -3,7 +3,7 @@
 """
 import json
 import time
-import requests
+import aiohttp
 from .base_model import HTTPAPILLMModel
 
 
@@ -19,29 +19,21 @@ class MitaAPILLMModel(HTTPAPILLMModel):
             "secret-key": self.api_key,
         }
 
-    async def make_order(self, content):
-        data = {"title": content}
-        response = requests.post(self.make_order_url, json=data, headers=self.headers)
-        if response.status_code == 200:
-            d = response.json()
-            return d["data"]["doc_id"]
-        else:
-            return int(response.status_code)
-
-    def get_result(self, id):
-        response = requests.get(self.get_result_url + id, headers=self.headers)
-        status_code = response.status_code
-        if status_code == 200:
-            d = response.json()
-            if d["errCode"] == 0:
-                return d["data"]["content"]
-            elif d["errCode"] == 4000 or d["errCode"] == 4001:
-                return False
-        return None
+       
+    async def async_get(self, url, headers):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                status_code = response.status
+                if status_code == 200:
+                    d = await response.json()
+                if d["errCode"] == 0:
+                    return d["data"]["content"]
+                elif d["errCode"] == 4000 or d["errCode"] == 4001:
+                    return False
+            return None
 
     async def generate(self, prompt, messages, *args, **kwargs):
         data = {"title": messages[-1]["content"]}
-        # response = requests.post(self.make_order_url, json=data, headers=self.headers)
         try:
             response = await self.async_post(
                 self.make_order_url, headers=self.headers, data=json.dumps(data)
@@ -53,21 +45,22 @@ class MitaAPILLMModel(HTTPAPILLMModel):
 
         if status_code == 200:
             d = response
-
-            return d["data"]["doc_id"]
+            while True:
+                data = await self.async_get(
+                    url=self.get_result_url + d["data"]["doc_id"],
+                    headers=self.headers
+                )
+                if data == False:
+                    time.sleep(0.5)
+                else:
+                    return data
         else:
             return status_code
 
     def parse(self, response):
         
         if isinstance(response, str):
-            
-            while True:
-                data = self.get_result(response)
-                if data == False:
-                    time.sleep(1)
-                else:
-                    return (True, data)
+            return (True, response)
         else:
             return(
                 False,

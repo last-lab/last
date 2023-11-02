@@ -2,7 +2,6 @@
    Tigerbot API 没有chat功能 仅支持单条数据 
 """
 import json
-import requests
 from .base_model import HTTPAPILLMModel
 
 

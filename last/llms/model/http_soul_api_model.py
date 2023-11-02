@@ -2,7 +2,6 @@
    SOUL API 支持chat功能
 """
 import json
-import requests
 from .base_model import HTTPAPILLMModel
 
 
