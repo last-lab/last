@@ -268,19 +268,31 @@ async def labeling_next_callback(request: Request):
     assert current_question_index in assign_user_item_list
     # 获取current_question_index在assign_user_item_list中的索引
     index = assign_user_item_list.index(current_question_index)
-    # 下一条标注的question_id
-    next_question_index = assign_user_item_list[(index + 1) % len(assign_user_item_list)]
     # TODO 判断下一道题有没有被标注过，如果下一道题被标注了，就继续往下跳直到遇到False，或者回到最开始
     labeling_flag = eval(labelpage_task_row[0].labeling_flag)
-    if labeling_flag[user_id][next_question_index]:
-        return {"question_id": "null", "task_id": task_id, "labeling_method": labeling_method}
+    search_index = assign_user_item_list[(index + 1) % len(assign_user_item_list)]
+    while True:
+        if labeling_flag[user_id][search_index]:
+            # 如果下一个题已经被标注了，就继续往后循环
+            search_index = (search_index + 1) % len(assign_user_item_list)
+        else:
+            next_flag = True
+            next_question_index = search_index
+            break
+        # 跳出判断, 由于是先调用next函数，因此碰到最后一个题的时候，查找next会出现
+        if search_index == current_question_index:
+            next_flag = False
+            break
 
-    else:
+    if next_flag:
         return {
             "question_id": next_question_index + 1,
             "task_id": task_id,
             "labeling_method": labeling_method,
         }
+
+    else:
+        return {"question_id": "null", "task_id": task_id, "labeling_method": labeling_method}
 
 
 @router.post("/{resource}/labeling/get_label_audit_status")

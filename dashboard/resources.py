@@ -18,6 +18,8 @@ from dashboard.widgets.displays import (  # ShowAudit,; ShowAuditProgress,
     OperationField,
     ShowAction,
     ShowAdmin,
+    ShowAudit,
+    ShowAuditProgress,
     ShowIp,
     ShowLabel,
     ShowLabelProgress,
@@ -27,11 +29,9 @@ from dashboard.widgets.displays import (  # ShowAudit,; ShowAuditProgress,
     ShowRiskType,
     ShowSecondType,
     ShowStatus,
+    ShowTaskAuditProgress,
     ShowTaskLabelingProgress,
     ShowTime,
-    ShowAudit,
-    ShowTaskAuditProgress,
-    ShowAuditProgress,
 )
 from dashboard.widgets.filters import SearchFilter
 from last.services import enums as _enums
@@ -219,44 +219,6 @@ class DataManager(Dropdown):
             ]
 
         async def get_actions(self, request: Request) -> List[Action]:
-            return []
-
-    class LabelingRecord(Model):
-        label = _("Labeling Record")
-        model = LabelPage
-        filters = [filters.Search(name="task_type", label="Task Type")]
-        fields = [
-            "id",
-            "task_id",
-            "task_type",
-            "labeling_method",
-            "end_time",
-            Field(name="task_id", label="标注进展", display=ShowLabelProgress()),
-            Field(name="task_id", label="操作", display=ShowLabel()),
-        ]
-
-        async def get_actions(self, request: Request) -> List[Action]:
-            return [
-                # Action(
-                #     label=_("labeling"),
-                #     icon="ti ti-edit",
-                #     name="labeling",
-                #     method=Method.GET,
-                #     ajax=False,
-                # ),
-                # Action(
-                #     label=_("标注任务详情"),
-                #     icon="ti ti-edit",
-                #     name="display",
-                #     method=Method.GET,
-                #     ajax=False,
-                # ),
-            ]
-
-        async def get_bulk_actions(self, request: Request) -> List[Action]:
-            return []
-
-        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return []
 
     label = _("datamanager")

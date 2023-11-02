@@ -8,6 +8,7 @@ class AuditPage(Model):
     audit_user = fields.CharField(max_length=255)
     audit_length = fields.CharField(max_length=255)
     audit_progress = fields.CharField(max_length=255)
+    audit_flag = fields.CharField(max_length=255)
 
 
 class AuditResult(Model):
@@ -17,3 +18,4 @@ class AuditResult(Model):
     audit_user = fields.CharField(max_length=255)
     question = fields.CharField(max_length=255)
     answer = fields.CharField(max_length=255)
+    audit_result = fields.CharField(max_length=10000, null=True, default=None)

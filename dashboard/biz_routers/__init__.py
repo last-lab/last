@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from .audit import router as audit_router
 from .datamanager import router as datamanager_router
 from .dataset import router as dataset_router
 from .eval_model import router as eval_model_router
@@ -14,3 +15,4 @@ biz_router.include_router(dataset_router)
 biz_router.include_router(label_router)
 biz_router.include_router(risk_router)
 biz_router.include_router(task_router)
+biz_router.include_router(audit_router)

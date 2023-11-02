@@ -13,6 +13,7 @@ class LabelPage(Model):
     labeling_progress = fields.CharField(max_length=255)
     labeling_flag = fields.CharField(max_length=255)
 
+
 # TODO 这个标注结果仅仅是针对于一个数据库的task而言的，对于单个标注员而言，需要自己的标注结果表
 class LabelResult(Model):
     task_id = fields.CharField(max_length=50)  # 任务ID
