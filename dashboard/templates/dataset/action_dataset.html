@@ -80,18 +80,17 @@
 
         <div class="modal-body">
           <div>
-        <button onclick="downloadFile({{value.name + value.uid}})" id=button{{ value.name + value.uid }} class="btn btn-primary">下载Excel</button>
+        <button type="button" onclick="downloadFile({{ value.id }})" id=btn{{ value.id }} class="btn btn-primary">下载Excel</button>
       </div>
 
             <div class="table-responsive">
-              <table class="table table-vcenter" id=table{{ value.name + value.uid }}>
+              <table class="table table-vcenter" id=tab{{ value.id }}>
                 <thead>
                   <tr>
                     <th>问题</th>
                     <th>回复</th>
                     <th>评判</th>
                       <th>操作</th>
-                      <!-- <th>更新时间</th> -->
                   </tr>
                 </thead>
                 <tbody>
@@ -107,7 +106,6 @@
                                 {{ item[2] }}
                             </td>
                             <td><button class="btn btn-primary">修改</button></td>
-                            <!-- <td>2022-10-10 10:10:10</td> -->
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -134,15 +132,19 @@
         })
     }
     function copyUrl(id) {
+        // console.log(id)
         const copyText = $("#"+id).text();
         navigator.clipboard.writeText(copyText);
         alert('复制成功');
     }
     function downloadFile(id) {
-    console.log("downloadFile running")
-    const downloadICON = document.getElementById("button" + id);
-    const dataTable = document.getElementById("table" + id);
-    // 状态标识
+    // console.log("downloadFile running")
+    // console.log(id)
+    const downloadICON = document.getElementById("btn"+id);
+    const dataTable = document.getElementById("tab"+id);
+    // console.log(downloadICON)
+    // console.log(dataTable)
+    //状态标识
     downloadICON.addEventListener('click', async () => {
         // 输入文件名
         const filename = prompt('请输入文件名');
