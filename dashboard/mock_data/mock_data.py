@@ -1,4 +1,4 @@
-from .clean_old import clean_old_record
+# from .clean_old import clean_old_record
 from .mock_audit_data import create_audit_mock_data
 from .mock_labeling_data import create_labeling_mock_data
 from .mock_llms import create_mock_llms

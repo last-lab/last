@@ -5,7 +5,7 @@ from dashboard.enums import EvalStatus
 
 
 async def clean_old_record():
-    connection = Tortoise.get_connection("default")
+    Tortoise.get_connection("default")
     # await connection.execute_query(f"DROP TABLE IF EXISTS {Record.__name__.upper()}")
     await Tortoise.generate_schemas(Record)
 
