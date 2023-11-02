@@ -1,6 +1,7 @@
 """
    mita API 没有chat功能 仅支持单条数据 
 """
+import json
 import time
 import requests
 from .base_model import HTTPAPILLMModel
@@ -40,16 +41,27 @@ class MitaAPILLMModel(HTTPAPILLMModel):
 
     async def generate(self, prompt, messages, *args, **kwargs):
         data = {"title": messages[-1]["content"]}
-        response = requests.post(self.make_order_url, json=data, headers=self.headers)
-        if response.status_code == 200:
-            d = response.json()
+        # response = requests.post(self.make_order_url, json=data, headers=self.headers)
+        try:
+            response = await self.async_post(
+                self.make_order_url, headers=self.headers, data=json.dumps(data)
+            )
+            status_code = 200
+        except Exception as e:
+            status_code = e
+            
+
+        if status_code == 200:
+            d = response
 
             return d["data"]["doc_id"]
         else:
-            return int(response.status_code)
+            return status_code
 
     def parse(self, response):
+        
         if isinstance(response, str):
+            
             while True:
                 data = self.get_result(response)
                 if data == False:
@@ -57,9 +69,8 @@ class MitaAPILLMModel(HTTPAPILLMModel):
                 else:
                     return (True, data)
         else:
-
             return(
                 False,
-                'make order error:'+str(response)
+                'make order error: %s' % str(response),
             ) 
 

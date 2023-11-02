@@ -1,6 +1,7 @@
 """
    Tigerbot API 没有chat功能 仅支持单条数据 
 """
+import json
 import requests
 from .base_model import HTTPAPILLMModel
 
@@ -21,8 +22,15 @@ class TigerbotAPILLMModel(HTTPAPILLMModel):
             "query": messages[-1]["content"],
             **kwargs,
         }
-
-        return requests.post(self.url, headers=self.headers, json=payload).json()
+        try:
+            resp = await self.async_post(
+                self.url, headers=self.headers, data=json.dumps(payload)
+            )
+            
+        except Exception as e:
+ 
+            return e
+        return resp
 
     def parse(self, response):
         if "error" in response:

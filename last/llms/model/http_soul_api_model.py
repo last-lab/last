@@ -33,12 +33,19 @@ class SoulAPILLMModel(HTTPAPILLMModel):
             **kwargs,
         }
 
-        resp = requests.post(self.url, headers=self.headers, data=json.dumps(payload))
-        if resp.status_code == 200:
-            return resp.json()
+        # resp = requests.post(self.url, headers=self.headers, data=json.dumps(payload))
+        _error = None
+        try:
+            resp = await self.async_post(
+                self.url, headers=self.headers, data=json.dumps(payload)
+            )
+        except Exception as e:
+            _error = e
+        if _error is None:
+            return resp
         else:
             return {
-                "_error": resp.status_code
+                "_error": _error
             }
 
     def parse(self, response):
