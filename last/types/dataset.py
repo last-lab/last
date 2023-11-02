@@ -112,16 +112,16 @@ class Dataset(Record, BaseManager):
             reader = csv.DictReader(file)
             for row in reader:
                 self_uid = ID()
-                question = Message(role=MessageRole.Human, content=row["question"])
+                question = Message(role=MessageRole.Human, content=str(row["question"]))
                 correct_ans = Message(
-                    role=MessageRole.AI, content=row["correct_ans"]
+                    role=MessageRole.AI, content=str(row["answer"])
                 )
                 # successor_uid = ID() # 提前安排好下一条数据的ID
                 qa_records[self_uid] = QARecord(
                     predecessor_uid=None,
                     successor_uid=None,
-                    question=str(question),
-                    answer=str(correct_ans),
+                    question=(question),
+                    answer=(correct_ans),
                 )
                 # predecessor_uid = self_uid
         return qa_records

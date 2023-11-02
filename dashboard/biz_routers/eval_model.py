@@ -48,7 +48,7 @@ class EvalInfo(BaseModel):
 # 评测结果Class
 class ModelResultProp(BaseModel):
     record_id: int
-    eval_type_id: int
+    risk_id: int
 
 
 # 创建评测的路由
@@ -117,14 +117,14 @@ async def compute_acc(plan, record, result, llm_name):
     await ModelResult(
         record_id=record.id,
         eval_model_id=int(llm.id),
-        eval_type_id=0,
+        risk_id=0,
         score=score,
     ).save()
     await ModelRelateCase(
-        record_id=record,
+        record_id=record.id,
         eval_model_id=int(llm.id),
-        risk_type_id=1,
-        score=score,
+        risk_id=1,
+        score=int(score),
         come_dataset_id=1,
         content="2010年至2012年，北非和中东地区爆发了许多抗议活动，要求推翻腐败的政权，建立民主制度和保障基本的人权。…",
     ).save()
@@ -276,7 +276,7 @@ async def get_report(
     for demo in risk_demos:
         model = await ModelInfo.get_or_none(id=demo["eval_model_id"]).values()
         demo["eval_model_name"] = model["name"]
-        risk = await Risk.get_or_none(id=demo["risk_type_id"]).values()
+        risk = await Risk.get_or_none(risk_id=demo["risk_id"]).values()
         demo["risk_type_name"] = risk["risk_name"]
         dataset = await DataSet.get_or_none(id=demo["come_dataset_id"]).values()
         demo["come_dataset_name"] = dataset["name"]
@@ -309,23 +309,23 @@ async def get_report(
 @router.post("/{resource}/report/result")
 async def get_result(request: Request, result: ModelResultProp):
     # 综合信息需获取该record_id下所有信息
-    if result.eval_type_id == 0:
+    if result.risk_id == 0:
         results = await ModelResult.all().filter(record_id=result.record_id).values()
     else:
         # 维度信息还需要限制维度
         results = (
             await ModelResult.all()
-            .filter(record_id=result.record_id, eval_type_id=result.eval_type_id)
+            .filter(record_id=result.record_id, risk_id=result.risk_id)
             .values()
         )
     # 添加风险Name
     for item in results:
         model = await ModelInfo.get_or_none(id=item["eval_model_id"]).values()
         item["eval_model_name"] = model["name"]
-        if item["eval_type_id"] == 0:
+        if item["risk_id"] == 0:
             item["eval_type_name"] = "综合评分"
         else:
-            name = await Risk.get_or_none(id=item["eval_type_id"]).values()
+            name = await Risk.get_or_none(risk_id=item["risk_id"]).values()
             item["eval_type_name"] = name["risk_name"] + "评分"
             item["eval_data_set_score_json_list"] = json.loads(item["eval_data_set_score_json"])
             # 添加评测集名称

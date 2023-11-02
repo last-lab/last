@@ -41,21 +41,21 @@ class Record(Model):
 class ModelResult(Model):
     record_id = fields.IntField()
     eval_model_id = fields.IntField()
-    eval_type_id = fields.IntField()
+    risk_id = fields.IntField()
     score = fields.IntField()
     eval_data_set_score_json = fields.TextField(null=True)
 
 
 # record_id 评测记录id
 # eval_model_id 评测模型id
-# risk_type_id 风险类型
+# risk_id 风险类型id
 # score 评分
 # come_dataset_id 来源评测集id
 # content 案例内容
 class ModelRelateCase(Model):
     record_id = fields.IntField()
     eval_model_id = fields.IntField()
-    risk_type_id = fields.IntField()
+    risk_id = fields.IntField()
     score = fields.IntField()
     come_dataset_id = fields.IntField()
     content = fields.TextField()

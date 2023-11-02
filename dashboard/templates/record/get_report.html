@@ -129,7 +129,7 @@ function getResult(type_id) {
         type: 'POST',
         data: JSON.stringify({
             "record_id": current_id,
-            "eval_type_id": type_id
+            "risk_id": type_id
         }),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -138,7 +138,7 @@ function getResult(type_id) {
             const categories = Array.from(new Set(value.result.map(item => item.eval_model_name)));
             const series = [];
             value.result.forEach(item => {
-                if (item.eval_type_id === Number(type_id)) {
+                if (item.risk_id === Number(type_id)) {
                     series.push(item.score)
                 }
             })
