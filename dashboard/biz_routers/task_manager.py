@@ -207,9 +207,10 @@ async def get_labeling_user_list(request: Request):
 @router.get("/{resource}/download/{pk}")
 async def download_labeling_result(
     request: Request,
+    resource: str = Path(...),
     pk: str = Path(...),
-    model_resource: ModelResource = Depends(get_model_resource),
     resources=Depends(get_resources),
+    model_resource: ModelResource = Depends(get_model_resource),
     model: Type[Model] = Depends(get_model),
 ):
     # 首先获取得到所有的标注结果，然后变成一个json数据返回给前端，前端完成数据的下载
@@ -220,7 +221,22 @@ async def download_labeling_result(
     task_result = await LabelResult.filter(task_id=task_id).values(
         "question", "answer", "labeling_result"
     )
-    # 这里添加数据装换操作
-    # csv_data = convert_table_to_csv(task_result)
-    # print(csv_data)
-    return task_result
+    # 直接返回一个html页面
+    context = {
+        "request": request,
+        "resource": resource,
+        "resource_label": model_resource.label,
+        "resources": resources,
+        "model_resource": model_resource,
+        "label_result": task_result,
+    }
+    try:
+        return templates.TemplateResponse(
+            f"{resource}/download_page.html",
+            context=context,
+        )
+    except TemplateNotFound:
+        return templates.TemplateResponse(
+            "download_page.html",
+            context=context,
+        )

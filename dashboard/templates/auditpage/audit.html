@@ -9,6 +9,26 @@
         padding: 10px;
         font-size: 16px;
     }
+
+
+    .back-btn {
+        padding: 10px 15px;
+        border-radius: 4px;
+        border: none;
+        background-color: #3498db;
+        color: white;
+        cursor: pointer;
+        width: 80px;
+        /* 设置按钮宽度为80px */
+        height: 40px;
+        padding: 10px;
+        font-size: 16px;
+        }
+
+    .back-btn:hover {
+    background-color: #2980b9;
+    }
+
 </style>
 <link href="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/css/main.css" rel="stylesheet">
 <script src="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/js/main.js"></script>
@@ -348,5 +368,16 @@
         })
     }
 </script>
+
+<button id="back" class="back-btn">返回</button>
+<script>
+    const briefDataUrl =  '/admin/auditpage/show_audit_data/' + '{{task_pk_value}}';
+    const backBtn = document.getElementById('back');
+    backBtn.addEventListener('click', () => {
+        location.href = briefDataUrl;
+    });
+
+</script>
+
 </body>
 {% endblock %}

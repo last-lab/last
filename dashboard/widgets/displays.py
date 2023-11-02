@@ -345,6 +345,14 @@ class ShowTaskLabelingProgress(Display):
         return await super().render(request, {"content": return_content})
 
 
+class DownLoadLabelResult(Display):
+    template = "taskmanage/download_label_result.html"
+
+    async def render(self, request: Request, value: any):
+        info = await AuditPage.get_or_none(task_id=value).values()
+        return await super().render(request, {"content": info["id"]})
+
+
 class ShowAudit(Display):
     template = "auditpage/audit_detail.html"
 

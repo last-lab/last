@@ -15,6 +15,7 @@ from dashboard.models import Permission as PermissionModel
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
 from dashboard.widgets.displays import (  # ShowAudit,; ShowAuditProgress,
+    DownLoadLabelResult,
     OperationField,
     ShowAction,
     ShowAdmin,
@@ -382,21 +383,13 @@ class TaskManagePanel(Dropdown):
             "labeling_method",
             "dateset",
             "create_time",
-            "current_status",
             Field(name="task_id", label="标注进展", display=ShowTaskLabelingProgress()),
             Field(name="task_id", label="审核进展", display=ShowTaskAuditProgress()),
+            Field(name="task_id", label="下载标注结果", display=DownLoadLabelResult()),
         ]
 
         async def get_actions(self, request: Request) -> List[Action]:
-            return [
-                Action(
-                    label=_("下载标注结果"),
-                    icon="ti ti-edit",
-                    name="download",
-                    method=Method.GET,
-                    ajax=False,
-                ),
-            ]
+            return []
 
         async def get_bulk_actions(self, request: Request) -> List[Action]:
             return []

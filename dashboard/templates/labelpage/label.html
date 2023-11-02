@@ -3,6 +3,26 @@
 <link href="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/css/main.css" rel="stylesheet">
 <script src="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/js/main.js"></script>
 
+<style>
+    .back-btn {
+        padding: 10px 15px;
+        border-radius: 4px;
+        border: none;
+        background-color: #3498db;
+        color: white;
+        cursor: pointer;
+        width: 80px;
+        /* 设置按钮宽度为80px */
+        height: 40px;
+        padding: 10px;
+        font-size: 16px;
+        }
+
+.back-btn:hover {
+    background-color: #2980b9;
+    }
+</style>
+
 <body>
 <div class="btn-group" role="group" style="width: 100px">
     {% for label in labels %}
@@ -11,6 +31,7 @@
     {% endfor %}
 </div>
 <div id="studio"></div>
+
 <!-- TODO, 选择标注的labelstudio的前端怎么写需要调研一下 -->
 <script>
     const queryString = window.location.search;
@@ -297,6 +318,18 @@
         })
         return rsp.json();
     }
+
+</script>
+
+
+
+<button id="back" class="back-btn">返回</button>
+<script>
+    const briefDataUrl = '/admin/labelpage/display/' + '{{task_pk_value}}';
+    const backBtn = document.getElementById('back');
+    backBtn.addEventListener('click', () => {
+        location.href = briefDataUrl;
+    });
 
 </script>
 </body>
