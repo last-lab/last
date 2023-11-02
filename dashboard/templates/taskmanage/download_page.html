@@ -1,0 +1,59 @@
+{% extends layout %}
+{% block page_body %}
+<!-- 提供一个标注结果显示，以及下载的按钮 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+<div class="card">
+
+    <div class="table-responsive">
+        <table class="table card-table table-vcenter text-nowrap datatable" id="myTable">
+            <thead>
+                <thead>
+                    <tr>
+                        <th>问题</th>
+                        <th>答案</th>
+                        <th>结果</th>
+                    </tr>
+                </thead>
+            </thead>
+            <tbody>
+
+
+                {% for item in label_result %}
+                <tr>
+                    <td>{{ item.question }}</td>
+                    <td>{{ item.answer }}</td>
+                    <td>{{ item.labeling_result }}</td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div>
+    <button id="download">下载Excel</button>
+</div>
+
+<script>
+    const downloadBtn = document.getElementById('download');
+    const dataTable = document.getElementById('myTable');
+    // 状态标识
+    downloadBtn.addEventListener('click', async () => {
+        // 输入文件名
+        const filename = prompt('请输入文件名');
+        // 等待下一个点击事件触发选择文件夹
+        //选择文件夹
+        // 拼接完整路径
+        const path = filename + '.xlsx';
+        // 生成工作表
+        const ws = XLSX.utils.table_to_sheet(dataTable);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        // 用完整路径保存文件
+        XLSX.writeFile(wb, path);
+
+    });
+
+</script>
+{% endblock %}

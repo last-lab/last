@@ -52,6 +52,8 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["MITA_API_TOKEN"]
         elif self.model.lower().startswith("jieyue"):
             api_key = os.environ["JIEYUE_API_TOKEN"]
+        elif self.model.lower().startswith("wuya"):
+            api_key = os.environ["WUYA_API_TOKEN"]
         elif self.model.lower().startswith("soul"):
             api_key = os.environ["SOUL_API_TOKEN"]
 
