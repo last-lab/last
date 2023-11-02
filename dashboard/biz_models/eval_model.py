@@ -35,7 +35,7 @@ class Record(Model):
 # id 行记录id
 # record_id 评测记录id
 # eval_model_id 评测模型id
-# eval_type 评测类型id, 综合默认为0
+# risk_id 风险类型id, 综合默认为0，就是综合维度评分，
 # score 评分
 # eval_data_set_score_json json类型 [{评测集得分信息}] 综合评分留空字段
 class ModelResult(Model):
