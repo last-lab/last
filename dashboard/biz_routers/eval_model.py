@@ -385,8 +385,8 @@ class ISave(BaseModel):
 # 导出之后保存操作和清除操作
 @router.post("/{resource}/report/save")
 async def save_pdf(request: Request, data: ISave):
-    # TODO 导出的md文件暂时保存在/static/md中
-    file_path = os.path.join(BASE_DIR, "static", "md", data.name)
+    # TODO 导出的md文件暂时保存在/static/mdSave中
+    file_path = os.path.join(BASE_DIR, "static", "mdSave", data.name)
     file_handle = open(file_path, "w", encoding="utf-8")
     file_handle.write(data.content)
     file_handle.close()
