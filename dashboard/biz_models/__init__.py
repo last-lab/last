@@ -1,4 +1,4 @@
-from .audit_model import AuditResult
+from .audit_model import AuditPage, AuditResult
 from .datamanager import DataSet, EvaluationPlan  # noqa
 from .eval_model import ModelInfo, ModelRelateCase, ModelResult, Record  # noqa
 from .labeling_model import LabelPage, LabelResult  # noqa
@@ -15,6 +15,7 @@ __all__ = [
     "TaskManage",
     "Risk",
     "AuditResult",
+    "AuditPage",
     "ModelResult",
     "ModelRelateCase",
 ]

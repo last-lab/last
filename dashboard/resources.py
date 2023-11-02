@@ -5,7 +5,7 @@ from typing import List
 from starlette.requests import Request
 
 from dashboard import enums
-from dashboard.biz_models import AuditResult  # EvaluationPlan,; Evaluation,
+from dashboard.biz_models import AuditPage  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import DataSet, LabelPage, TaskManage
 from dashboard.biz_models.eval_model import Record
@@ -14,10 +14,13 @@ from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
 from dashboard.models import Permission as PermissionModel
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
-from dashboard.widgets.displays import (
+from dashboard.widgets.displays import (  # ShowAudit,; ShowAuditProgress,
+    DownLoadLabelResult,
     OperationField,
     ShowAction,
     ShowAdmin,
+    ShowAudit,
+    ShowAuditProgress,
     ShowIp,
     ShowLabel,
     ShowLabelProgress,
@@ -27,6 +30,7 @@ from dashboard.widgets.displays import (
     ShowRiskType,
     ShowSecondType,
     ShowStatus,
+    ShowTaskAuditProgress,
     ShowTaskLabelingProgress,
     ShowTime,
 )
@@ -218,44 +222,6 @@ class DataManager(Dropdown):
         async def get_actions(self, request: Request) -> List[Action]:
             return []
 
-    class LabelingRecord(Model):
-        label = _("Labeling Record")
-        model = LabelPage
-        filters = [filters.Search(name="task_type", label="Task Type")]
-        fields = [
-            "id",
-            "task_id",
-            "task_type",
-            "labeling_method",
-            "end_time",
-            Field(name="task_id", label="标注进展", display=ShowLabelProgress()),
-            Field(name="task_id", label="操作", display=ShowLabel()),
-        ]
-
-        async def get_actions(self, request: Request) -> List[Action]:
-            return [
-                # Action(
-                #     label=_("labeling"),
-                #     icon="ti ti-edit",
-                #     name="labeling",
-                #     method=Method.GET,
-                #     ajax=False,
-                # ),
-                # Action(
-                #     label=_("标注任务详情"),
-                #     icon="ti ti-edit",
-                #     name="display",
-                #     method=Method.GET,
-                #     ajax=False,
-                # ),
-            ]
-
-        async def get_bulk_actions(self, request: Request) -> List[Action]:
-            return []
-
-        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
-            return []
-
     label = _("datamanager")
     icon = "fas fa-bars"
     resources = [DatasetResource, EvaluationPlanResource]
@@ -417,20 +383,13 @@ class TaskManagePanel(Dropdown):
             "labeling_method",
             "dateset",
             "create_time",
-            "current_status",
             Field(name="task_id", label="标注进展", display=ShowTaskLabelingProgress()),
+            Field(name="task_id", label="审核进展", display=ShowTaskAuditProgress()),
+            Field(name="task_id", label="下载标注结果", display=DownLoadLabelResult()),
         ]
 
         async def get_actions(self, request: Request) -> List[Action]:
-            return [
-                Action(
-                    label=_("下载标注结果"),
-                    icon="ti ti-edit",
-                    name="download",
-                    method=Method.GET,
-                    ajax=False,
-                ),
-            ]
+            return []
 
         async def get_bulk_actions(self, request: Request) -> List[Action]:
             return []
@@ -479,11 +438,15 @@ class TaskManagePanel(Dropdown):
 
     class AuditRecord(Model):
         label = _("Audit Record")
-        model = AuditResult
+        model = AuditPage
         filters = [filters.Search(name="task_id", label="任务id")]
         fields = [
             "id",
             "task_id",
+            "labeling_method",
+            "end_time",
+            Field(name="task_id", label="审核进展", display=ShowAuditProgress()),
+            Field(name="task_id", label="操作", display=ShowAudit()),
         ]
 
         async def get_actions(self, request: Request) -> List[Action]:

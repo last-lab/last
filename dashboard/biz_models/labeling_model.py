@@ -11,6 +11,7 @@ class LabelPage(Model):
     assign_user = fields.CharField(max_length=255)
     assign_length = fields.CharField(max_length=255)
     labeling_progress = fields.CharField(max_length=255)
+    labeling_flag = fields.CharField(max_length=255)
 
 
 # TODO 这个标注结果仅仅是针对于一个数据库的task而言的，对于单个标注员而言，需要自己的标注结果表

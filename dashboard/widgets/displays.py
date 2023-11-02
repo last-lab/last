@@ -5,7 +5,16 @@ import time
 import pandas as pd
 from starlette.requests import Request
 
-from dashboard.biz_models import DataSet, EvaluationPlan, LabelPage, LabelResult, ModelInfo, Risk
+from dashboard.biz_models import (
+    AuditPage,
+    AuditResult,
+    DataSet,
+    EvaluationPlan,
+    LabelPage,
+    LabelResult,
+    ModelInfo,
+    Risk,
+)
 from dashboard.enums import EvalStatus
 from dashboard.models import Admin
 from dashboard.utils.converter import DataSetTool
@@ -338,7 +347,7 @@ class ShowTaskLabelingProgress(Display):
         total_question = len(info_list)
         labeled_count = 0
         for info in info_list:
-            if info.status == "标注完成":
+            if info.status in ["标注完成", "已审核"]:
                 labeled_count += 1
 
         if labeled_count == total_question:
@@ -348,12 +357,58 @@ class ShowTaskLabelingProgress(Display):
         return await super().render(request, {"content": return_content})
 
 
+class DownLoadLabelResult(Display):
+    template = "taskmanage/download_label_result.html"
+
+    async def render(self, request: Request, value: any):
+        info = await AuditPage.get_or_none(task_id=value).values()
+        return await super().render(request, {"content": info["id"]})
+
+
+class ShowAudit(Display):
+    template = "auditpage/audit_detail.html"
+
+    async def render(self, request: Request, value: any):
+        info = await AuditPage.get_or_none(task_id=value).values()
+        return await super().render(request, {"content": info["id"]})
+
+
+class ShowAuditProgress(Display):
+    template = "auditpage/progress_show.html"
+
+    async def render(self, request: Request, value: any):
+        user_id = str(request.state.admin).split("#")[1]
+        info = await AuditPage.get_or_none(task_id=value).values()
+        audit_length_dict = eval(info["audit_length"])
+        audit_progress = eval(info["audit_progress"])
+        # 已经审核了的题目数量
+        audit_question_count = audit_progress[user_id]
+        total_question_count = audit_length_dict[user_id]
+        # return content
+        if audit_question_count == total_question_count:
+            return_content = "已完成"
+        else:
+            return_content = f"审核中 \n {audit_question_count}/{total_question_count}"
+
+        return await super().render(request, {"content": return_content})
+
+
 class ShowTaskAuditProgress(Display):
     template = "taskmanage/audit_progress_show.html"
 
     async def render(self, request: Request, value: any):
-        user_id = str(request.state.admin).split("#")[1]
-        return user_id
+        info_list = await AuditResult.filter(task_id=value)
+        total_question = len(info_list)
+        audit_count = 0
+        for info in info_list:
+            if info.status == "已审核":
+                audit_count += 1
+
+        if audit_count == total_question:
+            return_content = "已完成"
+        else:
+            return_content = f"审核中 \n {audit_count}/{total_question}"
+        return await super().render(request, {"content": return_content})
 
 
 class ShowTime(Display):

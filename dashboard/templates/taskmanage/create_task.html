@@ -258,47 +258,63 @@
                 var taskCount = cells[1].textContent;
                 auditAssignments.push({ auditor: auditor, taskCount: taskCount });
             }
+            // 确保taskAssignments，auditAssignments中taskCount之和为100
+            var taskTotal = 0;
+            for (var assignment of taskAssignments) {
+                taskTotal += Number(assignment.taskCount);
+            }
+            var auditTotal = 0;
+            for (var assignment of auditAssignments) {
+                auditTotal += Number(assignment.taskCount);
+            }
+            if (taskTotal != 100) {
+                alert("任务分配之和必须为100");
+            } else {
+                if (auditTotal != 100) {
+                    alert("审核分配之和必须为100");
+                } else {
+                    var formData = {
+                        fileName: fileName,
+                        fileContent: fileContent, // 将文件内容添加到表单数据中
+                        annotationTypes: annotationTypes,
+                        deadline: deadline,
+                        file: file,
+                        taskAssignments: taskAssignments,
+                        auditAssignments: auditAssignments,
+                    };
+                    console.log(formData);
+                    // 调用回调函数，将数据传递给它进行处理
+                    // 使用 $.ajax 发送数据到特定的 URL
+                    $.ajax({
+                        type: 'POST',
+                        url: '/admin/taskmanage/create_task_callback',
+                        data: JSON.stringify(formData),
+                        contentType: 'application/json',
+                        success: function (response) {
+                            // 请求成功的处理
+                            history.back();
+                            location.href = '/admin/taskmanage/list';
 
-            var formData = {
-                fileName: fileName,
-                fileContent: fileContent, // 将文件内容添加到表单数据中
-                annotationTypes: annotationTypes,
-                deadline: deadline,
-                taskAssignments: taskAssignments,
-                auditAssignments: auditAssignments,
-            };
-            console.log(formData);
-            // 调用回调函数，将数据传递给它进行处理
-            // 使用 $.ajax 发送数据到特定的 URL
-            $.ajax({
-                type: 'POST',
-                url: '/admin/taskmanage/create_task_callback',
-                data: JSON.stringify(formData),
-                contentType: 'application/json',
-                success: function (response) {
-                    // 请求成功的处理
-                    history.back();
-                    location.href = '/admin/taskmanage/list';
+                            // alert(success);
+                        },
+                        error: function (error) {
+                            // 请求失败的处理
+                            console.log(error);
+                        }
+                    });
+                };
+            }
+        }
+            // 以文本格式读取文件内容
+            reader.readAsText(file);
+        }
 
-                    // alert(success);
-                },
-                error: function (error) {
-                    // 请求失败的处理
-                    console.log(error);
-                }
-            });
-        };
-
-        // 以文本格式读取文件内容
-        reader.readAsText(file);
-    }
-
-    async function getUserList() {
-        const rsp = await fetch('/admin/taskmanage/get_user_list', {
-            method: 'get',
-        })
-        return rsp.json();
-    }
+        async function getUserList() {
+            const rsp = await fetch('/admin/taskmanage/get_user_list', {
+                method: 'get',
+            })
+            return rsp.json();
+        }
 
 </script>
 </body>

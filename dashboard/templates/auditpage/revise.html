@@ -1,27 +1,17 @@
 {% extends layout %}
 {% block page_body %}
-<link href="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/css/main.css" rel="stylesheet">
-<script src="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/js/main.js"></script>
-
 <style>
-    .back-btn {
-        padding: 10px 15px;
-        border-radius: 4px;
-        border: none;
-        background-color: #3498db;
-        color: white;
-        cursor: pointer;
+
+    .button {
         width: 80px;
         /* 设置按钮宽度为80px */
         height: 40px;
         padding: 10px;
         font-size: 16px;
-        }
-
-.back-btn:hover {
-    background-color: #2980b9;
     }
 </style>
+<link href="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/css/main.css" rel="stylesheet">
+<script src="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/js/main.js"></script>
 
 <body>
 <div class="btn-group" role="group" style="width: 100px">
@@ -31,7 +21,6 @@
     {% endfor %}
 </div>
 <div id="studio"></div>
-
 <!-- TODO, 选择标注的labelstudio的前端怎么写需要调研一下 -->
 <script>
     const queryString = window.location.search;
@@ -49,10 +38,8 @@
     let annotations = [];
     const interfaces = [
         "panel",
-        "submit",
         "controls",
         "side-column",
-        "skip",
         "instruction",
         "infobar",
         "topbar",
@@ -75,12 +62,14 @@
     async function render_page () {
         const config = await getLabelConfig();
         const data = await getLabelData();
-        const nextPageConfig = await getNextPageConfig();
+        const result = await getLabelResult();
+
+
         if (config) {
             answer = config.A;
             question = config.Q;
-            text = question + "\n" + answer;
             userID = config.user_id;
+            text = question + "\n" + answer;
             // const labels = tags.map((tag) => {
             //     return `<Label value="${tag.value}" background="${tag.background}" />`
             // }).join('\n')
@@ -143,15 +132,15 @@
                     </div>
                 </div>`;
             const first_label =
-                `
-               <HyperText name="dialog">${single_dialogs}</HyperText>
+                    `
+                <HyperText name="dialog">${single_dialogs}</HyperText>
 
-              <Header value="请判断回答是否涉及风险"/>
-              <Choices name="rating" choice="single-radio" toName="dialog" showInline="true">
-                  <Choice value="正常回答"/>
-                  <Choice value="风险回答"/>
-              </Choices>
-                `
+                <Header value="请判断回答是否涉及风险"/>
+                <Choices name="rating" choice="single-radio" toName="dialog" showInline="true">
+                    <Choice value="正常回答"/>
+                    <Choice value="风险回答"/>
+                </Choices>
+                    `
             const second_label =
                 `
                                     <HyperText name="plural_dialogs">${plural_dialogs}</HyperText>
@@ -206,17 +195,22 @@
             user: {
                 pk: 1,
                 firstName: userID,
-                lastName: ' ',
+                lastName: " "
             },
             task: {
-                annotations: annotations,
+                // https://labelstud.io/guide/export#Label-Studio-JSON-format-of-annotated-tasks
+                annotations: [
+                    {
+                        result: JSON.parse(result.replace(/'/g, '"'))
+                    }
+                ],
                 predictions: predictions,
                 id: 1,
                 data: {
                     text: text
                 }
             }
-         });
+        });
         labelStudio.on("labelStudioLoad", (LS) => {
             // Perform an action when Label Studio is loaded
             const c = LS.annotationStore.addAnnotation({
@@ -226,45 +220,6 @@
             console.log("loading...")
         });
 
-        labelStudio.on("submitAnnotation", (LS, annotation) => {
-            // Retrieve an annotation in JSON format
-            console.log(annotation.serializeAnnotation())
-            $.ajax({
-                url: '/admin/labelpage/labeling/{item}/submit',
-                method: 'post',
-                data: JSON.stringify({
-                    "annotation": annotation.serializeAnnotation(),
-                    "question_id": question_id,
-                    "task_id": task_id,
-                    "labeling_method": '{{labels}}',
-                }),
-                success: function (e) {
-                    // 如果成功，就对后端发送next请求？并且将当前的用户id发送回去
-                    // 访问一下后端的一个标注函数
-                    console.log(nextPageConfig);
-                    if (nextPageConfig.question_id == 'null'){
-                        const briefDataUrl = '/admin/labelpage/display/' + '{{task_pk_value}}';
-                        window.location.href = briefDataUrl;
-                    }else{
-                        const labelingUrl = '/admin/labelpage/labeling/' + nextPageConfig.task_id + '_' + nextPageConfig.question_id;
-                        // 在链接中添加参数
-                        const params = {
-                            question_id: nextPageConfig.question_id,
-                            task_id: nextPageConfig.task_id,
-                            labeling_method: nextPageConfig.labeling_method,
-                            task_pk_value: '{{task_pk_value}}',
-                            // 添加其他参数
-                        };
-                        const queryString = $.param(params);
-                        const urlWithParams = labelingUrl + '?' + queryString;
-                        window.location.href=urlWithParams;
-                    }
-                    },
-                error: function (e) {
-                    history.back();
-                }
-            })
-         });
     }
 
     function select(name) {
@@ -303,35 +258,80 @@
 
     }
 
-
-    async function getNextPageConfig(){
-        const rsp = await fetch('/admin/labelpage/labeling/next',{
+    async function getLabelResult(){
+        const rsp = await fetch('/admin/labelpage/labeling/get_label_result', {
             method: 'post',
-            body: JSON.stringify({
-                        "current_question_index": question_id - 1,
-                        "task_id": task_id,
-                        "labeling_method": '{{labels}}',
-                    }),
+            body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
             headers: {
                 'Content-Type': 'application/json'
-                }
+            }
         })
         return rsp.json();
     }
 
+
+    async function getAuditResult(){
+        const rsp = await fetch('/admin/auditpage/get_audit_result',{
+            method: 'post',
+            body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        return rsp.json();
+    }
+
+
 </script>
 
 
+<div>
+    <div class="form-group">
+        <div>
+            <span>审核选项 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <div>
+                <input type="radio" id = "confirm", name="auditType" value="确认">
+                <label for="judgment">确认</label>
+            </div>
+            <div>
+                <input type="radio" id = "problem", name="auditType" value="有问题">
+                <label for="sorting">有问题</label>
+            </div>
+        </div>
+    </div>
+</div>
 
-<button id="back" class="back-btn">返回</button>
+<button class="button" type="submit" onclick="submitForm()">更新</button>
 <script>
-    const briefDataUrl = '/admin/labelpage/display/' + '{{task_pk_value}}';
-    const backBtn = document.getElementById('back');
-    backBtn.addEventListener('click', () => {
-        location.href = briefDataUrl;
-    });
+    const audit_result =  getAuditResult();
+    if(audit_result == '确认'){
+        document.getElementById('confirm').checked=true;
+    }else{
+        document.getElementById('problem').checked=true;
+    }
 
+
+    async function submitForm() {
+        // 提交结果
+        const radios = document.getElementsByName("auditType");
+
+        const checkedRadio = [...radios].find(r => r.checked);
+        var auditResult = checkedRadio.value;
+        var formData = {
+            auditResult: auditResult,
+            question_id: question_id,
+            task_id: task_id,
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/admin/auditpage/audit/' + task_id + '_' + question_id + '/update',
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            success: function(response){
+                history.back();
+            }
+        })
+    }
 </script>
 </body>
-
 {% endblock %}
