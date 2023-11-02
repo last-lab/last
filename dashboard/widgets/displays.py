@@ -201,9 +201,10 @@ class ShowAction(Display):
             else:
                 raise NotImplementedError("We only support csv or xlsx file.")
 
-        return await super().render(
+        value = await super().render(
             request, {**dataset, "focused_risks": content, "label_info": label_info}
         )
+        return value
 
 
 class ShowRiskType(Display):
