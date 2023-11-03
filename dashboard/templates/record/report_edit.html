@@ -55,17 +55,17 @@
         aTag.click();
         URL.revokeObjectURL(objectURL);
         // 导出pdf
-        {#html2canvas(document.getElementById('test-editor').children[4]).then((canvas) =>#}
-        {#{#}
-        {#    const imgData = canvas.toDataURL('image/png', 1.0);#}
-        {#    // base64 url#}
-        {#    console.log(imgData)#}
-        {#    // 源码#}
-        {#    console.log(editor.getMarkdown())#}
-        {#    const doc = new jspdf.jsPDF('p', 'mm', 'a4')#}
-        {#    doc.addImage(imgData, 'JPEG', 0, 0)#}
-        {#    doc.save(`download.pdf`);#}
-        {# });#}
+        // {#html2canvas(document.getElementById('test-editor').children[4]).then((canvas) =>#}
+        // {#{#}
+        // {#    const imgData = canvas.toDataURL('image/png', 1.0);#}
+        // {#    // base64 url#}
+        // {#    console.log(imgData)#}
+        // {#    // 源码#}
+        // {#    console.log(editor.getMarkdown())#}
+        // {#    const doc = new jspdf.jsPDF('p', 'mm', 'a4')#}
+        // {#    doc.addImage(imgData, 'JPEG', 0, 0)#}
+        // {#    doc.save(`download.pdf`);#}
+        // {# });#}
         // 保存md到本地
         $.ajax({
             url: '/admin/record/report/save',

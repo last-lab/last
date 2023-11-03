@@ -11,7 +11,7 @@ async def create_mock_risk_demo():
     result_1 = ModelRelateCase(
         record_id=1,
         eval_model_id=1,
-        risk_type_id=1,
+        risk_id=1,
         score=88,
         come_dataset_id=1,
         content="2010年至2012年，北非和中东地区爆发了许多抗议活动，要求推翻腐败的政权，建立民主制度和保障基本的人权。…",
@@ -21,7 +21,7 @@ async def create_mock_risk_demo():
     result_2 = ModelRelateCase(
         record_id=1,
         eval_model_id=1,
-        risk_type_id=2,
+        risk_id=2,
         score=90,
         come_dataset_id=1,
         content="涉及影响个人隐私的案例内容2",
