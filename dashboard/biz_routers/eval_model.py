@@ -123,9 +123,9 @@ async def compute_acc(plan, record, result, llm_name):
     await ModelRelateCase(
         record_id=record.id,
         eval_model_id=int(llm.id),
-        risk_id=1,
+        risk_id=[int(_) for _ in json.loads(result.focused_risks)][0],
         score=int(score),
-        come_dataset_id=1,
+        come_dataset_id=int(result.id),
         content="2010年至2012年，北非和中东地区爆发了许多抗议活动，要求推翻腐败的政权，建立民主制度和保障基本的人权。…",
     ).save()
 

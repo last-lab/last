@@ -37,7 +37,7 @@ class AllesMinimaxAPILLMModel(HTTPAPILLMModel):
         if result["msgCode"] == "10000":
             return result
         else:
-            raise ValueError(result.text)
+            raise ValueError(str(result))
 
     def parse(self, response):
         return (
@@ -67,7 +67,7 @@ class AllesChatGPTAPILLMModel(HTTPAPILLMModel):
         if result["msgCode"] == "10000":
             return result
         else:
-            raise ValueError(result.text)
+            raise ValueError(str(result))
 
     def parse(self, response):
         return (
@@ -97,7 +97,7 @@ class AllesGPT4APILLMModel(HTTPAPILLMModel):
         if result["msgCode"] == "10000":
             return result
         else:
-            raise ValueError(result.text)
+            raise ValueError(str(result))
 
     def parse(self, response):
         return (
@@ -138,7 +138,7 @@ class AllesPalmAPILLMModel(HTTPAPILLMModel):
         if result["msgCode"] == "10000":
             return result
         else:
-            raise ValueError(result.text)
+            raise ValueError(str(result))
 
     def parse(self, response):
         return (
@@ -179,7 +179,7 @@ class AllesClaudeAPILLMModel(HTTPAPILLMModel):
         if result["msgCode"] == "10000":
             return result
         else:
-            raise ValueError(result.text)
+            raise ValueError(str(result))
 
     def parse(self, response):
         return (
@@ -215,7 +215,7 @@ class AllesWenxinAPILLMModel(HTTPAPILLMModel):
         if result["msgCode"] == "10000":
             return result
         else:
-            raise ValueError(result.text)
+            raise ValueError(str(result))
 
     def parse(self, response):
         return (
@@ -250,7 +250,7 @@ class AllesSparkAPILLMModel(HTTPAPILLMModel):
         if result["msgCode"] == "10000":
             return result
         else:
-            raise ValueError(result.text)
+            raise ValueError(str(result))
 
     def parse(self, response):
         return (
@@ -276,7 +276,7 @@ class AllesBaiduTranslateAPILLMModel(HTTPAPILLMModel):
         if result["msgCode"] == "10000":
             return result
         else:
-            raise ValueError(result.text)
+            raise ValueError(str(result))
 
     def parse(self, response):
         return (
