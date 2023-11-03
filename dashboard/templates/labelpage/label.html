@@ -43,7 +43,7 @@
         const question_id = urlParams.get('question_id');
         const task_id = urlParams.get('task_id');
         const risk_level = urlParams.get('risk_level');
-        const labeling_method = urlParams.get('labeling_method').str.match(/'([^']+)'/)[1];
+        const labeling_method = urlParams.get('labeling_method').match(/'([^']+)'/)[1];
         let tags = [];
         let tagView = '';
         let text = '';
@@ -333,13 +333,19 @@
 
                 const label_list = [first_label, second_label, third_label, risk_label_none];
                 const label_selects = ['判断标注', '排序标注', '框选标注', '风险判别'];
-                alert(label_list[label_selects.indexOf(labeling_method[0])]);
+                alert(label_list[label_selects.indexOf(labeling_method)]);
                 if(risk_level != 'None'){
                     if (risk_level == '一级风险'){
                         tagView = `
                         <View>
-
-                            ${label_list[label_selects.indexOf(labeling_method[0])]}
+                            ${risk_label_first_level}
+                        </View>
+                        `
+                    }
+                    if (risk_level == '二级风险'){
+                        tagView = `
+                        <View>
+                            ${risk_label_second_level}
                         </View>
                         `
                     }
