@@ -19,7 +19,7 @@ from tortoise import Tortoise
 from dashboard import settings
 from dashboard.constants import BASE_DIR
 
-# from dashboard.mock_data import mock_data
+from dashboard.mock_data import mock_data
 from dashboard.models import Admin, Log, Permission, Resource
 from dashboard.providers import (  # GitHubProvider,; GoogleProvider,
     LoginProvider,
@@ -122,7 +122,7 @@ def create_app():
             redis=r,
             default_layout=enums.Layout.layout,
         )
-        # await mock_data.create_mock_data()
+        await mock_data.create_mock_data()
         # await rearq_server.start_worker(with_timer=True)
 
     return app
