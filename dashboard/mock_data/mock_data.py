@@ -9,10 +9,10 @@ from .mock_task import create_task
 
 
 async def create_mock_data():
-    await create_labeling_mock_data()
-    await create_task()
+    # await create_labeling_mock_data()
+    # await create_task()
     await create_mock_risk()
-    await create_audit_mock_data()
+    # await create_audit_mock_data()
     await create_mock_report()
     await create_mock_risk_demo()
     await create_mock_llms()
