@@ -19,7 +19,7 @@ from tortoise import Tortoise
 from dashboard import settings
 from dashboard.constants import BASE_DIR
 
-# from dashboard.mock_data import mock_data
+from dashboard.mock_data import mock_data
 from dashboard.models import Admin, Log, Permission, Resource
 from dashboard.providers import (  # GitHubProvider,; GoogleProvider,
     LoginProvider,

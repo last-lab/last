@@ -96,9 +96,13 @@ async def create_task_callback(
     (volume, qa_num, word_cnt, qa_records) = statistic_dataset(json_data["fileName"])
     dataset_uid = uuid4()
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
+    # 构造风险维度
+    if json_data['riskData'] == 'None':
+        risk_level = 'None'
+    else:
+        risk_level = json_data['riskData']['grade'] if json_data['riskData']['type'] else 'None'
     # df = pd.read_csv(json_data['file'])
-
+    # json_data['labeling_method']如果是"风险判别"，那么后面会{"判断风险程度": false, "判断风险类型": ""}这个放在extra_data中
     # # # 将这个表单数据写入到task表中
     task_id = uuid4()
     await TaskManage(
@@ -112,6 +116,7 @@ async def create_task_callback(
         end_time=json_data["deadline"],
         assign_user=json_data["taskAssignments"],
         audit_user=json_data["auditAssignments"],
+        risk_level=risk_level,
     ).save()
 
     qa_list = split_string_to_list(json_data["fileContent"])
@@ -126,7 +131,7 @@ async def create_task_callback(
         user: [False for _ in range(len(assign_user_item_dict[user]))]
         for user in assign_user_item_dict
     }
-    # 将task写入到labelpage中
+    # 将task写入到labelpage中,
     await LabelPage(
         task_id=task_id,
         task_type="数据集标注",
@@ -152,6 +157,7 @@ async def create_task_callback(
             answer=answer,
             status="未标注",
             assign_user=item_assign_user_dict[index],
+            risk_level=risk_level,
         ).save()
 
     # 创建一个audit res表，存放审核结果

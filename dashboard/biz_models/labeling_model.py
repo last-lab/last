@@ -27,3 +27,4 @@ class LabelResult(Model):
     assign_user = fields.CharField(max_length=30, null=True)
     labeling_result = fields.CharField(max_length=10000, null=True, default=None)
     raw_labeling_result = fields.CharField(max_length=10000, null=True, default=None)
+    risk_level = fields.CharField(max_length=200)

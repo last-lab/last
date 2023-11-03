@@ -33,8 +33,9 @@ async def labeling_view(
         "resource": resource,
         "pk": pk,
         "task_pk_value": task_pk_value,
-        "labels": ["判断标注"],
-        # "labels": ast.literal_eval(request.query_params["labeling_method"]),
+        # "labels": ["判断标注"],
+        "labels": ast.literal_eval(request.query_params["labeling_method"]),
+        "risk_level": request.query_params["risk_level"],
     }
     # 点击了标注之后，需要根据传回来的参数，主要是数据集的名称，标注方式
     # 载入数据，丢一个新的界面出去
@@ -119,7 +120,7 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
     # 从result表中获取所有的question字段的结果
     # 获取result表中给定task_id的所有记录
     results = await LabelResult.filter(task_id=task_id).values(
-        "question_id", "question", "status", "labeling_method", "assign_user"
+        "question_id", "question", "status", "labeling_method", "assign_user", "risk_level"
     )
     res_list = []
     for result in results:
@@ -132,6 +133,7 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
                     "action": "标注" if result["status"] == "未标注" else "查看",
                     "task_id": task_id,
                     "labeling_method": result["labeling_method"],
+                    "risk_level": result["risk_level"],
                 }
             )
 
