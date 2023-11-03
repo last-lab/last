@@ -6,6 +6,7 @@ from .mock_report import create_mock_report
 from .mock_risk import create_mock_risk
 from .mock_risk_demo import create_mock_risk_demo
 from .mock_task import create_task
+from .mock_dataset import create_mock_dataset
 
 
 async def create_mock_data():
@@ -16,5 +17,6 @@ async def create_mock_data():
     await create_mock_report()
     await create_mock_risk_demo()
     await create_mock_llms()
+    await create_mock_dataset()
 
     # await clean_old_record()
