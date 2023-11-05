@@ -97,10 +97,7 @@ async def create_task_callback(
     dataset_uid = uuid4()
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # 构造风险维度
-    if json_data['riskData'] == 'None':
-        risk_level = 'None'
-    else:
-        risk_level = json_data['riskData']['grade'] if json_data['riskData']['type'] else 'None'
+    risk_level = json_data["riskData"]["grade"]
     # df = pd.read_csv(json_data['file'])
     # json_data['labeling_method']如果是"风险判别"，那么后面会{"判断风险程度": false, "判断风险类型": ""}这个放在extra_data中
     # # # 将这个表单数据写入到task表中

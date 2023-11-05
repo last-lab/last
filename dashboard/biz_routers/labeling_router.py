@@ -201,12 +201,15 @@ async def submit_callback(request: Request, resource: str, pk: str):
     task_id = json_data["task_id"]
     annotation = json_data["annotation"]
     labeling_method = json_data["labeling_method"]
+    risk_level = json_data["risk_level"]
     labeling_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
     assert len(labeling_row) == 1
     # 进行多人标注结果的合并
     labeling_result = labeling_row[0].labeling_result
     # 将labelstudio的标注结果进行提取操作
-    refine_labeling_result = convert_labelstudio_result_to_string(labeling_method, annotation)
+    refine_labeling_result = convert_labelstudio_result_to_string(
+        labeling_method, annotation, risk_level
+    )
     # 逻辑，如果当前user_id不在这个annotation中，就插入{'user_id': annotation}
     if labeling_result is None:
         new_labeling_result = {user_id: refine_labeling_result}
@@ -241,12 +244,15 @@ async def update_result_callback(request: Request, resource: str, pk: str):
     task_id = json_data["task_id"]
     annotation = json_data["annotation"]
     labeling_method = json_data["labeling_method"]
+    risk_level = json_data["risk_level"]
     labeling_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
     assert len(labeling_row) == 1
     # 进行多人标注结果的合并
     labeling_result = labeling_row[0].labeling_result
     # 将labelstudio的标注结果进行提取操作
-    refine_labeling_result = convert_labelstudio_result_to_string(labeling_method, annotation)
+    refine_labeling_result = convert_labelstudio_result_to_string(
+        labeling_method, annotation, risk_level
+    )
     # 逻辑，如果当前user_id不在这个annotation中，就插入{'user_id': annotation}
     assert labeling_result is not None
     # 更新已经有的结果
@@ -263,6 +269,7 @@ async def labeling_next_callback(request: Request):
     task_id = json_data["task_id"]
     current_question_index = json_data["current_question_index"]
     labeling_method = eval(html.unescape(json_data["labeling_method"]))
+    risk_level = json_data["risk_level"]
     # 从labelpage这个表中，基于user_id, question_id, task_id找到对应的记录
     labelpage_task_row = await LabelPage.filter(task_id=task_id)
     assert len(labelpage_task_row) == 1
@@ -291,10 +298,16 @@ async def labeling_next_callback(request: Request):
             "question_id": next_question_index + 1,
             "task_id": task_id,
             "labeling_method": labeling_method,
+            "risk_level": risk_level,
         }
 
     else:
-        return {"question_id": "null", "task_id": task_id, "labeling_method": labeling_method}
+        return {
+            "question_id": "null",
+            "task_id": task_id,
+            "labeling_method": labeling_method,
+            "risk_level": risk_level,
+        }
 
 
 @router.post("/{resource}/labeling/get_label_audit_status")

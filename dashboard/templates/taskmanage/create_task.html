@@ -64,6 +64,12 @@
             <input type="checkbox" id="boundingBox" name="annotationType" value="框选标注">
             <label class="checkbox-label" for="boundingBox">框选标注</label>
         </div>
+
+        <div>
+            <input type="checkbox" id="safeAnswer" name="annotationType" value="安全回答">
+            <label class="checkbox-label" for="safeAnswer">安全回答</label>
+        </div>
+
         <div>
             <input type="checkbox" id="risk" name="annotationType" value="风险判别">
             <label class="checkbox-label" for="risk">风险判别</label>
@@ -236,7 +242,7 @@
             var file = fileInput.files[0];
             var reader = new FileReader();
             var fileName = file.name; // 获取文件的路径
-            var riskData = "None";
+            var riskData;
             // 读取文件内容
             reader.onload = function (e) {
                 var fileContent = e.target.result;
@@ -253,10 +259,25 @@
                                 type: document.getElementById('risk-type').checked,
                                 grade: document.getElementById('risk-grade').value
                             };
+                        }else{
+                            riskData = {
+                                grade: 'None'
+                            }
                         }
                     }
                 }
-
+                console.log(riskData);
+                console.log(annotationTypes);
+                // 对riskData进行检查
+                if(riskData.grade != 'None'){
+                    if(riskData.grade != '一级风险'){
+                        // 如果不是一级风险，则必须保证level和type都要勾选上
+                        if(!(riskData.level && riskData.type)){
+                            alert("如果选择风险判别，并且风险判别类型不是一级风险，那么需要将判断风险程度和判断风险类别勾选上！")
+                            return
+                        }
+                    }
+                }
                 var deadlineInput = document.getElementById('deadline');
                 var deadline = deadlineInput.value;
                 // 用户标注任务分配表

@@ -26,21 +26,40 @@ def statistic_dataset(dataset_path):
     return (volume, qa_num, word_cnt, qa_records)
 
 
-def convert_labelstudio_result_to_string(labeling_method, labeling_result):
+def convert_labelstudio_result_to_string(labeling_method, labeling_result_list, risk_level):
     # TODO，目前就实现了当使用了判断标注的流程
     _labeling_method = eval(html.unescape(labeling_method))
     if _labeling_method == ["判断标注"]:
         # TODO，这个函数需要修改
-        refine_result = labeling_result[0]["value"]["choices"]
-        return refine_result[0]
+        refine_result = labeling_result_list[0]["value"]["choices"][0]
     elif _labeling_method == ["选择标注"]:
         pass
 
     elif _labeling_method == ["框选标注"]:
         pass
 
-    else:
-        pass
+    elif _labeling_method == ["风险判别"]:
+        if risk_level == "一级风险":
+            refine_result = {"一级风险": labeling_result_list[0]["value"]["choices"][0]}
+        elif risk_level == "二级风险":
+            refine_result = {}
+            for labeling_result in labeling_result_list:
+                if labeling_result["from_name"] == "risk_level":
+                    refine_result["一级风险"] = labeling_result["value"]["choices"][0]
+                else:
+                    refine_result["二级风险"] = labeling_result["value"]["choices"][0]
+        elif risk_level == "三级风险":
+            refine_result = {}
+            for labeling_result in labeling_result_list:
+                if labeling_result["from_name"] == "risk_level":
+                    refine_result["一级风险"] = labeling_result["value"]["choices"][0]
+                elif labeling_result["from_name"] == "risk_type":
+                    refine_result["二级风险"] = labeling_result["value"]["choices"][0]
+                else:
+                    refine_result["三级风险"] = labeling_result["value"]["choices"]
+    elif _labeling_method == ["安全回答"]:
+        refine_result = labeling_result_list[0]["value"]["text"]
+    return refine_result
 
 
 def update_labeling_result(user_id: str, new_labeling_result: str, current_labeling_result: str):
