@@ -17,9 +17,9 @@ class OpenaiAPILLMModel(BaseLLMModel):
         # print("Models:", models)
         super().initialize(*args, **kwargs)
 
-    def generate(self, prompt, messages, **kwargs):
+    async def generate(self, prompt, messages, **kwargs):
         if len(messages) > 0:
-            chat_completion = openai.ChatCompletion.create(
+            chat_completion = await openai.ChatCompletion.acreate(
                 model=self.model,
                 messages=messages,
                 echo=False,
@@ -29,7 +29,7 @@ class OpenaiAPILLMModel(BaseLLMModel):
             )
             return chat_completion
         else:
-            completion = openai.Completion.create(
+            completion = await openai.Completion.acreate(
                 model=self.model,
                 prompt=prompt,
                 echo=False,
