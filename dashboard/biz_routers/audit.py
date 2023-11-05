@@ -28,8 +28,8 @@ async def audit_view(
         "resource": resource,
         "pk": pk,
         "task_pk_value": task_pk_value,
-        "labels": ["判断标注"],
-        # "labels": ast.literal_eval(request.query_params["audit_method"]),
+        "labels": ast.literal_eval(request.query_params["labeling_method"]),
+        "risk_level": request.query_params["risk_level"],
     }
     # 点击了标注之后，需要根据传回来的参数，主要是数据集的名称，标注方式
     # 载入数据，丢一个新的界面出去
@@ -115,7 +115,7 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
     )
     # 从label result表中找到对应的标注结果
     label_results = await LabelResult.filter(task_id=task_id).values(
-        "question_id", "answer", "status", "labeling_method"
+        "question_id", "answer", "status", "labeling_method", "risk_level"
     )
     res_list = []
     for audit_result, label_result in zip(audit_results, label_results):
@@ -130,6 +130,7 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
                         "action": "未审核" if audit_result["status"] != "已审核" else "查看",
                         "task_id": task_id,
                         "labeling_method": label_result["labeling_method"],
+                        "risk_level": label_result["risk_level"],
                     }
                 )
 
@@ -153,7 +154,7 @@ async def submit_callback(request: Request, resource: str, pk: str):
         new_audit_result = {user_id: audit_result_by_user}
     else:
         # TODO 将新的标注结果和已经有的标注结果合并起来
-        pass
+        new_audit_result = {user_id: audit_result_by_user}
     audit_result_row[0].audit_result = new_audit_result
     audit_result_row[0].status = "已审核"
     # TODO，暂时摆烂了，一个task的每一个题目只会到一个人手上
@@ -204,6 +205,7 @@ async def audit_next_callback(request: Request):
     task_id = json_data["task_id"]
     current_question_index = json_data["current_question_index"]
     label_method = eval(html.unescape(json_data["labeling_method"]))
+    risk_level = json_data["risk_level"]
     # 从labelpage这个表中，基于user_id, question_id, task_id找到对应的记录
     auditpage_task_row = await AuditPage.filter(task_id=task_id)
     assert len(auditpage_task_row) == 1
@@ -216,13 +218,19 @@ async def audit_next_callback(request: Request):
     # TODO 判断下一道题有没有被标注过，如果下一道题被标注了，就继续往下跳直到遇到False，或者回到最开始
     audit_flag = eval(auditpage_task_row[0].audit_flag)
     if audit_flag[user_id][next_question_index]:
-        return {"question_id": "null", "task_id": task_id, "labeling_method": label_method}
+        return {
+            "question_id": "null",
+            "task_id": task_id,
+            "labeling_method": label_method,
+            "risk_level": risk_level,
+        }
 
     else:
         return {
             "question_id": next_question_index + 1,
             "task_id": task_id,
             "labeling_method": label_method,
+            "risk_level": risk_level,
         }
 
 

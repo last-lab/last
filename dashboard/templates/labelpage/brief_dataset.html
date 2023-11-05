@@ -79,6 +79,7 @@
                             task_id: item.task_id,
                             labeling_method: item.labeling_method,
                             task_pk_value: '{{pk}}',
+                            risk_level: item.risk_level,
                             // 添加其他参数
                         };
                         const queryString = $.param(params);
@@ -91,6 +92,8 @@
                             labeling_method: item.labeling_method,
                             task_id: item.task_id,
                             question_id: item.question_id,
+                            risk_level: item.risk_level,
+                            task_pk_value: '{{pk}}',
                         };
                         const queryString = $.param(params)
                         actionLink.attr('href', labelingUrl +'?' + queryString);
