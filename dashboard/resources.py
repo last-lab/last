@@ -191,15 +191,15 @@ class DataManager(Dropdown):
             ]
 
     class DatasetResource(Model):
-        label = _("评测集管理")
+        label = _("数据集管理")
         model = DataSet
-        page_title = _("评测集管理")
+        page_title = _("数据集管理")
         filters = [
-            filters.Search(name="name", label="评测集名称", search_mode="contains", placeholder="请输入"),
+            filters.Search(name="name", label="数据集名称", search_mode="contains", placeholder="请输入"),
             SearchFilter(name="first_risk_id", label="风险类型", placeholder="请输入"),
         ]
         fields = [
-            Field(name="name", label="评测集名称"),
+            Field(name="name", label="数据集名称"),
             Field(name="focused_risks", label="风险类型", display=ShowRiskType()),
             Field(name="focused_risks", label="二级类型", display=ShowSecondType()),
             Field(name="updated_at", label="更新时间"),
@@ -210,7 +210,7 @@ class DataManager(Dropdown):
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return [
                 ToolbarAction(
-                    label=_("上传评测集"),
+                    label=_("上传数据集"),
                     icon="fas fa-upload",
                     name="upload_dataset",
                     method=_enums.Method.GET,

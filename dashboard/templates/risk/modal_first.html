@@ -11,7 +11,7 @@
                     <div class="col">{{ risk.risk_name }}</div>
                 </div>
                 <div class="mb-3 row">
-                    <div class="col-3">评测集数量</div>
+                    <div class="col-3">数据集数量</div>
                     <div class="col">{{ risk.dataset.dataset_count }}</div>
                 </div>
                 <div class="mb-3 row">
@@ -19,7 +19,7 @@
                     <div class="col">{{ risk.dataset.dataset_word_cnt }}</div>
                 </div>
                 <div class="mb-3 row">
-                    <div class="col-3">评测集</div>
+                    <div class="col-3">数据集</div>
                     <div class="col">
                         <div style="background: #F9F9F9; max-height: 300px; overflow: auto; padding: 8px 12px">
                             {% for dataset_name in risk.dataset.dataset_name_list %}
