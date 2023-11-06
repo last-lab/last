@@ -343,7 +343,7 @@ class ShowLabelProgress(Display):
                 return_content = "已完成"
             else:
                 return_content = f"标注中 \n {labeled_question_count}/{total_question_count}"
-        except:
+        except Exception:
             return_content = "无权限查看"
 
         return await super().render(request, {"content": return_content})
@@ -400,8 +400,8 @@ class ShowAuditProgress(Display):
                 return_content = "已完成"
             else:
                 return_content = f"审核中 \n {audit_question_count}/{total_question_count}"
-        except:
-            return_content = '无权限查看'
+        except Exception:
+            return_content = "无权限查看"
 
         return await super().render(request, {"content": return_content})
 
