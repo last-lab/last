@@ -277,6 +277,13 @@
                             return
                         }
                     }
+                    if(riskData.grade == '一级风险'){
+                        // 如果是一级风险，则level和type都不要勾选
+                        if(riskData.level || riskData.type){
+                            alert("如果选择风险判别，并且风险判别是一级风险，那么不需要勾选判断风险程度和判断风险类别")
+                            return
+                        }
+                    }
                 }
                 var deadlineInput = document.getElementById('deadline');
                 var deadline = deadlineInput.value;

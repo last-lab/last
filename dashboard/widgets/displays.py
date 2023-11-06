@@ -332,16 +332,19 @@ class ShowLabelProgress(Display):
     async def render(self, request: Request, value: any):
         user_id = str(request.state.admin).split("#")[1]
         info = await LabelPage.get_or_none(task_id=value).values()
-        assign_length_dict = eval(info["assign_length"])
-        assign_labeling_progress = eval(info["labeling_progress"])
-        # 已经标注了的题目数量
-        labeled_question_count = assign_labeling_progress[user_id]
-        total_question_count = assign_length_dict[user_id]
-        # return content
-        if labeled_question_count == total_question_count:
-            return_content = "已完成"
-        else:
-            return_content = f"标注中 \n {labeled_question_count}/{total_question_count}"
+        try:
+            assign_length_dict = eval(info["assign_length"])
+            assign_labeling_progress = eval(info["labeling_progress"])
+            # 已经标注了的题目数量
+            labeled_question_count = assign_labeling_progress[user_id]
+            total_question_count = assign_length_dict[user_id]
+            # return content
+            if labeled_question_count == total_question_count:
+                return_content = "已完成"
+            else:
+                return_content = f"标注中 \n {labeled_question_count}/{total_question_count}"
+        except Exception:
+            return_content = "无权限查看"
 
         return await super().render(request, {"content": return_content})
 
@@ -386,16 +389,19 @@ class ShowAuditProgress(Display):
     async def render(self, request: Request, value: any):
         user_id = str(request.state.admin).split("#")[1]
         info = await AuditPage.get_or_none(task_id=value).values()
-        audit_length_dict = eval(info["audit_length"])
-        audit_progress = eval(info["audit_progress"])
-        # 已经审核了的题目数量
-        audit_question_count = audit_progress[user_id]
-        total_question_count = audit_length_dict[user_id]
-        # return content
-        if audit_question_count == total_question_count:
-            return_content = "已完成"
-        else:
-            return_content = f"审核中 \n {audit_question_count}/{total_question_count}"
+        try:
+            audit_length_dict = eval(info["audit_length"])
+            audit_progress = eval(info["audit_progress"])
+            # 已经审核了的题目数量
+            audit_question_count = audit_progress[user_id]
+            total_question_count = audit_length_dict[user_id]
+            # return content
+            if audit_question_count == total_question_count:
+                return_content = "已完成"
+            else:
+                return_content = f"审核中 \n {audit_question_count}/{total_question_count}"
+        except Exception:
+            return_content = "无权限查看"
 
         return await super().render(request, {"content": return_content})
 
