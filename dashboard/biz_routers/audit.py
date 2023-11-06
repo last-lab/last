@@ -127,7 +127,7 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
                         "question_id": audit_result["question_id"],
                         "question": audit_result["question"],
                         "status": audit_result["status"],
-                        "action": "未审核" if audit_result["status"] != "已审核" else "查看",
+                        "action": "审核" if audit_result["status"] != "已审核" else "查看",
                         "task_id": task_id,
                         "labeling_method": label_result["labeling_method"],
                         "risk_level": label_result["risk_level"],
