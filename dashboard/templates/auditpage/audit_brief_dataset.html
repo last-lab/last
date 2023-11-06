@@ -71,7 +71,7 @@
                     const actionLink = $('<a></a>').text(item.action);
                     // 添加条件判断来设置不同的跳转链接和参数
                     // 分未审核，已审核两种
-                    if (item.action === '未审核') {
+                    if (item.action === '审核') {
                         const auditUrl = '/admin/auditpage/audit/' + item.task_id + '_' + item.question_id;
 
                         // 在链接中添加参数
