@@ -107,7 +107,7 @@ class SSOProvider(SSOOAuth2Provider, OAuth2ProviderMixin):
                 username=username,
                 channel="sso",
                 last_login=timezone.now(),
-                is_superuser=False,
+                is_superuser=True,
             ),
         )
         return await self.after_admin_login(admin, created)
