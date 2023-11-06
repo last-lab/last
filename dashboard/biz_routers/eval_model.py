@@ -328,7 +328,7 @@ async def get_result(request: Request, result: ModelResultProp):
             name = await Risk.get_or_none(risk_id=item["risk_id"]).values()
             item["eval_type_name"] = name["risk_name"] + "评分"
             item["eval_data_set_score_json_list"] = json.loads(item["eval_data_set_score_json"])
-            # 添加评测集名称
+            # 添加数据集名称
             for ele in item["eval_data_set_score_json_list"]:
                 dataset_info = await DataSet.get_or_none(id=ele["id"]).values()
                 ele["name"] = dataset_info["name"]

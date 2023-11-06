@@ -60,13 +60,13 @@ msgid "新建方案"
 msgstr ""
 
 #: dashboard/resources.py:193 dashboard/resources.py:195
-msgid "评测集管理"
-msgstr "评测集管理"
+msgid "数据集管理"
+msgstr "数据集管理"
 
 #: dashboard/resources.py:212
 #, fuzzy
-msgid "上传评测集"
-msgstr "评测集管理"
+msgid "上传数据集"
+msgstr "数据集管理"
 
 #: dashboard/resources.py:224
 msgid "datamanager"
