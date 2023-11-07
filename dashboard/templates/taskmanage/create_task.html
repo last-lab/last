@@ -53,10 +53,6 @@
     <div>
         <span>标注方式 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
         <div>
-            <input type="checkbox" id="judgment" name="annotationType" value="判断标注">
-            <label class="checkbox-label" for="judgment">判断标注</label>
-        </div>
-        <div>
             <input type="checkbox" id="sorting" name="annotationType" value="排序标注">
             <label class="checkbox-label" for="sorting">排序标注</label>
         </div>
@@ -259,6 +255,11 @@
                                 type: document.getElementById('risk-type').checked,
                                 grade: document.getElementById('risk-grade').value
                             };
+                            // 如果选择了风险判别，level和type都不勾选，就直接报错
+                            if(!(riskData.level || riskData.type)){
+                                alert("点击了风险判别，则至少要在判断风险程度和判断风险类别两个中勾选一个！")
+                                return
+                            }
                         }else{
                             riskData = {
                                 grade: 'None'
@@ -266,22 +267,16 @@
                         }
                     }
                 }
-                console.log(riskData);
-                console.log(annotationTypes);
-                // 对riskData进行检查
+
+                // 对riskData进行检查并且修改risk_grade
                 if(riskData.grade != 'None'){
-                    if(riskData.grade != '一级风险'){
-                        // 如果不是一级风险，则必须保证level和type都要勾选上
-                        if(!(riskData.level && riskData.type)){
-                            alert("如果选择风险判别，并且风险判别类型不是一级风险，那么需要将判断风险程度和判断风险类别勾选上！")
-                            return
+                    if(riskData.level){
+                        if(riskData.type){
+                            // 如果level和type都勾选上了
+                            riskData.grade = '风险程度_' + riskData.grade;
                         }
-                    }
-                    if(riskData.grade == '一级风险'){
-                        // 如果是一级风险，则level和type都不要勾选
-                        if(riskData.level || riskData.type){
-                            alert("如果选择风险判别，并且风险判别是一级风险，那么不需要勾选判断风险程度和判断风险类别")
-                            return
+                        else{
+                            riskData.grade = '0级风险'
                         }
                     }
                 }

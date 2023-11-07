@@ -39,24 +39,60 @@ def convert_labelstudio_result_to_string(labeling_method, labeling_result_list, 
         pass
 
     elif _labeling_method == ["风险判别"]:
-        if risk_level == "一级风险":
+        if risk_level == "0级风险":
+            refine_result = {"0级风险": labeling_result_list[0]["value"]["choices"][0]}
+
+        elif risk_level == "一级风险":
             refine_result = {"一级风险": labeling_result_list[0]["value"]["choices"][0]}
+
         elif risk_level == "二级风险":
             refine_result = {}
             for labeling_result in labeling_result_list:
-                if labeling_result["from_name"] == "risk_level":
+                if "grade_one" in labeling_result["from_name"]:
                     refine_result["一级风险"] = labeling_result["value"]["choices"][0]
                 else:
                     refine_result["二级风险"] = labeling_result["value"]["choices"][0]
+
         elif risk_level == "三级风险":
             refine_result = {}
             for labeling_result in labeling_result_list:
-                if labeling_result["from_name"] == "risk_level":
+                if "grade_one" in labeling_result["from_name"]:
                     refine_result["一级风险"] = labeling_result["value"]["choices"][0]
-                elif labeling_result["from_name"] == "risk_type":
+                elif "grade_two" in labeling_result["from_name"]:
                     refine_result["二级风险"] = labeling_result["value"]["choices"][0]
                 else:
                     refine_result["三级风险"] = labeling_result["value"]["choices"]
+
+        elif risk_level == "风险程度_一级风险":
+            refine_result = {}
+            for labeling_result in labeling_result_list:
+                if labeling_result["from_name"] == "rating":
+                    refine_result["风险程度"] = labeling_result["value"]["choices"][0]
+                else:
+                    refine_result["一级风险"] = labeling_result["value"]["choices"][0]
+
+        elif risk_level == "风险程度_二级风险":
+            refine_result = {}
+            for labeling_result in labeling_result_list:
+                if labeling_result["from_name"] == "rating":
+                    refine_result["风险程度"] = labeling_result["value"]["choices"][0]
+                elif "grade_one" in labeling_result["from_name"]:
+                    refine_result["一级风险"] = labeling_result["value"]["choices"][0]
+                else:
+                    refine_result["二级风险"] = labeling_result["value"]["choices"][0]
+
+        elif risk_level == "风险程度_三级风险":
+            refine_result = {}
+            for labeling_result in labeling_result_list:
+                if labeling_result["from_name"] == "rating":
+                    refine_result["风险程度"] = labeling_result["value"]["choices"][0]
+                elif "grade_one" in labeling_result["from_name"]:
+                    refine_result["一级风险"] = labeling_result["value"]["choices"][0]
+                elif "grade_two" in labeling_result["from_name"]:
+                    refine_result["二级风险"] = labeling_result["value"]["choices"][0]
+                else:
+                    refine_result["三级风险"] = labeling_result["value"]["choices"]
+
     elif _labeling_method == ["安全回答"]:
         refine_result = labeling_result_list[0]["value"]["text"]
     return refine_result

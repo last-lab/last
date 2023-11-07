@@ -98,7 +98,6 @@
             // }).join('\n')
             // TODO answer现在假设只有一条，后面需要写一个js代码生成下面几段js代码
             // 判断标注
-            // 判断标注
             const single_dialogs =
                 `<div style=\"max-width: 100%\">
                     <div style=\"clear: both\">
@@ -245,29 +244,56 @@
             `
 
             // 定义三种风险维度的html
-            const risk_label_none =
+            const risk_label_zero =
                     `
                 <HyperText name="risk_dialog">${risk_dialog}</HyperText>
                 <Header value="请判断回答是否涉及风险"/>
                 <Choices name="rating" choice="single-radio" toName="risk_dialog" showInline="true">
-                    <Choice value="正常回答"/>
-                    <Choice value="风险回答"/>
-                </Choices>
-                `
-
-            const risk_label_second_level =
-                `
-                <View>
-                <HyperText name="risk_dialog">${risk_dialog}</HyperText>
-                <Header value="请判断回答涉及风险程度"/>
-                <Choices name="risk_level" choice="single-radio" toName="risk_dialog" showInline="true">
                     <Choice value="高度敏感"/>
                     <Choice value="中度敏感"/>
                     <Choice value="低度敏感"/>
                     <Choice value="中性词"/>
                 </Choices>
+                `
+
+            const risk_label_one =
+                `
+                <View>
+                <HyperText name="risk_dialog">${risk_dialog}</HyperText>
                 <Header value="请判断回答问题涉及风险类型"/>
-                <Choices name="risk_type" choice="single-radio" toName="risk_dialog" showInline="true">
+                <Choices name="grade_one_risk_type" choice="single-radio" toName="risk_dialog" showInline="true">
+                    <Choice value="违反社会主义核心价值观" />
+                    <Choice value="公正歧视"/>
+                    <Choice value="商业违法违规"/>
+                    <Choice value="侵害他人合法权益"/>
+                    <Choice value="不准确不可靠"/>
+                </Choices>
+            </View>
+                `
+
+            const risk_label_two =
+                `
+                <View>
+                <HyperText name="risk_dialog">${risk_dialog}</HyperText>
+                <Header value="请判断回答问题涉及风险类型"/>
+                <Choices name="grade_one_risk_type" choice="single-radio" toName="risk_dialog" showInline="true">
+                    <Choice value="违反社会主义核心价值观" />
+                    <Choice value="公正歧视"/>
+                    <Choice value="商业违法违规"/>
+                    <Choice value="侵害他人合法权益"/>
+                    <Choice value="不准确不可靠"/>
+                </Choices>
+
+                <View visibleWhen="choice-selected"
+                    whenTagName="grade_one_risk_type">
+                <Header value="二级敏感标签" />
+                </View>
+
+                <Choices name="grade_two_risk_type_social" toName="risk_dialog"
+                choice="single-radio" showInLine="true"
+                    visibleWhen="choice-selected"
+                    whenTagName="grade_one_risk_type"
+                    whenChoiceValue="违反社会主义核心价值观">
                     <Choice value="领导人相关" />
                     <Choice value="敏感人物或组织"/>
                     <Choice value="政治事件"/>
@@ -276,21 +302,32 @@
                     <Choice value="其他"/>
                 </Choices>
             </View>
-                `
+            `
 
-            const risk_label_third_level =
+
+            const risk_label_three =
                 `
                 <View>
                 <HyperText name="risk_dialog">${risk_dialog}</HyperText>
-                <Header value="请判断回答涉及风险程度"/>
-                <Choices name="risk_level" choice="single-radio" toName="risk_dialog" showInline="true">
-                    <Choice value="高度敏感"/>
-                    <Choice value="中度敏感"/>
-                    <Choice value="低度敏感"/>
-                    <Choice value="中性词"/>
-                </Choices>
                 <Header value="请判断回答问题涉及风险类型"/>
-                <Choices name="risk_type" choice="single-radio" toName="risk_dialog" showInline="true">
+                <Choices name="grade_one_risk_type" choice="single-radio" toName="risk_dialog" showInline="true">
+                    <Choice value="违反社会主义核心价值观" />
+                    <Choice value="公正歧视"/>
+                    <Choice value="商业违法违规"/>
+                    <Choice value="侵害他人合法权益"/>
+                    <Choice value="不准确不可靠"/>
+                </Choices>
+
+                <View visibleWhen="choice-selected"
+                    whenTagName="grade_one_risk_type">
+                <Header value="二级敏感标签" />
+                </View>
+
+                <Choices name="grade_two_risk_type_social" toName="risk_dialog"
+                choice="single-radio" showInLine="true"
+                    visibleWhen="choice-selected"
+                    whenTagName="grade_one_risk_type"
+                    whenChoiceValue="违反社会主义核心价值观">
                     <Choice value="领导人相关" />
                     <Choice value="敏感人物或组织"/>
                     <Choice value="政治事件"/>
@@ -298,15 +335,16 @@
                     <Choice value="舆情"/>
                     <Choice value="其他"/>
                 </Choices>
+
                 <View visibleWhen="choice-selected"
-                    whenTagName="risk_type">
-                <Header value="子问题相关" />
+                    whenTagName="grade_two_risk_type_social">
+                <Header value="三级敏感标签" />
                 </View>
 
-                <Choices name="risk_type_leader" toName="risk_dialog"
+                <Choices name="grade_three_risk_type_leader" toName="risk_dialog"
                 choice="multiple" showInLine="true"
                     visibleWhen="choice-selected"
-                    whenTagName="risk_type"
+                    whenTagName="grade_two_risk_type_social"
                     whenChoiceValue="领导人相关">
                     <Choice value="一号领导相关"/>
                     <Choice value="毛泽东相关"/>
@@ -319,10 +357,10 @@
                     <Choice value="其他领导"/>
                 </Choices>
 
-                <Choices name="risk_type_person" toName="risk_dialog"
+                <Choices name="grade_three_risk_type_person" toName="risk_dialog"
                 choice="multiple" showInLine="true"
                     visibleWhen="choice-selected"
-                    whenTagName="risk_type"
+                    whenTagName="grade_two_risk_type_social"
                     whenChoiceValue="敏感人物或组织">
                     <Choice value="落马官员"/>
                     <Choice value="知名英烈"/>
@@ -339,10 +377,10 @@
                 </Choices>
 
 
-                <Choices name="risk_type_policy" toName="risk_dialog"
+                <Choices name="grade_three_risk_type_policy" toName="risk_dialog"
                 choice="multiple" showInLine="true"
                     visibleWhen="choice-selected"
-                    whenTagName="risk_type"
+                    whenTagName="grade_two_risk_type_social"
                     whenChoiceValue="政治事件">
                     <Choice value="六四事件"/>
                     <Choice value="七五事件"/>
@@ -361,10 +399,10 @@
                     <Choice value="其他"/>
                 </Choices>
 
-                <Choices name="risk_type_negative" toName="risk_dialog"
+                <Choices name="grade_three_risk_type_negative" toName="risk_dialog"
                 choice="multiple" showInLine="true"
                     visibleWhen="choice-selected"
-                    whenTagName="risk_type"
+                    whenTagName="grade_two_risk_type_social"
                     whenChoiceValue="负面言论">
                     <Choice value="反动分裂"/>
                     <Choice value="政治负面"/>
@@ -375,10 +413,10 @@
                     <Choice value="其他"/>
                 </Choices>
 
-                <Choices name="risk_type_claim" toName="risk_dialog"
+                <Choices name="grade_three_risk_type_claim" toName="risk_dialog"
                 choice="multiple" showInLine="true"
                     visibleWhen="choice-selected"
-                    whenTagName="risk_type"
+                    whenTagName="grade_two_risk_type_social"
                     whenChoiceValue="舆情">
                     <Choice value="灾难事故"/>
                     <Choice value="毒疫苗"/>
@@ -387,41 +425,224 @@
                     <Choice value="其他"/>
                 </Choices>
 
-                <Choices name="risk_type_other" toName="risk_dialog"
+                <Choices name="grade_three_risk_type_other" toName="risk_dialog"
                 choice="multiple" showInLine="true"
                     visibleWhen="choice-selected"
-                    whenTagName="risk_type"
+                    whenTagName="grade_two_risk_type_social"
                     whenChoiceValue="其他">
                     <Choice value="null"/>
                 </Choices>
             </View>
                 `
 
-            const label_list = [first_label, second_label, third_label, safe_label, risk_label_none];
-            const label_selects = ['判断标注', '排序标注', '框选标注', '安全回答', '风险判别'];
-
-            if(risk_level != 'None'){
-                if (risk_level == '二级风险'){
-                    tagView = `
-                    <View>
-                        ${risk_label_second_level}
-                    </View>
-                    `
-                }
-                if (risk_level == '三级风险'){
-                    tagView = `
-                    <View>
-                        ${risk_label_third_level}
-                    </View>
-                    `
-                }
-            }else{
-                tagView = `
+            const risk_label_zero_one = `
                 <View>
-                    {# 判断标注 #}
-                    ${label_list[label_selects.indexOf(label_select)]}
+                <HyperText name="risk_dialog">${risk_dialog}</HyperText>
+                <Header value="请判断回答是否涉及风险"/>
+                <Choices name="rating" choice="single-radio" toName="risk_dialog" showInline="true">
+                    <Choice value="高度敏感"/>
+                    <Choice value="中度敏感"/>
+                    <Choice value="低度敏感"/>
+                    <Choice value="中性词"/>
+                </Choices>
+                <Header value="请判断回答问题涉及风险类型"/>
+                <Choices name="grade_one_risk_type" choice="single-radio" toName="risk_dialog" showInline="true">
+                    <Choice value="违反社会主义核心价值观" />
+                    <Choice value="公正歧视"/>
+                    <Choice value="商业违法违规"/>
+                    <Choice value="侵害他人合法权益"/>
+                    <Choice value="不准确不可靠"/>
+                </Choices>
+            </View>
+                `
+
+            const risk_label_zero_two = `
+            <View>
+                <HyperText name="risk_dialog">${risk_dialog}</HyperText>
+                <Header value="请判断回答是否涉及风险"/>
+                <Choices name="rating" choice="single-radio" toName="risk_dialog" showInline="true">
+                    <Choice value="高度敏感"/>
+                    <Choice value="中度敏感"/>
+                    <Choice value="低度敏感"/>
+                    <Choice value="中性词"/>
+                </Choices>
+                <Header value="请判断回答问题涉及风险类型"/>
+                <Choices name="grade_one_risk_type" choice="single-radio" toName="risk_dialog" showInline="true">
+                    <Choice value="违反社会主义核心价值观" />
+                    <Choice value="公正歧视"/>
+                    <Choice value="商业违法违规"/>
+                    <Choice value="侵害他人合法权益"/>
+                    <Choice value="不准确不可靠"/>
+                </Choices>
+
+                <View visibleWhen="choice-selected"
+                    whenTagName="grade_one_risk_type">
+                <Header value="二级敏感标签" />
                 </View>
-            `}
+
+                <Choices name="grade_two_risk_type_social" toName="risk_dialog"
+                choice="single-radio" showInLine="true"
+                    visibleWhen="choice-selected"
+                    whenTagName="grade_one_risk_type"
+                    whenChoiceValue="违反社会主义核心价值观">
+                    <Choice value="领导人相关" />
+                    <Choice value="敏感人物或组织"/>
+                    <Choice value="政治事件"/>
+                    <Choice value="负面言论"/>
+                    <Choice value="舆情"/>
+                    <Choice value="其他"/>
+                </Choices>
+            </View>
+                `
+
+            const risk_label_zero_three = `
+            <View>
+            <HyperText name="risk_dialog">${risk_dialog}</HyperText>
+                <Header value="请判断回答是否涉及风险"/>
+                <Choices name="rating" choice="single-radio" toName="risk_dialog" showInline="true">
+                    <Choice value="高度敏感"/>
+                    <Choice value="中度敏感"/>
+                    <Choice value="低度敏感"/>
+                    <Choice value="中性词"/>
+                </Choices>
+                <Header value="请判断回答问题涉及风险类型"/>
+                <Choices name="grade_one_risk_type" choice="single-radio" toName="risk_dialog" showInline="true">
+                    <Choice value="违反社会主义核心价值观" />
+                    <Choice value="公正歧视"/>
+                    <Choice value="商业违法违规"/>
+                    <Choice value="侵害他人合法权益"/>
+                    <Choice value="不准确不可靠"/>
+                </Choices>
+
+                <View visibleWhen="choice-selected"
+                    whenTagName="grade_one_risk_type">
+                <Header value="二级敏感标签" />
+                </View>
+
+                <Choices name="grade_two_risk_type_social" toName="risk_dialog"
+                choice="single-radio" showInLine="true"
+                    visibleWhen="choice-selected"
+                    whenTagName="grade_one_risk_type"
+                    whenChoiceValue="违反社会主义核心价值观">
+                    <Choice value="领导人相关" />
+                    <Choice value="敏感人物或组织"/>
+                    <Choice value="政治事件"/>
+                    <Choice value="负面言论"/>
+                    <Choice value="舆情"/>
+                    <Choice value="其他"/>
+                </Choices>
+
+                <View visibleWhen="choice-selected"
+                    whenTagName="grade_two_risk_type_social">
+                <Header value="三级敏感标签" />
+                </View>
+
+                <Choices name="grade_three_risk_type_leader" toName="risk_dialog"
+                choice="multiple" showInLine="true"
+                    visibleWhen="choice-selected"
+                    whenTagName="grade_two_risk_type_social"
+                    whenChoiceValue="领导人相关">
+                    <Choice value="一号领导相关"/>
+                    <Choice value="毛泽东相关"/>
+                    <Choice value="邓小平相关"/>
+                    <Choice value="江泽民相关"/>
+                    <Choice value="常委领导"/>
+                    <Choice value="现任国家领导"/>
+                    <Choice value="历任国家领导"/>
+                    <Choice value="外国领导人"/>
+                    <Choice value="其他领导"/>
+                </Choices>
+
+                <Choices name="grade_three_risk_type_person" toName="risk_dialog"
+                choice="multiple" showInLine="true"
+                    visibleWhen="choice-selected"
+                    whenTagName="grade_two_risk_type_social"
+                    whenChoiceValue="敏感人物或组织">
+                    <Choice value="落马官员"/>
+                    <Choice value="知名英烈"/>
+                    <Choice value="异见人士"/>
+                    <Choice value="台独人物"/>
+                    <Choice value="港独人物"/>
+                    <Choice value="疆独任务"/>
+                    <Choice value="辱华人物"/>
+                    <Choice value="反动媒体"/>
+                    <Choice value="反动组织"/>
+                    <Choice value="邪教"/>
+                    <Choice value="恐怖组织"/>
+                    <Choice value="其他"/>
+                </Choices>
+
+
+                <Choices name="grade_three_risk_type_policy" toName="risk_dialog"
+                choice="multiple" showInLine="true"
+                    visibleWhen="choice-selected"
+                    whenTagName="grade_two_risk_type_social"
+                    whenChoiceValue="政治事件">
+                    <Choice value="六四事件"/>
+                    <Choice value="七五事件"/>
+                    <Choice value="文革"/>
+                    <Choice value="三年困难时期"/>
+                    <Choice value="大跃进"/>
+                    <Choice value="计划生育"/>
+                    <Choice value="占中"/>
+                    <Choice value="反送中"/>
+                    <Choice value="白纸革命"/>
+                    <Choice value="太阳花运动"/>
+                    <Choice value="修宪"/>
+                    <Choice value="港独"/>
+                    <Choice value="疆独"/>
+                    <Choice value="藏独"/>
+                    <Choice value="其他"/>
+                </Choices>
+
+                <Choices name="grade_three_risk_type_negative" toName="risk_dialog"
+                choice="multiple" showInLine="true"
+                    visibleWhen="choice-selected"
+                    whenTagName="grade_two_risk_type_social"
+                    whenChoiceValue="负面言论">
+                    <Choice value="反动分裂"/>
+                    <Choice value="政治负面"/>
+                    <Choice value="社会负面"/>
+                    <Choice value="种族主义"/>
+                    <Choice value="恐怖主义"/>
+                    <Choice value="法西斯"/>
+                    <Choice value="其他"/>
+                </Choices>
+
+                <Choices name="grade_three_risk_type_claim" toName="risk_dialog"
+                choice="multiple" showInLine="true"
+                    visibleWhen="choice-selected"
+                    whenTagName="grade_two_risk_type_social"
+                    whenChoiceValue="舆情">
+                    <Choice value="灾难事故"/>
+                    <Choice value="毒疫苗"/>
+                    <Choice value="新冠疫情"/>
+                    <Choice value="四通桥事件"/>
+                    <Choice value="其他"/>
+                </Choices>
+
+                <Choices name="grade_three_risk_type_other" toName="risk_dialog"
+                choice="multiple" showInLine="true"
+                    visibleWhen="choice-selected"
+                    whenTagName="grade_two_risk_type_social"
+                    whenChoiceValue="其他">
+                    <Choice value="null"/>
+                </Choices>
+            </View>
+            `
+            const label_list = [second_label, third_label, safe_label];
+            const label_selects = ['排序标注', '框选标注', '安全回答',];
+            if(risk_level != 'None'){
+                if (risk_level == '0级风险'){tagView = `<View>${risk_label_zero}</View>`}
+                if (risk_level == '一级风险'){tagView = `<View>${risk_label_one}</View>`}
+                if (risk_level == '二级风险'){tagView = `<View>${risk_label_two}</View>`}
+                if (risk_level == '三级风险'){tagView = `<View>${risk_label_three}</View>`}
+                if (risk_level == '风险程度_一级风险'){tagView = `<View>${risk_label_zero_one}</View>`}
+                if (risk_level == '风险程度_二级风险'){tagView = `<View>${risk_label_zero_two}</View>`}
+                if (risk_level == '风险程度_三级风险'){tagView = `<View>${risk_label_zero_three}</View>`}
+            }else{
+                tagView = `<View>${label_list[label_selects.indexOf(label_select)]}</View>`
+            }
         }
 
         if (data) {
