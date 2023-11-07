@@ -1,6 +1,9 @@
 # 标注相关重新初始化
 # from .mock_audit_data import create_audit_mock_data
 # from .mock_labeling_data import create_labeling_mock_data
+from .mock_llms import create_mock_llms
+from .mock_risk import create_mock_risk
+
 # from .mock_task import create_task
 
 # 数据相关重新初始化
@@ -10,10 +13,6 @@
 # 评测报告重新初始画
 # from .mock_report import create_mock_report
 # from .mock_risk_demo import create_mock_risk_demo
-
-
-from .mock_llms import create_mock_llms
-from .mock_risk import create_mock_risk
 
 
 async def create_mock_data():
