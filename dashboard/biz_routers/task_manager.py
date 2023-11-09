@@ -116,6 +116,9 @@ async def create_task_callback(
     # df = pd.read_csv(json_data['file'])
     # json_data['labeling_method']如果是"风险判别"，那么后面会{"判断风险程度": false, "判断风险类型": ""}这个放在extra_data中
     # # # 将这个表单数据写入到task表中
+    qa_list = split_string_to_list(fileName, file_content)
+    if qa_list is None:
+        raise
     task_id = uuid4()
     await TaskManage(
         task_id=task_id,
@@ -131,7 +134,6 @@ async def create_task_callback(
         risk_level=risk_level,
     ).save()
 
-    qa_list = split_string_to_list(fileName, file_content)
     assign_dict = {user["annotator"]: user["taskCount"] for user in task_assignments}
     (
         item_assign_user_dict,

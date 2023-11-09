@@ -8,6 +8,8 @@ def split_string_to_list(file_name, qa_records_stream):
         return split_csv_file(qa_records_stream)
     elif "xlsx" in file_name:
         return split_xlsx_file(qa_records_stream)
+    else:
+        return None
 
 
 def split_csv_file(qa_records_stream):
