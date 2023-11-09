@@ -54,7 +54,7 @@ def create_app():
 
     @app.get("/")
     async def index():
-        return RedirectResponse(url="/admin")
+        return RedirectResponse(url="/admin/login")
 
     admin_app.add_middleware(
         middlewares.LoginPasswordMaxTryMiddleware, max_times=10, after_seconds=15
