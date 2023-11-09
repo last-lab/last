@@ -47,7 +47,7 @@ For more detail, checkout Dockfile and docker-compose.yml in case I miss somethi
 如果遇到redis服务出错的情况，使用 sudo /etc/init.d/redis-server restart 命令重启redis
 
 ## 测评数据样例
-见docs/examples中，标注数据样例.csv以及excel模型推理样例.xlsx
+见docs/examples中，数据上传样例.xlsx
 
 ## LLM配置
 目前系统集成了数个大模型，但需要用户自行在.env文件中配置大模型的API_TOKEN。
