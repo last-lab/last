@@ -234,123 +234,116 @@
         };
 
         function submitForm() {
+            // 创建表单对象
+            var formData = new FormData();
             var fileInput = document.getElementById('file');
-            var file = fileInput.files[0];
-            var reader = new FileReader();
+            var file = $('#file')[0].files[0];
             var fileName = file.name; // 获取文件的路径
             var riskData;
             // 读取文件内容
-            reader.onload = function (e) {
-                var fileContent = e.target.result;
-                // 在这里对文件内容进行处理
-
-                var annotationTypes = [];
-                var checkboxes = document.getElementsByName('annotationType');
-                for (var i = 0; i < checkboxes.length; i++) {
-                    if (checkboxes[i].checked) {
-                        annotationTypes.push(checkboxes[i].value);
-                        if(checkboxes[i].value == '风险判别'){
-                            riskData = {
-                                level: document.getElementById('risk-level').checked,
-                                type: document.getElementById('risk-type').checked,
-                                grade: document.getElementById('risk-grade').value
-                            };
-                            // 如果选择了风险判别，level和type都不勾选，就直接报错
-                            if(!(riskData.level || riskData.type)){
-                                alert("点击了风险判别，则至少要在判断风险程度和判断风险类别两个中勾选一个！")
-                                return
-                            }
-                        }else{
-                            riskData = {
-                                grade: 'None'
-                            }
-                        }
-                    }
-                }
-
-                // 对riskData进行检查并且修改risk_grade
-                if(riskData.grade != 'None'){
-                    if(riskData.level){
-                        if(riskData.type){
-                            // 如果level和type都勾选上了
-                            riskData.grade = '风险程度_' + riskData.grade;
-                        }
-                        else{
-                            riskData.grade = '0级风险'
-                        }
-                    }
-                }
-                var deadlineInput = document.getElementById('deadline');
-                var deadline = deadlineInput.value;
-                // 用户标注任务分配表
-                var assignTable = document.getElementById('assignTable');
-                var taskAssignments = [];
-                for (var i = 1; i < assignTable.rows.length; i++) {
-                    var cells = assignTable.rows[i].cells;
-                    var annotator = cells[0].textContent;
-                    var taskCount = cells[1].textContent;
-                    taskAssignments.push({ annotator: annotator, taskCount: taskCount });
-                }
-                // 审计任务分配表
-                var auditTable = document.getElementById('auditTable');
-                var auditAssignments = [];
-                for (var i = 1; i < auditTable.rows.length; i++) {
-                    var cells = auditTable.rows[i].cells;
-                    var auditor = cells[0].textContent;
-                    var taskCount = cells[1].textContent;
-                    auditAssignments.push({ auditor: auditor, taskCount: taskCount });
-                }
-                // 确保taskAssignments，auditAssignments中taskCount之和为100
-                var taskTotal = 0;
-                for (var assignment of taskAssignments) {
-                    taskTotal += Number(assignment.taskCount);
-                }
-                var auditTotal = 0;
-                for (var assignment of auditAssignments) {
-                    auditTotal += Number(assignment.taskCount);
-                }
-                if (taskTotal != 100) {
-                    alert("任务分配之和必须为100");
-                } else {
-                    if (auditTotal != 100) {
-                        alert("审核分配之和必须为100");
-                    } else {
-                        var formData = {
-                            fileName: fileName,
-                            fileContent: fileContent, // 将文件内容添加到表单数据中
-                            annotationTypes: annotationTypes,
-                            deadline: deadline,
-                            file: file,
-                            taskAssignments: taskAssignments,
-                            auditAssignments: auditAssignments,
-                            riskData: riskData
+            var fileContent = 'null';
+            var annotationTypes = [];
+            var checkboxes = document.getElementsByName('annotationType');
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    annotationTypes.push(checkboxes[i].value);
+                    if(checkboxes[i].value == '风险判别'){
+                        riskData = {
+                            level: document.getElementById('risk-level').checked,
+                            type: document.getElementById('risk-type').checked,
+                            grade: document.getElementById('risk-grade').value
                         };
-                        console.log(formData);
-                        // 调用回调函数，将数据传递给它进行处理
-                        // 使用 $.ajax 发送数据到特定的 URL
-                        $.ajax({
-                            type: 'POST',
-                            url: '/admin/taskmanage/create_task_callback',
-                            data: JSON.stringify(formData),
-                            contentType: 'application/json',
-                            success: function (response) {
-                                // 请求成功的处理
-                                history.back();
-                                location.href = '/admin/taskmanage/list';
-
-                                // alert(success);
-                            },
-                            error: function (error) {
-                                // 请求失败的处理
-                                console.log(error);
-                            }
-                        });
-                    };
+                        // 如果选择了风险判别，level和type都不勾选，就直接报错
+                        if(!(riskData.level || riskData.type)){
+                            alert("点击了风险判别，则至少要在判断风险程度和判断风险类别两个中勾选一个！")
+                            return
+                        }
+                    }else{
+                        riskData = {
+                            grade: 'None'
+                        }
+                    }
                 }
             }
-            // 以文本格式读取文件内容
-            reader.readAsText(file);
+
+            // 对riskData进行检查并且修改risk_grade
+            if(riskData.grade != 'None'){
+                if(riskData.level){
+                    if(riskData.type){
+                        // 如果level和type都勾选上了
+                        riskData.grade = '风险程度_' + riskData.grade;
+                    }
+                    else{
+                        riskData.grade = '0级风险'
+                    }
+                }
+            }
+            var deadlineInput = document.getElementById('deadline');
+            var deadline = deadlineInput.value;
+            // 用户标注任务分配表
+            var assignTable = document.getElementById('assignTable');
+            var taskAssignments = [];
+            for (var i = 1; i < assignTable.rows.length; i++) {
+                var cells = assignTable.rows[i].cells;
+                var annotator = cells[0].textContent;
+                var taskCount = cells[1].textContent;
+                taskAssignments.push({ annotator: annotator, taskCount: taskCount });
+            }
+            // 审计任务分配表
+            var auditTable = document.getElementById('auditTable');
+            var auditAssignments = [];
+            for (var i = 1; i < auditTable.rows.length; i++) {
+                var cells = auditTable.rows[i].cells;
+                var auditor = cells[0].textContent;
+                var taskCount = cells[1].textContent;
+                auditAssignments.push({ auditor: auditor, taskCount: taskCount });
+            }
+            // 确保taskAssignments，auditAssignments中taskCount之和为100
+            var taskTotal = 0;
+            for (var assignment of taskAssignments) {
+                taskTotal += Number(assignment.taskCount);
+            }
+            var auditTotal = 0;
+            for (var assignment of auditAssignments) {
+                auditTotal += Number(assignment.taskCount);
+            }
+            if (taskTotal != 100) {
+                alert("任务分配之和必须为100");
+            } else {
+                if (auditTotal != 100) {
+                    alert("审核分配之和必须为100");
+                } else {
+                    formData.append('fileName', fileName);
+                    formData.append('annotationTypes', JSON.stringify(annotationTypes));
+                    formData.append('deadline', deadline);
+                    formData.append('file', file);
+                    formData.append('taskAssignments', JSON.stringify(taskAssignments));
+                    formData.append('auditAssignments', JSON.stringify(auditAssignments));
+                    formData.append('riskData', JSON.stringify(riskData));
+                    // 调用回调函数，将数据传递给它进行处理
+                    // 使用 $.ajax 发送数据到特定的 URL
+                    $.ajax({
+                        type: 'POST',
+                        url: '/admin/taskmanage/create_task_callback',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            // 请求成功的处理
+                            history.back();
+                            location.href = '/admin/taskmanage/list';
+
+                            // alert(success);
+                        },
+                        error: function (error) {
+                            // 请求失败的处理
+                            alert("当前只接受csv文件或者xlsx文件");
+                        }
+                    });
+                };
+            }
         }
+
 
         async function getUserList() {
             const rsp = await fetch('/admin/taskmanage/get_user_list', {
