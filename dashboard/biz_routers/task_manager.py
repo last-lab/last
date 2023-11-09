@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from typing import Type
 
@@ -5,7 +6,7 @@ from typing import Type
 # from urllib.parse import parse_qs
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, File, Form, Path, UploadFile
 from jinja2 import TemplateNotFound
 from starlette.requests import Request
 from tortoise import Model
@@ -83,21 +84,32 @@ async def assign_test_task(
 @router.post("/{resource}/create_task_callback")
 async def create_task_callback(
     request: Request,
+    file: UploadFile = File(...),
+    fileName: str = Form(...),
+    annotationTypes: str = Form(...),
+    deadline: str = Form(...),
+    taskAssignments: str = Form(...),
+    auditAssignments: str = Form(...),
+    riskData: str = Form(...),
     model: Model = Depends(get_model),
     resources=Depends(get_resources),
     model_resource: ModelResource = Depends(get_model_resource),
     resource: str = Path(...),
 ):
-    json_data = await request.json()
+    file_content = await file.read()
+    risk_data = json.loads(riskData)
+    annotationTypes = eval(annotationTypes)
+    task_assignments = eval(taskAssignments)
+    audit_assignments = eval(auditAssignments)
     # TODO，上传的时候，直接将数据的原本内容就直接上传上来就好了？
     # 目前假设管理员和标注员都能访问到某个共享内容，所有的数据集放在这个里面，如cpfs位置，
     # 但是只有管理员才有创建任务的权限
     # TODO, 这个位置分配任务，那么如何给某个用户的表创建数据？
-    (volume, qa_num, word_cnt, qa_records) = statistic_dataset(json_data["fileName"])
+    (volume, qa_num, word_cnt, qa_records) = statistic_dataset(fileName)
     dataset_uid = uuid4()
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # 构造风险维度
-    risk_level = json_data["riskData"]["grade"]
+    risk_level = risk_data["grade"]
     # 定义，非判别标注的risk_level都是None，如果risk_level是True，risk_type是False就是0级风险
     # 如果risk_level是False，risk_type是True，risk_type就是正常的123级
     # 如果risk_level risk_type都勾选了，risk_level就是风险程度_一级风险，风险程度_二级风险等
@@ -108,19 +120,19 @@ async def create_task_callback(
     await TaskManage(
         task_id=task_id,
         task_type="数据集标注",
-        labeling_method=json_data["annotationTypes"],
+        labeling_method=annotationTypes,
         current_status="未标注",
-        dateset=json_data["fileName"],
+        dateset=fileName,
         dataset_uid=dataset_uid,
         create_time=current_time,
-        end_time=json_data["deadline"],
-        assign_user=json_data["taskAssignments"],
-        audit_user=json_data["auditAssignments"],
+        end_time=deadline,
+        assign_user=task_assignments,
+        audit_user=audit_assignments,
         risk_level=risk_level,
     ).save()
 
-    qa_list = split_string_to_list(json_data["fileContent"])
-    assign_dict = {user["annotator"]: user["taskCount"] for user in json_data["taskAssignments"]}
+    qa_list = split_string_to_list(fileName, file_content)
+    assign_dict = {user["annotator"]: user["taskCount"] for user in task_assignments}
     (
         item_assign_user_dict,
         assign_user_item_dict,
@@ -135,10 +147,10 @@ async def create_task_callback(
     await LabelPage(
         task_id=task_id,
         task_type="数据集标注",
-        labeling_method=json_data["annotationTypes"],
-        dateset=json_data["fileName"],
+        labeling_method=annotationTypes,
+        dateset=fileName,
         dataset_uid=dataset_uid,
-        end_time=json_data["deadline"],
+        end_time=deadline,
         assign_user=assign_user_item_dict,
         assign_length=assign_user_item_length,
         labeling_progress=assign_user_labeling_progress,
@@ -151,7 +163,7 @@ async def create_task_callback(
             task_id=task_id,
             dataset_id=dataset_uid,
             creator="root",
-            labeling_method=json_data["annotationTypes"],
+            labeling_method=annotationTypes,
             question_id=index + 1,
             question=question,
             answer=answer,
@@ -161,7 +173,7 @@ async def create_task_callback(
         ).save()
 
     # 创建一个audit res表，存放审核结果
-    audit_dict = {user["auditor"]: user["taskCount"] for user in json_data["auditAssignments"]}
+    audit_dict = {user["auditor"]: user["taskCount"] for user in audit_assignments}
     (
         item_audit_user_dict,
         audit_user_item_dict,
@@ -175,8 +187,8 @@ async def create_task_callback(
     # 生成Audit任务
     await AuditPage(
         task_id=task_id,
-        end_time=json_data["deadline"],
-        labeling_method=json_data["annotationTypes"],
+        end_time=deadline,
+        labeling_method=annotationTypes,
         audit_user=audit_user_item_dict,
         audit_length=audit_user_item_length,
         audit_progress=audit_progress,
