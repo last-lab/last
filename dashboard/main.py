@@ -54,10 +54,10 @@ def create_app():
 
     @app.get("/")
     async def index():
-        return RedirectResponse(url="/admin")
+        return RedirectResponse(url="/admin/login")
 
     admin_app.add_middleware(
-        middlewares.LoginPasswordMaxTryMiddleware, max_times=3, after_seconds=900
+        middlewares.LoginPasswordMaxTryMiddleware, max_times=5, after_seconds=150
     )
 
     admin_app.add_exception_handler(HTTP_500_INTERNAL_SERVER_ERROR, server_error_exception)

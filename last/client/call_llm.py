@@ -23,7 +23,9 @@ ALLES_CHAT_LLM = [
     "tigerbot",
     "mita",
     "wuya",
+    "soul",
 ]
+
 
 async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
     if model in CHAT_LLM_GPT:
@@ -43,7 +45,7 @@ async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
             messages.append(SystemMessage(content=system_prompt))
         messages.append(HumanMessage(content=human_prompt))
 
-        output = chat(
+        output = await chat.apredict_messages(
             messages,
         ).content
     elif model.lower() in ALLES_CHAT_LLM:
@@ -74,7 +76,6 @@ async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
     return "".join(list(output))
 
 
-
 async def generate(
     prompt: str,
     model: str,
@@ -90,7 +91,7 @@ async def generate(
         outputs = await call_llm(
             model=model,
             temperature=temperature,
-            system_prompt=system_prompt, # TODO 目前不支持system prompt
+            system_prompt=system_prompt,  # TODO 目前不支持system prompt
             human_prompt=prompt,
             maximum_length=maximum_length,
             stop_sequence=stop_sequence,
@@ -100,6 +101,8 @@ async def generate(
         )
     except Exception as ex:
         import traceback
+
         traceback.print_exc()
         raise ex
     return str(outputs)
+

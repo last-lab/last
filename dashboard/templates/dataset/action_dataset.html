@@ -1,24 +1,22 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <button data-bs-toggle="modal" data-bs-target="#{{ value.uid }}" class="btn btn-ghost-primary">
   详细信息
 </button>
 <button data-bs-toggle="modal" data-bs-target="#{{ value.name + value.uid }}" class="btn btn-ghost-primary">
-    标注信息
-</button>
-<button class="btn btn-ghost-primary">
-  导出
+    数据集内容
 </button>
 {% include "delete.html" %}
 <div class="modal" id={{ value.uid }} tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">评测集详情</h5>
+        <h5 class="modal-title">数据集详情</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="datagrid">
           <div class="datagrid-item">
-            <div class="datagrid-title">评测集名称</div>
+            <div class="datagrid-title">数据集名称</div>
             <div class="datagrid-content">{{ value.name }}</div>
           </div>
           <div class="datagrid-item">
@@ -54,7 +52,7 @@
             <div class="datagrid-content">{{ value.word_cnt }}</div>
           </div>
           <div class="datagrid-item">
-            <div class="datagrid-title">评测集大小</div>
+            <div class="datagrid-title">数据集大小</div>
             <div class="datagrid-content">{{ value.volume }}</div>
           </div>
           <div class="datagrid-item">
@@ -75,19 +73,24 @@
   <div class="modal-dialog" role="document" style="max-width: 100%">
     <div class="modal-content">
       <div class="modal-header" style="border-bottom: none">
-        <h5 class="modal-title">评测集标注信息</h5>
+        <h5 class="modal-title">数据集内容</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
       </div>
+
         <div class="modal-body">
+          <div>
+        <button type="button" onclick="downloadFile({{ value.id }})" id=btn{{ value.id }} class="btn btn-primary">下载Excel</button>
+      </div>
+
             <div class="table-responsive">
-              <table class="table table-vcenter">
+              <table class="table table-vcenter" id=tab{{ value.id }}>
                 <thead>
                   <tr>
                     <th>问题</th>
                     <th>回复</th>
                     <th>评判</th>
-                      <th>标注</th>
-                      <th>更新时间</th>
+                      <th>操作</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -102,8 +105,7 @@
                             <td style="max-width: 350px; word-wrap:break-word; word-break:break-all; white-space:normal;">
                                 {{ item[2] }}
                             </td>
-                            <td><button class="btn btn-primary">标注</button></td>
-                            <td>2022-10-10 10:10:10</td>
+                            <td><button class="btn btn-primary">修改</button></td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -134,4 +136,24 @@
         navigator.clipboard.writeText(copyText);
         alert('复制成功');
     }
+    function downloadFile(id) {
+    const downloadICON = document.getElementById("btn"+id);
+    const dataTable = document.getElementById("tab"+id);
+    //状态标识
+    downloadICON.addEventListener('click', async () => {
+        // 输入文件名
+        const filename = prompt('请输入文件名');
+        // 等待下一个点击事件触发选择文件夹
+        //选择文件夹
+        // 拼接完整路径
+        const path = filename + '.xlsx';
+        // 生成工作表
+        const ws = XLSX.utils.table_to_sheet(dataTable);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        // 用完整路径保存文件
+        XLSX.writeFile(wb, path);
+
+    });
+  }
 </script>

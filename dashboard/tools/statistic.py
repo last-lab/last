@@ -26,60 +26,76 @@ def statistic_dataset(dataset_path):
     return (volume, qa_num, word_cnt, qa_records)
 
 
-def distribute_labeling_task(len_dataset: int, assign_user_list):
-    # 传入的数据为[{"assign_user", 32}]这种格式
-    # 采用某种算法，给不同的用户分配不同的item进行标注
-    # 返回的结果为 {0: ['user1', 'user2'], ...}
-    # 暂时返回每个用户都要标注所有的item
-    item_assign_user_dict = {}
-    assign_user_item_dict = {}
-    for index in range(len_dataset):
-        if index % 2 == 0:
-            item_assign_user_dict[index] = [
-                assign_item["annotator"] for assign_item in assign_user_list
-            ]
-        else:
-            item_assign_user_dict[index] = []
-    # 对这个item_assign_user_dict 进行反序遍历
-    for index, assign_user_list in item_assign_user_dict.items():
-        if len(assign_user_list) != 0:
-            for _assign_user in assign_user_list:
-                if _assign_user not in assign_user_item_dict:
-                    assign_user_item_dict[_assign_user] = [index]
-                else:
-                    assign_user_item_dict[_assign_user].append(index)
-    # 返回{"user1": 10, "user2": 20, ...}
-    assign_user_item_length = {
-        assign_user: len(assign_user_item_dict[assign_user])
-        for assign_user in assign_user_item_dict
-    }
-
-    # 配置一个标注进度字典 {"user1": 0, "user2": 0}等
-    assign_user_labeling_progress = {assign_user: 0 for assign_user in assign_user_item_dict}
-
-    return (
-        item_assign_user_dict,
-        assign_user_item_dict,
-        assign_user_item_length,
-        assign_user_labeling_progress,
-    )
-
-
-def convert_labelstudio_result_to_string(labeling_method, labeling_result):
+def convert_labelstudio_result_to_string(labeling_method, labeling_result_list, risk_level):
     # TODO，目前就实现了当使用了判断标注的流程
     _labeling_method = eval(html.unescape(labeling_method))
     if _labeling_method == ["判断标注"]:
         # TODO，这个函数需要修改
-        refine_result = labeling_result[0]["value"]["choices"]
-        return refine_result[0]
+        refine_result = labeling_result_list[0]["value"]["choices"][0]
     elif _labeling_method == ["选择标注"]:
         pass
 
     elif _labeling_method == ["框选标注"]:
         pass
 
-    else:
-        pass
+    elif _labeling_method == ["风险判别"]:
+        if risk_level == "0级风险":
+            refine_result = {"0级风险": labeling_result_list[0]["value"]["choices"][0]}
+
+        elif risk_level == "一级风险":
+            refine_result = {"一级风险": labeling_result_list[0]["value"]["choices"][0]}
+
+        elif risk_level == "二级风险":
+            refine_result = {}
+            for labeling_result in labeling_result_list:
+                if "grade_one" in labeling_result["from_name"]:
+                    refine_result["一级风险"] = labeling_result["value"]["choices"][0]
+                else:
+                    refine_result["二级风险"] = labeling_result["value"]["choices"][0]
+
+        elif risk_level == "三级风险":
+            refine_result = {}
+            for labeling_result in labeling_result_list:
+                if "grade_one" in labeling_result["from_name"]:
+                    refine_result["一级风险"] = labeling_result["value"]["choices"][0]
+                elif "grade_two" in labeling_result["from_name"]:
+                    refine_result["二级风险"] = labeling_result["value"]["choices"][0]
+                else:
+                    refine_result["三级风险"] = labeling_result["value"]["choices"]
+
+        elif risk_level == "风险程度_一级风险":
+            refine_result = {}
+            for labeling_result in labeling_result_list:
+                if labeling_result["from_name"] == "rating":
+                    refine_result["风险程度"] = labeling_result["value"]["choices"][0]
+                else:
+                    refine_result["一级风险"] = labeling_result["value"]["choices"][0]
+
+        elif risk_level == "风险程度_二级风险":
+            refine_result = {}
+            for labeling_result in labeling_result_list:
+                if labeling_result["from_name"] == "rating":
+                    refine_result["风险程度"] = labeling_result["value"]["choices"][0]
+                elif "grade_one" in labeling_result["from_name"]:
+                    refine_result["一级风险"] = labeling_result["value"]["choices"][0]
+                else:
+                    refine_result["二级风险"] = labeling_result["value"]["choices"][0]
+
+        elif risk_level == "风险程度_三级风险":
+            refine_result = {}
+            for labeling_result in labeling_result_list:
+                if labeling_result["from_name"] == "rating":
+                    refine_result["风险程度"] = labeling_result["value"]["choices"][0]
+                elif "grade_one" in labeling_result["from_name"]:
+                    refine_result["一级风险"] = labeling_result["value"]["choices"][0]
+                elif "grade_two" in labeling_result["from_name"]:
+                    refine_result["二级风险"] = labeling_result["value"]["choices"][0]
+                else:
+                    refine_result["三级风险"] = labeling_result["value"]["choices"]
+
+    elif _labeling_method == ["安全回答"]:
+        refine_result = labeling_result_list[0]["value"]["text"]
+    return refine_result
 
 
 def update_labeling_result(user_id: str, new_labeling_result: str, current_labeling_result: str):

@@ -12,3 +12,4 @@ class TaskManage(Model):
     end_time = fields.DateField()
     assign_user = fields.CharField(max_length=255)
     audit_user = fields.CharField(max_length=255)
+    risk_level = fields.CharField(max_length=255)

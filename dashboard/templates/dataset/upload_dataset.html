@@ -2,9 +2,9 @@
 {% block page_body %}
     <div id="init">
         <span style="margin-right: 80px">选择文件</span>
-        <input type="file" id="fileInput" style="display:none;" accept=".csv">
+        <input type="file" id="fileInput" style="display:none;" accept=".csv, .xlsx, .xls, .json, .yaml">
         <button onclick="openFileSelector()" id="btn">打开文件</button>
-        <div style="display:none; margin-top: 10px" id="processing">上传评测集中，请勿关闭此页面</div>
+        <div style="display:none; margin-top: 10px" id="processing">上传数据集中，请勿关闭此页面</div>
         <div style="display:none; margin-top: 10px" id="error">上传失败，请重试</div>
         <div style="margin-top: 20px">
             <button type="button" class="btn btn-primary" onclick="history.back();">返回</button>
@@ -12,7 +12,7 @@
     </div>
     <div id="more" style="display: none; width: 700px">
         <div class="mb-3 row">
-            <label class="col-4 col-form-label">评测集名称</label>
+            <label class="col-4 col-form-label">数据集名称</label>
             <div class="col">
                 <input class="form-control" placeholder="请输入" id="name">
             </div>
@@ -64,7 +64,7 @@
             <div class="col col-form-label" id="number"></div>
         </div>
         <div class="mb-3 row">
-            <label class="col-4 col-form-label">评测集大小</label>
+            <label class="col-4 col-form-label">数据集大小</label>
             <div class="col col-form-label" id="size"></div>
         </div>
         <button type="button" class="btn btn-primary" onclick="uploadSubmit()">完成上传</button>
@@ -123,7 +123,7 @@
         // 上传提交函数
         function uploadSubmit (info) {
             if (!$("#name").val()) {
-                alert('请输入评测集名称')
+                alert('请输入数据集名称')
                 return;
             }
             if (!pre_id) {
@@ -155,7 +155,7 @@
                 dataType: "json",
                 success: function (value) {
                     if (value.result) {
-                        alert('评测集已完成上传')
+                        alert('数据集已完成上传')
                         window.location.replace(document.referrer);
                     } else {
                         alert(value.reason)

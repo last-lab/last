@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-09-15 15:41+0800\n"
+"POT-Creation-Date: 2023-11-02 16:00+0800\n"
 "PO-Revision-Date: 2021-04-16 22:46+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hans_CN\n"
@@ -16,118 +16,130 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.12.1\n"
+"Generated-By: Babel 2.13.1\n"
 
-#: dashboard/resources.py:58
+#: dashboard/resources.py:61
 msgid "Dashboard"
 msgstr "监控台"
 
-#: dashboard/resources.py:63
+#: dashboard/resources.py:66
 msgid "Notification"
 msgstr "通知"
 
-#: dashboard/resources.py:67
+#: dashboard/resources.py:71
+msgid "风险维度"
+msgstr ""
+
+#: dashboard/resources.py:75
 msgid "Administartor"
 msgstr "安全监管"
 
-#: dashboard/resources.py:79
-msgid "评测记录"
-msgstr "评测记录"
-
-#: dashboard/resources.py:102 last/services/resources.py:115
-msgid "create"
-msgstr "创建"
-
-#: dashboard/resources.py:116
+#: dashboard/resources.py:87
 msgid "创建评测"
 msgstr "创建评测"
 
-#: dashboard/resources.py:120
+#: dashboard/resources.py:94
+msgid "评测记录"
+msgstr "评测记录"
+
+#: dashboard/resources.py:117 last/services/resources.py:115
+msgid "create"
+msgstr "创建"
+
+#: dashboard/resources.py:129
 msgid "模型评测"
 msgstr ""
 
-#: dashboard/resources.py:128
-msgid "Labeling Record"
-msgstr "标注记录"
-
-#: dashboard/resources.py:136
-#, fuzzy
-msgid "labeling"
-msgstr "标注工具"
-
-#: dashboard/resources.py:150
-msgid "Labeling"
-msgstr "标注工具"
-
-#: dashboard/resources.py:154
-msgid "Dataset"
-msgstr "数据集"
-
-#: dashboard/resources.py:162
+#: dashboard/resources.py:137
 #, fuzzy
 msgid "评测方案管理"
 msgstr "评测方案管理"
 
-#: dashboard/resources.py:183 last/services/resources.py:127
-msgid "update"
-msgstr "更新"
-
-#: dashboard/resources.py:190
-msgid "复制并新建"
-msgstr ""
-
-#: dashboard/resources.py:197 last/services/resources.py:134
-msgid "delete"
-msgstr "删除"
-
-#: dashboard/resources.py:207
+#: dashboard/resources.py:183
 msgid "新建方案"
 msgstr ""
 
-#: dashboard/resources.py:217 dashboard/resources.py:219
-msgid "评测集管理"
-msgstr "评测集管理"
+#: dashboard/resources.py:193 dashboard/resources.py:195
+msgid "数据集管理"
+msgstr "数据集管理"
 
-#: dashboard/resources.py:236
+#: dashboard/resources.py:212
+#, fuzzy
 msgid "上传数据集"
-msgstr ""
+msgstr "数据集管理"
 
-#: dashboard/resources.py:248
+#: dashboard/resources.py:224
 msgid "datamanager"
 msgstr "数据管理"
 
-#: dashboard/resources.py:335
+#: dashboard/resources.py:231
 msgid "Log"
 msgstr "日志"
 
-#: dashboard/resources.py:384
+#: dashboard/resources.py:280
 msgid "Admin"
 msgstr "管理员"
 
-#: dashboard/resources.py:423
+#: dashboard/resources.py:323
 msgid "Resource"
 msgstr "资源"
 
-#: dashboard/resources.py:433
+#: dashboard/resources.py:333
 msgid "Permission"
 msgstr "权限"
 
-#: dashboard/resources.py:443
+#: dashboard/resources.py:343
 msgid "Role"
 msgstr "角色"
 
-#: dashboard/resources.py:446
+#: dashboard/resources.py:346
 msgid "Auth"
 msgstr "权限管理"
 
-#: dashboard/resources.py:566
+#: dashboard/resources.py:366
 msgid "Switch Layout"
 msgstr "切换布局"
 
-#: dashboard/biz_routers/eval_model.py:44
+#: dashboard/resources.py:376
+msgid "任务看板"
+msgstr ""
+
+#: dashboard/resources.py:393
+msgid "下载标注结果"
+msgstr ""
+
+#: dashboard/resources.py:407
+msgid "创建标注任务"
+msgstr ""
+
+#: dashboard/resources.py:415
+msgid "上传已标注数据"
+msgstr ""
+
+#: dashboard/resources.py:424
+msgid "Labeling Record"
+msgstr "标注记录"
+
+#: dashboard/resources.py:447
+msgid "Audit Record"
+msgstr "审核记录"
+
+#: dashboard/resources.py:468
+msgid "任务管理"
+msgstr ""
+
+#: dashboard/biz_routers/eval_model.py:65
 #, fuzzy
 msgid "Create Evaluation"
 msgstr "新建评测"
+
+#: dashboard/biz_routers/eval_model.py:255
+msgid "模型评测报告"
+msgstr ""
+
+#: dashboard/biz_routers/eval_model.py:312
+msgid "模型评测报告编辑"
+msgstr ""
 
 #: dashboard/templates/evaluationplan/copy_create.html:133
 #: dashboard/templates/evaluationplan/create.html:131
@@ -189,26 +201,25 @@ msgstr "请再次输入新密码"
 msgid "submit"
 msgstr "提交"
 
-#: dashboard/templates/record/create_eval.html:6
-#, fuzzy
-msgid "Evaluation Plan"
-msgstr "评测方案"
-
-#: dashboard/templates/record/create_eval.html:14
-#: dashboard/templates/record/create_eval.html:40
+#: dashboard/templates/record/create_eval.html:41
 #, fuzzy
 msgid "Evaluation Model"
 msgstr "模型评测"
 
-#: dashboard/templates/record/create_eval.html:21
-#, fuzzy
-msgid "Add Model"
-msgstr "添加模型"
-
-#: dashboard/templates/record/create_eval.html:59
+#: dashboard/templates/record/create_eval.html:60
 #, fuzzy
 msgid "Create new Model"
 msgstr "评测模型"
+
+#: dashboard/templates/record/get_report.html:90
+#: last/services/templates/list.html:169
+msgid "prev_page"
+msgstr "前一页"
+
+#: dashboard/templates/record/get_report.html:111
+#: last/services/templates/list.html:190
+msgid "next_page"
+msgstr "下一页"
 
 #: last/services/middlewares.py:77
 #, python-format
@@ -219,6 +230,14 @@ msgstr ""
 #, python-format
 msgid "Login failed %(times)s times, you can try %(rest_times)s more times"
 msgstr ""
+
+#: last/services/resources.py:127
+msgid "update"
+msgstr "更新"
+
+#: last/services/resources.py:134
+msgid "delete"
+msgstr "删除"
 
 #: last/services/resources.py:144
 msgid "delete_selected"
@@ -241,30 +260,30 @@ msgstr "导出"
 msgid "Success create %(count)s %(label)s"
 msgstr ""
 
-#: last/services/providers/login.py:136
+#: last/services/providers/login.py:143
 #, fuzzy
 msgid "captcha_error"
 msgstr "请输入旧密码"
 
-#: last/services/providers/login.py:153
+#: last/services/providers/login.py:160
 msgid "Google recaptcha verify failed"
 msgstr ""
 
-#: last/services/providers/login.py:160
+#: last/services/providers/login.py:167
 msgid "login_failed"
 msgstr "登陆失败"
 
-#: last/services/providers/login.py:234
+#: last/services/providers/login.py:241
 #, fuzzy
 msgid "confirm_password_different"
 msgstr "旧密码"
 
-#: last/services/providers/login.py:269
+#: last/services/providers/login.py:276
 #, fuzzy
 msgid "old_password_error"
 msgstr "旧密码"
 
-#: last/services/providers/login.py:271
+#: last/services/providers/login.py:278
 #, fuzzy
 msgid "new_password_different"
 msgstr "新密码"
@@ -334,14 +353,6 @@ msgstr ""
 #, python-format
 msgid "Showing %(from)s to %(to)s of %(total)s entries"
 msgstr ""
-
-#: last/services/templates/list.html:169
-msgid "prev_page"
-msgstr "前一页"
-
-#: last/services/templates/list.html:190
-msgid "next_page"
-msgstr "下一页"
 
 #: last/services/templates/update.html:24
 msgid "save_and_return"
@@ -469,3 +480,21 @@ msgstr ""
 
 #~ msgid "Evaluation Record"
 #~ msgstr "评测记录"
+
+#~ msgid "labeling"
+#~ msgstr "标注工具"
+
+#~ msgid "Labeling"
+#~ msgstr "标注工具"
+
+#~ msgid "复制并新建"
+#~ msgstr ""
+
+#~ msgid "上传数据集"
+#~ msgstr ""
+
+#~ msgid "Evaluation Plan"
+#~ msgstr "评测方案"
+
+#~ msgid "Add Model"
+#~ msgstr "添加模型"

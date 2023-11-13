@@ -2,9 +2,19 @@ import csv
 import json
 import time
 
+import pandas as pd
 from starlette.requests import Request
 
-from dashboard.biz_models import DataSet, EvaluationPlan, LabelPage, LabelResult, ModelInfo, Risk
+from dashboard.biz_models import (
+    AuditPage,
+    AuditResult,
+    DataSet,
+    EvaluationPlan,
+    LabelPage,
+    LabelResult,
+    ModelInfo,
+    Risk,
+)
 from dashboard.enums import EvalStatus
 from dashboard.models import Admin
 from dashboard.utils.converter import DataSetTool
@@ -183,15 +193,33 @@ class ShowAction(Display):
                                     "risk_description": res["risk_description"],
                                 }
                             )
-            with open(dataset["file"], "r") as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    info = row
-                    label_info.append(info)
-            del label_info[0]
-        return await super().render(
-            request, {**dataset, "focused_risks": content, "label_info": label_info}
+            if dataset["file"].endswith("csv"):
+                with open(dataset["file"], "r", encoding="utf-8-sig") as file:
+                    reader = csv.reader(file)
+                    # rows = []
+                    for row in reader:
+                        label_info.append(row)
+                        # row_string = ",".join(row)
+                        # rows.append(row_string)
+                    # csv_string = "\n".join(rows)
+                del label_info[0]
+
+            elif dataset["file"].endswith("xlsx"):
+                xls = pd.ExcelFile(dataset["file"])
+                for sheet_name in xls.sheet_names:
+                    # Read the sheet into a DataFrame
+                    df = pd.read_excel(xls, sheet_name=sheet_name)
+                    for index, row in df.iterrows():
+                        label_info.append(list(row))
+                # csv_string = ""
+            else:
+                raise NotImplementedError("We only support csv or xlsx file.")
+
+        value = await super().render(
+            request,
+            {**dataset, "focused_risks": content, "label_info": label_info},
         )
+        return value
 
 
 class ShowRiskType(Display):
@@ -304,16 +332,19 @@ class ShowLabelProgress(Display):
     async def render(self, request: Request, value: any):
         user_id = str(request.state.admin).split("#")[1]
         info = await LabelPage.get_or_none(task_id=value).values()
-        assign_length_dict = eval(info["assign_length"])
-        assign_labeling_progress = eval(info["labeling_progress"])
-        # 已经标注了的题目数量
-        labeled_question_count = assign_labeling_progress[user_id]
-        total_question_count = assign_length_dict[user_id]
-        # return content
-        if labeled_question_count == total_question_count:
-            return_content = "已完成"
-        else:
-            return_content = f"标注中 \n {labeled_question_count}/{total_question_count}"
+        try:
+            assign_length_dict = eval(info["assign_length"])
+            assign_labeling_progress = eval(info["labeling_progress"])
+            # 已经标注了的题目数量
+            labeled_question_count = assign_labeling_progress[user_id]
+            total_question_count = assign_length_dict[user_id]
+            # return content
+            if labeled_question_count == total_question_count:
+                return_content = "已完成"
+            else:
+                return_content = f"标注中 \n {labeled_question_count}/{total_question_count}"
+        except Exception:
+            return_content = "无权限查看"
 
         return await super().render(request, {"content": return_content})
 
@@ -326,7 +357,7 @@ class ShowTaskLabelingProgress(Display):
         total_question = len(info_list)
         labeled_count = 0
         for info in info_list:
-            if info.status == "标注完成":
+            if info.status in ["标注完成", "已审核"]:
                 labeled_count += 1
 
         if labeled_count == total_question:
@@ -336,12 +367,61 @@ class ShowTaskLabelingProgress(Display):
         return await super().render(request, {"content": return_content})
 
 
+class DownLoadLabelResult(Display):
+    template = "taskmanage/download_label_result.html"
+
+    async def render(self, request: Request, value: any):
+        info = await AuditPage.get_or_none(task_id=value).values()
+        return await super().render(request, {"content": info["id"]})
+
+
+class ShowAudit(Display):
+    template = "auditpage/audit_detail.html"
+
+    async def render(self, request: Request, value: any):
+        info = await AuditPage.get_or_none(task_id=value).values()
+        return await super().render(request, {"content": info["id"]})
+
+
+class ShowAuditProgress(Display):
+    template = "auditpage/progress_show.html"
+
+    async def render(self, request: Request, value: any):
+        user_id = str(request.state.admin).split("#")[1]
+        info = await AuditPage.get_or_none(task_id=value).values()
+        try:
+            audit_length_dict = eval(info["audit_length"])
+            audit_progress = eval(info["audit_progress"])
+            # 已经审核了的题目数量
+            audit_question_count = audit_progress[user_id]
+            total_question_count = audit_length_dict[user_id]
+            # return content
+            if audit_question_count == total_question_count:
+                return_content = "已完成"
+            else:
+                return_content = f"审核中 \n {audit_question_count}/{total_question_count}"
+        except Exception:
+            return_content = "无权限查看"
+
+        return await super().render(request, {"content": return_content})
+
+
 class ShowTaskAuditProgress(Display):
     template = "taskmanage/audit_progress_show.html"
 
     async def render(self, request: Request, value: any):
-        user_id = str(request.state.admin).split("#")[1]
-        return user_id
+        info_list = await AuditResult.filter(task_id=value)
+        total_question = len(info_list)
+        audit_count = 0
+        for info in info_list:
+            if info.status == "已审核":
+                audit_count += 1
+
+        if audit_count == total_question:
+            return_content = "已完成"
+        else:
+            return_content = f"审核中 \n {audit_count}/{total_question}"
+        return await super().render(request, {"content": return_content})
 
 
 class ShowTime(Display):

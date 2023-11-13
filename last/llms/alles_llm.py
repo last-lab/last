@@ -1,12 +1,22 @@
 import os
 from typing import Any, List, Mapping, Optional, Dict
 from pydantic import BaseModel
-from .model.http_alles_api_model import AllesMinimaxAPILLMModel, AllesChatGPTAPILLMModel, AllesGPT4APILLMModel, AllesPalmAPILLMModel, AllesClaudeAPILLMModel, AllesWenxinAPILLMModel, AllesSparkAPILLMModel, AllesBaiduTranslateAPILLMModel
+from .model.http_alles_api_model import (
+    AllesMinimaxAPILLMModel,
+    AllesChatGPTAPILLMModel,
+    AllesGPT4APILLMModel,
+    AllesPalmAPILLMModel,
+    AllesClaudeAPILLMModel,
+    AllesWenxinAPILLMModel,
+    AllesSparkAPILLMModel,
+    AllesBaiduTranslateAPILLMModel,
+)
 from .model.http_puyu_api_model import PuyuAPILLMModel
 from .model.http_tigerbot_api_model import TigerbotAPILLMModel
 from .model.http_mita_api_model import MitaAPILLMModel
 from .model.http_jieyue_api_model import JieyueAPILLMModel
 from .model.http_wuya_api_model import WuyaAPILLMModel
+from .model.http_soul_api_model import SoulAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -44,7 +54,9 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["JIEYUE_API_TOKEN"]
         elif self.model.lower().startswith("wuya"):
             api_key = os.environ["WUYA_API_TOKEN"]
-        
+        elif self.model.lower().startswith("soul"):
+            api_key = os.environ["SOUL_API_TOKEN"]
+
         params = {
             "api_key": api_key,
         }
@@ -72,6 +84,8 @@ class AllesChatLLM(BaseModel):
             model = JieyueAPILLMModel(**params)
         elif self.model.lower() == "wuya":
             model = WuyaAPILLMModel(**params)
+        elif self.model.lower() == "soul":
+            model = SoulAPILLMModel(**params)
         else:
             raise NotImplementedError()
 

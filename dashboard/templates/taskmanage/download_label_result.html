@@ -1,0 +1,7 @@
+<button class="btn btn-ghost-primary" onclick="jumpDetail({{ value.content }})">下载</button>
+
+<script>
+    function jumpDetail(id) {
+        window.location.href = `/admin/taskmanage/download/${id}`
+    }
+</script>

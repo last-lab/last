@@ -1,4 +1,6 @@
 import json
+from openai import Completion
+import openai
 import requests
 import sseclient
 from .base_model import HTTPAPILLMModel
@@ -10,7 +12,7 @@ class TigerAPILLMModel(HTTPAPILLMModel):
         self.api_key = api_key
         self.api_base = api_base
         self.model = None
-        
+
     def response(
         self,
         prompt,
@@ -23,8 +25,10 @@ class TigerAPILLMModel(HTTPAPILLMModel):
             try:
                 session = requests.Session()
                 data = {"prompt": prompt, "history": []}
-                headers = {'Content-Type': 'application/json'}
-                event_source = sseclient.SSEClient(self.api_base, json=data, headers=headers, session=session)
+                headers = {"Content-Type": "application/json"}
+                event_source = sseclient.SSEClient(
+                    self.api_base, json=data, headers=headers, session=session
+                )
                 history = []
                 for event in event_source:
                     # 将事件传递给回调函数进行处理
@@ -36,7 +40,7 @@ class TigerAPILLMModel(HTTPAPILLMModel):
                     else:
                         break
 
-                generated_text = completion["choices"][0]["text"]
+                generated_text = Completion["choices"][0]["text"]
                 success = True
             except Exception as ex:
                 generated_text = f"\n[Error] {type(ex).__name__}: {ex}\n"

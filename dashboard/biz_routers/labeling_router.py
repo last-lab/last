@@ -33,8 +33,9 @@ async def labeling_view(
         "resource": resource,
         "pk": pk,
         "task_pk_value": task_pk_value,
-        "labels": ["判断标注"],
-        # "labels": ast.literal_eval(request.query_params["labeling_method"]),
+        # "labels": ["判断标注"],
+        "labels": ast.literal_eval(request.query_params["labeling_method"]),
+        "risk_level": request.query_params["risk_level"],
     }
     # 点击了标注之后，需要根据传回来的参数，主要是数据集的名称，标注方式
     # 载入数据，丢一个新的界面出去
@@ -119,7 +120,7 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
     # 从result表中获取所有的question字段的结果
     # 获取result表中给定task_id的所有记录
     results = await LabelResult.filter(task_id=task_id).values(
-        "question_id", "question", "status", "labeling_method", "assign_user"
+        "question_id", "question", "status", "labeling_method", "assign_user", "risk_level"
     )
     res_list = []
     for result in results:
@@ -132,6 +133,7 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
                     "action": "标注" if result["status"] == "未标注" else "查看",
                     "task_id": task_id,
                     "labeling_method": result["labeling_method"],
+                    "risk_level": result["risk_level"],
                 }
             )
 
@@ -199,12 +201,15 @@ async def submit_callback(request: Request, resource: str, pk: str):
     task_id = json_data["task_id"]
     annotation = json_data["annotation"]
     labeling_method = json_data["labeling_method"]
+    risk_level = json_data["risk_level"]
     labeling_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
     assert len(labeling_row) == 1
     # 进行多人标注结果的合并
     labeling_result = labeling_row[0].labeling_result
     # 将labelstudio的标注结果进行提取操作
-    refine_labeling_result = convert_labelstudio_result_to_string(labeling_method, annotation)
+    refine_labeling_result = convert_labelstudio_result_to_string(
+        labeling_method, annotation, risk_level
+    )
     # 逻辑，如果当前user_id不在这个annotation中，就插入{'user_id': annotation}
     if labeling_result is None:
         new_labeling_result = {user_id: refine_labeling_result}
@@ -224,6 +229,10 @@ async def submit_callback(request: Request, resource: str, pk: str):
     current_labeling_progress = eval(labelpage_row[0].labeling_progress)
     current_labeling_progress[user_id] += 1
     labelpage_row[0].labeling_progress = current_labeling_progress
+    # 修改一下labeling_flag
+    labeling_flag = eval(labelpage_row[0].labeling_flag)
+    labeling_flag[user_id][int(question_id) - 1] = True
+    labelpage_row[0].labeling_flag = labeling_flag
     await labelpage_row[0].save()
 
 
@@ -235,12 +244,15 @@ async def update_result_callback(request: Request, resource: str, pk: str):
     task_id = json_data["task_id"]
     annotation = json_data["annotation"]
     labeling_method = json_data["labeling_method"]
+    risk_level = json_data["risk_level"]
     labeling_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
     assert len(labeling_row) == 1
     # 进行多人标注结果的合并
     labeling_result = labeling_row[0].labeling_result
     # 将labelstudio的标注结果进行提取操作
-    refine_labeling_result = convert_labelstudio_result_to_string(labeling_method, annotation)
+    refine_labeling_result = convert_labelstudio_result_to_string(
+        labeling_method, annotation, risk_level
+    )
     # 逻辑，如果当前user_id不在这个annotation中，就插入{'user_id': annotation}
     assert labeling_result is not None
     # 更新已经有的结果
@@ -257,20 +269,44 @@ async def labeling_next_callback(request: Request):
     task_id = json_data["task_id"]
     current_question_index = json_data["current_question_index"]
     labeling_method = eval(html.unescape(json_data["labeling_method"]))
+    risk_level = json_data["risk_level"]
     # 从labelpage这个表中，基于user_id, question_id, task_id找到对应的记录
     labelpage_task_row = await LabelPage.filter(task_id=task_id)
     assert len(labelpage_task_row) == 1
     assign_user_item_list = ast.literal_eval(labelpage_task_row[0].assign_user)[user_id]
     assert current_question_index in assign_user_item_list
+    # 获取current_question_index在assign_user_item_list中的索引
     index = assign_user_item_list.index(current_question_index)
-    if index == len(assign_user_item_list) - 1:
-        # 如果当前id在最后面，则返回下一个值返回None
-        return {"question_id": "null", "task_id": task_id, "labeling_method": labeling_method}
-    else:
+    # TODO 判断下一道题有没有被标注过，如果下一道题被标注了，就继续往下跳直到遇到False，或者回到最开始
+    labeling_flag = eval(labelpage_task_row[0].labeling_flag)
+    search_index = assign_user_item_list[(index + 1) % len(assign_user_item_list)]
+    while True:
+        if labeling_flag[user_id][search_index]:
+            # 如果下一个题已经被标注了，就继续往后循环
+            search_index = (search_index + 1) % len(assign_user_item_list)
+        else:
+            next_flag = True
+            next_question_index = search_index
+            break
+        # 跳出判断, 由于是先调用next函数，因此碰到最后一个题的时候，查找next会出现
+        if search_index == current_question_index:
+            next_flag = False
+            break
+
+    if next_flag:
         return {
-            "question_id": assign_user_item_list[index + 1] + 1,
+            "question_id": next_question_index + 1,
             "task_id": task_id,
             "labeling_method": labeling_method,
+            "risk_level": risk_level,
+        }
+
+    else:
+        return {
+            "question_id": "null",
+            "task_id": task_id,
+            "labeling_method": labeling_method,
+            "risk_level": risk_level,
         }
 
 

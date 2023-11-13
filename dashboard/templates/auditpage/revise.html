@@ -1,9 +1,16 @@
 {% extends layout %}
 {% block page_body %}
-<link href="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/css/main.css" rel="stylesheet">
-<script src="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/js/main.js"></script>
-
 <style>
+
+    .button {
+        width: 80px;
+        /* 设置按钮宽度为80px */
+        height: 40px;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+
     .back-btn {
         padding: 10px 15px;
         border-radius: 4px;
@@ -18,10 +25,13 @@
         font-size: 16px;
         }
 
-.back-btn:hover {
+    .back-btn:hover {
     background-color: #2980b9;
     }
+
 </style>
+<link href="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/css/main.css" rel="stylesheet">
+<script src="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/js/main.js"></script>
 
 <body>
 <div class="btn-group" role="group" style="width: 100px">
@@ -34,8 +44,10 @@
 <!-- TODO, 选择标注的labelstudio的前端怎么写需要调研一下 -->
 <script>
     const queryString = window.location.search;
+
     // 解析查询字符串中的参数
     const urlParams = new URLSearchParams(queryString);
+
     // 获取特定参数的值
     const question_id = urlParams.get('question_id');
     const task_id = urlParams.get('task_id');
@@ -49,7 +61,6 @@
     let annotations = [];
     const interfaces = [
         "panel",
-        "update",
         "controls",
         "side-column",
         "instruction",
@@ -75,8 +86,8 @@
         const config = await getLabelConfig();
         const data = await getLabelData();
         const result = await getLabelResult();
-        const audit_status = await getAuditStatus();
-        console.log(result);
+
+
         if (config) {
             answer = config.A;
             question = config.Q;
@@ -677,30 +688,6 @@
             console.log("loading...")
         });
 
-        if (!audit_status){
-            labelStudio.on("updateAnnotation", (LS, annotation) => {
-                // Retrieve an annotation in JSON format
-                $.ajax({
-                    url: '/admin/labelpage/labeling/{item}/update',
-                    method: 'post',
-                    data: JSON.stringify({
-                        "annotation": annotation.serializeAnnotation(),
-                        "question_id": question_id,
-                        "task_id": task_id,
-                        "labeling_method": "{{labels}}",
-                        "risk_level": risk_level,
-                    }),
-                    success: function (e) {
-                        history.back();
-                    },
-                    error: function (e) {
-                        console.log(e)
-                    }
-                })
-            });
-        }else{
-            console.log('hello');
-        }
     }
 
     function select(name) {
@@ -750,8 +737,9 @@
         return rsp.json();
     }
 
-    async function getAuditStatus(){
-        const rsp = await fetch('/admin/labelpage/labeling/get_label_audit_status',{
+
+    async function getAuditResult(){
+        const rsp = await fetch('/admin/auditpage/get_audit_result',{
             method: 'post',
             body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
             headers: {
@@ -761,43 +749,64 @@
         return rsp.json();
     }
 
-    function judgeLegalLabeling(annotationList, riskLevel){
-        if (riskLevel != "三级风险"){
-            return true;
-        }else{
-            const risk_type_subrisk_dict = {
-                "领导人相关": 'risk_type_leader',
-                "敏感人物或组织": 'risk_type_person',
-                "政治事件": 'risk_type_policy',
-                "负面言论": 'risk_type_negative',
-                "舆情": 'risk_type_claim',
-                "其他": 'risk_type_other'
-            }
-            // 首先找出来这个标注的二级风险类型
-            for (var i = 0; i< annotationList.length; i++){
-                var riskFlag = annotationList[i].from_name;
-                if (riskFlag == 'risk_type'){
-                    riskType = annotationList[i].value.choices[0];
-                    subRiskName = risk_type_subrisk_dict[riskType];
-                    break;
-                }
-            }
-            // 从annotationList中找出二级风险，然后先判断三级风险中有没有其他二级风险项
-            for (var i = 0; i< annotationList.length; i++){
-                var risk_flag = annotationList[i].from_name;
-                if (risk_flag != 'risk_type' && risk_flag != 'risk_level' && risk_flag != subRiskName){
-                    return false;
-                }
-            }
-            return true;
+
+</script>
+
+
+<div>
+    <div class="form-group">
+        <div>
+            <span>审核选项 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <div>
+                <input type="radio" id = "confirm", name="auditType" value="确认">
+                <label for="judgment">确认</label>
+            </div>
+            <div>
+                <input type="radio" id = "problem", name="auditType" value="有问题">
+                <label for="sorting">有问题</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="button" type="submit" onclick="submitForm()">更新</button>
+<script>
+    const audit_result =  getAuditResult();
+    if(audit_result == '确认'){
+        document.getElementById('confirm').checked=true;
+    }else{
+        document.getElementById('problem').checked=true;
+    }
+
+
+    async function submitForm() {
+        // 提交结果
+        const radios = document.getElementsByName("auditType");
+
+        const checkedRadio = [...radios].find(r => r.checked);
+        var auditResult = checkedRadio.value;
+        var formData = {
+            auditResult: auditResult,
+            question_id: question_id,
+            task_id: task_id,
+            risk_level: risk_level,
         }
+        $.ajax({
+            type: 'POST',
+            url: '/admin/auditpage/audit/' + task_id + '_' + question_id + '/update',
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            success: function(response){
+                history.back();
+            }
+        })
     }
 </script>
 
 <button id="back" class="back-btn">返回</button>
 <script>
     const pk_value = urlParams.get('task_pk_value');
-    const briefDataUrl = '/admin/labelpage/display/' + pk_value;
+    const briefDataUrl =  '/admin/auditpage/show_audit_data/' + pk_value;
     const backBtn = document.getElementById('back');
     backBtn.addEventListener('click', () => {
         location.href = briefDataUrl;

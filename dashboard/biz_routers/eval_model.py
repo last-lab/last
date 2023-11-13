@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import re
 import time
 from concurrent.futures import ThreadPoolExecutor
 from functools import reduce
@@ -47,7 +48,7 @@ class EvalInfo(BaseModel):
 # 评测结果Class
 class ModelResultProp(BaseModel):
     record_id: int
-    eval_type_id: int
+    risk_id: int
 
 
 # 创建评测的路由
@@ -56,8 +57,8 @@ async def create_eval(
     request: Request,
     resources=Depends(get_resources),
 ):
-    eval_plans = await EvaluationPlan.all().limit(10)
-    model_list = await ModelInfo.all().limit(10)
+    eval_plans = await EvaluationPlan.all().limit(50)
+    model_list = await ModelInfo.all().limit(50)
 
     return templates.TemplateResponse(
         "record/create_eval.html",
@@ -75,14 +76,14 @@ async def create_eval(
 
 # TODO WangXunhong
 async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
-    print("start")
+    llm_name = json.loads(kwargs_json)["$llm_model"]["name"]
     _, new_dataset = await Client.execute(AI_eval, kwargs_json)  # 这里是计算逻辑，执行很慢
-    print("end")
+    # print("end")
     focused_risks = reduce(add, [dataset["focused_risks"] for dataset in dataset_info]).replace(
         "][", ","
     )
-    await DataSet.create(
-        name=plan["name"] + "_Result",
+    result = await DataSet.create(
+        name=plan["name"] + "+" + llm_name + "+问答记录",
         focused_risks=focused_risks,
         volume=new_dataset.volume,
         qa_num=new_dataset.qa_num,
@@ -102,12 +103,43 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
         created_at=new_dataset.created_at,
         updated_at=new_dataset.created_at,
         permissions=new_dataset.permissions,
-        first_risk_id="1",  # 这里的逻辑不正确，TODO 改掉
+        first_risk_id="1",
     )
+    await compute_acc(plan, record, result, llm_name)
     await Record.filter(id=record.id).update(state=EvalStatus.finish)
 
 
+# TODO compute_acc功能暂时还没写完 一些结果是mock的
+async def compute_acc(plan, record, result, llm_name):
+    score = await extract_score(result.qa_records)
+
+    llm = await ModelInfo.get_or_none(name=llm_name)
+    await ModelResult(
+        record_id=record.id,
+        eval_model_id=int(llm.id),
+        risk_id=0,
+        score=score,
+    ).save()
+    await ModelRelateCase(
+        record_id=record.id,
+        eval_model_id=int(llm.id),
+        risk_id=[int(_) for _ in json.loads(result.focused_risks)][0],
+        score=int(score),
+        come_dataset_id=int(result.id),
+        content="2010年至2012年，北非和中东地区爆发了许多抗议活动，要求推翻腐败的政权，建立民主制度和保障基本的人权。…",
+    ).save()
+
+
+async def extract_score(string):
+    pattern = r"评分：(\d+)"
+    rating = re.findall(pattern, string)
+    score = [int(r) for r in rating]
+    return sum(score) / len(score)
+
+
 # 创建评测记录接口
+
+
 @router.post("/evaluation/evaluation_create")
 async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
@@ -150,6 +182,7 @@ async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加�
                 }
             )
             asyncio.create_task(client_execute(plan, record, dataset_info, AI_eval, kwargs_json))
+
     except Exception as e:
         await Record.filter(id=record.id).update(state=EvalStatus.error)
         return {"status": "error", "success": 0, "msg": str(e)}
@@ -243,7 +276,7 @@ async def get_report(
     for demo in risk_demos:
         model = await ModelInfo.get_or_none(id=demo["eval_model_id"]).values()
         demo["eval_model_name"] = model["name"]
-        risk = await Risk.get_or_none(id=demo["risk_type_id"]).values()
+        risk = await Risk.get_or_none(risk_id=demo["risk_id"]).values()
         demo["risk_type_name"] = risk["risk_name"]
         dataset = await DataSet.get_or_none(id=demo["come_dataset_id"]).values()
         demo["come_dataset_name"] = dataset["name"]
@@ -276,26 +309,26 @@ async def get_report(
 @router.post("/{resource}/report/result")
 async def get_result(request: Request, result: ModelResultProp):
     # 综合信息需获取该record_id下所有信息
-    if result.eval_type_id == 0:
+    if result.risk_id == 0:
         results = await ModelResult.all().filter(record_id=result.record_id).values()
     else:
         # 维度信息还需要限制维度
         results = (
             await ModelResult.all()
-            .filter(record_id=result.record_id, eval_type_id=result.eval_type_id)
+            .filter(record_id=result.record_id, risk_id=result.risk_id)
             .values()
         )
     # 添加风险Name
     for item in results:
         model = await ModelInfo.get_or_none(id=item["eval_model_id"]).values()
         item["eval_model_name"] = model["name"]
-        if item["eval_type_id"] == 0:
+        if item["risk_id"] == 0:
             item["eval_type_name"] = "综合评分"
         else:
-            name = await Risk.get_or_none(id=item["eval_type_id"]).values()
+            name = await Risk.get_or_none(risk_id=item["risk_id"]).values()
             item["eval_type_name"] = name["risk_name"] + "评分"
             item["eval_data_set_score_json_list"] = json.loads(item["eval_data_set_score_json"])
-            # 添加评测集名称
+            # 添加数据集名称
             for ele in item["eval_data_set_score_json_list"]:
                 dataset_info = await DataSet.get_or_none(id=ele["id"]).values()
                 ele["name"] = dataset_info["name"]
@@ -352,8 +385,8 @@ class ISave(BaseModel):
 # 导出之后保存操作和清除操作
 @router.post("/{resource}/report/save")
 async def save_pdf(request: Request, data: ISave):
-    # TODO 导出的md文件暂时保存在/static/md中
-    file_path = os.path.join(BASE_DIR, "static", "md", data.name)
+    # TODO 导出的md文件暂时保存在/static/mdSave中
+    file_path = os.path.join(BASE_DIR, "static", "mdSave", data.name)
     file_handle = open(file_path, "w", encoding="utf-8")
     file_handle.write(data.content)
     file_handle.close()

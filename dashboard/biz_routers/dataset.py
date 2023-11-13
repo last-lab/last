@@ -15,7 +15,7 @@ from last.types.dataset import Dataset
 router = APIRouter()
 
 
-# 上传评测集页面的路由
+# 上传数据集页面的路由
 @router.get("/{resource}/upload_dataset", dependencies=[Depends(create_checker)])
 async def upload_dataset(
     request: Request,
@@ -36,7 +36,7 @@ async def upload_dataset(
         "resource_label": model_resource.label,
         "resources": resources,
         "model_resource": model_resource,
-        "page_title": "上传评测集",
+        "page_title": "上传数据集",
         "risk_info": risk_info,
     }
     try:
@@ -70,7 +70,7 @@ class Item(Dataset):
 async def conform(request: Request, item: Item):
     result = await DataSet.all().filter(name=item.name)
     if len(result) > 0:
-        return {"result": 0, "reason": "评测集名称重复，请修改"}
+        return {"result": 0, "reason": "数据集名称重复，请修改"}
     else:
         time = (
             item.created_at.year

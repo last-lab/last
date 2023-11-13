@@ -1,7 +1,7 @@
 '''
    Wuya API 没有chat功能 仅支持单条数据 
 '''
-import requests
+import json
 from .base_model import HTTPAPILLMModel
 
         
@@ -22,8 +22,10 @@ class WuyaAPILLMModel(HTTPAPILLMModel):
             "query_intention": "knowledge"
         }
 
-
-        return requests.post(self.url, headers=self.headers, json=payload).json()
+        resp = await self.async_post(
+            self.url, headers=self.headers, data=json.dumps(payload)
+        )
+        return resp
 
     def parse(self, response):
 
