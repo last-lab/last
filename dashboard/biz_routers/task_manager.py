@@ -279,7 +279,6 @@ async def delete_task(
     label_task_row = await LabelPage.filter(task_id=task_id)
     audit_task_row = await AuditPage.filter(task_id=task_id)
 
-    assert len(task_row) == len(label_task_row) == len(audit_task_row) == 1
     await task_row[0].delete()
     await label_task_row[0].delete()
     await audit_task_row[0].delete()
