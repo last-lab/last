@@ -10,7 +10,7 @@ import last.query.test_data as test_data
     demo
 """
 
-start = time.time()
+# start = time.time()
 
 # class TestScheduler(unittest.TestCase):
 class TestScheduler():
@@ -22,12 +22,12 @@ class TestScheduler():
     
     def _callback_func(self, response):
         print(response.json())
-        print("duration : {:.2f}".format(time.time()- start))
+        # print("duration : {:.2f}".format(time.time()- start))
     
     ## 模拟class LLM query
     ## 回调方式获取response
     def query_callbackfunc(self):
-        start = time.time()
+        # start = time.time()
         for req in test_data.reqs:
             ## 发起 request
             ## request = {"url": url, "headers": headers, "data": json.dumps(payload)}
@@ -47,17 +47,21 @@ class TestScheduler():
     ## 从 response buffer 获取 response
     def get_response(self):
         pass
+    
+def test_query_callbackfunc():
+    ## 启动 scheduler 线程
+    load_scheduler()
+    ## 某个有 query 需求的对象
+    test = TestScheduler()
+    #
+    test.query_callbackfunc()
+    #
+    # test.query_no_callbackfunc()
 
-## 启动 scheduler 线程
-load_scheduler()
-## 某个有 query 需求的对象
-test = TestScheduler()
-#
-test.query_callbackfunc()
-#
-# test.query_no_callbackfunc()
+    ## 某个有 query 需求的对象
+    test2 = TestScheduler()
+    test2.query_callbackfunc()
+        
 
-## 某个有 query 需求的对象
-test2 = TestScheduler()
-test2.query_callbackfunc()
+
 
