@@ -123,6 +123,10 @@ msgstr ""
 msgid "Switch Layout"
 msgstr "Switch Layout"
 
+#: dashboard/resources.py:129
+msgid "AI Model Manager"
+msgstr ""
+
 #: dashboard/biz_routers/eval_model.py:44
 #, fuzzy
 msgid "Create Evaluation"

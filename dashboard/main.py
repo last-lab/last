@@ -26,6 +26,7 @@ from dashboard.providers import (  # GitHubProvider,; GoogleProvider,
     import_export_provider,
 )
 from dashboard.tasks import rearq
+from last.query import load_scheduler
 from last.services import enums, middlewares
 from last.services.app import app as admin_app
 from last.services.exceptions import (
@@ -123,6 +124,7 @@ def create_app():
         )
         await mock_data.create_mock_data()
         # await rearq_server.start_worker(with_timer=True)
+        load_scheduler()
 
     return app
 

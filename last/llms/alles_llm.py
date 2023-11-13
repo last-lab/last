@@ -74,7 +74,7 @@ class AllesChatLLM(BaseModel):
             model = WuyaAPILLMModel(**params)
         else:
             raise NotImplementedError()
-
+        ## 删除 返回值 response
         response = await model.response(
             prompt=prompt,
             messages=messages,

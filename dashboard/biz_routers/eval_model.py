@@ -373,3 +373,24 @@ async def save_md(request: Request, data: ISave):
     file_handle.write(data.content)
     file_handle.close()
     return {"mes": 1}
+
+
+# add ai model
+@app.get("/aimodel/add")
+async def add_aimodel(
+    request: Request,
+    resources=Depends(get_resources),
+):
+    model_type_list = ["type1", "type2", "type3"]
+
+    return templates.TemplateResponse(
+        "record/aimodel/add_aimodel.html",
+        context={
+            "request": request,
+            "resources": resources,
+            "resource_label": "Label",
+            "page_pre_title": "BY LABEL STUDIO",
+            "page_title": _("添加模型"),
+            "model_type_list": model_type_list,
+        },
+    )

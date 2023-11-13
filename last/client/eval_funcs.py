@@ -7,6 +7,7 @@ from tqdm import tqdm
 import json
 import asyncio
 
+
 async def AI_eval(
     datasets=Placeholder(parser=lambda x: x),
     llm_model=Placeholder(parser=lambda x: x),
@@ -45,9 +46,12 @@ async def AI_eval(
     new_qa_records = {}
     for qa_record in tqdm(plan):  
         question, correct_ans = qa_record.question, qa_record.answer
+        print("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm")
+        ## TODO: llm_model critic_model return 删除
         responce = await llm_model(question)
         critic = await critic_model(responce, correct_ans)
         new_qa_record = QARecord(question=question, answer=responce, critic=critic)
+        print("````````````")
         new_qa_records[ID()] = new_qa_record
 
     task = Task(

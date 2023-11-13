@@ -17,6 +17,9 @@ class ModelInfo(Model):
     endpoint = fields.CharField(max_length=200, null=True)
     access_key = fields.CharField(max_length=2000, null=True)
     secret_key = fields.CharField(max_length=200, null=True)
+    # model_org = fields.CharField(max_length=200, null=True) # 厂商
+    # auth_status = fields.CharField(max_length=200, null=True) # 鉴权状态
+    # operations = fields.CharField(max_length=200, null=True) # 操作
 
 
 # 每个评测记录的信息

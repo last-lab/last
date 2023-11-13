@@ -7,7 +7,7 @@ from starlette.requests import Request
 from dashboard import enums
 from dashboard.biz_models import AuditResult  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
-from dashboard.biz_models import DataSet, LabelPage, TaskManage
+from dashboard.biz_models import DataSet, LabelPage, ModelInfo, TaskManage
 from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
@@ -123,9 +123,37 @@ class Evaluation(Dropdown):
         async def get_actions(self, request: Request) -> List[Action]:
             return []
 
+    class AIModelManager(Model):
+        """模型管理"""
+
+        label = _("AI Model Manager")
+        model = ModelInfo
+
+        filters = []
+        fields = [
+            Field(name="name", label="模型名称", display=ShowPopover()),
+            Field(name="version", label="模型版本", display=ShowPopover()),
+            Field(name="model_type", label="模型类型", display=ShowPopover()),
+            Field(name="model_org", label="厂商", display=ShowPopover()),
+            Field(name="auth_status", label="鉴权状态", display=ShowPopover()),
+            Field(name="operations", label="操作", display=ShowPopover()),
+        ]
+
+        async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
+            return [
+                ToolbarAction(
+                    label="添加模型",
+                    icon="fas fa-plus",
+                    name="add",
+                    method=Method.GET,
+                    ajax=False,
+                    class_="btn-dark",
+                )
+            ]
+
     label = _("模型评测")
     icon = "fas fa-user"
-    resources = [Record, Create]
+    resources = [Record, Create, AIModelManager]
 
 
 @app.register

@@ -4,7 +4,6 @@
 import asyncio
 import os
 import time
-
 import unittest
 
 from last.client.call_llm import generate

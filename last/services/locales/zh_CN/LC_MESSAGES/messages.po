@@ -124,6 +124,10 @@ msgstr "权限管理"
 msgid "Switch Layout"
 msgstr "切换布局"
 
+#: dashboard/resources.py:130
+msgid "AI Model Manager"
+msgstr "模型管理"
+
 #: dashboard/biz_routers/eval_model.py:44
 #, fuzzy
 msgid "Create Evaluation"

@@ -42,7 +42,7 @@ async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
         if not (system_prompt is None or system_prompt == ""):
             messages.append(SystemMessage(content=system_prompt))
         messages.append(HumanMessage(content=human_prompt))
-
+        # 删除return output
         output = chat(
             messages,
         ).content
@@ -63,7 +63,7 @@ async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
         if not (system_prompt is None or system_prompt == ""):
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": human_prompt})
-
+        # 删除return output
         output = await chat(
             prompt="",
             messages=messages,
@@ -87,6 +87,8 @@ async def generate(
     presence_penalty: Optional[float] = 0.0,
 ) -> str:
     try:
+        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+        ## TODO: 删除 outputs
         outputs = await call_llm(
             model=model,
             temperature=temperature,

@@ -63,7 +63,7 @@ class LLM(LLMInfo):
             prompt = self.gen_critic_prompt(*msgs)
         else:
             prompt = msgs[0].content
-
+        ## TODO: 删除return_msg
         return_msg = await generate(prompt=prompt, model=self.name, system_prompt=self.system_prompt, maximum_length=self.max_tokens)
         return_msg = Message(role=MessageRole.AI, content=return_msg)
         return return_msg

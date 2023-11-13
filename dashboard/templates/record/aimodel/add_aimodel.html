@@ -1,0 +1,227 @@
+{% extends layout %}
+{% block page_body %}
+<div class="mb-3">
+    <header class="navbar navbar-expand-md navbar-transparent d-print-none">
+        <div class="container-xl">
+        <div class="collapse navbar-collapse" id="navbar-menu">
+            <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                <a class="nav-link"  onclick=showDiv(1)>
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/star -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path></svg>
+                    </span>
+                    <span class="nav-link-title">
+                        模型信息
+                    </span>
+                </a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" onclick=showDiv(2)>
+                    <span class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/star -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path></svg>
+                    </span>
+                    <span class="nav-link-title">
+                        鉴权信息
+                    </span>
+                </a>
+                </li>
+            </ul>
+            </div>
+        </div>
+        </div>
+    </header>
+</div>
+<form id="aimodel-form">
+        <div id = "1" class = "div-container">
+            <fieldset class="form-fieldset" style="width: 100%; margin-left: 12px; max-width: 800px">
+                <div class="mb-3">
+                    <label class="form-label required">模型名称</label>
+                    <input type="text" class="form-control" name="model_name">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label required">模型名称</label>
+                    <input type="text" class="form-control" name="model_name">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label required">模型路径</label>
+                    <input type="text" class="form-control" name="model_path">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">模型版本</label>
+                    <input type="text" class="form-control" name="model_version">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label required">模型类型</label>
+                    <select required class="form-select" id="model_type">
+                        {% for model_type in model_type_list %}
+                        <option>{{ model_type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">厂商</label>
+                    <input type="text" class="form-control" name="model_org">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">基模型</label>
+                    <input type="text" class="form-control" name="parent_model">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">模型参数量</label>
+                    <input type="text" class="form-control" name="model_params">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">预训练数据集</label>
+                    <input type="text" class="form-control" name="pretrain_dataset">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">微调方法</label>
+                    <input type="text" class="form-control" name="fine_tuning_method">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">微调数据集</label>
+                    <input type="text" class="form-control" name="fine_tuning_dataset">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">备案文件</label>
+                    <input type="file" class="form-control" name="avatar" placeholder="">
+                </div>
+            </fieldset>
+        </div>
+        <div id = "2" style="display:none" class = "div-container">
+            <fieldset>
+                <label class="form-label required">访问密钥</label>
+                <div class="mb-3">
+                    <label class="form-label required">access key</label>
+                    <input type="text" class="form-control" name="">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label required">secret key</label>
+                    <input type="text" class="form-control" name="">
+                </div>
+            </fieldset>
+            <div class="form-footer">
+                <button type="submit" class="btn btn-primary">新增密钥</button>
+            </div>
+        </div>
+        <div class="form-footer">
+            <button type="submit" class="btn btn-primary">提交</button>
+        </div>
+    </div>
+</form>
+
+<!-- 模型信息/鉴权信息点击事件
+    显示/隐藏 相关form label -->
+<script>
+    function showDiv(divId) {
+        var divs = document.getElementsByClassName("div-container");
+        for (var i = 0; i < divs.length; i++) {
+            divs[i].style.display = "none";
+            if(divs[i].id == divId) {
+                divs[i].style.display = "";
+            }
+        }
+    }
+</script>
+
+<script>
+    const handleCreateAIModel = function () {
+        const data = {
+            
+        }
+
+        $.ajax({
+            url: '/admin/model/model_create',
+            method: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+                alert('模型添加成功')
+                $('#modelModal').modal('hide')
+                window.location.href = '/admin/aimodel/list'
+            },
+            error: function (data) {
+                console.log(data)
+                alert('创建失败')
+            }
+        })
+    }
+
+    const aimodel_form = document.getElementById('aimodel-form')
+    aimodel_form.addEventListener('submit', event => {
+        event.preventDefault();
+        handleCreateAIModel(event);
+    });
+</script>
+<!-- <script>
+
+    const handleCreateModel = function () {
+        const data = {
+            endpoint: $('#endpoint').val(),
+            access_key: $('#access_key').val(),
+            secret_key: $('#secret_key').val()
+        }
+
+        $.ajax({
+            url: '/admin/model/model_create',
+            method: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+                alert('模型创建成功')
+                $('#modelModal').modal('hide')
+                window.location.reload()
+            },
+            error: function (data) {
+                console.log(data)
+                alert('创建失败')
+            }
+        })
+    }
+    const handleCreateEvaluation = function () {
+        const data = {
+            "llm_id": values_id.join(','),
+            "plan_id": $('#eval_plan').val(),
+            "created_at": new Date().getTime(),
+            "llm_name": $('#model').val()
+        }
+        $.ajax({
+            url: '/admin/evaluation/evaluation_create',
+            method: 'POST',
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.success) {
+                    alert('新建评测成功')
+                    window.location.href = '/admin/record/list'
+                } else {
+                    alert(data.msg)
+                }
+            },
+            error: function (data) {
+                console.log(data)
+                alert(data.msg)
+            }
+         })
+    }
+
+    const model_form = document.getElementById('model-form')
+    const eval_form = document.getElementById('eval-form')
+
+    model_form.addEventListener('submit', event => {
+        event.preventDefault();
+        handleCreateModel(event)
+    });
+
+    eval_form.addEventListener('submit', event => {
+        event.preventDefault();
+        handleCreateEvaluation(event)
+    })
+</script> -->
+
+{% endblock %}

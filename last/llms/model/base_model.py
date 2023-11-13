@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import aiohttp
 import asyncio
+from last.query import waiting_task_queue_put
 
 
 class BaseLLMModel(ABC):
@@ -56,17 +57,21 @@ class BaseLLMModel(ABC):
             "messages": messages,
             "generated_text": generated_text,
         }
-    
 
 class HTTPAPILLMModel(BaseLLMModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.url = None
         self.headers = None
-            
+    
+    # def _callback_func():
+    #     pass
+    
     async def async_post(self, url, headers, data):
+        req = {"url": url, "headers": headers, "data": data}
+        # add_request_callbackfunc(req, self._callback_func)
         async with aiohttp.ClientSession() as session:
             async with session.post(url, headers=headers, data=data) as response:
-                # 处理响应
+                print("********************************")
                 result = await response.json()
         return result
