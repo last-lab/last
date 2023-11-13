@@ -20,6 +20,7 @@ from last.services.depends import create_checker, get_model, get_model_resource,
 from last.services.resources import Model as ModelResource
 
 # from last.services.routes.resources import list_view
+from last.services.responses import redirect
 from last.services.template import templates
 
 router = APIRouter()
@@ -260,3 +261,26 @@ async def download_labeling_result(
             "download_page.html",
             context=context,
         )
+
+
+@router.get("/{resource}/delete_task/{pk}")
+async def delete_task(
+    request: Request,
+    resource: str = Path(...),
+    pk: str = Path(...),
+    resources=Depends(get_resources),
+    model_resource: ModelResource = Depends(get_model_resource),
+    model: Type[Model] = Depends(get_model),
+):
+    obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
+    # 获取得到对应task的id
+    task_id = obj.task_id
+    task_row = await TaskManage.filter(task_id=task_id)
+    label_task_row = await LabelPage.filter(task_id=task_id)
+    audit_task_row = await AuditPage.filter(task_id=task_id)
+
+    assert len(task_row) == len(label_task_row) == len(audit_task_row) == 1
+    await task_row[0].delete()
+    await label_task_row[0].delete()
+    await audit_task_row[0].delete()
+    return redirect(request, "list_view", resource=resource)

@@ -389,7 +389,15 @@ class TaskManagePanel(Dropdown):
         ]
 
         async def get_actions(self, request: Request) -> List[Action]:
-            return []
+            return [
+                Action(
+                    label=_("删除"),
+                    icon="ti ti-edit",
+                    name="delete_task",
+                    method=Method.GET,
+                    ajax=False,
+                ),
+            ]
 
         async def get_bulk_actions(self, request: Request) -> List[Action]:
             return []
