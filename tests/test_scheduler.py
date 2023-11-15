@@ -54,10 +54,13 @@ def test_http_request_with_callback_no_exception():
         Args:
             response (requests.Response): http response
         """
+        ## 对 request 进行任意操作，例如，将其放入 list 中
         _requests.append(request)
         pass
     
-    assert http_request_with_callback(request = generate_request(prompt = prompts[0]), callback_func = callback) is None
+    for prompt in prompts:
+        # 通过 scheduler 发起http请求
+        assert http_request_with_callback(request = generate_request(prompt = prompt), callback_func = callback) is None
 
 # callback 参数必须进行 type hints
 # 否则抛出 TypeError 异常
