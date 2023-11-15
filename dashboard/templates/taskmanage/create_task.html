@@ -40,6 +40,22 @@
         font-size: 16px;
     }
 
+    .loading-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      font-weight: bold;
+      animation: jump 1s infinite;
+    }
+
+    @keyframes jump {
+      0% { transform: translate(-50%, -50%) translateY(0); }
+      50% { transform: translate(-50%, -50%) translateY(-10px); }
+      100% { transform: translate(-50%, -50%) translateY(0); }
+    }
+
 </style>
 
 
@@ -145,9 +161,9 @@
     </div>
 
 
-
-
     <button class="button" type="submit" onclick="submitForm()">提交</button>
+
+    <div id="loading-text" class="loading-text" style="display: none;">任务正在创建中，请稍后。。。</div>
 
     <script>
 
@@ -322,6 +338,8 @@
                     formData.append('riskData', JSON.stringify(riskData));
                     // 调用回调函数，将数据传递给它进行处理
                     // 使用 $.ajax 发送数据到特定的 URL
+                    var loadingText = document.getElementById('loading-text');
+                    loadingText.style.display = 'block';
                     $.ajax({
                         type: 'POST',
                         url: '/admin/taskmanage/create_task_callback',
@@ -330,7 +348,8 @@
                         contentType: false,
                         success: function (response) {
                             // 请求成功的处理
-                            history.back();
+                            loadingText.style.display = 'none';
+                            // history.back();
                             location.href = '/admin/taskmanage/list';
 
                             // alert(success);
