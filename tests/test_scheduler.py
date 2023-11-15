@@ -1,5 +1,6 @@
 import json
 import os
+import unittest
 
 import pytest
 import requests
@@ -49,6 +50,7 @@ def generate_request(
 
 # 正确使用 http_request_with_callback
 _requests = []
+
 
 @unittest.skip("Need apikey")
 def test_http_request_with_callback_no_exception():
