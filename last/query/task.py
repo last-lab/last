@@ -1,7 +1,7 @@
 import requests
 from last.query.id_generator import IDGenerator
         
-class Task(object):
+class Task(object):#TODO:Description
     """ request task
         id: 
             int64;

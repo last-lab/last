@@ -1,16 +1,19 @@
 import time
 import threading
-from queue import Queue, Empty
 import requests
 import json
 import os
-from aiohttp import web
 import aiohttp
 import asyncio
+import types
+import inspect
+from aiohttp import web
+from queue import Queue, Empty
 from last.query.id_generator import IDGenerator
 import multiprocessing
 from last.query.task import Task
 from functools import partial
+
 
 """
 TODO: NULL
@@ -134,6 +137,31 @@ def http_request_with_callback(request, callback_func, target = None):
         callback_func (function):
         target (object, optional):
     """
+    load_scheduler()
+    # 对传入的回调函数进行类型检查
+    if not callable(callback_func):
+        raise TypeError("The 'callback' parameter must be a callable function")
+
+    # 对传入的回调函数进行类型检查
+    if not isinstance(callback_func, types.FunctionType):
+        raise TypeError("The 'callback' parameter must be a function")
+    
+    # 获取回调函数的参数类型信息
+    callback_signature = inspect.signature(callback_func)
+    callback_parameters = callback_signature.parameters
+    
+    # 回调函数必须有一个参数
+    if len(callback_parameters) != 1:
+        raise TypeError("The 'callback' function must have exactly one parameter")
+
+    # 检查回调函数的参数类型是否为 requests
+    callback_parameter_name = next(iter(callback_parameters))
+    callback_parameter_type = callback_parameters[callback_parameter_name].annotation
+
+    # 回调函数必须有requests类型参数
+    if callback_parameter_type != requests:
+        raise TypeError("The parameter of the 'callback' function must be of type Request")
+
     waiting_task_queue_put(request, callback_func, auto_task = True, target = target)
     
 def http_request_with_buffer(request, target = None):
@@ -149,16 +177,21 @@ def http_request_with_buffer(request, target = None):
     Returns:
         task._id: 该request对应的task的id, 在获取缓冲区中的 response 时使用
     """
+    load_scheduler()
     return waiting_task_queue_put(request, auto_task = False, target = target)
 
 
 def load_scheduler():
     """ 启动 scheduler 线程
-    """    
+    """ 
+    ## TODO: 用任务队列 rq 解决 _scheduler down掉后 task 丢失问题
     try:
         global _scheduler
-        if _scheduler and not _scheduler.is_alive():
-            # the threading scheduler not null and not alive
+        if not _scheduler:
+            # the threading scheduler is null
+            _scheduler = threading.Thread(target=schedule_requests)
+        if not _scheduler.is_alive():
+            # the threading scheduler is not alive
             _scheduler.start()
     except Exception as e:
         print(str(e))
