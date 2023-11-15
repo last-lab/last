@@ -60,6 +60,7 @@ def test_http_request_with_callback_no_exception():
     assert http_request_with_callback(request = generate_request(prompt = prompts[0]), callback_func = callback) is None
 
 # callback 参数必须进行 type hints
+# 否则抛出 TypeError 异常
 def test_http_request_with_callback_callback_type_mismatch():
     def callback(arg):
         pass
@@ -68,6 +69,7 @@ def test_http_request_with_callback_callback_type_mismatch():
         http_request_with_callback(request = generate_request(prompt = prompts[0]), callback_func = callback)
 
 # callback 必须带参数
+# 否则抛出 TypeError 异常
 def test_http_request_with_callback_no_arg():
     def callback():
         pass
