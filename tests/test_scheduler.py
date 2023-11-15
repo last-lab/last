@@ -50,7 +50,7 @@ def generate_request(
 # 正确使用 http_request_with_callback
 _requests = []
 
-
+@unittest.skip("Need apikey")
 def test_http_request_with_callback_no_exception():
     def callback(request: requests):
         """http 请求完成后调用的回调函数
@@ -75,6 +75,7 @@ def test_http_request_with_callback_no_exception():
 
 # callback 参数必须进行 type hints
 # 否则抛出 TypeError 异常
+@unittest.skip("Need apikey")
 def test_http_request_with_callback_callback_type_mismatch():
     def callback(arg):
         pass
@@ -89,6 +90,7 @@ def test_http_request_with_callback_callback_type_mismatch():
 
 # callback 必须带参数
 # 否则抛出 TypeError 异常
+@unittest.skip("Need apikey")
 def test_http_request_with_callback_no_arg():
     def callback():
         pass
