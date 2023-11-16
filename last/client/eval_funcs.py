@@ -55,7 +55,7 @@ async def AI_eval(
     # 无异常抛出的情况下 response_list 与 task_list 元素一一对应
     response_list = await asyncio.gather(*task_list)
     progress_bar.update(1)
-    progress_bar.set_description(llm_model.name + "的评测进度:待测模型回答完毕")
+    progress_bar.set_description(llm_model.name + "的评测进度:待测模型测试完毕")
     
     # critic任务
     task_list.clear()
@@ -66,7 +66,7 @@ async def AI_eval(
     # 无异常抛出的情况下 critic_list 与 task_list 元素一一对应
     critic_list = await asyncio.gather(*task_list)
     progress_bar.update(1)
-    progress_bar.set_description(llm_model.name + "的评测进度:评判模型回答完毕")
+    progress_bar.set_description(llm_model.name + "的评测进度:评判模型评测完毕")
     
     # 处理评测结果
     for qa_record, response, critic in zip(plan, response_list, critic_list):
@@ -74,7 +74,7 @@ async def AI_eval(
         new_qa_record = QARecord(question=question, answer=response, critic=critic)
         new_qa_records[ID()] = new_qa_record
     progress_bar.update(1)
-    progress_bar.set_description(llm_model.name + "的评测进度:处理评测结果完毕")
+    progress_bar.set_description(llm_model.name + "的评测进度:评测结果处理完毕")
     progress_bar.close()
 
     task = Task(
