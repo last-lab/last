@@ -45,10 +45,10 @@ async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
             messages.append(SystemMessage(content=system_prompt))
         messages.append(HumanMessage(content=human_prompt))
 
-        output = await chat.apredict_messages(
+        resultMessage_BaseMessage = await chat.apredict_messages(
             messages,
         )
-        output = output.content
+        output = resultMessage_BaseMessage.content
     elif model.lower() in ALLES_CHAT_LLM:
         chat = AllesChatLLM(
             model=model,
