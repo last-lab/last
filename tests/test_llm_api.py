@@ -48,9 +48,7 @@ async def generation_test(prompt, model):
 @unittest.skip("Need apikey")
 class TestLLMAPI(unittest.TestCase):
     def test_tigerbot_api(self):
-        generated_text = asyncio.run(
-            generation_test(prompt="中国的首都在哪里", model="tigerbot")
-        )
+        generated_text = asyncio.run(generation_test(prompt="中国的首都在哪里", model="tigerbot"))
         print("tigerbot", generated_text)
         assert generated_text.startswith("北京")
 
@@ -67,9 +65,7 @@ class TestLLMAPI(unittest.TestCase):
         assert generated_text.startswith("生日快乐")
 
     def test_easymoney_api(self):
-        generated_text = asyncio.run(
-            generation_test(prompt="请介绍下你自己", model="EasyMoney")
-        )
+        generated_text = asyncio.run(generation_test(prompt="请介绍下你自己", model="EasyMoney"))
         print("EasyMoney: %s" % generated_text)
 
     @unittest.skip("API key has expired")
@@ -98,9 +94,7 @@ class TestLLMAPI(unittest.TestCase):
         ]
 
         for model in ALLES_CHAT_LLM:
-            generated_text = asyncio.run(
-                generation_test(prompt="Happy Birthday", model=model)
-            )
+            generated_text = asyncio.run(generation_test(prompt="Happy Birthday", model=model))
             # time.sleep(1)  # waiting for the release of resources
             print(model, generated_text)
             assert generated_text is not None
