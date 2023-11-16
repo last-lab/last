@@ -45,13 +45,36 @@ async def AI_eval(
 
     new_qa_records = {}
     progress_bar = tqdm(total=None, desc=llm_model.name + "的评测进度", leave=False)
+
+    # 待测question任务
+    task_list = []
     for qa_record in plan:
-        question, correct_ans = qa_record.question, qa_record.answer
-        responce = await llm_model(question)
-        critic = await critic_model(responce, correct_ans)
-        new_qa_record = QARecord(question=question, answer=responce, critic=critic)
+        question = qa_record.question
+        task_list.append(asyncio.create_task(llm_model(question)))
+        
+    # 无异常抛出的情况下 response_list 与 task_list 元素一一对应
+    response_list = await asyncio.gather(*task_list)
+    progress_bar.update(1)
+    progress_bar.set_description(llm_model.name + "的评测进度:待测模型回答完毕")
+    
+    # critic任务
+    task_list.clear()
+    for qa_record, response in zip(plan, response_list):
+        correct_ans = qa_record.answer
+        task_list.append(asyncio.create_task(critic_model(response, correct_ans)))
+    
+    # 无异常抛出的情况下 critic_list 与 task_list 元素一一对应
+    critic_list = await asyncio.gather(*task_list)
+    progress_bar.update(1)
+    progress_bar.set_description(llm_model.name + "的评测进度:评判模型回答完毕")
+    
+    # 处理评测结果
+    for qa_record, response, critic in zip(plan, response_list, critic_list):
+        question = qa_record.question
+        new_qa_record = QARecord(question=question, answer=response, critic=critic)
         new_qa_records[ID()] = new_qa_record
-        progress_bar.update(1)
+    progress_bar.update(1)
+    progress_bar.set_description(llm_model.name + "的评测进度:处理评测结果完毕")
     progress_bar.close()
 
     task = Task(
