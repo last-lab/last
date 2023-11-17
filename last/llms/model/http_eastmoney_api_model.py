@@ -38,12 +38,15 @@ class EastMoneyAPILLMModel(HTTPAPILLMModel):
         return resp
 
     def parse(self, response):
-
-        if response["code"] != 0 and "message" in response:
-            return (False, response["message"])
-        elif response["code"] != 0:
+        if response["code"] == -7 and "message" in response:
+            return (
+                True,
+                response["message"],
+            )
+        elif response["code"] == 0 :
+            return (
+                True,
+                response["data"],
+            )
+        else:
             return (False, "Api Error!")
-        return (
-            True,
-            response["data"],
-        )
