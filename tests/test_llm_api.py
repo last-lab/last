@@ -17,6 +17,7 @@ os.environ["MITA_API_TOKEN"] = ""
 os.environ["WUYA_API_TOKEN"] = ""
 os.environ["SOUL_API_TOKEN"] = ""
 os.environ["EASYMONEY_API_TOKEN"] = ""
+os.environ["HUAZANG_API_TOKEN"] = ""
 
 
 async def generation_test(prompt, model):
@@ -56,6 +57,12 @@ class TestLLMAPI(unittest.TestCase):
         generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="soul"))
         # 大小写都可以， eg. SOUL, Soul
         print("Soul: %s" % generated_text)
+        assert generated_text is not None
+    
+    def test_huazang_api(self):
+        generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="HuaZang"))
+        # 大小写都可以， eg. HuaZang, Huazang
+        print("HuaZang: %s" % generated_text)
         assert generated_text is not None
 
     def test_mita_api(self):
