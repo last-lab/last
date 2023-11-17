@@ -16,7 +16,7 @@ os.environ["JIEYUE_API_TOKEN"] = ""
 os.environ["MITA_API_TOKEN"] = ""
 os.environ["WUYA_API_TOKEN"] = ""
 os.environ["SOUL_API_TOKEN"] = ""
-os.environ["EASYMONEY_API_TOKEN"] = ""
+os.environ["EASTMONEY_API_TOKEN"] = ""
 os.environ["HUAZANG_API_TOKEN"] = ""
 os.environ["KKBOT_API_TOKEN"] = ""
 
@@ -78,9 +78,9 @@ class TestLLMAPI(unittest.TestCase):
         print("Mita: %s" % generated_text)
         assert generated_text is not None
 
-    def test_easymoney_api(self):
-        generated_text = asyncio.run(generation_test(prompt="请介绍下你自己", model="EasyMoney"))
-        print("EasyMoney: %s" % generated_text)
+    def test_eastmoney_api(self):
+        generated_text = asyncio.run(generation_test(prompt="请介绍下你自己", model="EastMoney"))
+        print("EastMoney: %s" % generated_text)
 
     @unittest.skip("API key has expired")
     def test_jieyue_api(self):

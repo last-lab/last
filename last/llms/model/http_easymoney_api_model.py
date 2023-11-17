@@ -5,7 +5,7 @@ import json
 from .base_model import HTTPAPILLMModel
 
 
-class EasyMoneyAPILLMModel(HTTPAPILLMModel):
+class EastMoneyAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.url = "https://llm-platform.eastmoney.com/api/verify/ask2"
