@@ -96,7 +96,7 @@ async def generate(
             model=model,
             temperature=temperature,
             system_prompt=system_prompt,  # TODO 目前不支持system prompt
-            human_prompt=prompt,
+            human_prompt=prompt.replace('"','').replace("'",''),
             maximum_length=maximum_length,
             stop_sequence=stop_sequence,
             top_p=top_p,
