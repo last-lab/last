@@ -17,6 +17,9 @@ from .model.http_mita_api_model import MitaAPILLMModel
 from .model.http_jieyue_api_model import JieyueAPILLMModel
 from .model.http_wuya_api_model import WuyaAPILLMModel
 from .model.http_soul_api_model import SoulAPILLMModel
+from .model.http_easymoney_api_model import EasyMoneyAPILLMModel
+from .model.http_huazang_api_model import HuazhangAPILLMModel
+from .model.http_KKbot_api_model import KKbotAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -56,6 +59,12 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["WUYA_API_TOKEN"]
         elif self.model.lower().startswith("soul"):
             api_key = os.environ["SOUL_API_TOKEN"]
+        elif self.model.lower().startswith("easymoney"):
+            api_key = os.environ["EASYMONEY_API_TOKEN"]
+        elif self.model.lower().startswith("huazang"):
+            api_key = os.environ["HUAZANG_API_TOKEN"]
+        elif self.model.lower().startswith("kkbot"):
+            api_key = os.environ["KKBOT_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -86,6 +95,12 @@ class AllesChatLLM(BaseModel):
             model = WuyaAPILLMModel(**params)
         elif self.model.lower() == "soul":
             model = SoulAPILLMModel(**params)
+        elif self.model.lower() == "easymoney":
+            model = EasyMoneyAPILLMModel(**params)
+        elif self.model.lower() == "huazang":
+            model = HuazhangAPILLMModel(**params)
+        elif self.model.lower() == "kkbot":
+            model = KKbotAPILLMModel(**params)
         else:
             raise NotImplementedError()
 

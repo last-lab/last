@@ -16,6 +16,9 @@ os.environ["JIEYUE_API_TOKEN"] = ""
 os.environ["MITA_API_TOKEN"] = ""
 os.environ["WUYA_API_TOKEN"] = ""
 os.environ["SOUL_API_TOKEN"] = ""
+os.environ["EASYMONEY_API_TOKEN"] = ""
+os.environ["HUAZANG_API_TOKEN"] = ""
+os.environ["KKBOT_API_TOKEN"] = ""
 
 
 async def generation_test(prompt, model):
@@ -57,11 +60,27 @@ class TestLLMAPI(unittest.TestCase):
         print("Soul: %s" % generated_text)
         assert generated_text is not None
 
+    def test_huazang_api(self):
+        generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="HuaZang"))
+        # 大小写都可以， eg. HuaZang, Huazang
+        print("HuaZang: %s" % generated_text)
+        assert generated_text is not None
+
+    def test_KKbot_api(self):
+        generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="KKBot"))
+        # 大小写都可以， eg. KKBot, KKbot
+        print("KKBot: %s" % generated_text)
+        assert generated_text is not None
+
     def test_mita_api(self):
         generated_text = asyncio.run(generation_test(prompt="生日快乐", model="Mita"))
         # 大小写都可以， eg. MITA、mita
         print("Mita: %s" % generated_text)
         assert generated_text is not None
+
+    def test_easymoney_api(self):
+        generated_text = asyncio.run(generation_test(prompt="请介绍下你自己", model="EasyMoney"))
+        print("EasyMoney: %s" % generated_text)
 
     @unittest.skip("API key has expired")
     def test_jieyue_api(self):

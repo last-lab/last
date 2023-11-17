@@ -84,5 +84,8 @@ class HTTPAPILLMModel(BaseLLMModel):
         async with aiohttp.ClientSession() as session:
             async with session.post(url, headers=headers, data=data) as response:
                 # 处理响应
-                result = await response.json()
+                try:
+                    result = await response.json()
+                except Exception as e:
+                    result = await response.text()
         return result

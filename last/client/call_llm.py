@@ -24,6 +24,9 @@ ALLES_CHAT_LLM = [
     "mita",
     "wuya",
     "soul",
+    "easymoney",
+    "huazang",
+    "kkbot",
 ]
 
 
