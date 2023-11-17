@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import aiohttp
 import asyncio
+from aiomultiprocess import Pool
 
 
 class BaseLLMModel(ABC):
@@ -59,13 +60,26 @@ class BaseLLMModel(ABC):
             "generated_text": generated_text,
         }
 
+# post task
+async def _post(req):
+    async with aiohttp.ClientSession() as session:
+        async with session.post(req["url"], headers=req["headers"], data=req["data"]) as response:
+            # 处理响应
+            result = await response.json()
+    return result
 
 class HTTPAPILLMModel(BaseLLMModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.url = None
         self.headers = None
-
+    # # aiomultiprocess 处理 post task
+    # async def async_post(self, url, headers, data):
+    #     req = [{"url": url, "headers": headers, "data": data}]
+    #     async with Pool() as pool:
+    #         results = await pool.map(_post, req)
+    #     return results[0]
+    
     async def async_post(self, url, headers, data):
         async with aiohttp.ClientSession() as session:
             async with session.post(url, headers=headers, data=data) as response:
