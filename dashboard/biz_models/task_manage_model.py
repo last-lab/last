@@ -13,3 +13,4 @@ class TaskManage(Model):
     assign_user = fields.CharField(max_length=255)
     audit_user = fields.CharField(max_length=255)
     risk_level = fields.CharField(max_length=255)
+    sheet_name_list = fields.CharField(max_length=2555)

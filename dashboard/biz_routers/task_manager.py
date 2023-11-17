@@ -117,7 +117,7 @@ async def create_task_callback(
     # df = pd.read_csv(json_data['file'])
     # json_data['labeling_method']如果是"风险判别"，那么后面会{"判断风险程度": false, "判断风险类型": ""}这个放在extra_data中
     # # # 将这个表单数据写入到task表中
-    qa_list = split_string_to_list(fileName, file_content)
+    sheet_name_list, qa_list = split_string_to_list(fileName, file_content)
     if qa_list is None:
         raise
     task_id = uuid4()
@@ -133,6 +133,7 @@ async def create_task_callback(
         assign_user=task_assignments,
         audit_user=audit_assignments,
         risk_level=risk_level,
+        sheet_name_list=sheet_name_list,
     ).save()
 
     assign_dict = {user["annotator"]: user["taskCount"] for user in task_assignments}
@@ -161,7 +162,7 @@ async def create_task_callback(
     ).save()
 
     # 创建一个task res表，将这个任务的结果存放起来
-    for index, (question, answer) in enumerate(qa_list):
+    for index, (question, answer, sheet_name) in enumerate(qa_list):
         await LabelResult(
             task_id=task_id,
             dataset_id=dataset_uid,
@@ -173,6 +174,7 @@ async def create_task_callback(
             status="未标注",
             assign_user=item_assign_user_dict[index],
             risk_level=risk_level,
+            sheet_name=sheet_name,
         ).save()
 
     # 创建一个audit res表，存放审核结果
@@ -198,7 +200,7 @@ async def create_task_callback(
         audit_flag=audit_flag,
     ).save()
     # 插入数据，
-    for index, (question, answer) in enumerate(qa_list):
+    for index, (question, answer, _) in enumerate(qa_list):
         await AuditResult(
             task_id=task_id,
             status="未审核",
@@ -239,9 +241,15 @@ async def download_labeling_result(
     obj = await model.get(pk=pk).prefetch_related(*model_resource.get_m2m_field())
     # 获取得到对应task的id
     task_id = obj.task_id
-    task_result = await LabelResult.filter(task_id=task_id).values(
-        "question", "answer", "labeling_result"
-    )
+    task_row = await TaskManage.filter(task_id=task_id)
+    sheet_name_list = task_row[0].sheet_name_list
+    task_result = {
+        sheet_name: await LabelResult.filter(task_id=task_id, sheet_name=sheet_name).values(
+            "question", "answer", "labeling_result"
+        )
+        for sheet_name in eval(sheet_name_list)
+    }
+
     # 直接返回一个html页面
     context = {
         "request": request,
@@ -250,6 +258,8 @@ async def download_labeling_result(
         "resources": resources,
         "model_resource": model_resource,
         "label_result": task_result,
+        "task_id": task_id,
+        "sheet_name_list": sheet_name_list,
     }
     try:
         return templates.TemplateResponse(
@@ -283,3 +293,14 @@ async def delete_task(
     await label_task_row[0].delete()
     await audit_task_row[0].delete()
     return redirect(request, "list_view", resource=resource)
+
+
+@router.post("/{resource}/get_label_result")
+async def get_label_result(request: Request):
+    json_data = await request.json()
+    task_id = json_data["task_id"]
+    sheet_name = json_data["sheet_name"]
+    label_result = await LabelResult.filter(task_id=task_id, sheet_name=sheet_name).values(
+        "question", "answer", "labeling_result"
+    )
+    return label_result

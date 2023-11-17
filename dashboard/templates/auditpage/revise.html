@@ -771,12 +771,14 @@
 
 <button class="button" type="submit" onclick="submitForm()">更新</button>
 <script>
-    const audit_result =  getAuditResult();
-    if(audit_result == '确认'){
-        document.getElementById('confirm').checked=true;
-    }else{
-        document.getElementById('problem').checked=true;
-    }
+    getAuditResult().then((audit_result) =>{
+        console.log(audit_result);
+        if(audit_result == '确认'){
+            document.getElementById('confirm').checked=true;
+        }else{
+            document.getElementById('problem').checked=true;
+        }
+    });
 
 
     async function submitForm() {
