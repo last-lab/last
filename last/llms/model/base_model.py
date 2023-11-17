@@ -73,14 +73,14 @@ class HTTPAPILLMModel(BaseLLMModel):
         super().__init__(*args, **kwargs)
         self.url = None
         self.headers = None
-    # aiomultiprocess 处理 post task
-    async def async_post(self, url, headers, data):
-        req = [{"url": url, "headers": headers, "data": data}]
-        async with Pool() as pool:
-            results = await pool.map(_post, req)
-        return results[0]
+    # # aiomultiprocess 处理 post task
+    # async def async_post(self, url, headers, data):
+    #     req = [{"url": url, "headers": headers, "data": data}]
+    #     async with Pool() as pool:
+    #         results = await pool.map(_post, req)
+    #     return results[0]
     
-    async def async_post_direct_coroutine(self, url, headers, data):
+    async def async_post(self, url, headers, data):
         async with aiohttp.ClientSession() as session:
             async with session.post(url, headers=headers, data=data) as response:
                 # 处理响应
