@@ -136,11 +136,13 @@ class Dataset(Record, BaseManager):
             # Read the sheet into a DataFrame
             df = pd.read_excel(xls, sheet_name=sheet_name)
             for index, row in df.iterrows():
+                question_str = str(row[0])
+                answer_str = str(row[1]) if len(row) > 1 else ''
                 qa_records[ID()] = QARecord(
                     predecessor_uid=None,
                     successor_uid=None,
-                    question=Message(role=MessageRole.Human, content=str(row[0])),
-                    answer=Message(role=MessageRole.Human, content=str(row[1])),
+                    question=Message(role=MessageRole.Human, content=question_str),
+                    answer=Message(role=MessageRole.Human, content=answer_str),
                 )
             # key = df.keys()[0]  ### change for complex
             ####### change togather ####
