@@ -66,8 +66,9 @@ async def AI_eval(
     # critic任务
     taskList.clear()
     for qa_record, response in zip(plan, response_list):
+        question = qa_record.question
         correct_ans = qa_record.answer
-        await taskList.append(asyncio.create_task(critic_model(response, correct_ans)))
+        await taskList.append(asyncio.create_task(critic_model(question, response, correct_ans)))
     
     # 无异常抛出的情况下 critic_list 与 task_list 元素一一对应
     critic_list = await taskList.get_result_list()
