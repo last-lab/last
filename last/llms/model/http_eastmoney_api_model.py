@@ -38,7 +38,7 @@ class EastMoneyAPILLMModel(HTTPAPILLMModel):
         return resp
 
     def parse(self, response):
-        if response["code"] == -7 and "message" in response:
+        if response["code"] != 0 and "message" in response:
             return (
                 True,
                 response["message"],
