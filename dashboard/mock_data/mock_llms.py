@@ -79,7 +79,7 @@ async def create_mock_llms():
     # )
 
     await ModelInfo.create(
-        name="小i机器人",
+        name="huazang",
         endpoint="huazang",
         access_key="None",
         secret_key="None",
@@ -107,7 +107,7 @@ async def create_mock_llms():
     # )
 
     await ModelInfo.create(
-        name="竹间智能",
+        name="KKBot",
         endpoint="KKBot",
         access_key="None",
         secret_key="None",
@@ -121,7 +121,7 @@ async def create_mock_llms():
     )
 
     await ModelInfo.create(
-        name="东方财富",
+        name="eastmoney",
         endpoint="eastmoney",
         access_key="None",
         secret_key="None",
