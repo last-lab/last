@@ -18,7 +18,7 @@ os.environ["WUYA_API_TOKEN"] = ""
 os.environ["SOUL_API_TOKEN"] = ""
 os.environ["EASYMONEY_API_TOKEN"] = ""
 os.environ["HUAZANG_API_TOKEN"] = ""
-os.environ["KKBOT_API_TOKEN"] = ''
+os.environ["KKBOT_API_TOKEN"] = ""
 
 
 async def generation_test(prompt, model):
@@ -65,7 +65,7 @@ class TestLLMAPI(unittest.TestCase):
         # 大小写都可以， eg. HuaZang, Huazang
         print("HuaZang: %s" % generated_text)
         assert generated_text is not None
-    
+
     def test_KKbot_api(self):
         generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="KKBot"))
         # 大小写都可以， eg. KKBot, KKbot
