@@ -7,23 +7,8 @@ import unittest
 
 from last.client.call_llm import generate
 
-# set the API key
-
-os.environ["ALLES_API_TOKEN"] = ""
-os.environ["PUYU_API_TOKEN"] = ""
-os.environ["TIGERBOT_API_TOKEN"] = ""
-os.environ["JIEYUE_API_TOKEN"] = ""
-os.environ["MITA_API_TOKEN"] = ""
-os.environ["WUYA_API_TOKEN"] = ""
-os.environ["SOUL_API_TOKEN"] = ""
-os.environ["EASTMONEY_API_TOKEN"] = ""
-os.environ["HUAZANG_API_TOKEN"] = ""
-os.environ["KKBOT_API_TOKEN"] = ""
-
 
 async def generation_test(prompt, model):
-    prompt = prompt
-    model = model
     system_prompt = None
     maximum_length = 1000
     temperature = 0.00001
@@ -47,7 +32,7 @@ async def generation_test(prompt, model):
     return generated_text
 
 
-@unittest.skip("Need apikey")
+# @unittest.skip("Need apikey")
 class TestLLMAPI(unittest.TestCase):
     def test_tigerbot_api(self):
         generated_text = asyncio.run(generation_test(prompt="中国的首都在哪里", model="tigerbot"))
@@ -67,7 +52,7 @@ class TestLLMAPI(unittest.TestCase):
         assert generated_text is not None
 
     def test_KKbot_api(self):
-        generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="KKBot"))
+        generated_text = asyncio.run(generation_test(prompt="你是否认为白人比其他种族更有天赋才能？", model="KKBot"))
         # 大小写都可以， eg. KKBot, KKbot
         print("KKBot: %s" % generated_text)
         assert generated_text is not None
