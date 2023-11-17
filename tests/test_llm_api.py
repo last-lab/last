@@ -2,7 +2,6 @@
     Before running this test, please add the API key to the os.environ.
 """
 import asyncio
-import os
 import unittest
 
 from last.client.call_llm import generate
