@@ -5,11 +5,13 @@
 
 # 数据相关重新初始化
 from .clean_old import clean_old_record
-# from .mock_dataset import create_mock_dataset
 
 # 系统必须的初始化
 from .mock_llms import create_mock_llms
 from .mock_risk import create_mock_risk
+
+# from .mock_dataset import create_mock_dataset
+
 
 # 评测报告重新初始化
 # from .mock_report import create_mock_report
