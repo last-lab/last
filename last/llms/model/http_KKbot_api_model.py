@@ -5,7 +5,8 @@ import re
 import json
 import requests
 from .base_model import HTTPAPILLMModel
-
+import random
+import time
 
 class KKbotAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
@@ -30,22 +31,25 @@ class KKbotAPILLMModel(HTTPAPILLMModel):
 
     async def generate(self, prompt, messages, *args, **kwargs):
         
-        payload = json.dumps(
-            {
-                "type": "clear",
-                "data": {"sessionId": self.sessionId, "appId": self.appId},
-            }
+        # payload = json.dumps(
+        #     {
+        #         "type": "clear",
+        #         "data": {"sessionId": self.sessionId, "appId": self.appId},
+        #     }
+        # )
+        # response = await self.async_post(self.clear_url, headers=self.headers, data=payload)  # 先做一次clear
+
+        random_id = (
+            str(round(time.time() * 1000)) + "_" +
+            str(random.randint(10000, 99999))
         )
-        response = await self.async_post(self.clear_url, headers=self.headers, data=payload)  # 先做一次clear
-
-
         payload = {
                     "type": "message",
                     "data": {
                         "question": messages[-1]["content"],
-                        "sessionId": self.sessionId,
+                        "sessionId": "kkbot-session" + random_id,
                         "appId": self.appId,
-                        "questionId": "xxx",
+                        "questionId": random_id,
                     },
             }
 

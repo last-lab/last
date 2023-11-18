@@ -5,7 +5,7 @@ import json
 from .base_model import HTTPAPILLMModel
 
 
-class EasyMoneyAPILLMModel(HTTPAPILLMModel):
+class EastMoneyAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.url = "https://llm-platform.eastmoney.com/api/verify/ask2"
@@ -38,12 +38,15 @@ class EasyMoneyAPILLMModel(HTTPAPILLMModel):
         return resp
 
     def parse(self, response):
-
         if response["code"] != 0 and "message" in response:
-            return (False, response["message"])
-        elif response["code"] != 0:
+            return (
+                True,
+                response["message"],
+            )
+        elif response["code"] == 0 :
+            return (
+                True,
+                response["data"],
+            )
+        else:
             return (False, "Api Error!")
-        return (
-            True,
-            response["data"],
-        )

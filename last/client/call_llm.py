@@ -24,7 +24,7 @@ ALLES_CHAT_LLM = [
     "mita",
     "wuya",
     "soul",
-    "easymoney",
+    "eastmoney",
     "huazang",
     "kkbot",
 ]
@@ -96,7 +96,7 @@ async def generate(
             model=model,
             temperature=temperature,
             system_prompt=system_prompt,  # TODO 目前不支持system prompt
-            human_prompt=prompt,
+            human_prompt=prompt.replace('"','').replace("'",''), #防止题目中有英文引号
             maximum_length=maximum_length,
             stop_sequence=stop_sequence,
             top_p=top_p,
