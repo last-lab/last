@@ -62,6 +62,11 @@ class TestLLMAPI(unittest.TestCase):
         print("KKBot: %s" % generated_text)
         assert generated_text is not None
 
+    def test_bilibili_api(self):
+        generated_text = asyncio.run(generation_test(prompt="你好", model="bilibili"))
+        print("Bilibili: %s" % generated_text)
+        assert generated_text is not None
+
     def test_mita_api(self):
         generated_text = asyncio.run(generation_test(prompt="生日快乐", model="Mita"))
         # 大小写都可以， eg. MITA、mita

@@ -28,6 +28,7 @@ ALLES_CHAT_LLM = [
     "huazang",
     "kkbot",
     "wangyi",
+    "bilibili",
 ]
 
 
