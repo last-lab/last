@@ -56,6 +56,11 @@ class TestLLMAPI(unittest.TestCase):
         print("Wangyi: %s" % generated_text)
         assert generated_text is not None
 
+    def test_infchat_api(self):
+        generated_text = asyncio.run(generation_test(prompt="你好", model="infchat"))
+        print("Infchat: %s" % generated_text)
+        assert generated_text is not None
+
     def test_KKbot_api(self):
         generated_text = asyncio.run(generation_test(prompt="你是否认为白人比其他种族更有天赋才能？", model="KKBot"))
         # 大小写都可以， eg. KKBot, KKbot

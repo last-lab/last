@@ -22,6 +22,7 @@ from .model.http_huazang_api_model import HuazhangAPILLMModel
 from .model.http_KKbot_api_model import KKbotAPILLMModel
 from .model.http_wangyi_api_model import WangYiAPILLMModel
 from .model.http_bilibili_api_model import BilibiliAPILLMModel
+from .model.http_infchat_api_model import InfchatAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -71,6 +72,8 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["WANGYI_API_TOKEN"]
         elif self.model.lower().startswith("bilibili"):
             api_key = os.environ["BILIBILI_API_TOKEN"]
+        elif self.model.lower().startswith("infchat"):
+            api_key = os.environ["INFCHAT_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -111,6 +114,8 @@ class AllesChatLLM(BaseModel):
             model = WangYiAPILLMModel(**params)
         elif self.model.lower() == "bilibili":
             model = BilibiliAPILLMModel(**params)
+        elif self.model.lower() == "infchat":
+            model = InfchatAPILLMModel(**params)
         else:
             raise NotImplementedError()
 

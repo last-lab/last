@@ -29,6 +29,7 @@ ALLES_CHAT_LLM = [
     "kkbot",
     "wangyi",
     "bilibili",
+    "infchat",
 ]
 
 
