@@ -39,8 +39,8 @@ class HuazhangAPILLMModel(HTTPAPILLMModel):
         return resp
 
     def parse(self, response):
-        if response["status_code"] != 200:
-            return (False, response["reply"])
+        # if response["status_code"] != 200:
+        #     return (True, response["reply"])
 
         return (
             True,
