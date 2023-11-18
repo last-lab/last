@@ -20,6 +20,7 @@ from .model.http_soul_api_model import SoulAPILLMModel
 from .model.http_eastmoney_api_model import EastMoneyAPILLMModel
 from .model.http_huazang_api_model import HuazhangAPILLMModel
 from .model.http_KKbot_api_model import KKbotAPILLMModel
+from .model.http_wangyi_api_model import WangYiAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -65,6 +66,8 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["HUAZANG_API_TOKEN"]
         elif self.model.lower().startswith("kkbot"):
             api_key = os.environ["KKBOT_API_TOKEN"]
+        elif self.model.lower().startswith("wangyi"):
+            api_key = os.environ["WANGYI_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -101,6 +104,8 @@ class AllesChatLLM(BaseModel):
             model = HuazhangAPILLMModel(**params)
         elif self.model.lower() == "kkbot":
             model = KKbotAPILLMModel(**params)
+        elif self.model.lower() == "wangyi":
+            model = WangYiAPILLMModel(**params)
         else:
             raise NotImplementedError()
 

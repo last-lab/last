@@ -27,6 +27,7 @@ ALLES_CHAT_LLM = [
     "eastmoney",
     "huazang",
     "kkbot",
+    "wangyi",
 ]
 
 
