@@ -28,3 +28,4 @@ class LabelResult(Model):
     labeling_result = fields.CharField(max_length=10000, null=True, default=None)
     raw_labeling_result = fields.CharField(max_length=10000, null=True, default=None)
     risk_level = fields.CharField(max_length=200)
+    sheet_name = fields.CharField(max_length=200)

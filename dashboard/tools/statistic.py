@@ -1,6 +1,8 @@
 import ast
 import html
 
+risk_level_dict = {"高度敏感": 1, "中度敏感": 2, "低度敏感": 3, "中性词": 4}
+
 
 def statistic_dataset(dataset_path):
     # 传入一个文件的路径，然后读取一系列的统计数据填充dataset
@@ -40,8 +42,10 @@ def convert_labelstudio_result_to_string(labeling_method, labeling_result_list, 
 
     elif _labeling_method == ["风险判别"]:
         if risk_level == "0级风险":
-            refine_result = {"0级风险": labeling_result_list[0]["value"]["choices"][0]}
-
+            # refine_result = {"0级风险": labeling_result_list[0]["value"]["choices"][0]}
+            refine_result = {
+                "风险程度": risk_level_dict[labeling_result_list[0]["value"]["choices"][0]]
+            }
         elif risk_level == "一级风险":
             refine_result = {"一级风险": labeling_result_list[0]["value"]["choices"][0]}
 
@@ -67,7 +71,7 @@ def convert_labelstudio_result_to_string(labeling_method, labeling_result_list, 
             refine_result = {}
             for labeling_result in labeling_result_list:
                 if labeling_result["from_name"] == "rating":
-                    refine_result["风险程度"] = labeling_result["value"]["choices"][0]
+                    refine_result["风险程度"] = risk_level_dict[labeling_result["value"]["choices"][0]]
                 else:
                     refine_result["一级风险"] = labeling_result["value"]["choices"][0]
 
@@ -75,7 +79,7 @@ def convert_labelstudio_result_to_string(labeling_method, labeling_result_list, 
             refine_result = {}
             for labeling_result in labeling_result_list:
                 if labeling_result["from_name"] == "rating":
-                    refine_result["风险程度"] = labeling_result["value"]["choices"][0]
+                    refine_result["风险程度"] = risk_level_dict[labeling_result["value"]["choices"][0]]
                 elif "grade_one" in labeling_result["from_name"]:
                     refine_result["一级风险"] = labeling_result["value"]["choices"][0]
                 else:
@@ -85,7 +89,7 @@ def convert_labelstudio_result_to_string(labeling_method, labeling_result_list, 
             refine_result = {}
             for labeling_result in labeling_result_list:
                 if labeling_result["from_name"] == "rating":
-                    refine_result["风险程度"] = labeling_result["value"]["choices"][0]
+                    refine_result["风险程度"] = risk_level_dict[labeling_result["value"]["choices"][0]]
                 elif "grade_one" in labeling_result["from_name"]:
                     refine_result["一级风险"] = labeling_result["value"]["choices"][0]
                 elif "grade_two" in labeling_result["from_name"]:
