@@ -49,7 +49,7 @@ class TestLLMAPI(unittest.TestCase):
         # 大小写都可以， eg. HuaZang, Huazang
         print("HuaZang: %s" % generated_text)
         assert generated_text is not None
-    
+
     def test_wangyi_api(self):
         generated_text = asyncio.run(generation_test(prompt="请介绍一下台湾", model="Wangyi"))
         # 大小写都可以， eg. Wangyi, WANGYI
