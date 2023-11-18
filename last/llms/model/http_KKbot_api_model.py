@@ -76,28 +76,35 @@ class KKbotAPILLMModel(HTTPAPILLMModel):
 
                 if response_data["code"] == 200:
                     response_reslut["message"] += response_data["data"]["result"]
+                    if response_data['data']['type'] == 'sensitive':
+                        break
+                    
 
                 elif response_data["code"] == 205:
                     # 召回知识 其实好像没什么用
-                    pass
-                elif response_data["code"] == 201:
-                    # finished 其实好像没什么用
-                    pass
+                    continue
+                elif response_data["code"] == 201 and "data" not in response_data.keys():
+                    break
 
             if response_reslut["code"] == -1:
                 response_reslut["code"] = 200
             resp = response_reslut
 
         except Exception as e:
+
             return e
         return resp
 
+
+
     def parse(self, response):
+        try:
+            if response["code"] != 200:
+                return (False, response["message"])
 
-        if response["code"] != 200:
-            return (False, response["message"])
-
-        return (
-            True,
-            response["message"],
-        )
+            return (
+                True,
+                response["message"],
+            )
+        except Exception as e:
+            return e
