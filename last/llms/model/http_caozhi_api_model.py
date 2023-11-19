@@ -2,7 +2,6 @@
    达观数据 曹植 API  
 """
 import json
-import requests
 from .base_model import HTTPAPILLMModel
 
 

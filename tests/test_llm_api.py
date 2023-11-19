@@ -6,6 +6,7 @@ import unittest
 
 from last.client.call_llm import generate
 
+
 async def generation_test(prompt, model):
     system_prompt = None
     maximum_length = 256
