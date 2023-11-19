@@ -50,7 +50,7 @@ class TestLLMAPI(unittest.TestCase):
         print("HuaZang: %s" % generated_text)
         assert generated_text is not None
 
-    def test_huazang_api(self):
+    def test_caozhi_api(self):
         generated_text = asyncio.run(generation_test(prompt="什么是股票", model="CaoZhi"))
         # 大小写都可以， eg. CaoZhi, caozhi
         print("CaoZhi: %s" % generated_text)
