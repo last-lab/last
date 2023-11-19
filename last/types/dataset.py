@@ -33,6 +33,7 @@ class Annotation(BaseModel):
 
 
 class QARecord(BaseModel):
+    sheet_name: Optional[str] = None # 问答属于数据集的哪个子集
     predecessor_uid: Optional[str] = None  # 关联上一条Message记录的id, 用于多轮对话，目前不启用
     successor_uid: Optional[str] = None  # 关联下一条Message记录的id, 用于多轮对话，目前不启用
     question: Message
@@ -130,7 +131,6 @@ class Dataset(Record, BaseManager):
     def read_excel(filename: str) -> Tuple[Dict[str, QARecord], List[str]]:
         qa_records = {}
         xls = pd.ExcelFile(filename)
-        sheet_names = xls.sheet_names
         # Loop through all the sheets
         for sheet_name in xls.sheet_names:
             # Read the sheet into a DataFrame
@@ -139,6 +139,7 @@ class Dataset(Record, BaseManager):
                 question_str = str(row[0])
                 answer_str = str(row[1]) if len(row) > 1 else ''
                 qa_records[ID()] = QARecord(
+                    sheet_name=sheet_name,
                     predecessor_uid=None,
                     successor_uid=None,
                     question=Message(role=MessageRole.Human, content=question_str),
@@ -148,12 +149,12 @@ class Dataset(Record, BaseManager):
             ####### change togather ####
         return qa_records
 
-    # TODO 根据qa_records填充其他属性, 现在是mock的
     def fill_attributes(self, qa_records: Dict[str, QARecord]) -> None:
         self.conversation_start_id = list(self.qa_records.keys())
         self.qa_num = len(qa_records)
         self.word_cnt = Dataset.word_counting(qa_records)
         self.volume = str(os.path.getsize(self.file)) + "bytes"
+
 
     @staticmethod
     def word_counting(qa_records: Dict[str, QARecord]) -> int:

@@ -54,7 +54,7 @@ async def AI_eval(
     # 评测结果
     critic_list = []
     
-    for qa_record in plan:
+    for dataset, qa_record in plan:
         question = qa_record.question
         await taskList.append(asyncio.create_task(llm_model(question)))
         
@@ -65,7 +65,7 @@ async def AI_eval(
     
     # critic任务
     taskList.clear()
-    for qa_record, response in zip(plan, response_list):
+    for (dataset, qa_record), response in zip(plan, response_list):
         question = qa_record.question
         correct_ans = qa_record.answer
         await taskList.append(asyncio.create_task(critic_model(question, response, correct_ans)))
@@ -76,9 +76,10 @@ async def AI_eval(
     print(llm_model.name + "的评测进度:评判模型评测完毕")
     
     # 处理评测结果
-    for qa_record, response, critic in zip(plan, response_list, critic_list):
+    for (dataset, qa_record), response, critic in zip(plan, response_list, critic_list):
         question = qa_record.question
-        new_qa_record = QARecord(question=question, answer=response, critic=critic)
+        sheet_name = qa_record.sheet_name
+        new_qa_record = QARecord(sheet_name=sheet_name, question=question, answer=response, critic=critic)
         new_qa_records[ID()] = new_qa_record
     progress_bar.update(1)
     print(llm_model.name + "的评测进度:评测结果处理完毕")
