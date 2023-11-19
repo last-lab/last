@@ -76,6 +76,7 @@ class Dataset(Record, BaseManager):
 
         self.fill_attributes(self.qa_records)
 
+    # TODO 修改为保存excel
     @staticmethod
     def write_dict_list_to_csv(qa_records, filename):
         # 获取所有的字段名
