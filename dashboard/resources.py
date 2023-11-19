@@ -181,7 +181,15 @@ class DataManager(Dropdown):
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return [
                 ToolbarAction(
-                    label=_("新建方案"),
+                    label=_("上传新评测方案"),
+                    icon="fas fa-plus",
+                    name="epm_create",
+                    method=_enums.Method.GET,
+                    ajax=False,
+                    class_="btn-dark",
+                ),
+                ToolbarAction(
+                    label=_("从已有数据集中新建方案"),
                     icon="fas fa-plus",
                     name="epm_create",
                     method=_enums.Method.GET,
@@ -189,6 +197,7 @@ class DataManager(Dropdown):
                     class_="btn-dark",
                 )
             ]
+
 
     class DatasetResource(Model):
         label = _("数据集管理")
