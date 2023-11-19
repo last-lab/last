@@ -6,10 +6,9 @@ import unittest
 
 from last.client.call_llm import generate
 
-
 async def generation_test(prompt, model):
     system_prompt = None
-    maximum_length = 1000
+    maximum_length = 256
     temperature = 0.00001
     stop_sequence = None
     top_p = 0.9
@@ -48,6 +47,12 @@ class TestLLMAPI(unittest.TestCase):
         generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="HuaZang"))
         # 大小写都可以， eg. HuaZang, Huazang
         print("HuaZang: %s" % generated_text)
+        assert generated_text is not None
+
+    def test_huazang_api(self):
+        generated_text = asyncio.run(generation_test(prompt="什么是股票", model="CaoZhi"))
+        # 大小写都可以， eg. CaoZhi, caozhi
+        print("CaoZhi: %s" % generated_text)
         assert generated_text is not None
 
     def test_wangyi_api(self):
