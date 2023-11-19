@@ -28,7 +28,6 @@ class CaozhiAPILLMModel(HTTPAPILLMModel):
             "max_tokens": kwargs["max_tokens"],
             "top_p": kwargs["top_p"],
         }
-        print(payload)
 
         try:
             resp = await self.async_post(
