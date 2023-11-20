@@ -124,7 +124,7 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
     )
     res_list = []
     for result in results:
-        if user_id in result["assign_user"]:
+        if user_id in eval(result["assign_user"]):
             res_list.append(
                 {
                     "question_id": result["question_id"],
@@ -231,7 +231,9 @@ async def submit_callback(request: Request, resource: str, pk: str):
     labelpage_row[0].labeling_progress = current_labeling_progress
     # 修改一下labeling_flag
     labeling_flag = eval(labelpage_row[0].labeling_flag)
-    labeling_flag[user_id][int(question_id) - 1] = True
+    assign_user = eval(labelpage_row[0].assign_user)[user_id]  # [2, 5]
+    label_item_index = assign_user.index(int(question_id) - 1)
+    labeling_flag[user_id][label_item_index] = True
     labelpage_row[0].labeling_flag = labeling_flag
     await labelpage_row[0].save()
 
@@ -276,10 +278,12 @@ async def labeling_next_callback(request: Request):
     assign_user_item_list = ast.literal_eval(labelpage_task_row[0].assign_user)[user_id]
     assert current_question_index in assign_user_item_list
     # 获取current_question_index在assign_user_item_list中的索引
-    index = assign_user_item_list.index(current_question_index)
+    current_item_index = assign_user_item_list.index(current_question_index)
     # TODO 判断下一道题有没有被标注过，如果下一道题被标注了，就继续往下跳直到遇到False，或者回到最开始
     labeling_flag = eval(labelpage_task_row[0].labeling_flag)
-    search_index = assign_user_item_list[(index + 1) % len(assign_user_item_list)]
+    # search_index表示的是这个数据集的下一个题的index，绝对索引
+    # search_index = assign_user_item_list[(index + 1) % len(assign_user_item_list)]
+    search_index = (current_item_index + 1) % len(assign_user_item_list)
     while True:
         if labeling_flag[user_id][search_index]:
             # 如果下一个题已经被标注了，就继续往后循环
@@ -287,15 +291,19 @@ async def labeling_next_callback(request: Request):
         else:
             next_flag = True
             next_question_index = search_index
+            if next_question_index == current_item_index:
+                # 如果labeling_flag[user_id]列表的长度就是1，则初始的search_index就是
+                # current_item_index
+                next_flag = False
             break
         # 跳出判断, 由于是先调用next函数，因此碰到最后一个题的时候，查找next会出现
-        if search_index == current_question_index:
+        if search_index == current_item_index:
             next_flag = False
             break
 
     if next_flag:
         return {
-            "question_id": next_question_index + 1,
+            "question_id": assign_user_item_list[next_question_index] + 1,
             "task_id": task_id,
             "labeling_method": labeling_method,
             "risk_level": risk_level,

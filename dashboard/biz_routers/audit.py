@@ -119,7 +119,7 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
     )
     res_list = []
     for audit_result, label_result in zip(audit_results, label_results):
-        if user_id in audit_result["audit_user"]:
+        if user_id in eval(audit_result["audit_user"]):
             # 只有题目是已经标注的情况下，这个题才算是能够进入到审核流程中
             if label_result["status"] != "未标注":
                 res_list.append(
@@ -167,7 +167,9 @@ async def submit_callback(request: Request, resource: str, pk: str):
     auditpage_row[0].audit_progress = current_audit_progress
     # 修改一下audit——flag
     audit_flag = eval(auditpage_row[0].audit_flag)
-    audit_flag[user_id][int(question_id) - 1] = True
+    audit_user = eval(auditpage_row[0].audit_user)[user_id]  # [1,3,6]
+    audit_item_index = audit_user.index(int(question_id) - 1)  # 获取audit问题在审核者中的索引
+    audit_flag[user_id][audit_item_index] = True
     auditpage_row[0].audit_flag = audit_flag
     await auditpage_row[0].save()
     # 需要修改一下labelresult中的状态，将对应的question的状态变成已审核
@@ -209,17 +211,28 @@ async def audit_next_callback(request: Request):
     # 从labelpage这个表中，基于user_id, question_id, task_id找到对应的记录
     auditpage_task_row = await AuditPage.filter(task_id=task_id)
     assert len(auditpage_task_row) == 1
-    assign_user_item_list = eval(auditpage_task_row[0].audit_user)[user_id]
-    assert current_question_index in assign_user_item_list
+    audit_user_item_list = eval(auditpage_task_row[0].audit_user)[user_id]
+    assert current_question_index in audit_user_item_list
     # 获取current_question_index在assign_user_item_list中的索引
-    index = assign_user_item_list.index(current_question_index)
-    # 下一条标注的question_id
-    next_question_index = assign_user_item_list[(index + 1) % len(assign_user_item_list)]
-    # TODO 判断下一道题有没有被标注过，如果下一道题被标注了，就继续往下跳直到遇到False，或者回到最开始
+    current_item_index = audit_user_item_list.index(current_question_index)
     audit_flag = eval(auditpage_task_row[0].audit_flag)
-    if audit_flag[user_id][next_question_index]:
+    # 下一audit的question_id
+    search_index = (current_item_index + 1) % len(audit_user_item_list)
+    while True:
+        if audit_flag[user_id][search_index]:
+            # 如果下一个题已经被审核了，就往后查找
+            search_index = (search_index + 1) % len(audit_user_item_list)
+        else:
+            # 如果下一个题是false，则把这个题拿出去
+            next_flag = True
+            next_question_index = search_index
+            if next_question_index == current_item_index:
+                next_flag = False
+            break
+
+    if next_flag:
         return {
-            "question_id": "null",
+            "question_id": audit_user_item_list[next_question_index] + 1,
             "task_id": task_id,
             "labeling_method": label_method,
             "risk_level": risk_level,
@@ -227,7 +240,7 @@ async def audit_next_callback(request: Request):
 
     else:
         return {
-            "question_id": next_question_index + 1,
+            "question_id": "null",
             "task_id": task_id,
             "labeling_method": label_method,
             "risk_level": risk_level,
