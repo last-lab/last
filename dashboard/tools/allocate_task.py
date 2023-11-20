@@ -36,13 +36,13 @@ def distribute_audit_task(len_dataset: int, audit_user_list):
     item_audit_user_dict = {index: [] for index in range(len_dataset)}
     # 对这个item_assign_user_dict 进行反序遍历
     for index in range(len_dataset):
-        for assign_user in audit_user_item_dict:
-            if index in audit_user_item_dict[assign_user]:
-                item_audit_user_dict[index].append(assign_user)
+        for audit_user in audit_user_item_dict:
+            if index in audit_user_item_dict[audit_user]:
+                item_audit_user_dict[index].append(audit_user)
 
     # 返回{"user1": 10, "user2": 20, ...}
     audit_user_item_length = {
-        audit_user: len(audit_user_item_dict[assign_user]) for audit_user in audit_user_item_dict
+        audit_user: len(audit_user_item_dict[audit_user]) for audit_user in audit_user_item_dict
     }
 
     # 配置一个标注进度字典 {"user1": 0, "user2": 0}等

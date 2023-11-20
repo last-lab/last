@@ -87,6 +87,7 @@
               <table class="table table-vcenter" id=tab{{ value.id }}>
                 <thead>
                   <tr>
+                    <th>分页名</th>
                     <th>问题</th>
                     <th>回复</th>
                     <th>评判</th>
@@ -104,6 +105,9 @@
                             </td>
                             <td style="max-width: 350px; word-wrap:break-word; word-break:break-all; white-space:normal;">
                                 {{ item[2] }}
+                            </td>
+                            <td style="max-width: 350px; word-wrap:break-word; word-break:break-all; white-space:normal;">
+                              {{ item[3] }}
                             </td>
                             <!-- <td><button class="btn btn-primary">修改</button></td> -->
                         </tr>
@@ -143,17 +147,45 @@
     downloadICON.addEventListener('click', async () => {
         // 输入文件名
         const filename = prompt('请输入文件名');
+        if (!filename) return; // 如果没有输入文件名，则退出
         // 等待下一个点击事件触发选择文件夹
         //选择文件夹
         // 拼接完整路径
         const path = filename + '.xlsx';
         // 生成工作表
-        const ws = XLSX.utils.table_to_sheet(dataTable);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+        // 根据分页名分组数据
+        const groupedData = groupDataByPageName(dataTable);
+        // 为每个分组创建一个新的工作表
+        for (let pageName in groupedData) {
+            const ws = XLSX.utils.json_to_sheet(groupedData[pageName]);
+            XLSX.utils.book_append_sheet(wb, ws, pageName); // 将工作表添加到工作簿
+        }
         // 用完整路径保存文件
         XLSX.writeFile(wb, path);
 
     });
+  }
+
+  function groupDataByPageName(tableElement) {
+    let groupedData = {};
+    const rows = tableElement.getElementsByTagName("tr");
+
+    for (let i = 1; i < rows.length; i++) { // 从1开始，跳过表头
+        const cells = rows[i].getElementsByTagName("td");
+        const pageName = cells[0].innerText; // 假设第一列是分页名
+        const question = cells[1].innerText;
+        const reply = cells[2].innerText;
+        const judgment = cells[3].innerText;
+
+        if (!groupedData[pageName]) {
+            groupedData[pageName] = [];
+        }
+
+        groupedData[pageName].push({问题: question, 回复: reply, 评判: judgment });
+    }
+
+    return groupedData;
   }
 </script>
