@@ -53,14 +53,14 @@ class Plan(Record, BaseManager):
 
     def __next__(self) -> Message:
         try:
-            return next(self.current_dataset_iter)
+            return self.datasets[self.current_dataset_index], next(self.current_dataset_iter)
         except StopIteration:
             self.current_dataset_index += 1
             if self.current_dataset_index < len(self.datasets):
                 self.current_dataset_iter = iter(
                     self.datasets[self.current_dataset_index]
                 )
-                return next(self.current_dataset_iter)
+                return self.datasets[self.current_dataset_index], next(self.current_dataset_iter)
             else:
                 raise
 
