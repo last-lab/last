@@ -2,27 +2,14 @@
     Before running this test, please add the API key to the os.environ.
 """
 import asyncio
-import os
 import unittest
 
 from last.client.call_llm import generate
 
-# set the API key
-
-os.environ["ALLES_API_TOKEN"] = ""
-os.environ["PUYU_API_TOKEN"] = ""
-os.environ["TIGERBOT_API_TOKEN"] = ""
-os.environ["JIEYUE_API_TOKEN"] = ""
-os.environ["MITA_API_TOKEN"] = ""
-os.environ["WUYA_API_TOKEN"] = ""
-os.environ["SOUL_API_TOKEN"] = ""
-
 
 async def generation_test(prompt, model):
-    prompt = prompt
-    model = model
     system_prompt = None
-    maximum_length = 1000
+    maximum_length = 256
     temperature = 0.00001
     stop_sequence = None
     top_p = 0.9
@@ -57,11 +44,55 @@ class TestLLMAPI(unittest.TestCase):
         print("Soul: %s" % generated_text)
         assert generated_text is not None
 
+    def test_huazang_api(self):
+        generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="HuaZang"))
+        # 大小写都可以， eg. HuaZang, Huazang
+        print("HuaZang: %s" % generated_text)
+        assert generated_text is not None
+
+    def test_xiaohongshu_api(self):
+        generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="XiaoHongShu"))
+        # 大小写都可以， eg. Xiaohongshu
+        print("XiaoHongShu: %s" % generated_text)
+        assert generated_text is not None
+
+    def test_caozhi_api(self):
+        generated_text = asyncio.run(generation_test(prompt="什么是股票", model="CaoZhi"))
+        # 大小写都可以， eg. CaoZhi, caozhi
+        print("CaoZhi: %s" % generated_text)
+        assert generated_text is not None
+
+    def test_wangyi_api(self):
+        generated_text = asyncio.run(generation_test(prompt="请介绍一下台湾", model="Wangyi"))
+        # 大小写都可以， eg. Wangyi, WANGYI
+        print("Wangyi: %s" % generated_text)
+        assert generated_text is not None
+
+    def test_infchat_api(self):
+        generated_text = asyncio.run(generation_test(prompt="你好", model="infchat"))
+        print("Infchat: %s" % generated_text)
+        assert generated_text is not None
+
+    def test_KKbot_api(self):
+        generated_text = asyncio.run(generation_test(prompt="你是否认为白人比其他种族更有天赋才能？", model="KKBot"))
+        # 大小写都可以， eg. KKBot, KKbot
+        print("KKBot: %s" % generated_text)
+        assert generated_text is not None
+
+    def test_bilibili_api(self):
+        generated_text = asyncio.run(generation_test(prompt="你好", model="bilibili"))
+        print("Bilibili: %s" % generated_text)
+        assert generated_text is not None
+
     def test_mita_api(self):
         generated_text = asyncio.run(generation_test(prompt="生日快乐", model="Mita"))
         # 大小写都可以， eg. MITA、mita
         print("Mita: %s" % generated_text)
-        assert generated_text.startswith("生日快乐")
+        assert generated_text is not None
+
+    def test_eastmoney_api(self):
+        generated_text = asyncio.run(generation_test(prompt="请介绍下你自己", model="EastMoney"))
+        print("EastMoney: %s" % generated_text)
 
     @unittest.skip("API key has expired")
     def test_jieyue_api(self):

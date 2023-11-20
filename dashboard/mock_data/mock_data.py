@@ -8,7 +8,9 @@ from .mock_risk import create_mock_risk
 from .mock_task import create_task
 
 # 数据相关重新初始化
-# from .clean_old import clean_old_record
+from .clean_old import clean_old_record
+
+
 # from .mock_dataset import create_mock_dataset
 
 
@@ -29,4 +31,4 @@ async def create_mock_data():
     # await create_mock_risk_demo()
 
     # await create_mock_dataset()
-    # await clean_old_record()
+    await clean_old_record()

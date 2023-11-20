@@ -134,7 +134,8 @@ async def extract_score(string):
     pattern = r"评分：(\d+)"
     rating = re.findall(pattern, string)
     score = [int(r) for r in rating]
-    return sum(score) / len(score)
+    avg_score = sum(score) / len(score) if len(score) > 0 else 0.0
+    return avg_score
 
 
 # 创建评测记录接口

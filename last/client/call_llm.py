@@ -24,6 +24,14 @@ ALLES_CHAT_LLM = [
     "mita",
     "wuya",
     "soul",
+    "eastmoney",
+    "huazang",
+    "kkbot",
+    "wangyi",
+    "bilibili",
+    "infchat",
+    "caozhi",
+    "xiaohongshu",
 ]
 
 
@@ -45,9 +53,10 @@ async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
             messages.append(SystemMessage(content=system_prompt))
         messages.append(HumanMessage(content=human_prompt))
 
-        output = await chat.apredict_messages(
+        resultMessage_BaseMessage = await chat.apredict_messages(
             messages,
-        ).content
+        )
+        output = resultMessage_BaseMessage.content
     elif model.lower() in ALLES_CHAT_LLM:
         chat = AllesChatLLM(
             model=model,
@@ -92,7 +101,7 @@ async def generate(
             model=model,
             temperature=temperature,
             system_prompt=system_prompt,  # TODO 目前不支持system prompt
-            human_prompt=prompt,
+            human_prompt=prompt.replace('"','').replace("'",''), #防止题目中有英文引号
             maximum_length=maximum_length,
             stop_sequence=stop_sequence,
             top_p=top_p,
