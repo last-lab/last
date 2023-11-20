@@ -87,6 +87,7 @@
               <table class="table table-vcenter" id=tab{{ value.id }}>
                 <thead>
                   <tr>
+                    <th>分页名</th>
                     <th>问题</th>
                     <th>回复</th>
                     <th>评判</th>
@@ -104,6 +105,9 @@
                             </td>
                             <td style="max-width: 350px; word-wrap:break-word; word-break:break-all; white-space:normal;">
                                 {{ item[2] }}
+                            </td>
+                            <td style="max-width: 350px; word-wrap:break-word; word-break:break-all; white-space:normal;">
+                              {{ item[3] }}
                             </td>
                             <!-- <td><button class="btn btn-primary">修改</button></td> -->
                         </tr>

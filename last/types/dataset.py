@@ -33,7 +33,7 @@ class Annotation(BaseModel):
 
 
 class QARecord(BaseModel):
-    sheet_name: Optional[str] = None # 问答属于数据集的哪个子集
+    sheet_name: Optional[str] = None # 问答属于数据集的哪个分页子集
     predecessor_uid: Optional[str] = None  # 关联上一条Message记录的id, 用于多轮对话，目前不启用
     successor_uid: Optional[str] = None  # 关联下一条Message记录的id, 用于多轮对话，目前不启用
     question: Message
@@ -68,15 +68,39 @@ class Dataset(Record, BaseManager):
             self.qa_records = Dataset.upload(self.file)
         elif self.qa_records is not None:  # 根据传入的qa_records，保存file文件
             os.makedirs(os.path.join("dashboard", "static", "saves"), exist_ok=True)
-            file_path = os.path.join("dashboard", "static", "saves", f"{self.name}.csv")
-            Dataset.write_dict_list_to_csv(self.qa_records, file_path)
+            file_path = os.path.join("dashboard", "static", "saves", f"{self.name}.xlsx")
+            Dataset.write_dict_list_to_excel(self.qa_records, file_path)
+            # file_path = os.path.join("dashboard", "static", "saves", f"{self.name}.csv")
+            # Dataset.write_dict_list_to_csv(self.qa_records, file_path)
             self.file = file_path
         else:
             raise ValueError("Input parameter cannot be empty")
 
         self.fill_attributes(self.qa_records)
 
-    # TODO 修改为保存excel
+    @staticmethod
+    def write_dict_list_to_excel(qa_records: Dict[str, QARecord], filename: str):
+        # 创建一个Excel写入器
+        with pd.ExcelWriter(filename) as writer:
+            # 按sheet_name分组QA记录
+            for sheet_name, records in Dataset.group_by_sheet_name(qa_records).items():
+                # 将QA记录转换为DataFrame
+                df = pd.DataFrame([vars(record) for record in records])
+                # 选择需要的列
+                df = df[['question', 'answer', 'critic']]
+                # 写入到指定的sheet
+                df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+    @staticmethod
+    def group_by_sheet_name(qa_records: Dict[str, QARecord]) -> Dict[str, list]:
+        grouped_records = {}
+        for record in qa_records.values():
+            sheet_name = record.sheet_name or 'Default'
+            if sheet_name not in grouped_records:
+                grouped_records[sheet_name] = []
+            grouped_records[sheet_name].append(record)
+        return grouped_records
+
     @staticmethod
     def write_dict_list_to_csv(qa_records, filename):
         # 获取所有的字段名

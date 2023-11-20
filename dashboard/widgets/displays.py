@@ -198,19 +198,18 @@ class ShowAction(Display):
                     reader = csv.reader(file)
                     # rows = []
                     for row in reader:
-                        label_info.append(row)
+                        label_info.append(['无分页']+row)
                         # row_string = ",".join(row)
                         # rows.append(row_string)
                     # csv_string = "\n".join(rows)
                 del label_info[0]
-            # TODO 注意这里的excel是分sheet的 要把逻辑加上
             elif dataset["file"].endswith("xlsx"):
                 xls = pd.ExcelFile(dataset["file"])
                 for sheet_name in xls.sheet_names:
                     # Read the sheet into a DataFrame
                     df = pd.read_excel(xls, sheet_name=sheet_name)
                     for index, row in df.iterrows():
-                        label_info.append(list(row))
+                        label_info.append([sheet_name]+list(row))
                 # csv_string = ""
             else:
                 raise NotImplementedError("We only support csv or xlsx file.")
