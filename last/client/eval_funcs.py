@@ -74,7 +74,7 @@ async def AI_eval(
     critic_list = await taskList.get_result_list()
     progress_bar.update(1)
     print(llm_model.name + "的评测进度:评判模型评测完毕")
-    
+
     # 处理评测结果
     for qa_record, response, critic in zip(plan, response_list, critic_list):
         question = qa_record.question
@@ -106,12 +106,18 @@ class TaskList():
     result_list: list
     # 触发 process_task 的 阈值; 可并发数量
     task_batch_size: int
+    # 每轮任务执行进度条
+    # 每个 batch 完成后更新
+    process_bar: tqdm
+    
     def __init__(self):
         self.task_list = []
         self.result_list = []
         
         core_count = multiprocessing.cpu_count()
         self.task_batch_size = 2 * core_count
+        
+        self.process_bar = tqdm(desc="query task", leave=False)
 
     # 接收任务
     async def append(self, task: asyncio.Task):
@@ -124,13 +130,22 @@ class TaskList():
     async def process_task(self):
         if(len(self.task_list) > 0):
             temp_result_list = await asyncio.gather(*(self.task_list))
+            # a batch task accomplished
+            # update process bar
+            self.process_bar.update(len(self.task_list))
+
             self.task_list.clear()
+            # update result list 
             self.result_list += temp_result_list
 
     async def get_result_list(self):
-        # 处理剩余 task
+        # 所有任务均提交给TaskList
+        # 检查并处理剩余 task
         if(len(self.task_list) > 0):
             await self.process_task()
+        # 关闭并重置进度条
+        self.process_bar.close()
+        self.process_bar = tqdm(desc="query task", leave=False)
         return self.result_list.copy()
 
     def clear(self):
