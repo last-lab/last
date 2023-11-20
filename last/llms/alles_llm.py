@@ -20,6 +20,11 @@ from .model.http_soul_api_model import SoulAPILLMModel
 from .model.http_eastmoney_api_model import EastMoneyAPILLMModel
 from .model.http_huazang_api_model import HuazhangAPILLMModel
 from .model.http_KKbot_api_model import KKbotAPILLMModel
+from .model.http_wangyi_api_model import WangYiAPILLMModel
+from .model.http_bilibili_api_model import BilibiliAPILLMModel
+from .model.http_infchat_api_model import InfchatAPILLMModel
+from .model.http_caozhi_api_model import CaozhiAPILLMModel
+from .model.http_xiaohongshu_api_model import XiaoHongShuAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -65,6 +70,16 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["HUAZANG_API_TOKEN"]
         elif self.model.lower().startswith("kkbot"):
             api_key = os.environ["KKBOT_API_TOKEN"]
+        elif self.model.lower().startswith("wangyi"):
+            api_key = os.environ["WANGYI_API_TOKEN"]
+        elif self.model.lower().startswith("bilibili"):
+            api_key = os.environ["BILIBILI_API_TOKEN"]
+        elif self.model.lower().startswith("infchat"):
+            api_key = os.environ["INFCHAT_API_TOKEN"]
+        elif self.model.lower().startswith("caozhi"):
+            api_key = os.environ["CAOZHI_API_TOKEN"]
+        elif self.model.lower().startswith("xiaohongshu"):
+            api_key = os.environ["XIAOHONGSHU_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -101,6 +116,16 @@ class AllesChatLLM(BaseModel):
             model = HuazhangAPILLMModel(**params)
         elif self.model.lower() == "kkbot":
             model = KKbotAPILLMModel(**params)
+        elif self.model.lower() == "wangyi":
+            model = WangYiAPILLMModel(**params)
+        elif self.model.lower() == "bilibili":
+            model = BilibiliAPILLMModel(**params)
+        elif self.model.lower() == "infchat":
+            model = InfchatAPILLMModel(**params)
+        elif self.model.lower() == "caozhi":
+            model = CaozhiAPILLMModel(**params)
+        elif self.model.lower() == "xiaohongshu":
+            model = XiaoHongShuAPILLMModel(**params)
         else:
             raise NotImplementedError()
 
