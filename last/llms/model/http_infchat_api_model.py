@@ -32,16 +32,24 @@ class InfchatAPILLMModel(HTTPAPILLMModel):
             resp = await self.async_post(
                 self.url, headers=self.headers, data=json.dumps(payload)
             )
-            
         except Exception as e:
- 
             return e
         return resp
 
     def parse(self, response):
         if response is None:
             return (False, "API ERROR!")
-
+        if response["code"] != 0:
+            if str(response["code"]).startswith("2000"):
+                return (False, "LLM Server ERROR!")
+            elif str(response["code"]).startswith("2002"):
+                return (False, "Database ERROR!")
+            elif str(response["code"]).startswith("10"):
+                return (False, "System ERROR!")
+            elif str(response["code"]).startswith("30"):
+                return (False, "Params ERROR!")
+            elif str(response["code"]).startswith("40"):
+                return (False, "Key ERROR!")
         return (
             True,
             response['data']['choices'][0]['message']['content'],

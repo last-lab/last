@@ -37,7 +37,7 @@ class XiaoHongShuAPILLMModel(HTTPAPILLMModel):
 
         payload = {
             "messages": format_message,
-            "max_tokens": kwargs["max_tokens"],
+            "max_tokens": 256,
         }
         try:
             resp = await self.async_post(
@@ -50,6 +50,9 @@ class XiaoHongShuAPILLMModel(HTTPAPILLMModel):
         return resp
 
     def parse(self, response):
-        if response["status"] != "success":
+
+        if response['reason'] == "request failed, rejected by auditor":
+            return (True, response["reason"])
+        elif response["status"] != "success":
             return (False, response["reason"])
         return (True, response["reply"])

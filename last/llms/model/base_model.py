@@ -80,7 +80,7 @@ class HTTPAPILLMModel(BaseLLMModel):
     #         results = await pool.map(_post, req)
     #     return results[0]
     
-    async def async_post(self, url, headers, data, cookies=None, timeout=60):
+    async def async_post(self, url, headers, data, cookies=None, timeout=300):
         async with aiohttp.ClientSession() as session:
             async with session.post(url, headers=headers, data=data, cookies=cookies, timeout=timeout) as response:
                 # 处理响应

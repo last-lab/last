@@ -11,6 +11,7 @@ class WangYiAPILLMModel(HTTPAPILLMModel):
    def __init__(self, api_key, *args, **kwargs):
       super().__init__(*args, **kwargs)
       param = json.loads(api_key)
+      # print(param)
       self.cookies = {
          "RBAC_USER": param["RBAC_USER"],
          "RBAC_TOKEN": param["RBAC_TOKEN"],
@@ -50,7 +51,6 @@ class WangYiAPILLMModel(HTTPAPILLMModel):
    def parse(self, response):
       if "content" not in response:
             return (False, response["codeName"])
-
       return (
             True,
             response["content"],
