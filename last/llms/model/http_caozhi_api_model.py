@@ -25,10 +25,8 @@ class CaozhiAPILLMModel(HTTPAPILLMModel):
         
         payload = {
             "messages": format_message,
-            "max_tokens": kwargs["max_tokens"],
-            "top_p": kwargs["top_p"],
         }
-
+        # print(payload)
         try:
             resp = await self.async_post(
                 self.url, headers=self.headers, data=json.dumps(payload)
@@ -41,9 +39,11 @@ class CaozhiAPILLMModel(HTTPAPILLMModel):
         return resp
 
     def parse(self, response):
-        if response is None:
+        if isinstance(response, Exception):
             return (False, "API ERROR")
-        response = json.loads(response)
+        if not isinstance(response, dict):
+            response = json.loads(response)
+
         return (
             True,
             response["data"][0][0]["text"],

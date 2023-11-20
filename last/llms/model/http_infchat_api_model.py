@@ -41,7 +41,7 @@ class InfchatAPILLMModel(HTTPAPILLMModel):
     def parse(self, response):
         if response is None:
             return (False, "API ERROR!")
-
+        # print(response)
         return (
             True,
             response['data']['choices'][0]['message']['content'],
