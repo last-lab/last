@@ -198,7 +198,7 @@ class ShowAction(Display):
                     reader = csv.reader(file)
                     # rows = []
                     for row in reader:
-                        label_info.append(['无分页']+row)
+                        label_info.append(["无分页"] + row)
                         # row_string = ",".join(row)
                         # rows.append(row_string)
                     # csv_string = "\n".join(rows)
@@ -209,7 +209,7 @@ class ShowAction(Display):
                     # Read the sheet into a DataFrame
                     df = pd.read_excel(xls, sheet_name=sheet_name)
                     for index, row in df.iterrows():
-                        label_info.append([sheet_name]+list(row))
+                        label_info.append([sheet_name] + list(row))
                 # csv_string = ""
             else:
                 raise NotImplementedError("We only support csv or xlsx file.")

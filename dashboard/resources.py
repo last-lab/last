@@ -195,9 +195,8 @@ class DataManager(Dropdown):
                     method=_enums.Method.GET,
                     ajax=False,
                     class_="btn-dark",
-                )
+                ),
             ]
-
 
     class DatasetResource(Model):
         label = _("数据集管理")
