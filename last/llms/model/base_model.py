@@ -89,8 +89,6 @@ class HTTPAPILLMModel(BaseLLMModel):
                 # 处理响应
                 try:
                     result = await response.json()
-                    print(result)
                 except Exception as e:
                     result = await response.text()
-                    print(result)
         return result
