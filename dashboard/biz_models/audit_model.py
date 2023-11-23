@@ -19,3 +19,4 @@ class AuditResult(Model):
     question = fields.CharField(max_length=25500)
     answer = fields.CharField(max_length=25500)
     audit_result = fields.CharField(max_length=10000, null=True, default=None)
+    sheet_name = fields.CharField(max_length=200)
