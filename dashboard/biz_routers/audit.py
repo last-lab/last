@@ -8,6 +8,7 @@ from starlette.requests import Request
 from tortoise import Model
 
 from dashboard.biz_models import AuditPage, AuditResult, LabelResult
+from dashboard.tools.statistic import convert_audit_data
 from last.services.depends import get_model, get_model_resource, get_resources
 from last.services.resources import Model as ModelResource
 from last.services.template import templates
@@ -145,10 +146,13 @@ async def submit_callback(request: Request, resource: str, pk: str):
     question_id = json_data["question_id"]
     task_id = json_data["task_id"]
     audit_result_by_user = json_data["auditResult"]
+    labeling_method = json_data["labeling_method"]
+    risk_level = json_data["risk_level"]
     audit_result_row = await AuditResult.filter(task_id=task_id, question_id=question_id)
     assert len(audit_result_row) == 1
     # 进行多人标注结果的合并  {'test1': res,} {'test1': res, 'test':res_2}
     audit_result = audit_result_row[0].audit_result
+    audit_result_by_user = convert_audit_data(labeling_method, audit_result_by_user, risk_level)
     # 将labelstudio的标注结果进行提取操作
     if audit_result is None:
         new_audit_result = {user_id: audit_result_by_user}

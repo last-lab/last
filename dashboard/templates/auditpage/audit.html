@@ -43,6 +43,25 @@
 <div id="studio"></div>
 <!-- TODO, 选择标注的labelstudio的前端怎么写需要调研一下 -->
 <script>
+    function disabled_option(){
+        const label_studio_option = document.querySelectorAll(".ant-form")
+        label_studio_option.forEach(function(sub_label_studio_option){
+            for (let i=0; i<sub_label_studio_option.length; i++){
+                sub_label_studio_option[i].disabled = true
+            }
+        })
+    }
+
+
+    function enabled_option(){
+        const label_studio_option = document.querySelectorAll(".ant-form")
+        label_studio_option.forEach(function(sub_label_studio_option){
+            for (let i=0; i<sub_label_studio_option.length; i++){
+                sub_label_studio_option[i].disabled = false
+            }
+        })
+    }
+
     const queryString = window.location.search;
 
     // 解析查询字符串中的参数
@@ -303,7 +322,6 @@
                 </Choices>
             </View>
             `
-
 
             const risk_label_three =
                 `
@@ -689,10 +707,12 @@
 
     }
 
+
     function select(name) {
         label_select = name
         document.getElementById(name).checked = true
         render_page()
+
     }
     // TODO 初始态，标注方法列表的第一个
     select(labeling_method);
@@ -703,8 +723,10 @@
 
 
     window.onload = function(){
-        render_page();
+        render_page()
     }
+
+
 
     async function getLabelData() {
         const rsp = await fetch('/admin/labelpage/labeling/get_data', {
@@ -761,12 +783,16 @@
         <div>
             <span>审核选项 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <div>
-                <input type="radio" name="auditType" value="确认">
-                <label for="judgment">确认</label>
+                <label>
+                    <input type="radio" name="auditType" value="确认">
+                    确认
+                </label>
             </div>
             <div>
-                <input type="radio" name="auditType" value="有问题">
-                <label for="sorting">有问题</label>
+                <label>
+                    <input type="radio" name="auditType" value="有问题">
+                    有问题
+                </label>
             </div>
         </div>
     </div>
@@ -781,12 +807,38 @@
         const radios = document.getElementsByName("auditType");
 
         const checkedRadio = [...radios].find(r => r.checked);
-        var auditResult = checkedRadio.value;
-        var formData = {
+        let auditFlag = checkedRadio.value;
+        const auditResult = {}
+        // 不知道为啥函数的调用没反应，这里将所有的选项给他放在一起
+        const label_studio_option = document.querySelectorAll(".ant-form-inline")
+        label_studio_option.forEach(function(sub_option, index){
+            for (let i=0; i<sub_option.length; i++){
+                // 这段逻辑比较复杂，如果是多选框，就要用列表放，如果是单选框就直接放
+                if(sub_option[i].type == 'radio'){
+                    if(sub_option[i].checked){
+                        auditResult[String(index)] = sub_option[i].value
+                    }
+                }
+                else{
+                    if (auditResult[String(index)] == undefined){
+                        auditResult[String(index)] = []
+                    }
+                    if (sub_option[i].checked){
+                        auditResult[String(index)].push(sub_option[i].name)
+                    }
+                }
+            }
+            if (auditResult[String(index)].length == 0){
+                delete(auditResult[String(index)])
+            }
+        })
+
+        let formData = {
             auditResult: auditResult,
             question_id: question_id,
             task_id: task_id,
             risk_level: risk_level,
+            labeling_method: labeling_method,
         }
         $.ajax({
             type: 'POST',
@@ -816,6 +868,7 @@
                     }
             }
         })
+
     }
 </script>
 

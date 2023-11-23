@@ -116,3 +116,55 @@ def concat_labeling_result(user_id, new_labeling_result, current_labeling_result
 def convert_table_to_csv(table):
     # 这个函数是将标注结果变成csv文件，然后返回
     pass
+
+
+def convert_audit_data(labeling_method, audit_result, risk_level):
+    if labeling_method == "判断标注":
+        # TODO，这个函数需要修改
+        refine_result = audit_result["0"]
+
+    elif labeling_method == "选择标注":
+        pass
+
+    elif labeling_method == "框选标注":
+        pass
+
+    elif labeling_method == "风险判别":
+        if risk_level == "0级风险":
+            refine_result = {"风险程度": risk_level_dict[audit_result["0"]]}
+        elif risk_level == "一级风险":
+            refine_result = {"一级风险": audit_result["0"]}
+
+        elif risk_level == "二级风险":
+            refine_result = {}
+            refine_result["一级风险"] = audit_result["0"]
+            refine_result["二级风险"] = audit_result["1"]
+
+        elif risk_level == "三级风险":
+            refine_result = {}
+            refine_result["一级风险"] = audit_result["0"]
+            refine_result["二级风险"] = audit_result["1"]
+            refine_result["三级风险"] = audit_result["2"]
+
+        elif risk_level == "风险程度_一级风险":
+            refine_result = {}
+            refine_result["风险程度"] = risk_level_dict[audit_result["0"]]
+            refine_result["一级风险"] = audit_result["1"]
+
+        elif risk_level == "风险程度_二级风险":
+            refine_result = {}
+            refine_result["风险程度"] = risk_level_dict[audit_result["0"]]
+            refine_result["一级风险"] = audit_result["1"]
+            refine_result["二级风险"] = audit_result["2"]
+
+        elif risk_level == "风险程度_三级风险":
+            refine_result = {}
+            refine_result["风险程度"] = risk_level_dict[audit_result["0"]]
+            refine_result["一级风险"] = audit_result["1"]
+            refine_result["二级风险"] = audit_result["2"]
+            refine_result["三级风险"] = audit_result["3"]
+
+    elif labeling_method == "安全回答":
+        refine_result = audit_result["0"]
+
+    return refine_result
