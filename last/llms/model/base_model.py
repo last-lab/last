@@ -3,6 +3,7 @@ import aiohttp
 import asyncio
 from aiomultiprocess import Pool
 
+from aiohttp_retry import RetryClient, ExponentialRetry
 
 class BaseLLMModel(ABC):
     def __init__(self):
@@ -80,9 +81,11 @@ class HTTPAPILLMModel(BaseLLMModel):
     #         results = await pool.map(_post, req)
     #     return results[0]
     
-    async def async_post(self, url, headers, data, cookies=None, timeout=300):
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, headers=headers, data=data, cookies=cookies, timeout=timeout) as response:
+    async def async_post(self, url, headers, data, cookies=None, timeout=120):
+        # 指数增长 retry
+        retry_options = ExponentialRetry(attempts = 2 ** 3)
+        async with RetryClient(raise_for_status=False, retry_options=retry_options) as retry_client:
+            async with retry_client.post(url, headers=headers, data=data, cookies=cookies, timeout=timeout) as response:
                 # 处理响应
                 try:
                     result = await response.json()
