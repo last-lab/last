@@ -43,6 +43,7 @@ class EvalInfo(BaseModel):
     llm_id: str
     llm_name: str
     created_at: int
+    critic_id: str
 
 
 # 评测结果Class
@@ -144,9 +145,10 @@ async def extract_score(string):
 @router.post("/evaluation/evaluation_create")
 async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
-    models = await ModelInfo.filter(
+    llms = await ModelInfo.filter(
         Q(id__in=[int(x) for x in eval_info.llm_id.split(",")])
     ).values()
+    critic = await ModelInfo.get_or_none(id=eval_info.critic_id).values()
     record = await Record.create(
         eval_plan=plan["name"],
         plan_id=eval_info.plan_id,
@@ -158,7 +160,7 @@ async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加�
     dataset_ids = [int(_) for _ in plan["dataset_ids"].split(",")]
     dataset_info = await DataSet.filter(Q(id__in=dataset_ids)).values()
     try:
-        for model in models:
+        for model in llms:
             kwargs_json = json.dumps(
                 {
                     "$datasets": [
@@ -175,9 +177,9 @@ async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加�
                         "access_key": model["access_key"],
                     },
                     "$critic_model": {
-                        "name": models[0]["name"],
-                        "endpoint": models[0]["endpoint"],
-                        "access_key": models[0]["access_key"],
+                        "name": critic["name"],
+                        "endpoint": critic["endpoint"],
+                        "access_key": critic["access_key"],
                     },
                     "$plan": {"name": plan["name"]},
                 }

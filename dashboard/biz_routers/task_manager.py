@@ -200,7 +200,7 @@ async def create_task_callback(
         audit_flag=audit_flag,
     ).save()
     # 插入数据，
-    for index, (question, answer, _) in enumerate(qa_list):
+    for index, (question, answer, sheet_name) in enumerate(qa_list):
         await AuditResult(
             task_id=task_id,
             status="未审核",
@@ -208,6 +208,7 @@ async def create_task_callback(
             audit_user=item_audit_user_dict[index],
             question=question,
             answer=answer,
+            sheet_name=sheet_name,
         ).save()
 
     return "success"
@@ -243,13 +244,6 @@ async def download_labeling_result(
     task_id = obj.task_id
     task_row = await TaskManage.filter(task_id=task_id)
     sheet_name_list = task_row[0].sheet_name_list
-    task_result = {
-        sheet_name: await LabelResult.filter(task_id=task_id, sheet_name=sheet_name).values(
-            "question", "answer", "labeling_result"
-        )
-        for sheet_name in eval(sheet_name_list)
-    }
-
     # 直接返回一个html页面
     context = {
         "request": request,
@@ -257,7 +251,6 @@ async def download_labeling_result(
         "resource_label": model_resource.label,
         "resources": resources,
         "model_resource": model_resource,
-        "label_result": task_result,
         "task_id": task_id,
         "sheet_name_list": sheet_name_list,
     }
@@ -303,4 +296,11 @@ async def get_label_result(request: Request):
     label_result = await LabelResult.filter(task_id=task_id, sheet_name=sheet_name).values(
         "question", "answer", "labeling_result"
     )
+
+    audit_result = await AuditResult.filter(task_id=task_id, sheet_name=sheet_name).values(
+        "audit_result"
+    )
+    # 合并一下audit_reuslt 和 label_reuslt
+    for label_result_, audit_result_ in zip(label_result, audit_result):
+        label_result_.update(audit_result_)
     return label_result

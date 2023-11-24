@@ -112,6 +112,6 @@ async def generate(
         import traceback
 
         traceback.print_exc()
-        raise ex
+        return str(ex)
     return str(outputs)
 

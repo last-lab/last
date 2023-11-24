@@ -53,11 +53,10 @@
         "panel",
         "submit",
         "controls",
-        "side-column",
-        "skip",
         "instruction",
         "infobar",
         "topbar",
+        "side-column",
         "annotations:menu",
         "annotations:add-new",
         "annotations:delete",
@@ -67,7 +66,6 @@
         "annotations:view-all",
         "predictions:menu",
         "predictions:tabs",
-        "auto-annotation",
         "edit-history"
     ]
 
@@ -663,6 +661,7 @@
                 }
             }
         });
+
         labelStudio.on("labelStudioLoad", (LS) => {
             // Perform an action when Label Studio is loaded
             const c = LS.annotationStore.addAnnotation({
@@ -712,7 +711,8 @@
                     history.back();
                 }
             })
-        });
+        })
+        console.log(labelStudio)
     }
 
     function select(name) {
@@ -732,6 +732,7 @@
     window.onload = function(){
         render_page();
     }
+
 
     async function getLabelData() {
         const rsp = await fetch('/admin/labelpage/labeling/get_data', {
@@ -807,6 +808,13 @@
 
 <button id="back" class="back-btn">返回</button>
 <script>
+    // 修改按钮的位置
+    // let btn = document.querySelector(".lsf-button_look_primary")
+    // console.log(btn)
+    // btn.style.position = 'absolute'
+    // btn.style.top = "100px"
+    // btn.style.left= "200px"
+    // console.log(btn)
     const briefDataUrl = '/admin/labelpage/display/' + '{{task_pk_value}}';
     const backBtn = document.getElementById('back');
     backBtn.addEventListener('click', () => {

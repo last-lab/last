@@ -54,32 +54,53 @@
             '<th>答案</th>' +
             '<th>风险等级</th>' +
             '<th>标注者</th>' +
+            '<th>风险等级</th>' +
+            '<th>审核者</th>' +
             '</tr>' +
             '</thead>' +
             '<tbody>';
         get_label_data(sheetName).then((data) =>{
             for (var i = 0; i < data.length; i++) {
                 // {"test": {"风险程度": 2}}
-                label_user_dict = data[i]['labeling_result'];
+                label_user_dict = data[i]['labeling_result']
+                audit_user_dict = data[i]['audit_result']
+                let label_user
+                let risk_level
+                let audit_user
+                let audit_risk_level
                 if (label_user_dict == null){
-                    var label_user = null;
-                    var risk_level = null;
+                    label_user = null;
+                    risk_level = null;
                 }else{
-                    var label_user = label_user_dict;
+                    label_user = label_user_dict;
                     // 删除字符串中的单引号
                     var cleanedStr = label_user_dict.replace(/'/g, '"');
                     // 解析字符串为对象
                     var obj = JSON.parse(cleanedStr);
                     // 获取对象的键
-                    var label_user = Object.keys(obj)[0];
-                    var risk_level = obj[label_user]['风险程度'];
+                    label_user = Object.keys(obj)[0];
+                    risk_level = obj[label_user]['风险程度'];
+                }
+                if (audit_user_dict == null){
+                    audit_user = null;
+                    audit_risk_level = null;
+                } else{
+                    audit_user = audit_user_dict
+                    let cleanedStr = audit_user_dict.replace(/'/g, '"');
+                    // 解析字符串为对象
+                    let obj = JSON.parse(cleanedStr);
+                    // 获取对象的键
+                    audit_user = Object.keys(obj)[0];
+                    audit_risk_level = obj[label_user]['风险程度'];
+                }
 
-                };
                 tableHtml += '<tr>' +
                     '<td>' + data[i].question + '</td>' +
                     '<td>' + data[i].answer + '</td>' +
                     '<td>' + risk_level + '</td>' +
                     '<td>' + label_user + '</td>' +
+                    '<td>' + audit_risk_level + '</td>' +
+                    '<td>' + audit_user + '</td>' +
                     '</tr>';
             }
             tableHtml += '</tbody>' +
