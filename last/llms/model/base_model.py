@@ -80,7 +80,6 @@ class HTTPAPILLMModel(BaseLLMModel):
         self.retry_client = RetryClient(raise_for_status=False, retry_options=retry_options)
     
     def __del__(self):
-    
         loop = asyncio.get_running_loop()
         loop.create_task(self.cleanup())
     
