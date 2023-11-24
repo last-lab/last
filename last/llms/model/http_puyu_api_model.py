@@ -17,7 +17,7 @@ class PuyuAPILLMModel(HTTPAPILLMModel):
 
         self.headers = {
             "Content-Type": "application/json",
-            "Authorization": api_key,
+            "Authorization": self.token,
         }
 
     def get_token(self, ak: str, sk: str):
@@ -50,11 +50,11 @@ class PuyuAPILLMModel(HTTPAPILLMModel):
         payload = {
             "model": "ChatPJLM-latest",
             "messages": formatted_messages,
-            **kwargs,
+            # **kwargs,
         }
         response = await self.async_post(
             self.url, headers=self.headers, data=json.dumps(payload)
-        ).json()
+        )
         return response
 
     def parse(self, response):
