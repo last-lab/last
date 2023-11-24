@@ -37,6 +37,8 @@ aiohttp = "*"
 pandas = "*"
 openpyxl = "*"
 aiomultiprocess = "^0.9.0"
+openxlab = "*"
+oss2 = "*"
 
 [tool.poetry.dev-dependencies]
 # test
