@@ -145,9 +145,7 @@ async def extract_score(string):
 @router.post("/evaluation/evaluation_create")
 async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
-    llms = await ModelInfo.filter(
-        Q(id__in=[int(x) for x in eval_info.llm_id.split(",")])
-    ).values()
+    llms = await ModelInfo.filter(Q(id__in=[int(x) for x in eval_info.llm_id.split(",")])).values()
     critic = await ModelInfo.get_or_none(id=eval_info.critic_id).values()
     record = await Record.create(
         eval_plan=plan["name"],
