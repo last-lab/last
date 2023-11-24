@@ -12,14 +12,20 @@
         </div>
         <div class="mb-3">
             <label class="form-label required">待评测模型（可多选）</label>
-{#            <select required class="form-select" id="model">#}
-{#                {% for item in model_list %}#}
-{#                <option value="{{ item.id }}">{{ item.name }}</option>#}
-{#                {% endfor %}#}
-{#            </select>#}
             {% include "record/mult_select.html" %}
             <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modelModal">
                 添加待评测模型
+            </button>
+        </div>
+        <div class="mb-3">
+            <label class="form-label required">自动打分模型（仅可单选）</label>
+            <select required class="form-select" id="critic">
+                {% for item in model_list %}
+                <option value="{{ item.id }}">{{ item.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#criticModal">
+                添加自动打分模型
             </button>
         </div>
         <div class="form-footer">
@@ -74,7 +80,6 @@
             access_key: $('#access_key').val(),
             secret_key: $('#secret_key').val()
         }
-
         $.ajax({
             url: '/admin/model/model_create',
             method: 'POST',
@@ -97,7 +102,8 @@
             "llm_id": values_id.join(','),
             "plan_id": $('#eval_plan').val(),
             "created_at": new Date().getTime(),
-            "llm_name": $('#model').val()
+            "llm_name": $('#model').val(),
+            "critic_id": $('#critic').val()
         }
         $.ajax({
             url: '/admin/evaluation/evaluation_create',
@@ -107,7 +113,7 @@
             success: function (data) {
                 if (data.success) {
                     alert('新建评测成功')
-                    window.location.href = '/admin/record/list'
+                    // window.location.href = '/admin/record/list'
                 } else {
                     alert(data.msg)
                 }
