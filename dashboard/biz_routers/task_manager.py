@@ -244,24 +244,6 @@ async def download_labeling_result(
     task_id = obj.task_id
     task_row = await TaskManage.filter(task_id=task_id)
     sheet_name_list = task_row[0].sheet_name_list
-    task_result = {
-        sheet_name: await LabelResult.filter(task_id=task_id, sheet_name=sheet_name).values(
-            "question", "answer", "labeling_result"
-        )
-        for sheet_name in eval(sheet_name_list)
-    }
-
-    audit_result = {
-        sheet_name: await AuditResult.filter(task_id=task_id, sheet_name=sheet_name).values(
-            "audit_result", "audit_user"
-        )
-        for sheet_name in eval(sheet_name_list)
-    }
-    # 合并一下audit_reuslt 和 label_reuslt
-    for sheet in task_result:
-        for label_result, audit_result in zip(task_result[sheet], audit_result[sheet]):
-            label_result.update(audit_result)
-
     # 直接返回一个html页面
     context = {
         "request": request,
@@ -269,7 +251,6 @@ async def download_labeling_result(
         "resource_label": model_resource.label,
         "resources": resources,
         "model_resource": model_resource,
-        "label_result": task_result,
         "task_id": task_id,
         "sheet_name_list": sheet_name_list,
     }
