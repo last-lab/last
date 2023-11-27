@@ -48,11 +48,14 @@ async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
                 "presence_penalty": kwargs["presence_penalty"],
             },
         )
+        print("*********************")
+        print(model)
         messages = []
         if not (system_prompt is None or system_prompt == ""):
             messages.append(SystemMessage(content=system_prompt))
         messages.append(HumanMessage(content=human_prompt))
 
+        ## TODO: 更改 chat gpt 调用逻辑：1. key 更改 ; 2. prompt 更改
         resultMessage_BaseMessage = await chat.apredict_messages(
             messages,
         )
