@@ -4,6 +4,7 @@ from last.types.plan import EvaluationType, Plan
 from last.types.public import ID, Placeholder, RiskDimension
 from last.types.task import Task
 from tqdm import tqdm
+from task_list import TaskList
 import json
 import asyncio
 import multiprocessing
@@ -95,62 +96,3 @@ async def AI_eval(
     new_dataset = Dataset(name=plan.name + "+" + llm_model.name + "+问答记录", qa_records=new_qa_records, file=None)
 
     return task, new_dataset
-
-class TaskList():
-    """ 模拟任务队列 
-        用于控制并发数量
-    """ 
-    # element: asyncio.Task
-    task_list: list
-    # task result
-    # element: class Message
-    result_list: list
-    # 触发 process_task 的 阈值; 可并发数量
-    task_batch_size: int
-    # 每轮任务执行进度条
-    # 每个 batch 完成后更新
-    process_bar: tqdm
-    
-    def __init__(self):
-        self.task_list = []
-        self.result_list = []
-        
-        # core_count = multiprocessing.cpu_count()
-        # self.task_batch_size = 2 * core_count
-        # TODO: 不同LLM平台QPS不同，当前设为 4 是参照bilibili平台和huazang平台的QPS
-        self.task_batch_size = 4
-        
-        self.process_bar = tqdm(desc="query task", leave=False)
-
-    # 接收任务
-    async def append(self, task: asyncio.Task):
-        self.task_list.append(task)
-        # 任务数量达到 阈值 触发任务处理行为
-        if(len(self.task_list) > self.task_batch_size):
-            await self.process_task()
-
-    # 处理任务 更新 result_list
-    async def process_task(self):
-        if(len(self.task_list) > 0):
-            temp_result_list = await asyncio.gather(*(self.task_list))
-            # a batch task accomplished
-            # update process bar
-            self.process_bar.update(len(self.task_list))
-
-            self.task_list.clear()
-            # update result list 
-            self.result_list += temp_result_list
-
-    async def get_result_list(self):
-        # 所有任务均提交给TaskList
-        # 检查并处理剩余 task
-        if(len(self.task_list) > 0):
-            await self.process_task()
-        # 关闭并重置进度条
-        self.process_bar.close()
-        self.process_bar = tqdm(desc="query task", leave=False)
-        return self.result_list.copy()
-
-    def clear(self):
-        self.task_list.clear()
-        self.result_list.clear()
