@@ -45,7 +45,7 @@ class BaseLLMModel(ABC):
                 )
                 errors.append(generated_text)
                 print(generated_text)
-                raise ex
+                # raise ex
             finally:
                 trials += 1
 
@@ -89,6 +89,7 @@ class HTTPAPILLMModel(BaseLLMModel):
                 # 处理响应
                 try:
                     result = await response.json()
+                    print(result)
                 except Exception as e:
                     result = await response.text()
         return result

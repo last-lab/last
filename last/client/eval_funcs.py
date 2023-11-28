@@ -4,7 +4,7 @@ from last.types.plan import EvaluationType, Plan
 from last.types.public import ID, Placeholder, RiskDimension
 from last.types.task import Task
 from tqdm import tqdm
-from task_list import TaskList
+from .task_list import TaskList
 import json
 import asyncio
 import multiprocessing

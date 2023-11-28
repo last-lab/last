@@ -7,6 +7,7 @@ from tqdm import tqdm
 import json
 import asyncio
 import multiprocessing
+from typing import Coroutine
 
 class TaskList():
     """ 模拟任务队列 
@@ -25,6 +26,11 @@ class TaskList():
     
     ## TODO: 对每个失败的 task 使用 0 并发的方式处理, 策略是在每一 batch task 完成后检查result，立即对error的task进行处理
     # 因为出现error说明并发过高，停止batch task，使用 0 并发的方式处理 error task，降低并发量
+    pending_result_list: list
+    tasks: list
+    results: list
+    error_tasks_index: list
+    
     
     def __init__(self):
         self.task_list = []
@@ -35,7 +41,8 @@ class TaskList():
         
         # TODO: 限制峰值 QPS; ( 研究如何保证 avg_RPS --> QPS, 当前 avg_QPS == 单个请求耗时 / task_batch_size, 是否有multi / async + 时序 的方法
         # 注意, task_batch_size <= QPS, 否则服务大概率返回5xx
-        self.task_batch_size = 4
+        # self.task_batch_size = 4
+        self.task_batch_size = 16
         
         self.process_bar = tqdm(desc="query task", leave=False)
 
@@ -54,25 +61,36 @@ class TaskList():
         return True
     
     # 检查一批result
-    def check_list_error_task(self, result_list: list) -> bool:
-        self.error_tasks_index_list = list(map(self.check_single_error_task, result_list))
+    def check_list_error_task(self) -> bool:
+        """ 检查 pending_result_list 中有没有 error response
+            Returns:
+        """
+        self.error_tasks_index_list = list(map(self.check_single_error_task, self.pending_result_list))
         return all(self.error_tasks_index_list)
     
-    async def process_single_task(self):
-        
-        pass
-    
-    async def process_error_task(self, tasks: list, results: list, error_tasks_index: list):
+    async def process_error_task(self):
+        """ 保证 pending_result_list 的有序下处理 error task
+        """    
         # tasks、results、error_tasks_index 均添加到 self中
-        pass
+        error_tasks = [self.tasks_list[i] for i in self.error_tasks_index]
+        processed_tasks = [await task for task in error_tasks]
+        for i, task_index in enumerate(self.error_tasks_index):
+            self.results[task_index] = processed_tasks[i]
     
     
     # 处理任务 更新 result_list
     async def process_task(self):
+        """ 处理 LLM call 协程
+            通过 while self.check_list_error_task() 保证该 batch tasks 成功
+        """        
         if(len(self.task_list) > 0):
-            temp_result_list = await asyncio.gather(*(self.task_list))
-            while self.check_list_error_task(self, temp_result_list):
-                self.process_error_task()
+            # 发起并发
+            # TODO: 修改 parse 将异常返回至这里进行处理
+            self.pending_result_list = await asyncio.gather(*(self.task_list))
+            
+            while self.check_list_error_task():
+                # 直到请求成功; TODO: retry 过多时，是否容忍 error response
+                await self.process_error_task()
                 pass
             # a batch task accomplished
             # update process bar
@@ -80,7 +98,7 @@ class TaskList():
 
             self.task_list.clear()
             # update result list 
-            self.result_list += temp_result_list
+            self.result_list += self.pending_result_list.copy()
 
     async def get_result_list(self):
         # 所有任务均提交给TaskList
