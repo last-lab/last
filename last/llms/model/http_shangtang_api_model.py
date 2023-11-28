@@ -44,7 +44,7 @@ class ShangtangAPILLMModel(HTTPAPILLMModel):
         payload = {
             "max_new_tokens": 1024,
             "messages": formatted_messages,
-            "model": "nova-ptc-xl-v1",  ### nova-ptc-xl-v2-security-internal-test
+            "model": "nova-ptc-xl-v1",
             "repetition_penalty": 1.05,
             "stream": False,
             "temperature": 0.8,
@@ -62,7 +62,7 @@ class ShangtangAPILLMModel(HTTPAPILLMModel):
     def parse(self, response):
         if "error" in response:
             return (False, response["error"]["message"])
-
+        # print(response)
         return (
             True,
             response["data"]["choices"][0]["message"],
