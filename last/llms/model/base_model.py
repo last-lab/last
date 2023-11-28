@@ -82,8 +82,10 @@ class HTTPAPILLMModel(BaseLLMModel):
     #     return results[0]
     
     async def async_post(self, url, headers, data, cookies=None, timeout=120):
-        # 指数增长 retry
-        retry_options = ExponentialRetry(attempts = 2 ** 3)
+        # 指数级退避策略
+        # 总重试次数 2**2
+        # 首次重试延迟 1.0s
+        retry_options = ExponentialRetry(attempts = 2 ** 2, start_timeout = 1.0)
         async with RetryClient(raise_for_status=False, retry_options=retry_options) as retry_client:
             async with retry_client.post(url, headers=headers, data=data, cookies=cookies, timeout=timeout) as response:
                 # 处理响应
