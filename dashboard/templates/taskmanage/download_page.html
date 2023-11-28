@@ -4,7 +4,30 @@
 <style>
     .table-responsive {
   overflow: auto; /* 添加滚动条 */
-}
+    }
+
+    .card-table {
+        display: none
+    }
+
+    .active{
+        display: block
+    }
+
+    ul {
+    display: flex;
+    list-style-type: none;
+    }
+
+    .sheet-name{
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    }
+
+    .tab-active{
+        color:red
+    }
 </style>
 
 
@@ -12,11 +35,20 @@
 <div>
     <button id="download">下载Excel</button>
 </div>
-<div class="card">
-    <div class="table-responsive" id="tableContainer">
 
+<div class="table-list">
+    <div class="tab-nav">
+        <ul></ul>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive" id="tableContainer">
+
+        </div>
     </div>
 </div>
+
+
 
 <script>
     const decodedString = '{{sheet_name_list}}'.replace(/&#39;/g, "'");
@@ -47,6 +79,12 @@
 
     // 创建一个新表
     function create_table(sheetName){
+        const tab_nav = document.querySelector(".tab-nav ul")
+        const li_label = document.createElement("li")
+        li_label.classList.add("sheet-name")
+        li_label.textContent = sheetName
+        tab_nav.appendChild(li_label)
+
         var tableHtml = '<table class="table card-table table-vcenter text-nowrap datatable" id="' +sheetName + '">' +
             '<thead>' +
             '<tr>' +
@@ -114,6 +152,8 @@
     }
 
 
+
+
     async function get_label_data(sheet_name){
         const rsp = await fetch('/admin/taskmanage/get_label_result', {
             method: 'post',
@@ -126,7 +166,26 @@
 
     }
 
+    window.onload = function() {
+        // 获取所有的tab-nav.li标签，然后将第一个li设置为active，给所有的li的标签添加回调函数，如果当鼠标移动到这个标签，则显示对应的sheet，其余sheet的display设置为None
+        const tab_nav = document.querySelectorAll(".sheet-name")
+        for (let i =0; i<tab_nav.length; i++){
+            tab_nav[i].addEventListener('mouseenter', function(){
+                // 鼠标移动，对应的table增加active class，拥有active的table删除active类
+                document.querySelector('.tab-active').classList.remove('tab-active')
+                tab_nav[i].classList.add('tab-active')
+
+
+                document.querySelector('.active').classList.remove('active')
+                document.querySelector(`.card-table:nth-child(${i+1})`).classList.add('active')
+            })
+        }
+        // 给第一个card-table设置active属性
+        document.querySelector(`.card-table:first-child`).classList.add('active')
+        document.querySelector(`.sheet-name:first-child`).classList.add('tab-active')
+    }
 
 
 </script>
+
 {% endblock %}
