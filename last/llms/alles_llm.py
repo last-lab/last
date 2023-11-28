@@ -25,6 +25,7 @@ from .model.http_bilibili_api_model import BilibiliAPILLMModel
 from .model.http_infchat_api_model import InfchatAPILLMModel
 from .model.http_caozhi_api_model import CaozhiAPILLMModel
 from .model.http_xiaohongshu_api_model import XiaoHongShuAPILLMModel
+from .model.http_shangtang_api_model import ShangtangAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -80,6 +81,8 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["CAOZHI_API_TOKEN"]
         elif self.model.lower().startswith("xiaohongshu"):
             api_key = os.environ["XIAOHONGSHU_API_TOKEN"]
+        elif self.model.lower().startswith("shangtang"):
+            api_key = os.environ["SHANGTANG_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -126,6 +129,8 @@ class AllesChatLLM(BaseModel):
             model = CaozhiAPILLMModel(**params)
         elif self.model.lower() == "xiaohongshu":
             model = XiaoHongShuAPILLMModel(**params)
+        elif self.model.lower() == "shangtang":
+            model = ShangtangAPILLMModel(**params)
         else:
             raise NotImplementedError()
 
