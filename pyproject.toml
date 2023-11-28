@@ -58,6 +58,7 @@ pylint = "*"
 # example
 asyncmy = "*"
 python-dotenv = "*"
+pyjwt = "*"
 rearq = { git = "https://github.com/long2ice/rearq.git", branch = "dev" }
 asyncpg = "*"
 
