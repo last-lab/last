@@ -1,4 +1,4 @@
-from last.types.dataset import Dataset, QARecord
+from last.types.dataset import Dataset, QARecord, Message, MessageRole
 from last.types.llm import LLM, LLMType
 from last.types.plan import EvaluationType, Plan
 from last.types.public import ID, Placeholder, RiskDimension
@@ -68,7 +68,9 @@ async def AI_eval(
     for (dataset, qa_record), response in zip(plan, response_list):
         question = qa_record.question
         correct_ans = qa_record.answer
-        await taskList.append(asyncio.create_task(critic_model(question, response, correct_ans)))
+        ## sheet_name 作为 theme, 确定 type_prompt
+        sheet_name = Message(role=MessageRole.Chat, content=qa_record.sheet_name)
+        await taskList.append(asyncio.create_task(critic_model(question, response, correct_ans, sheet_name)))
     
     # 无异常抛出的情况下 critic_list 与 task_list 元素一一对应
     critic_list = await taskList.get_result_list()

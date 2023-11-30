@@ -75,7 +75,7 @@ class HTTPAPILLMModel(BaseLLMModel):
         self.url = None
         self.headers = None
         # 指数增长 retry
-        retry_options = ExponentialRetry(attempts = 2 ** 3)
+        retry_options = ExponentialRetry(attempts = 2 ** 2, start_timeout = 1.0)
         # 同一个LLM的请求用同一个 session 访问
         self.retry_client = RetryClient(raise_for_status=False, retry_options=retry_options)
     
@@ -99,9 +99,7 @@ class HTTPAPILLMModel(BaseLLMModel):
             # 处理响应
             try:
                 result = await response.json()
-                print(result)
             except Exception as e:
                 result = await response.text()
-                print(result)
         return result
 

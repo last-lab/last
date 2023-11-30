@@ -48,6 +48,7 @@ async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
                 "frequency_penalty": kwargs["frequence_penalty"],
                 "presence_penalty": kwargs["presence_penalty"],
             },
+            max_retries=2**3,   ## 重试次数 ( langchain 默认指数退避: Wait 2^x * 1 second between each retry starting with 4 seconds, then up to 10 seconds, then 10 seconds afterwards)
         )
         messages = []
         if not (system_prompt is None or system_prompt == ""):
