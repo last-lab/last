@@ -120,7 +120,7 @@ class TaskList():
         # core_count = multiprocessing.cpu_count()
         # self.task_batch_size = 2 * core_count
         # TODO: 不同LLM平台QPS不同，当前设为 4 是参照bilibili平台和huazang平台的QPS
-        self.task_batch_size = 8
+        self.task_batch_size = 4
         
         self.process_bar = tqdm(desc="query task", leave=False)
 
