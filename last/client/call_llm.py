@@ -32,6 +32,7 @@ ALLES_CHAT_LLM = [
     "infchat",
     "caozhi",
     "xiaohongshu",
+    "shangtang",
 ]
 
 
