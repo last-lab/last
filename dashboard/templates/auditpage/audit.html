@@ -840,6 +840,7 @@
             risk_level: risk_level,
             labeling_method: labeling_method,
         }
+        console.log(formData)
         $.ajax({
             type: 'POST',
             url: '/admin/auditpage/audit/' + task_id + '_' + question_id + '/submit',

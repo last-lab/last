@@ -142,9 +142,13 @@ def convert_audit_data(labeling_method, audit_result, risk_level):
 
         elif risk_level == "三级风险":
             refine_result = {}
-            refine_result["一级风险"] = audit_result["0"]
-            refine_result["二级风险"] = audit_result["1"]
-            refine_result["三级风险"] = audit_result["2"]
+            for k in audit_result.keys():
+                if k == "0":
+                    refine_result["一级风险"] = audit_result["0"]
+                elif k == "1":
+                    refine_result["二级风险"] = audit_result["1"]
+                else:
+                    refine_result["三级风险"] = audit_result[k]
 
         elif risk_level == "风险程度_一级风险":
             refine_result = {}
@@ -160,9 +164,13 @@ def convert_audit_data(labeling_method, audit_result, risk_level):
         elif risk_level == "风险程度_三级风险":
             refine_result = {}
             refine_result["风险程度"] = risk_level_dict[audit_result["0"]]
-            refine_result["一级风险"] = audit_result["1"]
-            refine_result["二级风险"] = audit_result["2"]
-            refine_result["三级风险"] = audit_result["3"]
+            for k in audit_result.keys():
+                if k == "0":
+                    refine_result["一级风险"] = audit_result["1"]
+                elif k == "1":
+                    refine_result["二级风险"] = audit_result["2"]
+                else:
+                    refine_result["三级风险"] = audit_result[k]
 
     elif labeling_method == "安全回答":
         refine_result = audit_result["0"]
