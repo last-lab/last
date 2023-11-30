@@ -12,7 +12,6 @@ def statistic_dataset(dataset_path):
     word_cnt = (200,)
     qa_records = """
                 Who painted the Mona Lisa?,Leonardo da Vinci
-                What is the symbol for the chemical element iron?,Fe
                 "Who wrote the play ""Hamlet""?",William Shakespeare
                 What is the largest planet in our solar system?,Jupiter
                 Who is the author of the Harry Potter book series?,J.K. Rowling
