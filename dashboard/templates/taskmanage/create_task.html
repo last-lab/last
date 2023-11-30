@@ -69,30 +69,31 @@
     <div>
         <span>标注方式 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
         <div>
-            <input type="checkbox" id="sorting" name="annotationType" value="排序标注">
+            <input type="radio" id="sorting" name="annotationType" value="排序标注">
             <label class="checkbox-label" for="sorting">排序标注</label>
         </div>
         <div>
-            <input type="checkbox" id="boundingBox" name="annotationType" value="框选标注">
+            <input type="radio" id="boundingBox" name="annotationType" value="框选标注">
             <label class="checkbox-label" for="boundingBox">框选标注</label>
         </div>
 
         <div>
-            <input type="checkbox" id="safeAnswer" name="annotationType" value="安全回答">
+            <input type="radio" id="safeAnswer" name="annotationType" value="安全回答">
             <label class="checkbox-label" for="safeAnswer">安全回答</label>
         </div>
 
         <div>
-            <input type="checkbox" id="risk" name="annotationType" value="风险判别">
+            <input type="radio" id="risk" name="annotationType" value="风险判别">
             <label class="checkbox-label" for="risk">风险判别</label>
-            <input type="checkbox" id="risk-level">
-            <label for="risk-level">判断风险程度</label>
-            <input type="checkbox" id="risk-type">
-            <label for="risk-level">判断风险类别</label>
+
+            <label><input type="checkbox" id="risk-type">判断风险程度</label>
+            <label><input type="checkbox" id="risk-level">判断风险类别</label>
+
             <select id="risk-grade">
-                <option value="一级风险">一级风险类型</option>
-                <option value="二级风险">二级风险类型</option>
-                <option value="三级风险">三级风险类型</option>
+                <option value="default" disabled selected>请选择风险类型</option>
+                <option value="一级风险" disabled>一级风险类型</option>
+                <option value="二级风险" disabled>二级风险类型</option>
+                <option value="三级风险" disabled>三级风险类型</option>
             </select>
         </div>
     </div>
@@ -375,6 +376,15 @@
             })
             return rsp.json();
         }
+
+
+        const risk_level = document.querySelector('#risk-level')
+        risk_level.addEventListener('click', function(){
+            const risk_grade = document.querySelector('#risk-grade')
+            for (let i = 0; i< risk_grade.length; i++){
+                risk_grade[i].disabled = !risk_grade[i].disabled
+            }
+        })
 
     </script>
     </body>
