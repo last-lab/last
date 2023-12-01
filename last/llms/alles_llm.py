@@ -27,6 +27,8 @@ from .model.http_caozhi_api_model import CaozhiAPILLMModel
 from .model.http_xiaohongshu_api_model import XiaoHongShuAPILLMModel
 from .model.http_shangtang_api_model import ShangtangAPILLMModel
 from .model.http_claude2_api_model import Claude2APILLMModel
+from .model.http_minimax_api_model import MinimaxAPILLMModel
+from .model.http_ERNIEBot_api_model import ERNIEBOTAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -86,6 +88,10 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["SHANGTANG_API_TOKEN"]
         elif self.model.lower().startswith("claude2"):
             api_key = os.environ["CLAUDE2_API_TOKEN"]
+        elif self.model.lower().startswith("minimax"):
+            api_key = os.environ["MINIMAX_API_TOKEN"]
+        elif self.model.lower().startswith("erniebot"):
+            api_key = os.environ["ERNIEBOT_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -136,6 +142,10 @@ class AllesChatLLM(BaseModel):
             model = ShangtangAPILLMModel(**params)
         elif self.model.lower() == "claude2":
             model = Claude2APILLMModel(**params)
+        elif self.model.lower() == "minimax":
+            model = MinimaxAPILLMModel(**params)
+        elif self.model.lower() == "erniebot":
+            model = ERNIEBOTAPILLMModel(**params)
         else:
             raise NotImplementedError()
 
