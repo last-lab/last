@@ -56,8 +56,14 @@ class MinimaxAPILLMModel(HTTPAPILLMModel):
 
     def parse(self, response):
         response = json.loads(response)
-        if response is None or response['base_resp']['status_code'] != 0:
+        if response is None or (response['base_resp']['status_code'] != 0 and response['base_resp']['status_code'] != 1027):
             return (False, response['base_resp']['status_msg'])
+        
+        if response['base_resp']['status_code'] == 1027:
+            return (
+                True,
+                "输出包含敏感信息",
+            )
         return (
             True,
             response['reply'],
