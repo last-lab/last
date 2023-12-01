@@ -33,6 +33,9 @@ ALLES_CHAT_LLM = [
     "caozhi",
     "xiaohongshu",
     "shangtang",
+    "claude2",
+    "minimax",
+    "erniebot"
 ]
 
 

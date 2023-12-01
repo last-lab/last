@@ -56,6 +56,12 @@ class TestLLMAPI(unittest.TestCase):
         print("XiaoHongShu: %s" % generated_text)
         assert generated_text is not None
 
+    def test_claude2_api(self):
+        generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="Claude2"))
+        # 大小写都可以， eg. claude2
+        print("Claude2: %s" % generated_text)
+        assert generated_text is not None
+
     def test_caozhi_api(self):
         generated_text = asyncio.run(generation_test(prompt="什么是股票", model="CaoZhi"))
         # 大小写都可以， eg. CaoZhi, caozhi
@@ -66,6 +72,16 @@ class TestLLMAPI(unittest.TestCase):
         generated_text = asyncio.run(generation_test(prompt="你好", model="shangtang"))
         # 大小写都可以， eg. Shangtang, ShangTang
         print("ShangTang: %s" % generated_text)
+        assert generated_text is not None
+
+    def test_minimax_api(self):
+        generated_text = asyncio.run(generation_test(prompt="你好", model="Minimax"))
+        print("Minimax: %s" % generated_text)
+        assert generated_text is not None
+
+    def test_erniebot_api(self):
+        generated_text = asyncio.run(generation_test(prompt="你好", model="ERNIEBOT"))
+        print("ERNIEBOT: %s" % generated_text)
         assert generated_text is not None
 
     def test_wangyi_api(self):
