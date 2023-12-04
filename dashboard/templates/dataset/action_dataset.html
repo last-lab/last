@@ -90,7 +90,8 @@
                     <th>分页名</th>
                     <th>问题</th>
                     <th>回复</th>
-                    <th>评判</th>
+                    <th>自动评判结果</th>
+                    <th>自动评判理由</th>
                       <!-- <th>操作</th> -->
                   </tr>
                 </thead>
@@ -108,6 +109,9 @@
                             </td>
                             <td style="max-width: 350px; word-wrap:break-word; word-break:break-all; white-space:normal;">
                               {{ item[3] }}
+                            </td>
+                            <td style="max-width: 350px; word-wrap:break-word; word-break:break-all; white-space:normal;">
+                              {{ item[4] }}
                             </td>
                             <!-- <td><button class="btn btn-primary">修改</button></td> -->
                         </tr>
@@ -178,12 +182,13 @@
         const question = cells[1].innerText;
         const reply = cells[2].innerText;
         const judgment = cells[3].innerText;
+        const reason = cells[4].innerText;
 
         if (!groupedData[pageName]) {
             groupedData[pageName] = [];
         }
 
-        groupedData[pageName].push({问题: question, 回复: reply, 评判: judgment });
+        groupedData[pageName].push({问题: question, 回复: reply, 自动评判结果: judgment, 自动评判理由: reason });
     }
 
     return groupedData;

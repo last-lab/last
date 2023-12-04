@@ -40,7 +40,7 @@ class QARecord(BaseModel):
     question: Message
     answer: Optional[Message] = None
     critic: Optional[Message] = None  # critic模型的评测结果
-    result: Optional[Message] = None    # critic模型的评测理由
+    reason: Optional[Message] = None    # critic模型的评测理由
     annotation: Optional[Annotation] = None  # QARecord对应的人工标注结果
 
 
