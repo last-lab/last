@@ -8,6 +8,7 @@ import csv
 from enum import Enum
 from last.services.enums import StrEnum
 import os
+
 import pandas as pd
 
 DatasetTyping = TypeVar("DatasetTyping", bound="Dataset")
@@ -38,7 +39,8 @@ class QARecord(BaseModel):
     successor_uid: Optional[str] = None  # 关联下一条Message记录的id, 用于多轮对话，目前不启用
     question: Message
     answer: Optional[Message] = None
-    critic: Optional[Message] = None  # critic模型对该条QARecord的回复
+    critic: Optional[Message] = None  # critic模型的评测结果
+    reason: Optional[Message] = None    # critic模型的评测理由
     annotation: Optional[Annotation] = None  # QARecord对应的人工标注结果
 
 
@@ -87,7 +89,7 @@ class Dataset(Record, BaseManager):
                 # 将QA记录转换为DataFrame
                 df = pd.DataFrame([vars(record) for record in records])
                 # 选择需要的列
-                df = df[['question', 'answer', 'critic']]
+                df = df[['question', 'answer', 'critic', 'reason']]
                 # 写入到指定的sheet
                 df.to_excel(writer, sheet_name=sheet_name, index=False)
 
@@ -104,7 +106,7 @@ class Dataset(Record, BaseManager):
     @staticmethod
     def write_dict_list_to_csv(qa_records, filename):
         # 获取所有的字段名
-        fieldnames = ["question", "answer", "critic"]
+        fieldnames = ["question", "answer", "critic", "reason"]
         assert set(fieldnames).issubset(
             set(vars(qa_records[list(qa_records.keys())[0]]))
         )
@@ -119,6 +121,9 @@ class Dataset(Record, BaseManager):
             for qa_record in qa_records.values():
                 row = {field: str(getattr(qa_record, field)) for field in fieldnames}
                 writer.writerow(row)
+
+
+
 
     @staticmethod
     def upload(file_path: str) -> Tuple[Dict[str, QARecord], List[str]]:
