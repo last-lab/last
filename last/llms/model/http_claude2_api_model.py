@@ -14,6 +14,7 @@ class Claude2APILLMModel(HTTPAPILLMModel):
             "Content-Type": "application/json",
             "Authorization": "Bearer " + self.api_key,
         }
+        self.qps = 2
 
     async def generate(self, prompt, messages, *args, **kwargs):
         

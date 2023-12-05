@@ -78,6 +78,10 @@ class HTTPAPILLMModel(BaseLLMModel):
         retry_options = ExponentialRetry(attempts = 2 ** 2, start_timeout = 1.0)
         # 同一个LLM的请求用同一个 session 访问
         self.retry_client = RetryClient(raise_for_status=False, retry_options=retry_options)
+        
+        # 不同平台 不同 QPS
+        self.qps = 4
+        self.semaphore = asyncio.Semaphore(self.qps)
     
     def __del__(self):
         loop = asyncio.get_running_loop()
@@ -95,11 +99,12 @@ class HTTPAPILLMModel(BaseLLMModel):
     #     return results[0]
     
     async def async_post(self, url, headers, data, cookies=None, timeout=120):
-        async with self.retry_client.post(url, headers=headers, data=data, cookies=cookies, timeout=timeout) as response:
-            # 处理响应
-            try:
-                result = await response.json()
-            except Exception as e:
-                result = await response.text()
+        async with self.semaphore:
+            async with self.retry_client.post(url, headers=headers, data=data, cookies=cookies, timeout=timeout) as response:
+                # 处理响应
+                try:
+                    result = await response.json()
+                except Exception as e:
+                    result = await response.text()
         return result
 
