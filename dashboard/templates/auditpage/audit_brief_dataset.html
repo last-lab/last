@@ -1,7 +1,17 @@
 {% extends layout %}
 {% block page_body %}
 
-
+<style>
+    table {
+      width: 100%;
+      table-layout: auto;
+    }
+  
+    td {
+      word-wrap: break-word;
+      white-space: normal;
+    }
+  </style>
 
     <div class="card">
 
@@ -13,9 +23,17 @@
 
                         <th>问题</th>
 
+                        <th>答案</th>
+
                         <th>当前状态</th>
 
+                        <th>模型标注</th>
+
+                        <th>模型原因</th>
+
                         <th>操作</th>
+
+                        
 
                 </tr>
                 </thead>
@@ -56,6 +74,7 @@
 
                 // 遍历数据并添加到表格中
                 data.forEach(function(item) {
+                    console.log(item)
                     const row = $('<tr></tr>');
 
                     const idCell = $('<td></td>').text(item.question_id);
@@ -64,9 +83,13 @@
                     const questionCell = $('<td></td>').text(item.question);
                     row.append(questionCell);
 
+                    const answerCell = $('<td></td>').text(item.answer);
+                    row.append(answerCell);
+
                     const statusCell = $('<td></td>').text(item.status);
                     row.append(statusCell);
-
+                    row.append(`<td>${item.model_label}</td>`)
+                    row.append(`<td>${item.model_reason}</td>`)
                     const actionCell = $('<td></td>');
                     const actionLink = $('<a></a>').text(item.action);
                     // 添加条件判断来设置不同的跳转链接和参数

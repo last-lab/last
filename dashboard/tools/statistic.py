@@ -118,7 +118,11 @@ def convert_table_to_csv(table):
 
 
 def convert_audit_data(labeling_method, audit_result, risk_level):
-    if labeling_method == "判断标注":
+    if labeling_method == "Model":
+        if risk_level == "0级风险":
+            refine_result = {"风险程度": risk_level_dict[audit_result["0"]]}
+
+    elif labeling_method == "判断标注":
         # TODO，这个函数需要修改
         refine_result = audit_result["0"]
 

@@ -53,6 +53,33 @@ async def upload_dataset(
         )
 
 
+@router.get("/{resource}/upload_labeled_data", dependencies=[Depends(create_checker)])
+async def upload_labeled_data(
+    request: Request,
+    resource: str = Path(...),
+    resources=Depends(get_resources),
+    model_resource: ModelResource = Depends(get_model_resource),
+):
+    context = {
+        "request": request,
+        "resource": resource,
+        "resource_label": model_resource.label,
+        "resources": resources,
+        "model_resource": model_resource,
+        "page_title": "创建标注任务",
+    }
+    try:
+        return templates.TemplateResponse(
+            f"{resource}/create_model_labeled_task.html",
+            context=context,
+        )
+    except TemplateNotFound:
+        return templates.TemplateResponse(
+            "create_model_labeled_task.html",
+            context=context,
+        )
+
+
 @router.post("/{resource}/assign_test_task")
 async def assign_test_task(
     request: Request,
@@ -214,6 +241,120 @@ async def create_task_callback(
     return "success"
 
 
+@router.post("/{resource}/create_model_task_callback")
+async def create_model_task_callback(
+    request: Request,
+    file: UploadFile = File(...),
+    fileName: str = Form(...),
+    deadline: str = Form(...),
+    auditAssignments: str = Form(...),
+):
+    """_summary_
+
+    Args:
+        request (Request): _description_
+        file (UploadFile, optional): _description_. <starlette.datastructures.UploadFile object at 0x7f24293daa90>
+        fileName (str, optional): _description_. string
+        deadline (str, optional): _description_. string like '2023-12-06T21:13'
+        auditAssignments (str, optional): _description_. string like '[{"auditor":"test","taskCount":"100"}]'
+
+    Returns:
+        _type_: _description_
+    """
+    file_content = await file.read()
+    audit_assignments = eval(auditAssignments)
+    sheet_name_list, qa_list = split_string_to_list(fileName, file_content)
+    task_id = uuid4()
+    audit_dict = {user["auditor"]: user["taskCount"] for user in audit_assignments}
+    (
+        item_audit_user_dict,
+        audit_user_item_dict,
+        audit_user_item_length,
+        audit_progress,
+    ) = distribute_audit_task(len(qa_list), audit_dict)
+    audit_flag = {
+        user: [False for _ in range(len(audit_user_item_dict[user]))]
+        for user in audit_user_item_dict
+    }
+    if qa_list is None:
+        raise
+    task_id = uuid4()
+    dataset_uid = uuid4()
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # 写入到taskManage中
+    await TaskManage(
+        task_id=task_id,
+        task_type="数据集标注",
+        labeling_method=["Model"],
+        current_status="未标注",
+        dateset=fileName,
+        dataset_uid=dataset_uid,
+        create_time=current_time,
+        end_time=deadline,
+        assign_user="None",
+        audit_user=audit_assignments,
+        risk_level="0级风险",
+        sheet_name_list=sheet_name_list,
+    ).save()
+
+    # 写入标注表
+    # 将task写入到labelpage中,
+    await LabelPage(
+        task_id=task_id,
+        task_type="数据集标注",
+        labeling_method=["Model"],
+        dateset=fileName,
+        dataset_uid=dataset_uid,
+        end_time=deadline,
+        assign_user="None",
+        assign_length="None",
+        labeling_progress="None",
+        labeling_flag="None",
+    ).save()
+
+    # 创建一个task res表，将这个任务的结果存放起来
+    for index, (question, answer, model_label, model_reason, sheet_name) in enumerate(qa_list):
+        await LabelResult(
+            task_id=task_id,
+            dataset_id=dataset_uid,
+            creator="root",
+            labeling_method=["Model"],
+            question_id=index + 1,
+            question=question,
+            answer=answer,
+            status="标注完成",
+            assign_user=["None"],
+            risk_level="0级风险",
+            sheet_name=sheet_name,
+        ).save()
+
+    # 写入到autiPage表中
+    await AuditPage(
+        task_id=task_id,
+        end_time=deadline,
+        labeling_method=["Model"],
+        audit_user=audit_user_item_dict,
+        audit_length=audit_user_item_length,
+        audit_progress=audit_progress,
+        audit_flag=audit_flag,
+    ).save()
+
+    # 插入数据，
+    for index, (question, answer, model_label, model_reason, sheet_name) in enumerate(qa_list):
+        await AuditResult(
+            task_id=task_id,
+            status="未审核",
+            question_id=index + 1,
+            audit_user=item_audit_user_dict[index],
+            question=question,
+            answer=answer,
+            model_label=model_label,
+            model_reason=model_reason,
+            sheet_name=sheet_name,
+        ).save()
+    return "success"
+
+
 @router.get("/{resource}/get_datasets_name")
 async def get_datasets_name(request: Request, resources=Depends(get_resources)):
     return ["test1", "test2"]
@@ -298,7 +439,7 @@ async def get_label_result(request: Request):
     )
 
     audit_result = await AuditResult.filter(task_id=task_id, sheet_name=sheet_name).values(
-        "audit_result"
+        "audit_result", "model_label", "model_reason"
     )
     # 合并一下audit_reuslt 和 label_reuslt
     for label_result_, audit_result_ in zip(label_result, audit_result):

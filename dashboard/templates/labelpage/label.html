@@ -71,12 +71,16 @@
 
     // 标注方法选择
     var label_select;
+    const configPromise = getLabelConfig();
+    const dataPromise = getLabelData();
+    const nextPageConfigPromise = getNextPageConfig();
 
-    async function render_page () {
-        const config = await getLabelConfig();
-        const data = await getLabelData();
-        const nextPageConfig = await getNextPageConfig();
-        if (config) {
+    function render_page () {
+        Promise.all([configPromise, dataPromise, nextPageConfigPromise]).then(res => {
+            let config
+            let data
+            let nextPageConifg
+            [config, data, nextPageConfig] = res
             answer = config.A;
             question = config.Q;
             text = question + "\n" + answer;
@@ -619,7 +623,8 @@
             </View>
             `
             const label_list = [second_label, third_label, safe_label];
-            const label_selects = ['排序标注', '框选标注', '安全回答',];
+            const label_selects = ['排序标注', '框选标注', '安全回答',]
+            console.log(risk_level)
             if(risk_level != 'None'){
                 if (risk_level == '0级风险'){tagView = `<View>${risk_label_zero}</View>`}
                 if (risk_level == '一级风险'){tagView = `<View>${risk_label_one}</View>`}
@@ -631,90 +636,88 @@
             }else{
                 tagView = `<View>${label_list[label_selects.indexOf(label_select)]}</View>`
             }
-        }
-
-        if (data) {
-            annotations = data.annotations;
-            predictions = data.predictions;
-        }
-        const studio = document.querySelector('#label-studio')
-        if (studio) {
-            studio.remove()
-        }
-        const root = document.createElement('div');
-        root.id = 'label-studio'
-        document.getElementById('studio').append(root)
-        const labelStudio = new LabelStudio(root, {
-            config: tagView,
-            interfaces: interfaces,
-            user: {
-                pk: 1,
-                firstName: userID,
-                lastName: ' ',
-            },
-            task: {
-                annotations: annotations,
-                predictions: predictions,
-                id: 1,
-                data: {
-                    text: text
-                }
+            console.log(tagView)
+            if (data) {
+                annotations = data.annotations;
+                predictions = data.predictions;
             }
-        });
-
-        labelStudio.on("labelStudioLoad", (LS) => {
-            // Perform an action when Label Studio is loaded
-            const c = LS.annotationStore.addAnnotation({
-                userGenerate: true
-            });
-            LS.annotationStore.selectAnnotation(c.id);
-            console.log("loading...")
-        });
-
-        labelStudio.on("submitAnnotation", (LS, annotation) => {
-            // Retrieve an annotation in JSON format
-            // 这个地方对三级标注进行判断
-            $.ajax({
-                url: '/admin/labelpage/labeling/{item}/submit',
-                method: 'post',
-                data: JSON.stringify({
-                    "annotation": annotation.serializeAnnotation(),
-                    "question_id": question_id,
-                    "task_id": task_id,
-                    "labeling_method": urlParams.get('labeling_method'),
-                    "risk_level": risk_level,
-                    }),
-                success: function (e) {
-                    // 如果成功，就对后端发送next请求？并且将当前的用户id发送回去
-                    // 访问一下后端的一个标注函数
-                    console.log(nextPageConfig);
-                    if (nextPageConfig.question_id == 'null'){
-                        const briefDataUrl = '/admin/labelpage/display/' + '{{task_pk_value}}';
-                        window.location.href = briefDataUrl;
-                    }else{
-                        const labelingUrl = '/admin/labelpage/labeling/' + nextPageConfig.task_id + '_' + nextPageConfig.question_id;
-                        // 在链接中添加参数
-                        const params = {
-                            question_id: nextPageConfig.question_id,
-                            task_id: nextPageConfig.task_id,
-                            labeling_method: urlParams.get('labeling_method'),
-                            task_pk_value: '{{task_pk_value}}',
-                            risk_level: nextPageConfig.risk_level,
-                            // 添加其他参数
-                        };
-                        const queryString = $.param(params);
-                        const urlWithParams = labelingUrl + '?' + queryString;
-                        window.location.href=urlWithParams;
-                    }
+            const studio = document.querySelector('#label-studio')
+            if (studio) {
+                studio.remove()
+            }
+            const root = document.createElement('div');
+            root.id = 'label-studio'
+            document.getElementById('studio').append(root)
+            const labelStudio = new LabelStudio(root, {
+                config: tagView,
+                interfaces: interfaces,
+                user: {
+                    pk: 1,
+                    firstName: userID,
+                    lastName: ' ',
                 },
-                error: function (e) {
-                    history.back();
+                task: {
+                    annotations: annotations,
+                    predictions: predictions,
+                    id: 1,
+                    data: {
+                        text: text
+                    }
                 }
+            });
+
+            labelStudio.on("labelStudioLoad", (LS) => {
+                // Perform an action when Label Studio is loaded
+                const c = LS.annotationStore.addAnnotation({
+                    userGenerate: true
+                });
+                LS.annotationStore.selectAnnotation(c.id);
+                console.log("loading...")
+            });
+
+            labelStudio.on("submitAnnotation", (LS, annotation) => {
+                // Retrieve an annotation in JSON format
+                // 这个地方对三级标注进行判断
+                $.ajax({
+                    url: '/admin/labelpage/labeling/{item}/submit',
+                    method: 'post',
+                    data: JSON.stringify({
+                        "annotation": annotation.serializeAnnotation(),
+                        "question_id": question_id,
+                        "task_id": task_id,
+                        "labeling_method": urlParams.get('labeling_method'),
+                        "risk_level": risk_level,
+                        }),
+                    success: function (e) {
+                        // 如果成功，就对后端发送next请求？并且将当前的用户id发送回去
+                        // 访问一下后端的一个标注函数
+                        console.log(nextPageConfig);
+                        if (nextPageConfig.question_id == 'null'){
+                            const briefDataUrl = '/admin/labelpage/display/' + '{{task_pk_value}}';
+                            window.location.href = briefDataUrl;
+                        }else{
+                            const labelingUrl = '/admin/labelpage/labeling/' + nextPageConfig.task_id + '_' + nextPageConfig.question_id;
+                            // 在链接中添加参数
+                            const params = {
+                                question_id: nextPageConfig.question_id,
+                                task_id: nextPageConfig.task_id,
+                                labeling_method: urlParams.get('labeling_method'),
+                                task_pk_value: '{{task_pk_value}}',
+                                risk_level: nextPageConfig.risk_level,
+                                // 添加其他参数
+                            };
+                            const queryString = $.param(params);
+                            const urlWithParams = labelingUrl + '?' + queryString;
+                            window.location.href=urlWithParams;
+                        }
+                    },
+                    error: function (e) {
+                        history.back();
+                    }
+                })
             })
         })
-        console.log(labelStudio)
     }
-
     function select(name) {
         label_select = name
         document.getElementById(name).checked = true
