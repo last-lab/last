@@ -32,7 +32,6 @@
 </style>
 <link href="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/css/main.css" rel="stylesheet">
 <script src="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/js/main.js"></script>
-
 <body>
 <div class="btn-group" role="group" style="width: 100px">
     {% for label in labels %}
@@ -72,52 +71,177 @@
     const task_id = urlParams.get('task_id');
     const risk_level = urlParams.get('risk_level');
     const labeling_method = urlParams.get('labeling_method').match(/'([^']+)'/)[1];
+    const configPromise = getLabelConfig();
+    const dataPromise = getLabelData();
+    const labelResultPromise = getLabelResult();
 
-    let tags = [];
-    let tagView = '';
-    let text = '';
-    let predictions = [];
-    let annotations = [];
-    const interfaces = [
-        "panel",
-        "controls",
-        "side-column",
-        "instruction",
-        "infobar",
-        "topbar",
-        "annotations:menu",
-        "annotations:add-new",
-        "annotations:delete",
-        "annotations:current",
-        "annotations:tabs",
-        "annotations:history",
-        "annotations:view-all",
-        "predictions:menu",
-        "predictions:tabs",
-        "auto-annotation",
-        "edit-history"
-    ]
+    function render_page () {
+        Promise.all([configPromise, dataPromise, labelResultPromise]).then(
+            res => {
+                let config
+                let data
+                let result
+                [config, data, result] = res
+                let answer = config.A
+                let question = config.Q
+                let model_label = config.model_label
+                let model_reason = config.model_reason
+                let text = question + "\n" + answer
+                let predictions
+                console.log(result)
+                if(model_reason != 'None'){
+                    text += ("\n" + model_reason) 
+                }
 
-    // 标注方法选择
-    var label_select;
+                let userID = config.user_id
+                if (data) {
+                    predictions = data.predictions;
+                }
+                const studio = document.querySelector('#label-studio')
+                
+                if (studio) {
+                    studio.remove()
+                }
+                const root = document.createElement('div');
+                root.id = 'label-studio'
+                document.getElementById('studio').append(root)
+                tagView = tag_view(question, answer, model_reason, risk_level, labeling_method)
+                const interfaces = [
+                    "panel",
+                    "controls",
+                    "side-column",
+                    "instruction",
+                    "infobar",
+                    "topbar",
+                    "annotations:menu",
+                    "annotations:add-new",
+                    "annotations:delete",
+                    "annotations:current",
+                    "annotations:tabs",
+                    "annotations:history",
+                    "annotations:view-all",
+                    "predictions:menu",
+                    "predictions:tabs",
+                    "auto-annotation",
+                    "edit-history"
+                ]
+                const labelStudio = new LabelStudio(root, {
+                    config: tagView,
+                    interfaces: interfaces,
+                    user: {
+                        pk: 1,
+                        firstName: userID,
+                        lastName: " "
+                    },
+                    task: {
+                        // https://labelstud.io/guide/export#Label-Studio-JSON-format-of-annotated-tasks
+                        annotations: [
+                            {
+                            result: JSON.parse(result.replace(/'/g, '"'))
+                            }
+                        ],
+                        predictions: predictions,
+                        id: 1,
+                        data: {
+                            text: text
+                        }
+                    }
+                })
+                
+                
+                labelStudio.on("labelStudioLoad", (LS) => {
+                    // Perform an action when Label Studio is loaded
+                    const c = LS.annotationStore.addAnnotation({
+                        userGenerate: true
+                    });
+                    LS.annotationStore.selectAnnotation(c.id);
+                    console.log("loading...")
+                })
+            }
+        )}
+    function select(name) {
+        document.getElementById(name).checked = true
+        render_page()
 
-    async function render_page () {
-        const config = await getLabelConfig();
-        const data = await getLabelData();
-        const result = await getLabelResult();
+    }
+    // TODO 初始态，标注方法列表的第一个
+    select(labeling_method)
+
+    $("input:radio[name='btn-radio-basic']").change((e) =>{
+        select(e.target.id)
+    });
 
 
-        if (config) {
-            answer = config.A;
-            question = config.Q;
-            userID = config.user_id;
-            text = question + "\n" + answer;
-            // const labels = tags.map((tag) => {
-            //     return `<Label value="${tag.value}" background="${tag.background}" />`
-            // }).join('\n')
-            // TODO answer现在假设只有一条，后面需要写一个js代码生成下面几段js代码
-            // 判断标注
-            const single_dialogs =
+    window.onload = function(){
+        render_page()
+        
+    }
+
+    async function getLabelData() {
+        const rsp = await fetch('/admin/lauditpage/audit/get_data', {
+            method: 'post',
+        })
+        return rsp.json();
+    }
+
+    async function getLabelConfig() {
+        const rsp = await fetch('/admin/auditpage/audit/get_config', {
+            method: 'post',
+            body: JSON.stringify({
+                "task_id": task_id, 
+                "question_id": question_id,
+                "labeling_method": labeling_method
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        return rsp.json();
+
+    }
+
+    async function getLabelResult(){
+        const rsp = await fetch('/admin/auditpage/audit/get_label_result', {
+            method: 'post',
+            body: JSON.stringify({
+                "task_id": task_id, 
+                "question_id": question_id,
+                "labeling_method": labeling_method
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        return rsp.json();
+    }
+
+
+    async function getNextPageConfig(){
+        const rsp = await fetch('/admin/auditpage/audit/next',{
+            method: 'post',
+            body: JSON.stringify({
+                "current_question_index": question_id - 1,
+                "task_id": task_id,
+                "labeling_method": '{{labels}}',
+                "risk_level": risk_level,
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+                }
+        })
+        return rsp.json();
+    }
+
+
+    function tag_view(question, answer, model_reason, risk_level, label_select){
+        let extra_html
+        if (model_reason!='None'){
+            extra_html = `<p>${model_reason}</p>`
+        }
+        else{
+            extra_html = ``
+        }
+        const single_dialogs =
                 `<div style=\"max-width: 100%\">
                     <div style=\"clear: both\">
                         <div style=\"display: inline-block; background-color: #fff; border-radius: 12px 12px 12px 0; padding: 12px 18px; margin: 10px 0; max-width: 80%; color: rgba(18, 19, 22, 0.50)\">
@@ -131,6 +255,7 @@
                             <p>
                                 ${answer}
                             </p>
+                            ${extra_html}
                         </div>
                     </div>
                 </div>`;
@@ -151,6 +276,7 @@
                                 <p>
                                     ${answer}
                                 </p>
+                                ${extra_html}
                             </div>
                         </div>
                     </div>
@@ -173,6 +299,7 @@
                                 <p>
                                     ${answer}
                                 </p>
+                                ${extra_html}
                             </div>
                         </div>
                     </div>
@@ -193,6 +320,7 @@
                             <p>
                                 ${answer}
                             </p>
+                            ${extra_html}
                         </div>
                     </div>
                 </div>`;
@@ -212,6 +340,7 @@
                             <p>
                                 ${answer}
                             </p>
+                            ${extra_html}
                         </div>
                     </div>
                 </div>`;
@@ -661,118 +790,7 @@
             }else{
                 tagView = `<View>${label_list[label_selects.indexOf(label_select)]}</View>`
             }
-        }
-
-        if (data) {
-            annotations = data.annotations;
-            predictions = data.predictions;
-        }
-        const studio = document.querySelector('#label-studio')
-        if (studio) {
-            studio.remove()
-        }
-        const root = document.createElement('div');
-        root.id = 'label-studio'
-        document.getElementById('studio').append(root)
-        const labelStudio = new LabelStudio(root, {
-            config: tagView,
-            interfaces: interfaces,
-            user: {
-                pk: 1,
-                firstName: userID,
-                lastName: " "
-            },
-            task: {
-                // https://labelstud.io/guide/export#Label-Studio-JSON-format-of-annotated-tasks
-                annotations: [
-                    {
-                        result: JSON.parse(result.replace(/'/g, '"'))
-                    }
-                ],
-                predictions: predictions,
-                id: 1,
-                data: {
-                    text: text
-                }
-            }
-        });
-        labelStudio.on("labelStudioLoad", (LS) => {
-            // Perform an action when Label Studio is loaded
-            const c = LS.annotationStore.addAnnotation({
-                userGenerate: true
-            });
-            LS.annotationStore.selectAnnotation(c.id);
-            console.log("loading...")
-        });
-
-    }
-
-
-    function select(name) {
-        label_select = name
-        document.getElementById(name).checked = true
-        render_page()
-
-    }
-    // TODO 初始态，标注方法列表的第一个
-    select(labeling_method);
-
-    $("input:radio[name='btn-radio-basic']").change((e) =>{
-        select(e.target.id)
-    });
-
-
-    window.onload = function(){
-        render_page()
-    }
-
-
-
-    async function getLabelData() {
-        const rsp = await fetch('/admin/labelpage/labeling/get_data', {
-            method: 'post',
-        })
-        return rsp.json();
-    }
-
-    async function getLabelConfig() {
-        const rsp = await fetch('/admin/labelpage/labeling/get_config', {
-            method: 'post',
-            body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        return rsp.json();
-
-    }
-
-    async function getLabelResult(){
-        const rsp = await fetch('/admin/labelpage/labeling/get_label_result', {
-            method: 'post',
-            body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        return rsp.json();
-    }
-
-
-    async function getNextPageConfig(){
-        const rsp = await fetch('/admin/auditpage/audit/next',{
-            method: 'post',
-            body: JSON.stringify({
-                "current_question_index": question_id - 1,
-                "task_id": task_id,
-                "labeling_method": '{{labels}}',
-                "risk_level": risk_level,
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-                }
-        })
-        return rsp.json();
+        return tagView
     }
 
 
@@ -811,6 +829,7 @@
         const auditResult = {}
         // 不知道为啥函数的调用没反应，这里将所有的选项给他放在一起
         const label_studio_option = document.querySelectorAll(".ant-form-inline")
+        console.log(label_studio_option)
         label_studio_option.forEach(function(sub_option, index){
             for (let i=0; i<sub_option.length; i++){
                 // 这段逻辑比较复杂，如果是多选框，就要用列表放，如果是单选框就直接放

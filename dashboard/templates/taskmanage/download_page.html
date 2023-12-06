@@ -28,6 +28,16 @@
     .tab-active{
         color:red
     }
+
+    table {
+      width: 100%;
+      table-layout: auto;
+    }
+  
+    td {
+      word-wrap: break-word;
+      white-space: normal;
+    }
 </style>
 
 
@@ -90,23 +100,26 @@
             '<tr>' +
             '<th>问题</th>' +
             '<th>答案</th>' +
-            '<th>风险等级</th>' +
+            '<th>标注结果</th>' +
             '<th>标注者</th>' +
-            '<th>风险等级</th>' +
+            '<th>审核结果</th>' +
             '<th>审核者</th>' +
+            '<th>模型评价</th>' +
+            '<th>模型原因</th>' +
             '</tr>' +
             '</thead>' +
-            '<tbody>';
+            '<tbody>'
+        
+
         get_label_data(sheetName).then((data) =>{
             for (var i = 0; i < data.length; i++) {
-                // {"test": {"风险程度": 2}}
                 label_user_dict = data[i]['labeling_result']
                 audit_user_dict = data[i]['audit_result']
                 let label_user
                 let risk_level
                 let audit_user
                 let audit_risk_level
-                if (label_user_dict == null){
+                if (label_user_dict == null || label_user_dict == 'None'){
                     label_user = null;
                     risk_level = null;
                 }else{
@@ -122,14 +135,18 @@
                 if (audit_user_dict == null){
                     audit_user = null;
                     audit_risk_level = null;
+                    if(data[i].model_label!='None'){
+                        audit_user = '自动审核'
+                        audit_risk_level = data[i].model_label
+                    }
                 } else{
                     audit_user = audit_user_dict
                     let cleanedStr = audit_user_dict.replace(/'/g, '"');
                     // 解析字符串为对象
-                    let obj = JSON.parse(cleanedStr);
+                    let obj = JSON.parse(cleanedStr)
                     // 获取对象的键
-                    audit_user = Object.keys(obj)[0];
-                    audit_risk_level = obj[label_user]['风险程度'];
+                    audit_user = Object.keys(obj)[0]
+                    audit_risk_level = obj[audit_user]['风险程度'];
                 }
 
                 tableHtml += '<tr>' +
@@ -139,6 +156,8 @@
                     '<td>' + label_user + '</td>' +
                     '<td>' + audit_risk_level + '</td>' +
                     '<td>' + audit_user + '</td>' +
+                    '<td>' + data[i].model_label + '</td>'+ 
+                    '<td>' + data[i].model_reason + '</td>' +
                     '</tr>';
             }
             tableHtml += '</tbody>' +

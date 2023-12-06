@@ -112,7 +112,7 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
     user_id = str(request.state.admin).split("#")[1]
     # 从审核结果表中找到对应的题，从labelresult表中得到标注后的结果，共同返回
     audit_results = await AuditResult.filter(task_id=task_id).values(
-        "question_id", "question", "status", "audit_user"
+        "question_id", "question", "answer", "status", "audit_user", "model_label", "model_reason"
     )
     # 从label result表中找到对应的标注结果
     label_results = await LabelResult.filter(task_id=task_id).values(
@@ -127,6 +127,9 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
                     {
                         "question_id": audit_result["question_id"],
                         "question": audit_result["question"],
+                        "answer": audit_result["answer"],
+                        "model_label": audit_result["model_label"],
+                        "model_reason": audit_result["model_reason"],
                         "status": audit_result["status"],
                         "action": "审核" if audit_result["status"] != "已审核" else "查看",
                         "task_id": task_id,
@@ -134,7 +137,6 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
                         "risk_level": label_result["risk_level"],
                     }
                 )
-
     return res_list
 
 
@@ -260,3 +262,75 @@ async def get_audit_result(request: Request):
     audit_result_row = await AuditResult.filter(task_id=task_id, question_id=question_id)
     audit_result = eval(audit_result_row[0].audit_result)
     return audit_result[user_id]
+
+
+@router.post("/{resource}/audit/get_config")
+async def get_config_from_db(request: Request, resource: str):
+    """_summary_
+    # 需要返回 id，支持数据库的搜索
+
+    Args:
+        request (Request): _description_
+        resource (str): _description_
+    """
+    user_id = str(request.state.admin).split("#")[1]
+    json_data = await request.json()
+    task_id = json_data["task_id"]
+    question_id = json_data["question_id"]
+    # 查找默认得到一个列表，尽管只有一个元素
+    data = await AuditResult.filter(task_id=task_id, question_id=question_id)
+    risk_level_dict = {"1": "高度敏感", "2": "中度敏感", "3": "低度敏感", "4": "中性词"}
+    # 将下一个题目的id也返回回去，如果这个标注已经结束了，值就用null返回
+    assert len(data) == 1
+    labeling_method = json_data["labeling_method"]
+    # 查找出来标注方法，根据不同的标注方法定义不同的返回结果,如answer字段
+    query_data = {
+        "Q": data[0].question,
+        "A": data[0].answer,
+        "labeling_method": labeling_method,
+        "user_id": user_id,
+    }
+
+    if "Model" in query_data["labeling_method"]:
+        query_data["model_label"] = risk_level_dict[data[0].model_label]
+        query_data["model_reason"] = data[0].model_reason
+
+    else:
+        query_data["model_label"] = "None"
+        query_data["model_reason"] = "None"
+    return query_data
+
+
+@router.post("/{resource}/audit/get_data")
+async def get_annotatoin_and_predict_data(request: Request, resource: str):
+    """_summary_
+    # 需要返回labelstudio需要的annotation和predict的两个数据
+
+    Args:
+        request (Request): _description_
+        resource (str): _description_
+    """
+    mock_data = {"annotations": [], "predictions": []}
+    return mock_data
+
+
+@router.post("/{resource}/audit/get_label_result")
+async def get_label_reset(request: Request, resource: str):
+    json_data = await request.json()
+    task_id = json_data["task_id"]
+    question_id = json_data["question_id"]
+    labeling_method = json_data["labeling_method"]
+    # 查找数据结果表，得到标注结果
+    data = await LabelResult.filter(task_id=task_id, question_id=question_id)
+    raw_labeling_result = data[0].raw_labeling_result
+    # 如果是使用model标注，则直接构造一个结果返回
+    if "Model" in labeling_method:
+        data = await AuditResult.filter(task_id=task_id, question_id=question_id)
+        risk_level_dict = {"1": "高度敏感", "2": "中度敏感", "3": "低度敏感", "4": "中性词"}
+        model_label = risk_level_dict[data[0].model_label]
+        return (
+            "[{'value': {'choices': ['"
+            + model_label
+            + "']}, 'id': 'ONWk5-qNZn', 'from_name': 'rating', 'to_name': 'risk_dialog', 'type': 'choices', 'origin': 'manual'}]"
+        )
+    return raw_labeling_result
