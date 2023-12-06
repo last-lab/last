@@ -61,113 +61,132 @@
 
 
 <script>
-    const decodedString = '{{sheet_name_list}}'.replace(/&#39;/g, "'");
-    const jsonString = decodedString.replace(/'/g, '"');
-    const sheetNameList = JSON.parse(jsonString);
-    const downloadBtn = document.getElementById('download');
-    sheetNameList.forEach((sheetName)=>{create_table(sheetName)});
+    const decodedString = '{{sheet_name_list}}'.replace(/&#39;/g, "'")
+    const jsonString = decodedString.replace(/'/g, '"')
+    const sheetNameList = JSON.parse(jsonString)
+    const downloadBtn = document.getElementById('download')
+    const sheetPromise = sheetNameList.map((sheetName)=>{ return create_table(sheetName)})
+    Promise.all(sheetPromise).then( () => {
+        const tab_nav = document.querySelectorAll(".sheet-name")
+        for (let i =0; i<tab_nav.length; i++){
+            tab_nav[i].addEventListener('mouseenter', function(){
+                // 鼠标移动，对应的table增加active class，拥有active的table删除active类
+                document.querySelector('.tab-active').classList.remove('tab-active')
+                tab_nav[i].classList.add('tab-active')
+                document.querySelector('.active').classList.remove('active')
+                document.querySelector(`.card-table:nth-child(${i+1})`).classList.add('active')
+            })
+        }
+        // 给第一个card-table设置active属性
+        document.querySelector(`.card-table:first-child`).classList.add('active')
+        document.querySelector(`.sheet-name:first-child`).classList.add('tab-active')
+        }
+    )
     // 状态标识
     downloadBtn.addEventListener('click', async () => {
         // 输入文件名
-        const filename = prompt('请输入文件名');
+        const filename = prompt('请输入文件名')
         // 等待下一个点击事件触发选择文件夹
         //选择文件夹
         // 拼接完整路径
         const path = filename + '.xlsx';
         // 生成工作表，使用循环的方式
-        const wb = XLSX.utils.book_new();
+        const wb = XLSX.utils.book_new()
         sheetNameList.forEach((sheetName) =>{
-            const dataTable = document.getElementById(sheetName);
-            const ws = XLSX.utils.table_to_sheet(dataTable);
-            XLSX.utils.book_append_sheet(wb, ws, sheetName);
+            const dataTable = document.getElementById(sheetName)
+            const ws = XLSX.utils.table_to_sheet(dataTable)
+            XLSX.utils.book_append_sheet(wb, ws, sheetName)
             // 用完整路径保存文件
-        });
-        XLSX.writeFile(wb, path);
+        })
+        XLSX.writeFile(wb, path)
 
-    });
+    })
 
 
     // 创建一个新表
-    function create_table(sheetName){
-        const tab_nav = document.querySelector(".tab-nav ul")
-        const li_label = document.createElement("li")
-        li_label.classList.add("sheet-name")
-        li_label.textContent = sheetName
-        tab_nav.appendChild(li_label)
+    async function create_table(sheetName){
+        return new Promise((resolve, reject) => {
+            const tab_nav = document.querySelector(".tab-nav ul")
+            const li_label = document.createElement("li")
+            li_label.classList.add("sheet-name")
+            li_label.textContent = sheetName
+            tab_nav.appendChild(li_label)
 
-        var tableHtml = '<table class="table card-table table-vcenter text-nowrap datatable" id="' +sheetName + '">' +
-            '<thead>' +
-            '<tr>' +
-            '<th>问题</th>' +
-            '<th>答案</th>' +
-            '<th>标注结果</th>' +
-            '<th>标注者</th>' +
-            '<th>审核结果</th>' +
-            '<th>审核者</th>' +
-            '<th>模型评价</th>' +
-            '<th>模型原因</th>' +
-            '</tr>' +
-            '</thead>' +
-            '<tbody>'
-        
+            var tableHtml = '<table class="table card-table table-vcenter text-nowrap datatable" id="' +sheetName + '">' +
+                '<thead>' +
+                '<tr>' +
+                '<th>问题</th>' +
+                '<th>答案</th>' +
+                '<th>标注结果</th>' +
+                '<th>标注者</th>' +
+                '<th>审核结果</th>' +
+                '<th>审核者</th>' +
+                '<th>模型评价</th>' +
+                '<th>模型原因</th>' +
+                '</tr>' +
+                '</thead>' +
+                '<tbody>'
+            
 
-        get_label_data(sheetName).then((data) =>{
-            for (var i = 0; i < data.length; i++) {
-                label_user_dict = data[i]['labeling_result']
-                audit_user_dict = data[i]['audit_result']
-                let label_user
-                let risk_level
-                let audit_user
-                let audit_risk_level
-                if (label_user_dict == null || label_user_dict == 'None'){
-                    label_user = null;
-                    risk_level = null;
-                }else{
-                    label_user = label_user_dict;
-                    // 删除字符串中的单引号
-                    var cleanedStr = label_user_dict.replace(/'/g, '"');
-                    // 解析字符串为对象
-                    var obj = JSON.parse(cleanedStr);
-                    // 获取对象的键
-                    label_user = Object.keys(obj)[0];
-                    risk_level = obj[label_user]['风险程度'];
-                }
-                if (audit_user_dict == null){
-                    audit_user = null;
-                    audit_risk_level = null;
-                    if(data[i].model_label!='None'){
-                        audit_user = '自动审核'
-                        audit_risk_level = data[i].model_label
+            get_label_data(sheetName).then((data) =>{
+                for (var i = 0; i < data.length; i++) {
+                    label_user_dict = data[i]['labeling_result']
+                    audit_user_dict = data[i]['audit_result']
+                    let label_user
+                    let risk_level
+                    let audit_user
+                    let audit_risk_level
+                    if (label_user_dict == null || label_user_dict == 'None'){
+                        label_user = null;
+                        risk_level = null;
+                    }else{
+                        label_user = label_user_dict;
+                        // 删除字符串中的单引号
+                        var cleanedStr = label_user_dict.replace(/'/g, '"')
+                        // 解析字符串为对象
+                        var obj = JSON.parse(cleanedStr)
+                        // 获取对象的键
+                        label_user = Object.keys(obj)[0];
+                        risk_level = obj[label_user]['风险程度'];
                     }
-                } else{
-                    audit_user = audit_user_dict
-                    let cleanedStr = audit_user_dict.replace(/'/g, '"');
-                    // 解析字符串为对象
-                    let obj = JSON.parse(cleanedStr)
-                    // 获取对象的键
-                    audit_user = Object.keys(obj)[0]
-                    audit_risk_level = obj[audit_user]['风险程度'];
+                    if (audit_user_dict == null){
+                        audit_user = null;
+                        audit_risk_level = null;
+                        if(data[i].model_label!='None'){
+                            audit_user = '自动审核'
+                            audit_risk_level = data[i].model_label
+                        }
+                    } else{
+                        audit_user = audit_user_dict
+                        let cleanedStr = audit_user_dict.replace(/'/g, '"')
+                        // 解析字符串为对象
+                        let obj = JSON.parse(cleanedStr)
+                        // 获取对象的键
+                        audit_user = Object.keys(obj)[0]
+                        audit_risk_level = obj[audit_user]['风险程度'];
+                    }
+
+                    tableHtml += '<tr>' +
+                        '<td>' + data[i].question + '</td>' +
+                        '<td>' + data[i].answer + '</td>' +
+                        '<td>' + risk_level + '</td>' +
+                        '<td>' + label_user + '</td>' +
+                        '<td>' + audit_risk_level + '</td>' +
+                        '<td>' + audit_user + '</td>' +
+                        '<td>' + data[i].model_label + '</td>'+ 
+                        '<td>' + data[i].model_reason + '</td>' +
+                        '</tr>';
                 }
+                tableHtml += '</tbody>' +
+                    '</table>';
 
-                tableHtml += '<tr>' +
-                    '<td>' + data[i].question + '</td>' +
-                    '<td>' + data[i].answer + '</td>' +
-                    '<td>' + risk_level + '</td>' +
-                    '<td>' + label_user + '</td>' +
-                    '<td>' + audit_risk_level + '</td>' +
-                    '<td>' + audit_user + '</td>' +
-                    '<td>' + data[i].model_label + '</td>'+ 
-                    '<td>' + data[i].model_reason + '</td>' +
-                    '</tr>';
-            }
-            tableHtml += '</tbody>' +
-                '</table>';
-
-        var tableContainer = document.getElementById('tableContainer');
-        var tempDiv = document.createElement('div');
-        tempDiv.innerHTML = tableHtml;
-        tableContainer.appendChild(tempDiv.firstChild);
-        });
+                var tableContainer = document.getElementById('tableContainer')
+                var tempDiv = document.createElement('div')
+                tempDiv.innerHTML = tableHtml;
+                tableContainer.appendChild(tempDiv.firstChild)
+                resolve()
+            })
+        })
     }
 
 
@@ -181,27 +200,8 @@
                 'Content-Type': 'application/json'
             }
         })
-        return rsp.json();
+        return rsp.json()
 
-    }
-
-    window.onload = function() {
-        // 获取所有的tab-nav.li标签，然后将第一个li设置为active，给所有的li的标签添加回调函数，如果当鼠标移动到这个标签，则显示对应的sheet，其余sheet的display设置为None
-        const tab_nav = document.querySelectorAll(".sheet-name")
-        for (let i =0; i<tab_nav.length; i++){
-            tab_nav[i].addEventListener('mouseenter', function(){
-                // 鼠标移动，对应的table增加active class，拥有active的table删除active类
-                document.querySelector('.tab-active').classList.remove('tab-active')
-                tab_nav[i].classList.add('tab-active')
-
-
-                document.querySelector('.active').classList.remove('active')
-                document.querySelector(`.card-table:nth-child(${i+1})`).classList.add('active')
-            })
-        }
-        // 给第一个card-table设置active属性
-        document.querySelector(`.card-table:first-child`).classList.add('active')
-        document.querySelector(`.sheet-name:first-child`).classList.add('tab-active')
     }
 
 
