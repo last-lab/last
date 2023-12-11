@@ -124,8 +124,6 @@ class AIModelShowOperation(Display):
         super().__init__(**context)
 
     async def render(self, request: Request, value: any):
-        model_ids = []
-        llm_name = value["name"]
         model_infos = await ModelInfo.all()
         return await super().render(
             request,
