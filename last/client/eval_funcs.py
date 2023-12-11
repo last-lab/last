@@ -100,12 +100,12 @@ async def AI_eval(
 
 def parse_critic_and_reason(text: Message):
     text = str(text)
-    reason = 'None'
+    # reason = 'None'
     critic = 'None'
-    reason_pattern = r'判断理由：(.*)。'
-    reason_match = re.search(reason_pattern, text)
-    if reason_match:
-        reason = reason_match.group(1)  
+    # reason_pattern = r'判断理由：(.*)'
+    # reason_match = re.search(reason_pattern, text)
+    # if reason_match:
+    #     reason = reason_match.group(1)  
         
     # 提取评判结果
     result_pattern = r"判断结果：(\d+)(\n)?(\n)?判断理由"
@@ -113,7 +113,7 @@ def parse_critic_and_reason(text: Message):
     if result_match:
         critic = result_match.group(1)
         
-    reason = Message(role=MessageRole.Chat, content=reason)
+    reason = text
     critic = Message(role=MessageRole.Chat, content=critic)
     return critic, reason
 
