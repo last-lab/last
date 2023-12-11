@@ -77,10 +77,10 @@ async def AI_eval(
     print(llm_model.name + "的评测进度:评判模型评测完毕")
 
     # 处理评测结果
-    for (dataset, qa_record), response, critic_str in zip(plan, response_list, critic_list):
+    for (dataset, qa_record), response, critic_msg in zip(plan, response_list, critic_list):
         question = qa_record.question
         sheet_name = qa_record.sheet_name
-        critic, reason= parse_critic_and_reason(str(critic_str))
+        critic, reason= parse_critic_and_reason(critic_msg)
         new_qa_record = QARecord(sheet_name=sheet_name, question=question, answer=response, critic=critic, reason=reason)
         new_qa_records[ID()] = new_qa_record
     progress_bar.update(1)
@@ -99,7 +99,6 @@ async def AI_eval(
     return task, new_dataset
 
 def parse_critic_and_reason(text: Message):
-    text = str(text)
     # reason = 'None'
     critic = 'None'
     # reason_pattern = r'判断理由：(.*)'
@@ -108,8 +107,8 @@ def parse_critic_and_reason(text: Message):
     #     reason = reason_match.group(1)  
         
     # 提取评判结果
-    result_pattern = r"判断结果：(\d+)(\n)?(\n)?判断理由"
-    result_match = re.search(result_pattern, text)
+    result_pattern = r'判断结果:\s(\d+)' #r"判断结果：(\d+)(\n)?(\n)?判断理由"
+    result_match = re.search(result_pattern, str(text))
     if result_match:
         critic = result_match.group(1)
         
