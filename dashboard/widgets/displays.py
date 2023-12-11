@@ -113,7 +113,7 @@ class AIModelManagerOperationField(ComputeField):
     async def get_value(self, request: Request, obj: dict):
         return {
             "id": obj["id"],
-            "name": obj["name"],  ## 通过 name 在 db中查找
+            "name": obj["name"],  # 通过 name 在 db中查找
         }
 
 
