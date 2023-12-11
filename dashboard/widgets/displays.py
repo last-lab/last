@@ -104,6 +104,7 @@ class OperationField(ComputeField):
         }
 
 
+# 添加模型主页面操作栏组件
 class AIModelManagerOperationField(ComputeField):
     def __init__(self, **context):
         super().__init__(**context)
@@ -112,8 +113,7 @@ class AIModelManagerOperationField(ComputeField):
     async def get_value(self, request: Request, obj: dict):
         return {
             "id": obj["id"],
-            "name": obj["name"],
-            # "report": obj["report"],
+            "name": obj["name"],  ## 通过 name 在 db中查找
         }
 
 
