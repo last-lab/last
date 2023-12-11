@@ -104,6 +104,36 @@ class OperationField(ComputeField):
         }
 
 
+# 添加模型主页面操作栏组件
+class AIModelManagerOperationField(ComputeField):
+    def __init__(self, **context):
+        super().__init__(**context)
+        self.display = AIModelShowOperation(**context)
+
+    async def get_value(self, request: Request, obj: dict):
+        return {
+            "id": obj["id"],
+            "name": obj["name"],  # 通过 name 在 db中查找
+        }
+
+
+class AIModelShowOperation(Display):
+    template = "record/record_aimodelmanager_operations.html"
+
+    def __init__(self, **context):
+        super().__init__(**context)
+
+    async def render(self, request: Request, value: any):
+        model_infos = await ModelInfo.all()
+        return await super().render(
+            request,
+            {
+                "id": value["id"],
+                "model_infos": model_infos,
+            },
+        )
+
+
 class ShowOperation(Display):
     template = "record/record_operations.html"
 
