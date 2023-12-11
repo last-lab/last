@@ -31,12 +31,12 @@ async def generation_test(prompt, model):
     return generated_text
 
 
-# @unittest.skip("Need apikey")
+@unittest.skip("Need apikey")
 class TestLLMAPI(unittest.TestCase):
     def test_tigerbot_api(self):
         generated_text = asyncio.run(generation_test(prompt="中国的首都在哪里", model="tigerbot"))
         print("tigerbot", generated_text)
-        assert generated_text is not None
+        assert generated_text.startswith("北京")
 
     def test_soul_api(self):
         generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="soul"))
@@ -130,22 +130,22 @@ class TestLLMAPI(unittest.TestCase):
 
         assert generated_text is not None
 
-    # def test_alles_chat_llm_api(self):
-    #     ALLES_CHAT_LLM = [
-    #         "alles-minimax",
-    #         "alles-chatgpt",
-    #         "alles-gpt4",
-    #         "alles-palm",
-    #         "alles-claude",  # Only Support English
-    #         # "alles-wenxin",  # 这个暂时无法访问
-    #         "alles-spark",
-    #     ]
+    def test_alles_chat_llm_api(self):
+        ALLES_CHAT_LLM = [
+            "alles-minimax",
+            "alles-chatgpt",
+            "alles-gpt4",
+            "alles-palm",
+            "alles-claude",  # Only Support English
+            # "alles-wenxin",  # 这个暂时无法访问
+            "alles-spark",
+        ]
 
-    #     for model in ALLES_CHAT_LLM:
-    #         generated_text = asyncio.run(generation_test(prompt="Happy Birthday", model=model))
-    #         # time.sleep(1)  # waiting for the release of resources
-    #         print(model, generated_text)
-    #         assert generated_text is not None
+        for model in ALLES_CHAT_LLM:
+            generated_text = asyncio.run(generation_test(prompt="Happy Birthday", model=model))
+            # time.sleep(1)  # waiting for the release of resources
+            print(model, generated_text)
+            assert generated_text is not None
 
 
 if __name__ == "__main__":
