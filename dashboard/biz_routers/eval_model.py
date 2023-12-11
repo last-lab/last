@@ -132,7 +132,7 @@ async def compute_acc(plan, record, result, llm_name):
 
 
 async def extract_score(string):
-    pattern = r"评分：(\d+)"
+    pattern = r"判断结果：(\d+)"
     rating = re.findall(pattern, string)
     score = [int(r) for r in rating]
     avg_score = sum(score) / len(score) if len(score) > 0 else 0.0
