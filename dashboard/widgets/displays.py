@@ -103,6 +103,35 @@ class OperationField(ComputeField):
             "report": obj["report"],
         }
 
+class AIModelManagerOperationField(ComputeField):
+    def __init__(self, **context):
+        super().__init__(**context)
+        self.display = AIModelShowOperation(**context)
+
+    async def get_value(self, request: Request, obj: dict):
+        return {
+            "id": obj["id"],
+            "name": obj["name"],
+            # "report": obj["report"],
+        }
+        
+class AIModelShowOperation(Display):
+    template = "record/record_aimodelmanager_operations.html"
+
+    def __init__(self, **context):
+        super().__init__(**context)
+
+    async def render(self, request: Request, value: any):
+        model_ids = []
+        llm_name = value["name"]
+        model_infos = await ModelInfo.all()
+        return await super().render(
+            request,
+            {
+                "id": value["id"],
+                "model_infos": model_infos,
+            },
+        )
 
 class ShowOperation(Display):
     template = "record/record_operations.html"

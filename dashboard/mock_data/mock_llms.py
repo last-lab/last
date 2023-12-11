@@ -20,6 +20,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="OpenAI",
+        auth_status=True,
     )
 
     await ModelInfo.create(
@@ -34,6 +36,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="OpenAI",
+        auth_status=True,
     )
 
     # await ModelInfo.create(
@@ -90,6 +94,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="小i机器人",
+        auth_status=True,
     )
 
     # await ModelInfo.create(
@@ -118,6 +124,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="竹间智能",
+        auth_status=True,
     )
 
     await ModelInfo.create(
@@ -132,6 +140,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="东方财富",
+        auth_status=True,
     )
 
     await ModelInfo.create(
@@ -146,10 +156,12 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="Anthropic",
+        auth_status=True,
     )
 
     await ModelInfo.create(
-        name="Minimax",
+        name="MiniMax",
         endpoint="Minimax",
         access_key="None",
         secret_key="None",
@@ -160,6 +172,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="MiniMax",
+        auth_status=True,
     )
 
     await ModelInfo.create(
@@ -174,6 +188,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="BaiDu",
+        auth_status=True,
     )
 
     # await ModelInfo.create(
@@ -202,6 +218,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="None",
+        auth_status=False,
     )
 
     # await ModelInfo.create(
@@ -230,6 +248,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="虎博科技",
+        auth_status=True,
     )
 
     await ModelInfo.create(
@@ -244,6 +264,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="mita",
+        auth_status=True,
     )
 
     await ModelInfo.create(
@@ -258,6 +280,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="bilibili",
+        auth_status=True,
     )
 
     await ModelInfo.create(
@@ -272,6 +296,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="WangYi",
+        auth_status=True,
     )
 
     await ModelInfo.create(
@@ -286,6 +312,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="ShangTang",
+        auth_status=True,
     )
 
     await ModelInfo.create(
@@ -300,6 +328,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="达观数据",
+        auth_status=True,
     )
 
     await ModelInfo.create(
@@ -314,6 +344,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="infchat",
+        auth_status=True,
     )
 
     await ModelInfo.create(
@@ -328,6 +360,8 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="XiaoHongShu",
+        auth_status=True,
     )
 
     await ModelInfo.create(
@@ -342,4 +376,6 @@ async def create_mock_llms():
         pretraining_info="包含约7500亿个英文和中文字词的大规模无标签文本数据集",
         finetuning_info="未经过微调",
         alignment_info="RLHF对齐",
+        model_org="None",
+        auth_status=False,
     )

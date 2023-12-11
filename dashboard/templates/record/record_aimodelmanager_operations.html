@@ -1,0 +1,111 @@
+<button id="{{value.id}}" type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#modelSelect-{{ value.id }}" onclick="clickBtn(this.id)">
+    详细信息
+</button>
+<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal" data-bs-target="#recordFile">
+    备案文件
+</button>
+<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal">
+    编辑
+</button>
+<button type="button" class="btn btn-ghost-primary" data-bs-toggle="modal">
+    删除
+</button>
+
+<div class="modal" id="recordFile" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">备案文件</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group list-group-flush">
+                    {% for item in value.record_file %}
+                    <a class="list-group-item list-group-item-action" href="{{ item.url }}" download="{{ item.name }}.pdf">{{ item.name }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modelSelect-{{ value.id }}" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">模型详情</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="recover()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group list-group-flush">
+                    {% for item in [value.model_infos[value.id - 1]] %}
+                        <!-- <div class="list-group-item list-group-item-action" style="cursor: pointer" onclick="clickBtn({{ item.id }})" id="btn">
+                            {{ item.name }}
+                        </div> -->
+                        <div class="datagrid" id="detail-{{ item.id }}">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">模型名称</div>
+                                <div class="datagrid-content">{{ item.name }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">模型类型</div>
+                                <div class="datagrid-content">{{ item.model_type }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">模型版本</div>
+                                <div class="datagrid-content">{{ item.version }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">基模型</div>
+                                <div class="datagrid-content">{{ item.base_model }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">模型参数</div>
+                                <div class="datagrid-content">{{ item.parameter_volume }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">预训练信息</div>
+                                <div class="datagrid-content">{{ item.pretraining_info }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">微调信息</div>
+                                <div class="datagrid-content">{{ item.finetuning_info }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">对齐信息</div>
+                                <div class="datagrid-content">{{ item.alignment_info }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var current_id;
+    // 选择模型查看详情
+    function clickBtn(id) {
+        current_id = id;
+        let obj = document.querySelectorAll('#btn')
+        for (let i = 0; i < obj.length; i++) {
+          obj[i].style.display = 'none';
+        }
+        document.getElementById(`detail-${id}`).style.display = 'block';
+    }
+    // 关闭弹窗重置页面
+    function recover() {
+        let obj = document.querySelectorAll('#btn')
+        for (let i = 0; i < obj.length; i++) {
+          obj[i].style.display = 'block';
+        }
+        if (current_id) {
+            document.getElementById(`detail-${current_id}`).style.display = 'none';
+        }
+    }
+    // 跳转评测报告页
+    function jumpReport(id) {
+        window.location.href = `/admin/record/report/${id}`
+    }
+</script>
