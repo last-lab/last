@@ -130,7 +130,6 @@ class TestLLMAPI(unittest.TestCase):
 
         assert generated_text is not None
 
-
     # def test_alles_chat_llm_api(self):
     #     ALLES_CHAT_LLM = [
     #         "alles-minimax",

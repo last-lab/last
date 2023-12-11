@@ -103,6 +103,7 @@ class OperationField(ComputeField):
             "report": obj["report"],
         }
 
+
 class AIModelManagerOperationField(ComputeField):
     def __init__(self, **context):
         super().__init__(**context)
@@ -114,7 +115,8 @@ class AIModelManagerOperationField(ComputeField):
             "name": obj["name"],
             # "report": obj["report"],
         }
-        
+
+
 class AIModelShowOperation(Display):
     template = "record/record_aimodelmanager_operations.html"
 
@@ -132,6 +134,7 @@ class AIModelShowOperation(Display):
                 "model_infos": model_infos,
             },
         )
+
 
 class ShowOperation(Display):
     template = "record/record_operations.html"

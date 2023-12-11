@@ -7,7 +7,7 @@ from starlette.requests import Request
 from dashboard import enums
 from dashboard.biz_models import AuditPage  # EvaluationPlan,; Evaluation,
 from dashboard.biz_models import EvaluationPlan  # EvaluationPlan,; Evaluation,
-from dashboard.biz_models import DataSet, LabelPage, ModelInfo,TaskManage
+from dashboard.biz_models import DataSet, LabelPage, ModelInfo, TaskManage
 from dashboard.biz_models.eval_model import Record
 from dashboard.constants import BASE_DIR
 from dashboard.models import Admin, Log  # EvaluationPlan,; Evaluation,
@@ -15,9 +15,9 @@ from dashboard.models import Permission as PermissionModel
 from dashboard.models import Resource as ResourceModel
 from dashboard.models import Role as RoleModel
 from dashboard.widgets.displays import (  # ShowAudit,; ShowAuditProgress,
+    AIModelManagerOperationField,
     DownLoadLabelResult,
     OperationField,
-    AIModelManagerOperationField,
     ShowAction,
     ShowAdmin,
     ShowAudit,
@@ -127,7 +127,7 @@ class Evaluation(Dropdown):
 
         async def get_actions(self, request: Request) -> List[Action]:
             return []
-        
+
     class AIModelManager(Model):
         """模型管理"""
 
@@ -159,7 +159,6 @@ class Evaluation(Dropdown):
     label = _("模型评测")
     icon = "fas fa-user"
     resources = [Record, Create, AIModelManager]
-
 
 
 @app.register
