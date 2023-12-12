@@ -1,5 +1,8 @@
 {% extends layout %}
 {% block page_body %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 
 <style>
     table {
@@ -28,30 +31,7 @@
 
     <div class="table-responsive">
         <table class="table card-table table-vcenter text-nowrap datatable" id="myTable">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>问题</th>
-                    <th>答案</th>
-                    <th>当前状态<select class="status custom-select"></select></th>
-                    <th>模型标注<select class="label custom-select"></select></th>
-                    <th>模型原因</th>
-                    <th>操作</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <span class="dropdown">
-                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                            <!-- <a class="dropdown-item" href="/admin/labelpage/display/1"> -->
-                            <i class="ti ti-edit me-2"></i>
-                            审核任务详情
-                            </a>
-                        </div>
-                    </span>
-                    </td>
-                </tr>
-            </tbody>
+            
         </table>
     </div>
 </div>
@@ -65,27 +45,53 @@
             data: JSON.stringify({ "taskID": "{{task_id}}" }),
             contentType: 'application/json',
             success: function (data) {
-                const table = $('#myTable')
-                // 遍历数据并添加到表格中
+                const table = $('#myTable');
+
+                // 清空现有内容
+                table.empty();
+
+                // 创建表头
+                const thead = $('<thead></thead>');
+                const headerRow = $('<tr></tr>');
+                const headers = ['ID', '问题', '答案', '当前状态', '模型标注', '模型原因', '操作'];
+                headers.forEach(function (header) {
+                    if (header=='当前状态'){
+                        headerRow.append(`<th>当前状态<select class="status"></select></th>`)
+                    }else if(header == '模型标注'){
+                        headerRow.append(`<th>模型标注<select class="label"></select></th>`)
+                    }else{
+                        headerRow.append($('<th></th>').text(header))
+                    }
+                })
+                thead.append(headerRow);
+                table.append(thead);
+
+                // 创建表体
+                const tbody = $('<tbody></tbody>');
                 data.forEach(function (item, index) {
-                    console.log(item)
-                    const row = $(`<tr data-id=${index} class="item"></tr>`)
-                    const idCell = $('<td></td>').text(item.question_id)
-                    row.append(idCell)
-                    const questionCell = $('<td></td>').text(item.question)
-                    row.append(questionCell)
-                    const answerCell = $('<td></td>').text(item.answer)
-                    row.append(answerCell)
-                    const statusCell = $('<td></td>').text(item.status)
-                    row.append(statusCell)
-                    row.append(`<td>${item.model_label}</td>`)
-                    row.append(`<td>${item.model_reason}</td>`)
-                    const actionCell = $(`<td></td>`)
-                    const actionLink = $('<a></a>').text(item.action)
+                    const row = $(`<tr data-id=${index} class="item"></tr>`);
+
+                    const idCell = $('<td></td>').text(item.question_id);
+                    row.append(idCell);
+
+                    const questionCell = $('<td></td>').text(item.question);
+                    row.append(questionCell);
+
+                    const answerCell = $('<td></td>').text(item.answer);
+                    row.append(answerCell);
+
+                    const statusCell = $('<td></td>').text(item.status);
+                    row.append(statusCell);
+
+                    row.append(`<td>${item.model_label}</td>`);
+                    row.append(`<td>${item.model_reason}</td>`);
+
+                    const actionCell = $(`<td></td>`);
+                    const actionLink = $('<a></a>').text(item.action);
                     // 添加条件判断来设置不同的跳转链接和参数
                     // 分未审核，已审核两种
                     if (item.action === '审核') {
-                        const auditUrl = '/admin/auditpage/audit/' + item.task_id + '_' + item.question_id
+                        const auditUrl = '/admin/auditpage/audit/' + item.task_id + '_' + item.question_id;
                         // 在链接中添加参数
                         const params = {
                             question_id: item.question_id,
@@ -95,11 +101,11 @@
                             labeling_method: item.labeling_method,
                             // 添加其他参数
                         };
-                        const queryString = $.param(params)
-                        actionLink.attr('href', auditUrl + '?' + queryString)
+                        const queryString = $.param(params);
+                        actionLink.attr('href', auditUrl + '?' + queryString);
                     } else {
                         // 设置其他页面的跳转链接
-                        const auditUrl = '/admin/auditpage/revise/'
+                        const auditUrl = '/admin/auditpage/revise/';
                         // 链接中添加参数
                         const params = {
                             labeling_method: item.labeling_method,
@@ -108,20 +114,27 @@
                             task_pk_value: '{{pk}}',
                             risk_level: item.risk_level,
                         };
-                        const queryString = $.param(params)
-                        actionLink.attr('href', auditUrl + '?' + queryString)
+                        const queryString = $.param(params);
+                        actionLink.attr('href', auditUrl + '?' + queryString);
                     }
-                    actionCell.append(actionLink)
-                    row.append(actionCell)
-                    table.append(row)
-                })
+                    actionCell.append(actionLink);
+                    row.append(actionCell);
+                    tbody.append(row);
+                });
+                table.append(tbody);
+
+                // 转换为DataTables表格并添加分页功能
+                table.DataTable({
+                    paging: true, // 启用分页
+                    lengthMenu: [15, 25, 50], // 每页显示的记录数选项
+                    pageLength: 15 // 默认每页显示的记录数
+                });
                 resolve()
             },
             error: function (xhr, status, error) {
-                console.log('Error:', error)
+                console.log('Error:', error);
             }
-        })
-
+        });
     })
 
     function unique_model_label() {
@@ -168,15 +181,15 @@
         status_select_button.innerHTML = `<option checked value="all">全部</option>
                                             <option value="已审核">已审核</option>
                                             <option value="未审核">未审核</option>`
-        status_select_button.addEventListener('change', (e)=>{
+        status_select_button.addEventListener('change', (e) => {
             const selected_value = e.target.value
-            if (selected_value === 'all'){
+            if (selected_value === 'all') {
                 data_table.forEach((x) => {
                     x.style.display = 'table-row';
                 })
-            }else{
+            } else {
                 data_table.forEach((x) => {
-                    if (!(selected_value === x.cells[3].innerHTML)){
+                    if (!(selected_value === x.cells[3].innerHTML)) {
                         x.style.display = 'none'
                     } else {
                         x.style.display = 'table-row'
