@@ -32,6 +32,7 @@
 </style>
 <link href="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/css/main.css" rel="stylesheet">
 <script src="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/js/main.js"></script>
+
 <body>
 <div class="btn-group" role="group" style="width: 100px">
     {% for label in labels %}
@@ -43,22 +44,18 @@
 <!-- TODO, 选择标注的labelstudio的前端怎么写需要调研一下 -->
 <script>
     function disabled_option(){
-        const label_studio_option = document.querySelectorAll(".ant-form")
-        label_studio_option.forEach(function(sub_label_studio_option){
-            for (let i=0; i<sub_label_studio_option.length; i++){
-                sub_label_studio_option[i].disabled = true
-            }
-        })
+        const label_studio_option = document.querySelectorAll(".ant-radio-input")
+        for (let i=0; i<label_studio_option.length; i++){
+            label_studio_option[i].disabled = true
+        }
     }
 
 
     function enabled_option(){
-        const label_studio_option = document.querySelectorAll(".ant-form")
-        label_studio_option.forEach(function(sub_label_studio_option){
-            for (let i=0; i<sub_label_studio_option.length; i++){
-                sub_label_studio_option[i].disabled = false
-            }
-        })
+        const label_studio_option = document.querySelectorAll(".ant-radio-input")
+        for (let i=0; i<label_studio_option.length; i++){
+            label_studio_option[i].disabled = false
+        }
     }
 
     const queryString = window.location.search;
@@ -75,94 +72,90 @@
     const dataPromise = getLabelData();
     const labelResultPromise = getLabelResult();
 
-    function render_page () {
-        Promise.all([configPromise, dataPromise, labelResultPromise]).then(
-            res => {
-                let config
-                let data
-                let result
-                [config, data, result] = res
-                let answer = config.A
-                let question = config.Q
-                let model_label = config.model_label
-                let model_reason = config.model_reason
-                let text = question + "\n" + answer
-                let predictions
-                console.log(result)
-                if(model_reason != 'None'){
-                    text += ("\n" + model_reason) 
-                }
+    async function render_page () {
+        const [config, data, result] = await Promise.all([configPromise, dataPromise, labelResultPromise])
+        let answer = config.A
+        let question = config.Q
+        let model_label = config.model_label
+        let model_reason = config.model_reason
+        let text = question + "\n" + answer
+        let predictions
+        console.log(result)
+        if(model_reason != 'None'){
+            text += ("\n" + model_reason) 
+        }
 
-                let userID = config.user_id
-                if (data) {
-                    predictions = data.predictions;
-                }
-                const studio = document.querySelector('#label-studio')
-                
-                if (studio) {
-                    studio.remove()
-                }
-                const root = document.createElement('div');
-                root.id = 'label-studio'
-                document.getElementById('studio').append(root)
-                tagView = tag_view(question, answer, model_reason, risk_level, labeling_method)
-                const interfaces = [
-                    "panel",
-                    "controls",
-                    "side-column",
-                    "instruction",
-                    "infobar",
-                    "topbar",
-                    "annotations:menu",
-                    "annotations:add-new",
-                    "annotations:delete",
-                    "annotations:current",
-                    "annotations:tabs",
-                    "annotations:history",
-                    "annotations:view-all",
-                    "predictions:menu",
-                    "predictions:tabs",
-                    "auto-annotation",
-                    "edit-history"
-                ]
-                const labelStudio = new LabelStudio(root, {
-                    config: tagView,
-                    interfaces: interfaces,
-                    user: {
-                        pk: 1,
-                        firstName: userID,
-                        lastName: " "
-                    },
-                    task: {
-                        // https://labelstud.io/guide/export#Label-Studio-JSON-format-of-annotated-tasks
-                        annotations: [
-                            {
-                            result: JSON.parse(result.replace(/'/g, '"'))
-                            }
-                        ],
-                        predictions: predictions,
-                        id: 1,
-                        data: {
-                            text: text
-                        }
+        let userID = config.user_id
+        if (data) {
+            predictions = data.predictions;
+        }
+        const studio = document.querySelector('#label-studio')
+        
+        if (studio) {
+            studio.remove()
+        }
+        const root = document.createElement('div');
+        root.id = 'label-studio'
+        document.getElementById('studio').append(root)
+        tagView = tag_view(question, answer, model_reason, risk_level, labeling_method)
+        const interfaces = [
+            "panel",
+            "controls",
+            "side-column",
+            "instruction",
+            "infobar",
+            "topbar",
+            "annotations:menu",
+            "annotations:add-new",
+            "annotations:delete",
+            "annotations:current",
+            "annotations:tabs",
+            "annotations:history",
+            "annotations:view-all",
+            "predictions:menu",
+            "predictions:tabs",
+            "auto-annotation",
+            "edit-history"
+        ]
+        const labelStudio = new LabelStudio(root, {
+            config: tagView,
+            interfaces: interfaces,
+            user: {
+                pk: 1,
+                firstName: userID,
+                lastName: " "
+            },
+            task: {
+                // https://labelstud.io/guide/export#Label-Studio-JSON-format-of-annotated-tasks
+                annotations: [
+                    {
+                    result: JSON.parse(result.replace(/'/g, '"'))
                     }
-                })
-                
-                
-                labelStudio.on("labelStudioLoad", (LS) => {
-                    // Perform an action when Label Studio is loaded
-                    const c = LS.annotationStore.addAnnotation({
-                        userGenerate: true
-                    });
-                    LS.annotationStore.selectAnnotation(c.id);
-                    console.log("loading...")
-                })
+                ],
+                predictions: predictions,
+                id: 1,
+                data: {
+                    text: text
+                }
             }
-        )}
+        })
+            
+            
+        labelStudio.on("labelStudioLoad", (LS) => {
+            // Perform an action when Label Studio is loaded
+            const c = LS.annotationStore.addAnnotation({
+                userGenerate: true
+            });
+            LS.annotationStore.selectAnnotation(c.id);
+            console.log("loading...")
+        })
+            
+        return "test"
+        
+    }
+        
     function select(name) {
         document.getElementById(name).checked = true
-        render_page()
-
     }
     // TODO 初始态，标注方法列表的第一个
     select(labeling_method)
@@ -172,10 +165,10 @@
     });
 
 
-    window.onload = function(){
-        render_page()
-        
-    }
+    render_page().then(e => {
+        console.log(e)
+        })
+    // 
 
     async function getLabelData() {
         const rsp = await fetch('/admin/lauditpage/audit/get_data', {
@@ -808,7 +801,7 @@
             </div>
             <div>
                 <label>
-                    <input type="radio" name="auditType" value="有问题">
+                    <input type="radio" name="auditType" value="有问题" id="problem">
                     有问题
                 </label>
             </div>
@@ -900,6 +893,16 @@
         location.href = briefDataUrl;
     });
 
+
+    window.onload = function(){
+        console.log('============')
+        setTimeout(function() {
+            disabled_option()
+            document.querySelector('#problem').addEventListener('click', enabled_option)
+        }, 1000)
+    }
+    
+    
 </script>
 
 </body>
