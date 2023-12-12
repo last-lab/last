@@ -3,100 +3,89 @@
 
 <style>
     table {
-      width: 100%;
-      table-layout: auto;
+        width: 100%;
+        table-layout: auto;
     }
-  
+
     td {
-      word-wrap: break-word;
-      white-space: normal;
+        word-wrap: break-word;
+        white-space: normal;
     }
-  </style>
 
-    <div class="card">
+    .custom-select {
+        background-color: white;
+        border: 1px solid #ccc;
+        color: #333;
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        width: 70px;
+        height: 30px;
+        border-radius: 5px;
+    }
+</style>
 
-        <div class="table-responsive">
-            <table class="table card-table table-vcenter text-nowrap datatable" id="myTable">
-                <thead>
+<div class="card">
+
+    <div class="table-responsive">
+        <table class="table card-table table-vcenter text-nowrap datatable" id="myTable">
+            <thead>
                 <tr>
-                        <th>Id</th>
-
-                        <th>问题</th>
-
-                        <th>答案</th>
-
-                        <th>当前状态</th>
-
-                        <th>模型标注</th>
-
-                        <th>模型原因</th>
-
-                        <th>操作</th>
-
-                        
-
+                    <th>Id</th>
+                    <th>问题</th>
+                    <th>答案</th>
+                    <th>当前状态<select class="status custom-select"></select></th>
+                    <th>模型标注<select class="label custom-select"></select></th>
+                    <th>模型原因</th>
+                    <th>操作</th>
                 </tr>
-                </thead>
-                <tbody>
-
-                    <tr>
-
-          <span class="dropdown">
-            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-
-
-                <!-- <a class="dropdown-item" href="/admin/labelpage/display/1"> -->
-                <i class="ti ti-edit me-2"></i>
-                审核任务详情
-              </a>
-
-            </div>
-          </span>
-                        </td>
-
-                    </tr>
-
-                </tbody>
-            </table>
-        </div>
-
+            </thead>
+            <tbody>
+                <tr>
+                    <span class="dropdown">
+                        <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                            <!-- <a class="dropdown-item" href="/admin/labelpage/display/1"> -->
+                            <i class="ti ti-edit me-2"></i>
+                            审核任务详情
+                            </a>
+                        </div>
+                    </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
+</div>
 
-    <script>
-        // 使用 $.ajax 方法获取数据
+<script>
+    // 使用 $.ajax 方法获取数据
+    const brief_data = new Promise((resolve, reject) => {
         $.ajax({
             url: '/admin/auditpage/get_audit_data', // 替换为您实际的数据获取 URL
             method: 'POST',
-            data: JSON.stringify({"taskID": "{{task_id}}"}),
+            data: JSON.stringify({ "taskID": "{{task_id}}" }),
             contentType: 'application/json',
-            success: function(data) {
-                const table = $('#myTable');
-
+            success: function (data) {
+                const table = $('#myTable')
                 // 遍历数据并添加到表格中
-                data.forEach(function(item) {
+                data.forEach(function (item, index) {
                     console.log(item)
-                    const row = $('<tr></tr>');
-
-                    const idCell = $('<td></td>').text(item.question_id);
-                    row.append(idCell);
-
-                    const questionCell = $('<td></td>').text(item.question);
-                    row.append(questionCell);
-
-                    const answerCell = $('<td></td>').text(item.answer);
-                    row.append(answerCell);
-
-                    const statusCell = $('<td></td>').text(item.status);
-                    row.append(statusCell);
+                    const row = $(`<tr data-id=${index} class="item"></tr>`)
+                    const idCell = $('<td></td>').text(item.question_id)
+                    row.append(idCell)
+                    const questionCell = $('<td></td>').text(item.question)
+                    row.append(questionCell)
+                    const answerCell = $('<td></td>').text(item.answer)
+                    row.append(answerCell)
+                    const statusCell = $('<td></td>').text(item.status)
+                    row.append(statusCell)
                     row.append(`<td>${item.model_label}</td>`)
                     row.append(`<td>${item.model_reason}</td>`)
-                    const actionCell = $('<td></td>');
-                    const actionLink = $('<a></a>').text(item.action);
+                    const actionCell = $(`<td></td>`)
+                    const actionLink = $('<a></a>').text(item.action)
                     // 添加条件判断来设置不同的跳转链接和参数
                     // 分未审核，已审核两种
                     if (item.action === '审核') {
-                        const auditUrl = '/admin/auditpage/audit/' + item.task_id + '_' + item.question_id;
-
+                        const auditUrl = '/admin/auditpage/audit/' + item.task_id + '_' + item.question_id
                         // 在链接中添加参数
                         const params = {
                             question_id: item.question_id,
@@ -106,11 +95,11 @@
                             labeling_method: item.labeling_method,
                             // 添加其他参数
                         };
-                        const queryString = $.param(params);
-                        actionLink.attr('href', auditUrl + '?' + queryString);
+                        const queryString = $.param(params)
+                        actionLink.attr('href', auditUrl + '?' + queryString)
                     } else {
                         // 设置其他页面的跳转链接
-                        const auditUrl = '/admin/auditpage/revise/';
+                        const auditUrl = '/admin/auditpage/revise/'
                         // 链接中添加参数
                         const params = {
                             labeling_method: item.labeling_method,
@@ -120,18 +109,83 @@
                             risk_level: item.risk_level,
                         };
                         const queryString = $.param(params)
-                        actionLink.attr('href', auditUrl +'?' + queryString);
+                        actionLink.attr('href', auditUrl + '?' + queryString)
                     }
-                    actionCell.append(actionLink);
-                    row.append(actionCell);
-
-                    table.append(row);
-                });
+                    actionCell.append(actionLink)
+                    row.append(actionCell)
+                    table.append(row)
+                })
+                resolve()
             },
-            error: function(xhr, status, error) {
-                console.log('Error:', error);
+            error: function (xhr, status, error) {
+                console.log('Error:', error)
             }
-        });
-    </script>
+        })
+
+    })
+
+    function unique_model_label() {
+        const data_table = document.querySelectorAll('.item')
+        const distinct_label_dict = {}
+        data_table.forEach(x => {
+            let model_label = x.cells[4].innerHTML
+            if (!(model_label in distinct_label_dict)) {
+                distinct_label_dict[model_label] = [x.dataset.id]
+            } else {
+                distinct_label_dict[model_label].push(x.dataset.id)
+            }
+        })
+        return distinct_label_dict
+    }
+
+    Promise.all([brief_data]).then(result => {
+        const select_button = document.querySelector('select.label')
+        const data_table = document.querySelectorAll('.item')
+        // 完善select标签
+        select_button.innerHTML = `<option checked value='all'>全部</option>`
+        let distinct_label_dict = unique_model_label()
+        for (let item in distinct_label_dict) {
+            select_button.innerHTML += `<option value="${item}">${item}</option>`
+        }
+        select_button.addEventListener('change', (e) => {
+            const selected_value = e.target.value
+            if (selected_value === 'all') {
+                data_table.forEach((x) => {
+                    x.style.display = 'table-row'
+                })
+            } else {
+                data_table.forEach((x) => {
+                    if (!distinct_label_dict[selected_value].includes(x.dataset.id)) {
+                        x.style.display = 'none'
+                    } else {
+                        x.style.display = 'table-row'
+                    }
+                })
+            }
+        })
+
+        const status_select_button = document.querySelector('select.status')
+        status_select_button.innerHTML = `<option checked value="all">全部</option>
+                                            <option value="已审核">已审核</option>
+                                            <option value="未审核">未审核</option>`
+        status_select_button.addEventListener('change', (e)=>{
+            const selected_value = e.target.value
+            if (selected_value === 'all'){
+                data_table.forEach((x) => {
+                    x.style.display = 'table-row';
+                })
+            }else{
+                data_table.forEach((x) => {
+                    if (!(selected_value === x.cells[3].innerHTML)){
+                        x.style.display = 'none'
+                    } else {
+                        x.style.display = 'table-row'
+                    }
+                })
+            }
+        })
+    })
+
+</script>
 
 {% endblock %}

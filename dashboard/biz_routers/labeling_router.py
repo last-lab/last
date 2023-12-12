@@ -25,6 +25,9 @@ async def labeling_view(
     request: Request,
     resource: str = Path(...),
     pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
 ):
     # TODO 标注方法从数据库中读取出来，或者直接在brief_dataset页面直接传
     task_pk_value = request.query_params["task_pk_value"]
@@ -36,6 +39,8 @@ async def labeling_view(
         # "labels": ["判断标注"],
         "labels": ast.literal_eval(request.query_params["labeling_method"]),
         "risk_level": request.query_params["risk_level"],
+        "resources": resources,
+        "model_resource": model_resource,
     }
     # 点击了标注之后，需要根据传回来的参数，主要是数据集的名称，标注方式
     # 载入数据，丢一个新的界面出去
