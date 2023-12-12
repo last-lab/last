@@ -21,6 +21,9 @@ async def audit_view(
     request: Request,
     resource: str = Path(...),
     pk: str = Path(...),
+    model_resource: ModelResource = Depends(get_model_resource),
+    resources=Depends(get_resources),
+    model: Type[Model] = Depends(get_model),
 ):
     # TODO 标注方法从数据库中读取出来，或者直接在brief_dataset页面直接传
     task_pk_value = request.query_params["task_pk_value"]
@@ -31,6 +34,8 @@ async def audit_view(
         "task_pk_value": task_pk_value,
         "labels": ast.literal_eval(request.query_params["labeling_method"]),
         "risk_level": request.query_params["risk_level"],
+        "model_resource": model_resource,
+        "resources": resources,
     }
     # 点击了标注之后，需要根据传回来的参数，主要是数据集的名称，标注方式
     # 载入数据，丢一个新的界面出去
@@ -213,7 +218,9 @@ async def audit_next_callback(request: Request):
     task_id = json_data["task_id"]
     current_question_index = json_data["current_question_index"]
     label_method = eval(html.unescape(json_data["labeling_method"]))
+    # filter_dict = eval(json_data["filter"]) # {"model_label": '4'} / None /
     risk_level = json_data["risk_level"]
+    # audit_item = await AuditResult.filter(task_id=task_id, **filter_dict, status="未审核")
     # 从labelpage这个表中，基于user_id, question_id, task_id找到对应的记录
     auditpage_task_row = await AuditPage.filter(task_id=task_id)
     assert len(auditpage_task_row) == 1
