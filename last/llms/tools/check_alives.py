@@ -60,6 +60,7 @@ def run_coroutine():
 def run_schedule():
     """每 inc / 10 秒检查一下是否需要执行任务
     """ 
+    # 立即检查一次API
     asyncio.run(check_model_api_alives())
     while True:
         schedule.run_pending()
