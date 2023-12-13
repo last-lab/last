@@ -26,6 +26,7 @@ from dashboard.providers import (  # GitHubProvider,; GoogleProvider,
     import_export_provider,
 )
 from dashboard.tasks import rearq
+from last.llms.tools.check_alives import run_check_model_api_alives
 from last.services import enums, middlewares
 from last.services.app import app as admin_app
 from last.services.exceptions import (
@@ -38,8 +39,6 @@ from last.services.providers.admin_log import AdminLogProvider
 from last.services.providers.notification import NotificationProvider
 from last.services.providers.permission import PermissionProvider
 from last.services.providers.search import SearchProvider
-
-from last.llms.tools.check_alives import check_model_api_alives
 
 BASE_DIR = Path(BASE_DIR)
 
@@ -124,7 +123,7 @@ def create_app():
             default_layout=enums.Layout.layout,
         )
         await mock_data.create_mock_data()
-        await check_model_api_alives()
+        await run_check_model_api_alives()
         # await rearq_server.start_worker(with_timer=True)
 
     return app

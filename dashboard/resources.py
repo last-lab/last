@@ -143,7 +143,7 @@ class Evaluation(Dropdown):
             Field(name="auth_status", label="鉴权状态", display=ShowPopover()),
             AIModelManagerOperationField(name="name", label="操作"),
         ]
-        
+
         async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
             return [
                 ToolbarAction(
