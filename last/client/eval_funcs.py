@@ -9,12 +9,15 @@ import asyncio
 
 from .task_list import TaskList
 
+from last.newevaluate.utlis import extract
+
 
 async def AI_eval(
     datasets=Placeholder(parser=lambda x: x),
     llm_model=Placeholder(parser=lambda x: x),
     critic_model=Placeholder(parser=lambda x: x),
     plan=Placeholder(parser=lambda x: x),
+    prompt=Placeholder(parser=lambda x: x),
 ):
     datasets = [
         Dataset(
@@ -71,7 +74,9 @@ async def AI_eval(
         correct_ans = qa_record.answer
         ## sheet_name 作为 theme, 确定 type_prompt
         sheet_name = Message(role=MessageRole.Chat, content=qa_record.sheet_name)
-        await taskList.append(asyncio.create_task(critic_model(question, response, correct_ans, sheet_name)))
+        ## prompt id 索引 使用的具体脚本
+        prompt_id = Message(role=MessageRole.Chat, content=prompt["id"])
+        await taskList.append(asyncio.create_task(critic_model(question, response, correct_ans, sheet_name, prompt_id)))
     
     # 无异常抛出的情况下 critic_list 与 task_list 元素一一对应
     critic_list = await taskList.get_result_list()
@@ -82,7 +87,17 @@ async def AI_eval(
     for (dataset, qa_record), response, critic_msg in zip(plan, response_list, critic_list):
         question = qa_record.question
         sheet_name = qa_record.sheet_name
-        critic, reason= parse_critic_and_reason(critic_msg)
+        # 内部脚本处理评判结果
+        # critic, reason= parse_critic_and_reason(critic_msg)
+        # 外部脚本处理评判结果
+        try:
+            critic = extract(str(critic_msg))
+            critic = Message(role=MessageRole.Chat, content=str(critic))
+            reason = critic_msg
+        except Exception as e:
+            # 模型拒绝回答时 评分设为 None
+            critic = Message(role=MessageRole.Chat, content="None")
+            reason = Message(role=MessageRole.Chat, content="None")
         new_qa_record = QARecord(sheet_name=sheet_name, question=question, answer=response, critic=critic, reason=reason)
         new_qa_records[ID()] = new_qa_record
     progress_bar.update(1)

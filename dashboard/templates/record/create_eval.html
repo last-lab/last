@@ -28,6 +28,75 @@
                 添加自动打分模型
             </button>
         </div>
+        <div class="mb-3 row">
+            <label class="form-label required">评判流程Prompt类型</label>
+            <div class="col-8 offset-2">
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="table card-table table-vcenter text-nowrap datatable">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>prompt类型</th>
+                            </tr>
+                            </thead>
+                            <tbody id="ds_tbody">
+                            <tr>
+                                <td>
+                                    <input data-id = "1"
+                                        class="form-check-input m-0 align-middle checkbox-select-item"
+                                        type="radio" name="prompt_radio">
+                                </td>
+                                <td>违反社会主义核心价值观</td>
+                            </tr>
+                                <td>
+                                    <input data-id = "2"
+                                        class="form-check-input m-0 align-middle checkbox-select-item"
+                                        type="radio" name="prompt_radio">
+                            </td>
+                                <td>歧视</td>
+                            </tr>
+                                <td>
+                                    <input data-id = "3"
+                                        class="form-check-input m-0 align-middle checkbox-select-item"
+                                        type="radio" name="prompt_radio">
+                            </td>
+                                <td>商业违法违规</td>
+                            </tr>
+                                <td>
+                                    <input data-id = "4"
+                                        class="form-check-input m-0 align-middle checkbox-select-item"
+                                        type="radio" name="prompt_radio">
+                                </td>
+                                <td>侵害他人合法权益</td>
+                            </tr>
+                                <td>
+                                    <input data-id = "5"
+                                        class="form-check-input m-0 align-middle checkbox-select-item"
+                                        type="radio" name="prompt_radio">
+                                </td>
+                                <td>无法满足特定服务类型的安全需求</td>
+                            </tr>
+                                <td>
+                                    <input data-id = "6"
+                                        class="form-check-input m-0 align-middle checkbox-select-item"
+                                        type="radio" name="prompt_radio">
+                                </td>
+                                <td>模型应拒答问题</td>
+                            </tr>
+                                <td>
+                                    <input data-id = "7"
+                                        class="form-check-input m-0 align-middle checkbox-select-item"
+                                        type="radio" name="prompt_radio">
+                                </td>
+                                <td>不应该拒答问题</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="form-footer">
             <button type="submit" class="btn btn-primary">提交评测</button>
         </div>
@@ -73,7 +142,11 @@
 </div>
 
 <script>
-
+    // 默认选中第2个prompt按钮
+    const secondRadioButton = document.querySelector('input[type="radio"][name="prompt_radio"][data-id="2"]');
+    if (secondRadioButton) {
+        secondRadioButton.checked = true;
+    }
     const handleCreateModel = function () {
         const data = {
             endpoint: $('#endpoint').val(),
@@ -98,13 +171,17 @@
         })
     }
     const handleCreateEvaluation = function () {
+        // 获取选中的单选按钮的 data-id 值
+        const selectedId = document.querySelector('input[type="radio"]:checked').getAttribute('data-id');
         const data = {
             "llm_id": values_id.join(','),
             "plan_id": $('#eval_plan').val(),
             "created_at": new Date().getTime(),
             "llm_name": $('#model').val(),
-            "critic_id": $('#critic').val()
+            "critic_id": $('#critic').val(),
+            "prompt_id": selectedId,
         }
+        
         $.ajax({
             url: '/admin/evaluation/evaluation_create',
             method: 'POST',
@@ -122,12 +199,13 @@
                 console.log(data)
                 alert(data.msg)
             }
-         })
+        })
     }
 
     const model_form = document.getElementById('model-form')
     const eval_form = document.getElementById('eval-form')
-
+    // 获取选中的单选按钮的 data-id 值
+    const selectedId = document.querySelector('input[type="radio"]:checked').getAttribute('data-id');
     model_form.addEventListener('submit', event => {
         event.preventDefault();
         handleCreateModel(event)
