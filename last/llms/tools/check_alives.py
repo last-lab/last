@@ -58,13 +58,15 @@ def run_coroutine():
     asyncio.run(check_model_api_alives())
     
 def run_schedule():
-    """每 inc / 10 秒检查一下是否需要执行任务
+    """调度器线程执行函数
+    每 inc + 1 秒检查一下是否需要执行任务
     """ 
     # 立即检查一次API
     asyncio.run(check_model_api_alives())
     while True:
         schedule.run_pending()
-        time.sleep(int(inc / 10))
+        # 每 inc 秒新增一个任务，则每 inc + 1 秒唤醒 schedule 线程查看并执行任务
+        time.sleep(inc + 1)
         
 async def run_check_model_api_alives():
     """检查各模型 API 是否可用, 结果写入DB
