@@ -43,7 +43,7 @@ async def check_model_api_alives():
     for llm_info in model_infos:
         llm_name = llm_info.name
         # 访问 API
-        generated_text = await generation_test(prompt="hello", model=llm_name)
+        generated_text = await generation_test(prompt="你好,我现在有一些问题需要咨询你,请问你可以帮忙回答一下么", model=llm_name)
         if generated_text.startswith("error:"):
             # error 在 generate 内部消化，以前缀获取是否返回 error
             llm_info.auth_status = False
