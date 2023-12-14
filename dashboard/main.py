@@ -26,6 +26,7 @@ from dashboard.providers import (  # GitHubProvider,; GoogleProvider,
     import_export_provider,
 )
 from dashboard.tasks import rearq
+from last.llms.tools.check_alives import run_check_model_api_alives
 from last.services import enums, middlewares
 from last.services.app import app as admin_app
 from last.services.exceptions import (
@@ -122,6 +123,7 @@ def create_app():
             default_layout=enums.Layout.layout,
         )
         await mock_data.create_mock_data()
+        await run_check_model_api_alives()
         # await rearq_server.start_worker(with_timer=True)
 
     return app

@@ -117,6 +117,7 @@ async def generate(
         import traceback
 
         traceback.print_exc()
-        return str(ex)
+        # todo: 返回带 error 字段的 dic; 当前依靠 phase str; 或者抛出error?
+        return "error:" + str(ex)
     return str(outputs)
 
