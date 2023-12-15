@@ -44,6 +44,7 @@ class EvalInfo(BaseModel):
     llm_name: str
     created_at: int
     critic_id: str
+    prompt_id: str
 
 
 # 评测结果Class
@@ -154,6 +155,7 @@ async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加�
         llm_id=eval_info.llm_id,
         created_at=eval_info.created_at,
         created_user_id=str(request.state.admin).split("#")[1],
+        prompt_id=eval_info.prompt_id,
     )
     dataset_ids = [int(_) for _ in plan["dataset_ids"].split(",")]
     dataset_info = await DataSet.filter(Q(id__in=dataset_ids)).values()
@@ -180,6 +182,7 @@ async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加�
                         "access_key": critic["access_key"],
                     },
                     "$plan": {"name": plan["name"]},
+                    "$prompt": {"id": eval_info.prompt_id},
                 }
             )
             asyncio.create_task(client_execute(plan, record, dataset_info, AI_eval, kwargs_json))

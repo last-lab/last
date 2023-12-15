@@ -42,7 +42,7 @@ async def list_view(
 ):
     fields_label = model_resource.get_fields_label()
     fields = model_resource.get_fields()
-    qs = model.all()
+    qs = model.all().order_by("-id")
     params, qs = await model_resource.resolve_query_params(request, dict(request.query_params), qs)
     filters = await model_resource.get_filters(request, params)
     total = await qs.count()
