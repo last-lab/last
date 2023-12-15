@@ -9,6 +9,8 @@ from uuid import uuid4
 from fastapi import APIRouter, Depends, File, Form, Path, UploadFile
 from jinja2 import TemplateNotFound
 from starlette.requests import Request
+
+# from starlette.responses import Response
 from tortoise import Model
 
 from dashboard.biz_models import AuditPage, AuditResult, LabelPage, LabelResult, TaskManage
@@ -153,7 +155,7 @@ async def create_task_callback(
         task_type="数据集标注",
         labeling_method=annotationTypes,
         current_status="未标注",
-        dateset=fileName,
+        dataset=fileName,
         dataset_uid=dataset_uid,
         create_time=current_time,
         end_time=deadline,
@@ -179,7 +181,7 @@ async def create_task_callback(
         task_id=task_id,
         task_type="数据集标注",
         labeling_method=annotationTypes,
-        dateset=fileName,
+        dataset=fileName,
         dataset_uid=dataset_uid,
         end_time=deadline,
         assign_user=assign_user_item_dict,
@@ -220,6 +222,7 @@ async def create_task_callback(
     await AuditPage(
         task_id=task_id,
         end_time=deadline,
+        dataset=fileName,
         labeling_method=annotationTypes,
         audit_user=audit_user_item_dict,
         audit_length=audit_user_item_length,
@@ -287,7 +290,7 @@ async def create_model_task_callback(
         task_type="数据集标注",
         labeling_method=["Model"],
         current_status="未标注",
-        dateset=fileName,
+        dataset=fileName,
         dataset_uid=dataset_uid,
         create_time=current_time,
         end_time=deadline,
@@ -303,7 +306,7 @@ async def create_model_task_callback(
         task_id=task_id,
         task_type="数据集标注",
         labeling_method=["Model"],
-        dateset=fileName,
+        dataset=fileName,
         dataset_uid=dataset_uid,
         end_time=deadline,
         assign_user="None",
@@ -333,6 +336,7 @@ async def create_model_task_callback(
         task_id=task_id,
         end_time=deadline,
         labeling_method=["Model"],
+        dataset=fileName,
         audit_user=audit_user_item_dict,
         audit_length=audit_user_item_length,
         audit_progress=audit_progress,
@@ -445,3 +449,20 @@ async def get_label_result(request: Request):
     for label_result_, audit_result_ in zip(label_result, audit_result):
         label_result_.update(audit_result_)
     return label_result
+
+
+@router.post("/{resource}/mock_send_file")
+async def mock_send_file(request: Request):
+    from io import BytesIO
+
+    import pandas as pd
+
+    json_data = await request.form()
+    pd_file = await json_data["file"].read()
+    csv_data = pd.read_excel(BytesIO(pd_file), na_values="null", sheet_name=None)
+    csv_data_dict = {
+        sheet_name: df.to_dict(orient="records") for sheet_name, df in csv_data.items()
+    }
+
+    # 返回 JSON 格式的数据给前端
+    return csv_data_dict

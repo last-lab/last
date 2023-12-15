@@ -136,7 +136,7 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
                         "model_label": audit_result["model_label"],
                         "model_reason": audit_result["model_reason"],
                         "status": audit_result["status"],
-                        "action": "审核" if audit_result["status"] != "已审核" else "查看",
+                        "action": "审核" if "已审核" not in audit_result["status"] else "查看",
                         "task_id": task_id,
                         "labeling_method": label_result["labeling_method"],
                         "risk_level": label_result["risk_level"],
@@ -167,7 +167,8 @@ async def submit_callback(request: Request, resource: str, pk: str):
         # TODO 将新的标注结果和已经有的标注结果合并起来
         new_audit_result = {user_id: audit_result_by_user}
     audit_result_row[0].audit_result = new_audit_result
-    audit_result_row[0].status = "已审核"
+    audit_flag = json_data["auditFlag"]
+    audit_result_row[0].status = "已审核_" + audit_flag
     # TODO，暂时摆烂了，一个task的每一个题目只会到一个人手上
     await audit_result_row[0].save()
     # 修改一下auditpage的标注进展
@@ -196,6 +197,7 @@ async def update_result_callback(request: Request, resource: str, pk: str):
     question_id = json_data["question_id"]
     task_id = json_data["task_id"]
     update_audit_result = json_data["auditResult"]
+    # audit_flag = json_data["auditFlag"]
     audit_row = await AuditResult.filter(task_id=task_id, question_id=question_id)
     assert len(audit_row) == 1
     # 进行多人标注结果的合并

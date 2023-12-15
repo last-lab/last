@@ -5,7 +5,7 @@ class LabelPage(Model):
     task_id = fields.CharField(max_length=50)
     task_type = fields.CharField(max_length=50)
     labeling_method = fields.CharField(max_length=255)
-    dateset = fields.CharField(max_length=255)  # 这个任务对应的dataset的名称
+    dataset = fields.CharField(max_length=255)  # 这个任务对应的dataset的名称
     dataset_uid = fields.CharField(max_length=255)  # 每一个数据集有唯一的uid
     end_time = fields.DateField()
     assign_user = fields.CharField(max_length=25500)

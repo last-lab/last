@@ -9,6 +9,7 @@ class AuditPage(Model):
     audit_length = fields.CharField(max_length=25500)
     audit_progress = fields.CharField(max_length=25500)
     audit_flag = fields.CharField(max_length=25500)
+    dataset = fields.CharField(max_length=255)
 
 
 class AuditResult(Model):
