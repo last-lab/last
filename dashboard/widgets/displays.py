@@ -14,6 +14,7 @@ from dashboard.biz_models import (
     LabelResult,
     ModelInfo,
     Risk,
+    TaskManage,
 )
 from dashboard.enums import EvalStatus
 from dashboard.models import Admin
@@ -404,6 +405,16 @@ class DownLoadLabelResult(Display):
         return await super().render(request, {"content": info["id"]})
 
 
+class DownLoadReport(Display):
+    template = "taskmanage/download_report.html"
+
+    async def render(self, request: Request, value: any):
+        info = await TaskManage.get_or_none(task_id=value).values()
+        return await super().render(
+            request, {"id": value, "sheet_name_list": info["sheet_name_list"]}
+        )
+
+
 class ShowAudit(Display):
     template = "auditpage/audit_detail.html"
 
@@ -443,7 +454,7 @@ class ShowTaskAuditProgress(Display):
         total_question = len(info_list)
         audit_count = 0
         for info in info_list:
-            if info.status == "已审核":
+            if "已审核" in info.status:
                 audit_count += 1
 
         if audit_count == total_question:

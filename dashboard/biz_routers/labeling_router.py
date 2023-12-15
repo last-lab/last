@@ -331,7 +331,7 @@ async def get_label_audit_status(request: Request):
     # 查找数据结果表，得到标注结果
     data = await LabelResult.filter(task_id=task_id, question_id=question_id)
     data_status = data[0].status
-    if data_status == "已审核":
+    if "已审核" in data_status:
         return True
     else:
         return False

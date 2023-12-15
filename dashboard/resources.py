@@ -17,6 +17,7 @@ from dashboard.models import Role as RoleModel
 from dashboard.widgets.displays import (  # ShowAudit,; ShowAuditProgress,
     AIModelManagerOperationField,
     DownLoadLabelResult,
+    DownLoadReport,
     OperationField,
     ShowAction,
     ShowAdmin,
@@ -418,11 +419,12 @@ class TaskManagePanel(Dropdown):
             "id",
             "task_id",
             "labeling_method",
-            "dateset",
+            "dataset",
             "create_time",
             Field(name="task_id", label="标注进展", display=ShowTaskLabelingProgress()),
             Field(name="task_id", label="审核进展", display=ShowTaskAuditProgress()),
             Field(name="task_id", label="下载标注结果", display=DownLoadLabelResult()),
+            Field(name="task_id", label="下载报告", display=DownLoadReport()),
         ]
 
         async def get_actions(self, request: Request) -> List[Action]:
@@ -467,6 +469,7 @@ class TaskManagePanel(Dropdown):
             "task_id",
             "task_type",
             "labeling_method",
+            "dataset",
             "end_time",
             Field(name="task_id", label="标注进展", display=ShowLabelProgress()),
             Field(name="task_id", label="操作", display=ShowLabel()),
@@ -489,6 +492,7 @@ class TaskManagePanel(Dropdown):
             "id",
             "task_id",
             "labeling_method",
+            "dataset",
             "end_time",
             Field(name="task_id", label="审核进展", display=ShowAuditProgress()),
             Field(name="task_id", label="操作", display=ShowAudit()),
