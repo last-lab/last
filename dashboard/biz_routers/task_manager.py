@@ -6,7 +6,7 @@ from typing import Type
 # from urllib.parse import parse_qs
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, File, Form, Path, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Path, Response, UploadFile
 from jinja2 import TemplateNotFound
 from starlette.requests import Request
 
@@ -26,6 +26,7 @@ from last.services.responses import redirect
 from last.services.template import templates
 
 router = APIRouter()
+# router.mount("/static/reportSave", StaticFiles(directory=f"{BASE_DIR}/static/reportSave"), name="reportSave")
 
 
 @router.get("/{resource}/create_task", dependencies=[Depends(create_checker)])
@@ -453,6 +454,7 @@ async def get_label_result(request: Request):
 
 @router.post("/{resource}/mock_send_file")
 async def mock_send_file(request: Request):
+    import uuid
     from io import BytesIO
 
     import pandas as pd
@@ -463,6 +465,28 @@ async def mock_send_file(request: Request):
     csv_data_dict = {
         sheet_name: df.to_dict(orient="records") for sheet_name, df in csv_data.items()
     }
+    #
 
-    # 返回 JSON 格式的数据给前端
-    return csv_data_dict
+    file_uuid = uuid.uuid4()
+    with pd.ExcelWriter(f"./dashboard/static/saves/output_{file_uuid}.xlsx") as writer:
+        for sheet_name, df in csv_data_dict.items():
+            df = pd.DataFrame(df)
+            df = df.fillna("null")
+            df.to_excel(writer, sheet_name=sheet_name, index=False)
+    writer.close()
+    return f"output_{file_uuid}.xlsx"
+
+    # return FileResponse('./dashboard/static/saves/output.xlsx', filename='output.xlsx', media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+
+@router.get("/{resource}/save")
+async def download_report(response: Response, server_saved_file_name: str, saved_file_name: str):
+    from urllib.parse import quote
+
+    from starlette.responses import FileResponse
+
+    response.headers["Content-Disposition"] = f"attachment; filename={quote(saved_file_name)}"
+    return FileResponse(
+        f"./dashboard/static/saves/{server_saved_file_name}",
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )

@@ -1,6 +1,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx-populate/1.21.0/xlsx-populate.min.js" integrity="sha512-JVBz6zJ6cvcRjn7GayGJ/dsfYmykXq/O+BG5jqvCotbSkRd7pD/k0q/wqoIKEgXTh9lBxWoInk0DgrDhpXc9JA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
 <button class="btn btn-ghost-primary report-button" id="btn_{{value.id}}">报告下载</button>
 <div class="table-list" style="display: none" id="table_{{value.id}}">
     <div class="tab-nav">
@@ -26,35 +28,50 @@
     function Download(task_id, sheet_name_list) {
         const sheetPromise = sheet_name_list.map((sheetName)=>{ return create_table(sheetName, task_id)})
         Promise.all(sheetPromise).then(result => {
-        const wb = XLSX.utils.book_new();
-        sheet_name_list.forEach((sheetName) => {
-            const dataTable = document.getElementById(sheetName+'_' + task_id);
-            const ws = XLSX.utils.table_to_sheet(dataTable);
-            XLSX.utils.book_append_sheet(wb, ws, sheetName);
-        });
-        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-
-        // 将二进制数据封装为 Blob 对象
-        const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
-
-        // 创建一个 FormData 对象，并将 Blob 对象添加到其中
-        const formData = new FormData();
-        formData.append('file', blob, 'report.xlsx');
-
-        // 使用 Axios 发送 FormData 到后端
-        axios.post('/admin/taskmanage/mock_send_file', formData)
-        .then(response => {
-            console.log(response)
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    });
+            const wb = XLSX.utils.book_new();
+            sheet_name_list.forEach((sheetName) => {
+                const dataTable = document.getElementById(sheetName+'_' + task_id);
+                const ws = XLSX.utils.table_to_sheet(dataTable);
+                XLSX.utils.book_append_sheet(wb, ws, sheetName);
+            });
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+            // 将二进制数据封装为 Blob 对象
+            const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
+            // 创建一个 FormData 对象，并将 Blob 对象添加到其中
+            const formData = new FormData()
+            formData.append('file', blob, 'report.xlsx')
+            let saved_file_name = 'report_' + '{{value.dataset}}'
+            // 使用 Axios 发送 FormData 到后端
+            axios.post('/admin/taskmanage/mock_send_file', formData)
+                .then(response => {
+                    let server_saved_file_name = response.data;
+                    return axios({
+                        method: 'get',
+                        url: '/admin/taskmanage/save',
+                        responseType: 'blob',  // 设置响应类型为 blob
+                        params: {
+                            server_saved_file_name,
+                            saved_file_name
+                        }
+                    })
+                }).then(res => {
+                    // 创建一个可下载的链接，并模拟点击下载
+                    const downloadUrl = window.URL.createObjectURL(new Blob([res.data]));
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.setAttribute('download', saved_file_name);  // 设置下载文件的文件名
+                    document.body.appendChild(link);
+                    link.click();
+                    console.log(res)
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            })
+        }   
         // 2. 将数据封装成excel
         // 3. 讲数据发送到另外一个后端函数，返回得到一个excel文件对象
-        // 4. 将数据下载到本地
-    }
-
+        // 4. 将数据下载到本
+    
     function s2ab(s) {
         const buf = new ArrayBuffer(s.length);
         const view = new Uint8Array(buf);
