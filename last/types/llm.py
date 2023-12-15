@@ -63,6 +63,8 @@ class LLM(LLMInfo):
     async def __call__(self, *msgs: Message) -> Message:
         # 提供 model 部分信息生成 prompt
         self.system_prompt, prompt = PromptGenerator.generate_prompt(self.name, self.model_type, *msgs)
+        print("********************************")
+        print(self.system_prompt)
         return_msg = await generate(
             prompt=prompt,
             model=self.name,
