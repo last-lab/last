@@ -1,20 +1,19 @@
 import json
 from datetime import datetime
+from io import BytesIO
 from typing import Type
+from urllib.parse import quote
 
 # from typing import Type
 # from urllib.parse import parse_qs
 from uuid import uuid4
-import uuid
-from io import BytesIO
 
 import pandas as pd
 from fastapi import APIRouter, Depends, File, Form, Path, Response, UploadFile
 from jinja2 import TemplateNotFound
 from starlette.requests import Request
-from urllib.parse import quote
-
 from starlette.responses import FileResponse
+
 # from starlette.responses import Response
 from tortoise import Model
 
@@ -464,21 +463,15 @@ async def mock_send_file(request: Request):
     pd_file = await json_data["file"].read()
     csv_data = pd.read_excel(BytesIO(pd_file), na_values="null", sheet_name=None)
     result_df = auto_table(csv_data)
-
-    # csv_data_dict = {
-    #     sheet_name: df.to_dict(orient="records") for sheet_name, df in csv_data.items()
-    # }
-    with pd.ExcelWriter(f"./dashboard/static/saves/table_result.xlsx") as writer:
+    with pd.ExcelWriter("./dashboard/static/reportSave/table_result.xlsx") as writer:
         result_df.to_excel(writer)
     return "table_result.xlsx"
-
 
 
 @router.get("/{resource}/save")
 async def download_report(response: Response, server_saved_file_name: str, saved_file_name: str):
     response.headers["Content-Disposition"] = f"attachment; filename={quote(saved_file_name)}"
     return FileResponse(
-        f"./dashboard/static/saves/{server_saved_file_name}",
+        f"./dashboard/static/reportSave/{server_saved_file_name}",
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-
