@@ -40,7 +40,7 @@
             // 创建一个 FormData 对象，并将 Blob 对象添加到其中
             const formData = new FormData()
             formData.append('file', blob, 'report.xlsx')
-            let saved_file_name = 'report_' + '{{value.dataset}}'
+            let saved_file_name = '自动报表生成_' + '{{value.dataset}}'
             // 使用 Axios 发送 FormData 到后端
             axios.post('/admin/taskmanage/mock_send_file', formData)
                 .then(response => {
