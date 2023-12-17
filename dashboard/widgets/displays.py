@@ -411,7 +411,8 @@ class DownLoadReport(Display):
     async def render(self, request: Request, value: any):
         info = await TaskManage.get_or_none(task_id=value).values()
         return await super().render(
-            request, {"id": value, "sheet_name_list": info["sheet_name_list"]}
+            request,
+            {"id": value, "sheet_name_list": info["sheet_name_list"], "dataset": info["dataset"]},
         )
 
 
