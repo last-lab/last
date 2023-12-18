@@ -21,11 +21,13 @@
     
     document.querySelector(`#btn_{{value.id}}`).addEventListener('click', function(){
         const task_id = '{{value.id}}'
+        const dataset = '{{value.dataset}}'
+        alert(dataset)
         const sheet_name_list = JSON.parse('{{value.sheet_name_list}}'.replace(/&#39;/g, "'").replace(/'/g, '"'))
-        Download(task_id, sheet_name_list)
+        Download(task_id, sheet_name_list, dataset)
     })
     
-    function Download(task_id, sheet_name_list) {
+    function Download(task_id, sheet_name_list, dataset) {
         const sheetPromise = sheet_name_list.map((sheetName)=>{ return create_table(sheetName, task_id)})
         Promise.all(sheetPromise).then(result => {
             const wb = XLSX.utils.book_new();
@@ -40,11 +42,11 @@
             // 创建一个 FormData 对象，并将 Blob 对象添加到其中
             const formData = new FormData()
             formData.append('file', blob, 'report.xlsx')
-            let saved_file_name = '自动报表生成_' + '{{value.dataset}}'
+            let saved_file_name = 'report_' + dataset
             // 使用 Axios 发送 FormData 到后端
             axios.post('/admin/taskmanage/mock_send_file', formData)
                 .then(response => {
-                    let server_saved_file_name = response.data;
+                    let server_saved_file_name = response.data
                     return axios({
                         method: 'get',
                         url: '/admin/taskmanage/save',
@@ -59,7 +61,7 @@
                     const downloadUrl = window.URL.createObjectURL(new Blob([res.data]));
                     const link = document.createElement('a');
                     link.href = downloadUrl;
-                    link.setAttribute('download', saved_file_name);  // 设置下载文件的文件名
+                    link.setAttribute('download', 'report_' + dataset);  // 设置下载文件的文件名
                     document.body.appendChild(link);
                     link.click();
                     console.log(res)
