@@ -1,14 +1,18 @@
 import json
 from datetime import datetime
+from io import BytesIO
 from typing import Type
+from urllib.parse import quote
 
 # from typing import Type
 # from urllib.parse import parse_qs
 from uuid import uuid4
 
+import pandas as pd
 from fastapi import APIRouter, Depends, File, Form, Path, Response, UploadFile
 from jinja2 import TemplateNotFound
 from starlette.requests import Request
+from starlette.responses import FileResponse
 
 # from starlette.responses import Response
 from tortoise import Model
@@ -24,6 +28,7 @@ from last.services.resources import Model as ModelResource
 # from last.services.routes.resources import list_view
 from last.services.responses import redirect
 from last.services.template import templates
+from last.types.report import auto_table
 
 router = APIRouter()
 # router.mount("/static/reportSave", StaticFiles(directory=f"{BASE_DIR}/static/reportSave"), name="reportSave")
@@ -454,39 +459,19 @@ async def get_label_result(request: Request):
 
 @router.post("/{resource}/mock_send_file")
 async def mock_send_file(request: Request):
-    import uuid
-    from io import BytesIO
-
-    import pandas as pd
-
     json_data = await request.form()
     pd_file = await json_data["file"].read()
     csv_data = pd.read_excel(BytesIO(pd_file), na_values="null", sheet_name=None)
-    csv_data_dict = {
-        sheet_name: df.to_dict(orient="records") for sheet_name, df in csv_data.items()
-    }
-    #
-
-    file_uuid = uuid.uuid4()
-    with pd.ExcelWriter(f"./dashboard/static/saves/output_{file_uuid}.xlsx") as writer:
-        for sheet_name, df in csv_data_dict.items():
-            df = pd.DataFrame(df)
-            df = df.fillna("null")
-            df.to_excel(writer, sheet_name=sheet_name, index=False)
-    writer.close()
-    return f"output_{file_uuid}.xlsx"
-
-    # return FileResponse('./dashboard/static/saves/output.xlsx', filename='output.xlsx', media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    result_df = auto_table(csv_data)
+    with pd.ExcelWriter("./dashboard/static/reportSave/table_result.xlsx") as writer:
+        result_df.to_excel(writer)
+    return "table_result.xlsx"
 
 
 @router.get("/{resource}/save")
 async def download_report(response: Response, server_saved_file_name: str, saved_file_name: str):
-    from urllib.parse import quote
-
-    from starlette.responses import FileResponse
-
     response.headers["Content-Disposition"] = f"attachment; filename={quote(saved_file_name)}"
     return FileResponse(
-        f"./dashboard/static/saves/{server_saved_file_name}",
+        f"./dashboard/static/reportSave/{server_saved_file_name}",
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )

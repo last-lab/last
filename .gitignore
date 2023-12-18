@@ -150,3 +150,5 @@ uploads
 *.rdb
 /dataset_folder
 dashboard/static/saves
+dashboard/static/reportSave
+dashboard/static/uploads
