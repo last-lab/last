@@ -38,8 +38,6 @@ class PromptGenerator(object):
                         messages, _ = generate_message(question.content, response.content, sheet_name.content, SensitiveShuffle.get_sensitive_data())
                     else:
                         messages, _ = generate_message(question.content, response.content, sheet_name.content)
-                    print("********************************")
-                    print(messages)
                     prompt = messages[0]["content"]
                 except Exception as e:
                     print("generate critic system prompt error: %s" % e)
@@ -93,8 +91,6 @@ class PromptGenerator(object):
                 messages, _ = generate_message(question.content, response.content, sheet_name.content, SensitiveShuffle.get_sensitive_data())
             else:
                 messages, _ = generate_message(question.content, response.content, sheet_name.content)
-            print("********************************")
-            print(messages)
             prompt = messages[1]["content"]
         except Exception as e:
             print("generate critic normal prompt error: %s" % e)
