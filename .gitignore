@@ -152,3 +152,6 @@ uploads
 dashboard/static/saves
 dashboard/static/reportSave
 dashboard/static/uploads
+
+# 敏感词库
+/last/newevaluate/sensitive/*
