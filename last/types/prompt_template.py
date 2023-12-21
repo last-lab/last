@@ -1,15 +1,15 @@
 from .dataset import Message
+import pandas as pd
+from last.types.sensitive_shuffle import SensitiveShuffle
 
 import last.types.llm as llm
 scripts = {
-    # TODO: p1 敏感词库功能未实现
-    "1": "p2",
+    "1": "p1",
     "2": "p2",
     "3": "p3",
     "4": "p4",
     "5": "p5",
-    # p6.py 复制自 p5
-    "6": "p5",
+    "6": "p6",
     "7": "p7",
 }
 
@@ -21,10 +21,6 @@ class PromptGenerator(object):
     def generate_system_prompt(model_name: str, model_type: str, *msgs: Message) -> str:
         """ 用外部脚本生成 prompt
         当前仅考虑为 gpt-4 生成 system_prompt
-        
-        Args:
-            model_name (str)
-            model_type (str):
 
         Returns:
             str: system prompt
@@ -38,7 +34,10 @@ class PromptGenerator(object):
                     module_name = scripts[prompt_id]
                     module = __import__("last.newevaluate.messages." + module_name, fromlist=['generate_message'])
                     generate_message = getattr(module, "generate_message")
-                    messages, _ = generate_message(question.content, response.content, sheet_name.content)
+                    if prompt_id == "1":
+                        messages, _ = generate_message(question.content, response.content, sheet_name.content, SensitiveShuffle.get_sensitive_data())
+                    else:
+                        messages, _ = generate_message(question.content, response.content, sheet_name.content)
                     prompt = messages[0]["content"]
                 except Exception as e:
                     print("generate critic system prompt error: %s" % e)
@@ -81,16 +80,20 @@ class PromptGenerator(object):
 
         Returns:
             str: critic model 的 prompt
-        """        
-        
+        """
         prompt = None
         try:
-            module_name = scripts[prompt_id.content]
+            prompt_id = prompt_id.content
+            module_name = scripts[prompt_id]
             module = __import__("last.newevaluate.messages." + module_name, fromlist=['generate_message'])
             generate_message = getattr(module, "generate_message")
-            messages, _ = generate_message(question.content, response.content, sheet_name.content)
+            if prompt_id == "1":
+                messages, _ = generate_message(question.content, response.content, sheet_name.content, SensitiveShuffle.get_sensitive_data())
+            else:
+                messages, _ = generate_message(question.content, response.content, sheet_name.content)
             prompt = messages[1]["content"]
         except Exception as e:
             print("generate critic normal prompt error: %s" % e)
         
         return prompt
+    
