@@ -449,7 +449,7 @@ async def get_label_result(request: Request):
     )
 
     audit_result = await AuditResult.filter(task_id=task_id, sheet_name=sheet_name).values(
-        "audit_result", "model_label", "model_reason"
+        "audit_result", "model_label", "model_reason", "status"
     )
     # 合并一下audit_reuslt 和 label_reuslt
     for label_result_, audit_result_ in zip(label_result, audit_result):
