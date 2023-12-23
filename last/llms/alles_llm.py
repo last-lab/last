@@ -29,6 +29,7 @@ from .model.http_shangtang_api_model import ShangtangAPILLMModel
 from .model.http_claude2_api_model import Claude2APILLMModel
 from .model.http_minimax_api_model import MinimaxAPILLMModel
 from .model.http_ERNIEBot_api_model import ERNIEBOTAPILLMModel
+from .model.http_warrenq_api_model import WarrenQAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -92,6 +93,8 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["MINIMAX_API_TOKEN"]
         elif self.model.lower().startswith("erniebot"):
             api_key = os.environ["ERNIEBOT_API_TOKEN"]
+        elif self.model.lower().startswith("warrenq"):
+            api_key = os.environ["WARRENQ_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -146,6 +149,8 @@ class AllesChatLLM(BaseModel):
             model = MinimaxAPILLMModel(**params)
         elif self.model.lower() == "erniebot":
             model = ERNIEBOTAPILLMModel(**params)
+        elif self.model.lower() == "warrenq":
+            model = WarrenQAPILLMModel(**params)
         else:
             raise NotImplementedError()
 

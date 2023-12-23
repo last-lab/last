@@ -90,6 +90,11 @@ class TestLLMAPI(unittest.TestCase):
         print("Wangyi: %s" % generated_text)
         assert generated_text is not None
 
+    def test_warrenq_api(self):
+        generated_text = asyncio.run(generation_test(prompt="你好", model="warrenq"))
+        print("warrenq: %s" % generated_text)
+        assert generated_text is not None
+
     def test_infchat_api(self):
         generated_text = asyncio.run(generation_test(prompt="你好", model="infchat"))
         print("Infchat: %s" % generated_text)
