@@ -84,10 +84,20 @@ class TestLLMAPI(unittest.TestCase):
         print("ERNIEBOT: %s" % generated_text)
         assert generated_text is not None
 
+    def test_giantgpt_api(self):
+        generated_text = asyncio.run(generation_test(prompt="你好", model="GiantGPT"))
+        print("GiantGPT: %s" % generated_text)
+        assert generated_text is not None
+
     def test_wangyi_api(self):
         generated_text = asyncio.run(generation_test(prompt="请介绍一下台湾", model="Wangyi"))
         # 大小写都可以， eg. Wangyi, WANGYI
         print("Wangyi: %s" % generated_text)
+        assert generated_text is not None
+
+    def test_warrenq_api(self):
+        generated_text = asyncio.run(generation_test(prompt="你好", model="warrenq"))
+        print("warrenq: %s" % generated_text)
         assert generated_text is not None
 
     def test_infchat_api(self):

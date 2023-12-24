@@ -98,12 +98,15 @@ class HTTPAPILLMModel(BaseLLMModel):
     #         results = await pool.map(_post, req)
     #     return results[0]
     
-    async def async_post(self, url, headers, data, cookies=None, timeout=120):
+    async def async_post(self, url, headers, data, cookies=None, timeout=120, _is_stream=False):
         async with self.semaphore:
             async with self.retry_client.post(url, headers=headers, data=data, cookies=cookies, timeout=timeout) as response:
                 # 处理响应
                 try:
-                    result = await response.json()
+                    if _is_stream:
+                        result = await response
+                    else:
+                        result = await response.json()
                 except Exception as e:
                     result = await response.text()
         return result
