@@ -37,6 +37,7 @@ ALLES_CHAT_LLM = [
     "minimax",
     "erniebot",
     "warrenq",
+    "giantgpt",
 ]
 
 

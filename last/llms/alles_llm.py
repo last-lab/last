@@ -30,6 +30,7 @@ from .model.http_claude2_api_model import Claude2APILLMModel
 from .model.http_minimax_api_model import MinimaxAPILLMModel
 from .model.http_ERNIEBot_api_model import ERNIEBOTAPILLMModel
 from .model.http_warrenq_api_model import WarrenQAPILLMModel
+from .model.http_giantgpt_api_model import GiantgptAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -95,6 +96,8 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["ERNIEBOT_API_TOKEN"]
         elif self.model.lower().startswith("warrenq"):
             api_key = os.environ["WARRENQ_API_TOKEN"]
+        elif self.model.lower().startswith("giantgpt"):
+            api_key = os.environ["GIANTGPT_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -151,6 +154,8 @@ class AllesChatLLM(BaseModel):
             model = ERNIEBOTAPILLMModel(**params)
         elif self.model.lower() == "warrenq":
             model = WarrenQAPILLMModel(**params)
+        elif self.model.lower() == "giantgpt":
+            model = GiantgptAPILLMModel(**params)
         else:
             raise NotImplementedError()
 

@@ -71,7 +71,6 @@ def timer_action(function, *args, **kwargs):
             time_delta_str = f'[{time_delta:.2f}s]'
         else:
             time_delta_str = f'[{int(time_delta * 1000)}ms]'
-        print(f"本次耗时：{time_delta_str}")
 
 
 
@@ -103,7 +102,7 @@ class WarrenQAPILLMModel(HTTPAPILLMModel):
             "sign": self.sign,
         }
         sign = get_sign(param, self.AppSecret)
-        print("sign:", sign)
+
         param["sign"] = sign
         hearder = {"Content-Type": "application/json;charset=utf-8"}
 
