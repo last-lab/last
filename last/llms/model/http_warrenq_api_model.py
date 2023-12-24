@@ -132,8 +132,7 @@ class WarrenQAPILLMModel(HTTPAPILLMModel):
 
     def parse(self, response):
         
-        try:
-
+        try:           
             data_list = response.split("\n\n")
             tmp_index = -1
             if len(data_list[tmp_index]) == 0:
@@ -164,8 +163,7 @@ class WarrenQAPILLMModel(HTTPAPILLMModel):
                     if "please try again" in message.get("message"):
                         has_error = True
                         error_messages = message
-
-                    return (True, message)
+                    return (True, message['message'])
             except Exception as e:
 
                 return message
