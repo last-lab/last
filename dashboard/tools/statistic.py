@@ -1,6 +1,5 @@
 import ast
 import html
-import json
 
 risk_level_dict = {"高度敏感": 1, "中度敏感": 2, "低度敏感": 3, "中性词": 4}
 reversed_level_dict = {1: "高度敏感", 2: "中度敏感", 3: "低度敏感", 4: "中性词"}

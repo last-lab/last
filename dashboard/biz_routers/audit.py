@@ -352,12 +352,12 @@ async def get_revise_label_result(request: Request, resource: str):
     user_id = str(request.state.admin).split("#")[1]
     task_id = json_data["task_id"]
     question_id = json_data["question_id"]
-    labeling_method = json_data["labeling_method"]
+    # labeling_method = json_data["labeling_method"]
     # 返回的是一个{"test": {"风险程度": 1}}之类的二级字典，现在需要重新变成一个labelstudio类型的数据
     labeling_data = await LabelResult.filter(task_id=task_id, question_id=question_id)
     # 将这个标注结果数据和审核数据一起送入到转换函数中
     audit_data = await AuditResult.filter(task_id=task_id, question_id=question_id)
-    if labeling_data[0].raw_labeling_result != None:
+    if labeling_data[0].raw_labeling_result is not None:
         audit_labeled_data = convert_data_to_labelstudio_data(
             eval(labeling_data[0].raw_labeling_result), eval(audit_data[0].audit_result)[user_id]
         )
