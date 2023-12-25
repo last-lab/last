@@ -82,7 +82,6 @@ async def create_mock_llms():
     #     alignment_info="未知",
     # )
 
-
     # await ModelInfo.create(
     #     name="alles-claude",
     #     endpoint="alles-claude",
