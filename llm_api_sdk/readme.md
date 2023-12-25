@@ -28,6 +28,7 @@ pip intall -r requirements.txt
 
 填写完成后使用*test_llm_api.py*进行测试即可。
 
+在运行下面的命令之前，请删除*test_llm_api.py*中的 @unittest.skip("Need develop")
 ```
 python -m test_llm_api
 ```
