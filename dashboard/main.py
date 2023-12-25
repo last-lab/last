@@ -132,4 +132,4 @@ def create_app():
 app_ = create_app()
 
 if __name__ == "__main__":
-    uvicorn.run("main:app_", reload=True)
+    uvicorn.run("main:app_", host='0.0.0.0', reload=True)
