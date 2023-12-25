@@ -125,9 +125,10 @@
 
                 // 转换为DataTables表格并添加分页功能
                 table.DataTable({
-                    paging: true, // 启用分页
-                    lengthMenu: [15, 25, 50], // 每页显示的记录数选项
-                    pageLength: 15 // 默认每页显示的记录数
+                    paging: false, // 启用分页
+                    // lengthMenu: [15, 25, 450], // 每页显示的记录数选项
+                    // pageLength: 450, // 默认每页显示的记录数
+                    ordering: false
                 });
                 resolve()
             },
@@ -161,8 +162,9 @@
             select_button.innerHTML += `<option value="${item}">${item}</option>`
         }
         select_button.addEventListener('change', (e) => {
+            console.log(distinct_label_dict)
             const selected_value = e.target.value
-            if (selected_value === 'all') {
+            if (selected_value == 'all') {
                 data_table.forEach((x) => {
                     x.style.display = 'table-row'
                 })

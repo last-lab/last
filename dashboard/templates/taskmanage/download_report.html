@@ -22,7 +22,6 @@
     document.querySelector(`#btn_{{value.id}}`).addEventListener('click', function(){
         const task_id = '{{value.id}}'
         const dataset = '{{value.dataset}}'
-        alert(dataset)
         const sheet_name_list = JSON.parse('{{value.sheet_name_list}}'.replace(/&#39;/g, "'").replace(/'/g, '"'))
         Download(task_id, sheet_name_list, dataset)
     })
@@ -141,17 +140,24 @@
                         audit_user = Object.keys(obj)[0]
                         audit_risk_level = obj[audit_user]['风险程度'];
                     }
+                    let status = data[i].status
+                    let questionCell = '<td>' + data[i].question + '</td>';
+                    let answerCell = '<td>' + data[i].answer + '</td>';
+                    if (status === '已审核_有问题') {
+                    questionCell = '<td class="yellow">' + data[i].question + '</td>';
+                    answerCell = '<td class="yellow">' + data[i].answer + '</td>';
+                    }
 
                     tableHtml += '<tr>' +
-                        '<td>' + data[i].question + '</td>' +
-                        '<td>' + data[i].answer + '</td>' +
-                        '<td>' + risk_level + '</td>' +
-                        '<td>' + label_user + '</td>' +
-                        '<td>' + audit_risk_level + '</td>' +
-                        '<td>' + audit_user + '</td>' +
-                        '<td>' + data[i].model_label + '</td>'+ 
-                        '<td>' + data[i].model_reason + '</td>' +
-                        '</tr>';
+                    questionCell +
+                    answerCell +
+                    '<td>' + risk_level + '</td>' +
+                    '<td>' + label_user + '</td>' +
+                    '<td>' + audit_risk_level + '</td>' +
+                    '<td>' + audit_user + '</td>' +
+                    '<td>' + data[i].model_label + '</td>' +
+                    '<td>' + data[i].model_reason + '</td>' +
+                    '</tr>';
                 }
                 tableHtml += '</tbody>' +
                     '</table>';

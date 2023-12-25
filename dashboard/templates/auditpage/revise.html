@@ -194,7 +194,7 @@
     }
 
     async function getLabelResult(){
-        const rsp = await fetch('/admin/auditpage/audit/get_label_result', {
+        const rsp = await fetch('/admin/auditpage/audit/get_revise_label_result', {
             method: 'post',
             body: JSON.stringify({
                 "task_id": task_id, 
@@ -807,12 +807,22 @@
         <div>
             <span>审核选项 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <div>
-                <input type="radio" id = "confirm", name="auditType" value="确认">
-                <label for="judgment">确认</label>
+                <label>
+                    <input type="radio" name="auditType" value="确认">
+                    确认
+                </label>
             </div>
             <div>
-                <input type="radio" id = "problem", name="auditType" value="有问题">
-                <label for="sorting">有问题</label>
+                <label>
+                    <input type="radio" name="auditType" value="有异议" id="problem">
+                    有异议
+                </label>
+            </div>
+            <div>
+                <label>
+                    <input type="radio" name="auditType" value="有问题">
+                    此题存在问题，无法做答
+                </label>
             </div>
         </div>
     </div>

@@ -2,6 +2,7 @@ import ast
 import html
 
 risk_level_dict = {"高度敏感": 1, "中度敏感": 2, "低度敏感": 3, "中性词": 4}
+reversed_level_dict = {1: "高度敏感", 2: "中度敏感", 3: "低度敏感", 4: "中性词"}
 
 
 def statistic_dataset(dataset_path):
@@ -179,3 +180,22 @@ def convert_audit_data(labeling_method, audit_result, risk_level):
         refine_result = audit_result["0"]
 
     return refine_result
+
+
+def convert_data_to_labelstudio_data(labeling_data, audit_data):
+    if labeling_data is None:
+        return (
+            "[{'value': {'choices': ['"
+            + reversed_level_dict[audit_data["风险程度"]]
+            + "']}, 'id': 'ONWk5-qNZn', 'from_name': 'rating', 'to_name': 'risk_dialog', 'type': 'choices', 'origin': 'manual'}]"
+        )
+    for labeling_item in labeling_data:
+        if labeling_item["from_name"] == "rating":
+            labeling_item["value"]["choices"] = [reversed_level_dict[audit_data["风险程度"]]]
+        elif labeling_item["from_name"] == "grade_one_risk_type":
+            labeling_item["value"]["choices"] = [audit_data["一级风险"]]
+        elif "grade_two_risk_type" in labeling_item["from_name"]:
+            labeling_item["value"]["choices"] = [audit_data["二级风险"]]
+        else:
+            labeling_item["value"]["choices"] = audit_data["三级风险"]
+    return str(labeling_data)

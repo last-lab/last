@@ -29,6 +29,10 @@
         color:red
     }
 
+    .yellow{
+        background-color: yellow;
+    }
+
     table {
       width: 100%;
       table-layout: auto;
@@ -41,7 +45,11 @@
 </style>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script> -->
+<!-- use version 0.20.1 -->
+<script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/exceljs/dist/exceljs.min.js"></script>
+<script src="https://unpkg.com/file-saver/dist/FileSaver.min.js"></script>
 <div>
     <button id="download">下载Excel</button>
 </div>
@@ -87,22 +95,55 @@
     // 状态标识
     downloadBtn.addEventListener('click', async () => {
         // 输入文件名
-        const filename = prompt('请输入文件名')
-        // 等待下一个点击事件触发选择文件夹
-        //选择文件夹
+        const filename = prompt('请输入文件名');
         // 拼接完整路径
         const path = filename + '.xlsx';
-        // 生成工作表，使用循环的方式
-        const wb = XLSX.utils.book_new()
-        sheetNameList.forEach((sheetName) =>{
-            const dataTable = document.getElementById(sheetName)
-            const ws = XLSX.utils.table_to_sheet(dataTable)
-            XLSX.utils.book_append_sheet(wb, ws, sheetName)
-            // 用完整路径保存文件
-        })
-        XLSX.writeFile(wb, path)
-
-    })
+        // 生成工作簿
+        const workbook = new ExcelJS.Workbook();
+        
+        sheetNameList.forEach((sheetName) => {
+            const dataTable = document.getElementById(sheetName);
+            const worksheet = workbook.addWorksheet(sheetName);
+            const rows = dataTable.getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.getElementsByTagName('td');
+            
+            for (let j = 0; j < cells.length; j++) {
+                const cell = cells[j];
+                const cellValue = cell.innerText;
+                const cellStyle = cell.className; // Get the class name for styling
+                const excelCell = worksheet.getCell(i + 1, j + 1);
+                excelCell.value = cellValue;
+                
+                if (cellValue === '已审核_有问题') {
+                    const question_cell = worksheet.getCell(i+1,1)
+                    const answer_cell = worksheet.getCell(i+1, 2)
+                    question_cell.style = {
+                        fill: {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'FFFF00' } // Yellow background color
+                        }
+                    }
+                    answer_cell.style= {
+                        fill: {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'FFFF00' } // Yellow background color
+                        }
+                    }
+                }
+            }
+            }
+        });
+        
+        // 用完整路径保存文件
+        workbook.xlsx.writeBuffer().then(function(buffer) {
+            saveAs(new Blob([buffer], { type: 'application/octet-stream' }), path);
+        });
+    });
 
 
     // 创建一个新表
@@ -125,6 +166,7 @@
                 '<th>审核者</th>' +
                 '<th>模型评价</th>' +
                 '<th>模型原因</th>' +
+                '<th>审核状态</th>' +
                 '</tr>' +
                 '</thead>' +
                 '<tbody>'
@@ -168,16 +210,26 @@
                         audit_risk_level = obj[audit_user]['风险程度'];
                     }
 
+                    let status = data[i].status
+                    let questionCell = '<td>' + data[i].question + '</td>';
+                    let answerCell = '<td>' + data[i].answer + '</td>';
+                    if (status === '已审核_有问题') {
+                        console.log("===")
+                        questionCell = '<td style="background-color: yellow">' + data[i].question + '</td>';
+                        answerCell = '<td style="background-color: yellow">' + data[i].answer + '</td>';
+                    }
+
                     tableHtml += '<tr>' +
-                        '<td>' + data[i].question + '</td>' +
-                        '<td>' + data[i].answer + '</td>' +
-                        '<td>' + risk_level + '</td>' +
-                        '<td>' + label_user + '</td>' +
-                        '<td>' + audit_risk_level + '</td>' +
-                        '<td>' + audit_user + '</td>' +
-                        '<td>' + data[i].model_label + '</td>'+ 
-                        '<td>' + data[i].model_reason + '</td>' +
-                        '</tr>';
+                    questionCell +
+                    answerCell +
+                    '<td>' + risk_level + '</td>' +
+                    '<td>' + label_user + '</td>' +
+                    '<td>' + audit_risk_level + '</td>' +
+                    '<td>' + audit_user + '</td>' +
+                    '<td>' + data[i].model_label + '</td>' +
+                    '<td>' + data[i].model_reason + '</td>' +
+                    '<td>' + status + '</td>' + 
+                    '</tr>';
                 }
                 tableHtml += '</tbody>' +
                     '</table>';
