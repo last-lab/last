@@ -82,22 +82,6 @@ async def create_mock_llms():
     #     alignment_info="未知",
     # )
 
-    await ModelInfo.create(
-        name="huazang",
-        endpoint="huazang",
-        access_key="None",
-        secret_key="None",
-        model_type="聊天机器人、自然语言处理助手",
-        version="未知",
-        base_model="未知",
-        parameter_volume="未知",
-        pretraining_info="未知",
-        finetuning_info="未知",
-        alignment_info="未知",
-        model_org="小i机器人",
-        auth_status=True,
-    )
-
     # await ModelInfo.create(
     #     name="alles-claude",
     #     endpoint="alles-claude",
@@ -111,38 +95,6 @@ async def create_mock_llms():
     #     finetuning_info="未知",
     #     alignment_info="未知",
     # )
-
-    await ModelInfo.create(
-        name="KKBot",
-        endpoint="KKBot",
-        access_key="None",
-        secret_key="None",
-        model_type="聊天机器人、自然语言处理助手",
-        version="未知",
-        base_model="未知",
-        parameter_volume="未知",
-        pretraining_info="未知",
-        finetuning_info="未知",
-        alignment_info="未知",
-        model_org="竹间智能",
-        auth_status=True,
-    )
-
-    await ModelInfo.create(
-        name="eastmoney",
-        endpoint="eastmoney",
-        access_key="None",
-        secret_key="None",
-        model_type="聊天机器人、自然语言处理助手",
-        version="未知",
-        base_model="未知",
-        parameter_volume="未知",
-        pretraining_info="未知",
-        finetuning_info="未知",
-        alignment_info="未知",
-        model_org="东方财富",
-        auth_status=True,
-    )
 
     await ModelInfo.create(
         name="Claude2",
@@ -192,6 +144,38 @@ async def create_mock_llms():
         auth_status=True,
     )
 
+    await ModelInfo.create(
+        name="warrenq",
+        endpoint="warrenq",
+        access_key="None",
+        secret_key="None",
+        model_type="聊天机器人、自然语言处理助手",
+        version="未知",
+        base_model="未知",
+        parameter_volume="未知",
+        pretraining_info="未知",
+        finetuning_info="未知",
+        alignment_info="未知",
+        model_org="恒生聚源",
+        auth_status=True,
+    )
+
+    await ModelInfo.create(
+        name="giantgpt",
+        endpoint="giantgpt",
+        access_key="None",
+        secret_key="None",
+        model_type="聊天机器人、自然语言处理助手",
+        version="未知",
+        base_model="未知",
+        parameter_volume="未知",
+        pretraining_info="未知",
+        finetuning_info="未知",
+        alignment_info="未知",
+        model_org="巨人网络",
+        auth_status=True,
+    )
+
     # await ModelInfo.create(
     #     name="alles-spark",
     #     endpoint="alles-spark",
@@ -205,6 +189,53 @@ async def create_mock_llms():
     #     finetuning_info="未知",
     #     alignment_info="未知",
     # )
+
+    await ModelInfo.create(
+        name="huazang",
+        endpoint="huazang",
+        access_key="None",
+        secret_key="None",
+        model_type="聊天机器人、自然语言处理助手",
+        version="未知",
+        base_model="未知",
+        parameter_volume="未知",
+        pretraining_info="未知",
+        finetuning_info="未知",
+        alignment_info="未知",
+        model_org="小i机器人",
+        auth_status=True,
+    )
+    await ModelInfo.create(
+        name="KKBot",
+        endpoint="KKBot",
+        access_key="None",
+        secret_key="None",
+        model_type="聊天机器人、自然语言处理助手",
+        version="未知",
+        base_model="未知",
+        parameter_volume="未知",
+        pretraining_info="未知",
+        finetuning_info="未知",
+        alignment_info="未知",
+        model_org="竹间智能",
+        auth_status=True,
+    )
+
+    await ModelInfo.create(
+        name="eastmoney",
+        endpoint="eastmoney",
+        access_key="None",
+        secret_key="None",
+        model_type="聊天机器人、自然语言处理助手",
+        version="未知",
+        base_model="未知",
+        parameter_volume="未知",
+        pretraining_info="未知",
+        finetuning_info="未知",
+        alignment_info="未知",
+        model_org="东方财富",
+        auth_status=True,
+    )
 
     await ModelInfo.create(
         name="wuya(权限关闭)",
