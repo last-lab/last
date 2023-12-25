@@ -31,6 +31,8 @@ from .model.http_minimax_api_model import MinimaxAPILLMModel
 from .model.http_ERNIEBot_api_model import ERNIEBOTAPILLMModel
 from .model.http_warrenq_api_model import WarrenQAPILLMModel
 from .model.http_giantgpt_api_model import GiantgptAPILLMModel
+from .model.http_ruyichat_api_model import RuyichatAPILLMModel
+from .model.http_midu_api_model import MiduAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -98,6 +100,10 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["WARRENQ_API_TOKEN"]
         elif self.model.lower().startswith("giantgpt"):
             api_key = os.environ["GIANTGPT_API_TOKEN"]
+        elif self.model.lower().startswith("ruyigpt"):
+            api_key = os.environ["RUYIGPT_API_TOKEN"]
+        elif self.model.lower().startswith("midu"):
+            api_key = os.environ["MIDU_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -156,6 +162,10 @@ class AllesChatLLM(BaseModel):
             model = WarrenQAPILLMModel(**params)
         elif self.model.lower() == "giantgpt":
             model = GiantgptAPILLMModel(**params)
+        elif self.model.lower().startswith("ruyigpt"):
+            model = RuyichatAPILLMModel(**params)
+        elif self.model.lower().startswith("midu"):
+            model = MiduAPILLMModel(**params)
         else:
             raise NotImplementedError()
 

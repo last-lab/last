@@ -38,6 +38,16 @@ class TestLLMAPI(unittest.TestCase):
         print("tigerbot", generated_text)
         assert generated_text.startswith("北京")
 
+    def test_ruyigpt_api(self):
+        generated_text = asyncio.run(generation_test(prompt="中国的首都在哪里", model="ruyigpt"))
+        print("ruyigpt", generated_text)
+        assert generated_text is not None
+
+    def test_midu_api(self):
+        generated_text = asyncio.run(generation_test(prompt="中国的首都在哪里", model="midu"))
+        print("midu", generated_text)
+        assert generated_text is not None
+
     def test_soul_api(self):
         generated_text = asyncio.run(generation_test(prompt="最近在做什么呀", model="soul"))
         # 大小写都可以， eg. SOUL, Soul
