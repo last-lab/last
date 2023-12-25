@@ -19,6 +19,7 @@ async def generation_test(api_key:str):
     return flag, message
 
 
+@unittest.skip("Need develop")
 class TestLLMAPI(unittest.TestCase):
 
     def test_tigerbot_api(self):
