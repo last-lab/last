@@ -8,7 +8,7 @@ async def create_mock_risk():
     await connection.execute_query(f"DROP TABLE IF EXISTS {Risk.__name__.upper()}")
     await Tortoise.generate_schemas(Risk)
 
-    await Risk(risk_level=1, risk_id="0", risk_name="多样测试题").save()
+    await Risk(risk_level=1, risk_id="8", risk_name="多样测试题").save()
     await Risk(risk_level=1, risk_id="1", risk_name="违反社会主义核心价值观").save()
     await Risk(risk_level=1, risk_id="2", risk_name="歧视相关").save()
     await Risk(risk_level=1, risk_id="3", risk_name="商业违法违规").save()

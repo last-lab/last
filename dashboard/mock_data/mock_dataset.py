@@ -1,12 +1,16 @@
 from tortoise import Tortoise
 
-from dashboard.biz_models import DataSet
+from dashboard.biz_models import DataSet, EvaluationPlan
 
 
 async def create_mock_dataset():
     connection = Tortoise.get_connection("default")
     await connection.execute_query(f"DROP TABLE IF EXISTS {DataSet.__name__.upper()}")
     await Tortoise.generate_schemas(DataSet)
+
+    connection = Tortoise.get_connection("default")
+    await connection.execute_query(f"DROP TABLE IF EXISTS {EvaluationPlan.__name__.upper()}")
+    await Tortoise.generate_schemas(EvaluationPlan)
 
     # dataset_1 = DataSet(
     #     name="Product ABC",
