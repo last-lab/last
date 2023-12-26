@@ -4,6 +4,7 @@
 import asyncio
 import unittest
 from pathlib import Path
+
 from last.client.call_llm import generate
 
 
@@ -35,6 +36,7 @@ async def generation_test_with_semaphore(sem: int, model: str, prompt: str):
         return await generation_test(model, prompt)
 
 
+@unittest.skip("Need apikey")
 class TestLLAPIAsync(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.mock_data = [
@@ -55,7 +57,8 @@ class TestLLAPIAsync(unittest.IsolatedAsyncioTestCase):
     async def test_yuewriter_api(self):
         semaphore = asyncio.Semaphore(self.qps)
         tasks = [
-            generation_test_with_semaphore(semaphore, "yuewriter",item["content"]) for item in self.mock_data
+            generation_test_with_semaphore(semaphore, "yuewriter", item["content"])
+            for item in self.mock_data
         ]
         results = await asyncio.gather(*tasks)
         for result in results:
