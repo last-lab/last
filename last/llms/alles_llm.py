@@ -33,6 +33,7 @@ from .model.http_warrenq_api_model import WarrenQAPILLMModel
 from .model.http_giantgpt_api_model import GiantgptAPILLMModel
 from .model.http_ruyichat_api_model import RuyichatAPILLMModel
 from .model.http_midu_api_model import MiduAPILLMModel
+from .model.http_yuewriter_api_model import YueWriterAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -104,6 +105,8 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["RUYIGPT_API_TOKEN"]
         elif self.model.lower().startswith("midu"):
             api_key = os.environ["MIDU_API_TOKEN"]
+        elif self.model.lower().startswith("yuewriter"):
+            api_key = os.environ["YUEWRITER_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -166,6 +169,8 @@ class AllesChatLLM(BaseModel):
             model = RuyichatAPILLMModel(**params)
         elif self.model.lower().startswith("midu"):
             model = MiduAPILLMModel(**params)
+        elif self.model.lower().startswith("yuewriter"):
+           model = YueWriterAPILLMModel(**params)
         else:
             raise NotImplementedError()
 

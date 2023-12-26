@@ -40,6 +40,7 @@ ALLES_CHAT_LLM = [
     "giantgpt",
     "ruyigpt",
     "midu",
+    "yuewriter",
 ]
 
 
