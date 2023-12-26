@@ -20,6 +20,7 @@
         <div class="mb-3">
             <label class="form-label required">自动打分模型（仅可单选）</label>
             <select required class="form-select" id="critic">
+                <option value="" selected>未选择，不进行自动评测</option>
                 {% for item in model_list %}
                 <option value="{{ item.id }}">{{ item.name }}</option>
                 {% endfor %}

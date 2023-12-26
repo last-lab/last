@@ -40,13 +40,14 @@ async def AI_eval(
         access_key=llm_model["access_key"],
     )
 
-    if plan.eval_type == EvaluationType.auto_ai_critique:
+    if plan.eval_type == EvaluationType.auto_ai_critique and critic_model["name"] != '未选择，不进行自动评测':
         critic_model = LLM(
             name=critic_model["name"],
             model_type=LLMType.critic,
             endpoint=critic_model["endpoint"],
             access_key=critic_model["access_key"],
         )
+        use_ai_critique = True
 
     new_qa_records = {}
     progress_bar = tqdm(total=3, desc=llm_model.name + "的评测进度", leave=False)

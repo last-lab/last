@@ -8,6 +8,7 @@ from typing import List, Dict, Union, Optional, TypeVar, Tuple
 CHAT_LLM_GPT = [
     "gpt-3.5-turbo",
     "gpt-4",
+    "gpt-4-1106-preview",
 ]
 
 ALLES_CHAT_LLM = [
