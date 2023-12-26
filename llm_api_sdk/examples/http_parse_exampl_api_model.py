@@ -10,20 +10,14 @@ from .base_model import HTTPAPILLMModel
 class ParseExamplAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.url = "https://ParseExampl/chat/api/send"
+        self.url = "https://ParseExampl/chat/api"
         self.api_key = api_key
         self.headers = {
             "Content-Type": "application/json",
-            'Authorization': 'BEAR ' + self.api_key,
+            "Authorization": "BEAR " + self.api_key,
         }
 
-    async def generate(self, *args, **kwargs):
-        messages = [
-            {
-                "role": "user",
-                "content": "你好",
-            }
-        ]
+    async def generate(self, messages, *args, **kwargs):
         formatted_messages = [
             {
                 "role": item["role"],
@@ -59,5 +53,5 @@ class ParseExamplAPILLMModel(HTTPAPILLMModel):
                 return (False, "Key ERROR!")
         return (
             True,
-            response['data']['message']['content'],
+            response["data"]["message"]["content"],
         )

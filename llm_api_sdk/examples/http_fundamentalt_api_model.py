@@ -17,18 +17,17 @@ class FundamentalAPILLMModel(HTTPAPILLMModel):
             "Authorization": self.api_key,
         }
 
-    async def generate(self, *args, **kwargs):
+    async def generate(self, messages, *args, **kwargs):
         payload = {
-            "query": "你好",
+            "query": messages[-1]["content"],
             **kwargs,
         }
         try:
             resp = await self.async_post(
                 self.url, headers=self.headers, data=json.dumps(payload)
             )
-            
+
         except Exception as e:
- 
             return e
         return resp
 

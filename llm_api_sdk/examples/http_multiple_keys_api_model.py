@@ -15,9 +15,9 @@ def encode_token(ak, sk):
 
 
 class MultipleKeysAPILLMModel(HTTPAPILLMModel):
-    def __init__(self, api_key:str, *args, **kwargs):
+    def __init__(self, api_key: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.url = "https://MultipleKeys/chat/api/send"
+        self.url = "https://MultipleKeys/chat/api"
         param = json.loads(api_key)
         ak = param["ak"]
         sk = param["sk"]
@@ -28,13 +28,7 @@ class MultipleKeysAPILLMModel(HTTPAPILLMModel):
             "Authorization": self.token,
         }
 
-    async def generate(self, prompt, messages, *args, **kwargs):
-        messages = [
-            {
-                "role": "user",
-                "content": "你好",
-            }
-        ]
+    async def generate(self, messages, *args, **kwargs):
         formatted_messages = [
             {
                 "role": item["role"],

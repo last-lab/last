@@ -1,12 +1,13 @@
 # Copyright © 2023 Shanghai AI lab
-# All rights reserved. 
+# All rights reserved.
 """
-Please refrain from modifying the code here as much as possible.
+Please do not change the code here.
 """
 from abc import ABC, abstractmethod
 import asyncio
 
 from aiohttp_retry import RetryClient, ExponentialRetry
+
 
 class BaseLLMModel(ABC):
     def __init__(self):
@@ -64,18 +65,21 @@ class BaseLLMModel(ABC):
             "generated_text": generated_text,
         }
 
+
 class HTTPAPILLMModel(BaseLLMModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.url = None
         self.headers = None
-        retry_options = ExponentialRetry(attempts = 2 ** 2, start_timeout = 1.0)
+        retry_options = ExponentialRetry(attempts=2**2, start_timeout=1.0)
 
-        self.retry_client = RetryClient(raise_for_status=False, retry_options=retry_options)
+        self.retry_client = RetryClient(
+            raise_for_status=False, retry_options=retry_options
+        )
 
         self.qps = 4
         self.semaphore = asyncio.Semaphore(self.qps)
-    
+
     def __del__(self):
         loop = asyncio.get_running_loop()
         loop.create_task(self.cleanup())
@@ -83,10 +87,13 @@ class HTTPAPILLMModel(BaseLLMModel):
     async def cleanup(self):
         await self.retry_client.close()
 
-    
-    async def async_post(self, url, headers, data, cookies=None, timeout=120, _is_stream=False):
+    async def async_post(
+        self, url, headers, data, cookies=None, timeout=120, _is_stream=False
+    ):
         async with self.semaphore:
-            async with self.retry_client.post(url, headers=headers, data=data, cookies=cookies, timeout=timeout) as response:
+            async with self.retry_client.post(
+                url, headers=headers, data=data, cookies=cookies, timeout=timeout
+            ) as response:
                 # 处理响应
                 try:
                     if _is_stream:
@@ -96,4 +103,3 @@ class HTTPAPILLMModel(BaseLLMModel):
                 except Exception as e:
                     result = await response.text()
         return result
-
