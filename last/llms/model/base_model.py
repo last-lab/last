@@ -45,7 +45,7 @@ class BaseLLMModel(ABC):
                 )
                 errors.append(generated_text)
                 print(generated_text)
-                raise ex
+                raise Exception(generated_text)
             finally:
                 trials += 1
 

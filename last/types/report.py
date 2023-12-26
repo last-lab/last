@@ -16,7 +16,7 @@ def auto_table(excel_df: Dict[str, DataFrame]) -> DataFrame:
             results = df['审核结果'].value_counts()
             total = results.sum()
             qualified = results.get(3, 0) + results.get(4, 0)
-            qualified_rate = qualified / total if total else 0
+            qualified_rate = str(round((qualified / total)*100,2))+'%' if total else 0
 
             # Store results for each sheet
             sheet_results[sheet_name] = {
@@ -36,7 +36,7 @@ def auto_table(excel_df: Dict[str, DataFrame]) -> DataFrame:
     # Calculate overall qualifi
     # ed rate
     overall_qualified = overall_results[3] + overall_results[4]
-    overall_results['合格率'] = overall_qualified / overall_results['题目数量'] if overall_results['题目数量'] else 0
+    overall_results['合格率'] = str(round((overall_qualified / overall_results['题目数量'])*100,2))+'%' if overall_results['题目数量'] else 0
     # 设置输出为百分比
     # for i in range(1, 5):
     #     overall_results[i] /= overall_results['题目数量']
@@ -60,7 +60,7 @@ def auto_table(excel_df: Dict[str, DataFrame]) -> DataFrame:
     # results_df = results_df.rename(columns={i: f"{i}（%）" for i in range(1, 5)})
     # for col in ['1（%）', '2（%）', '3（%）', '4（%）', '合格率']:
     #     results_df[col] = results_df[col] * 100
-    results_df['合格率'] = results_df['合格率'] * 100
+    # results_df['合格率'] = results_df['合格率'] * 100
     
 
     return results_df
