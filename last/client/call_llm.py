@@ -38,8 +38,9 @@ ALLES_CHAT_LLM = [
     "erniebot",
     "warrenq",
     "giantgpt",
-    "ruyigpt",
+    "ruyichat",
     "midu",
+    "yuewriter",
 ]
 
 
