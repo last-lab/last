@@ -105,37 +105,38 @@
             const dataTable = document.getElementById(sheetName);
             const worksheet = workbook.addWorksheet(sheetName);
             const rows = dataTable.getElementsByTagName('tr');
-            
+            let cells
             for (let i = 0; i < rows.length; i++) {
-            const row = rows[i];
-            const cells = row.getElementsByTagName('td');
-            
-            for (let j = 0; j < cells.length; j++) {
-                const cell = cells[j];
-                const cellValue = cell.innerText;
-                const cellStyle = cell.className; // Get the class name for styling
-                const excelCell = worksheet.getCell(i + 1, j + 1);
-                excelCell.value = cellValue;
+                const row = rows[i];
+                cells = row.getElementsByTagName('td')
+                if (i==0){cells = row.getElementsByTagName('th')}
                 
-                if (cellValue === '已审核_有问题') {
-                    const question_cell = worksheet.getCell(i+1,1)
-                    const answer_cell = worksheet.getCell(i+1, 2)
-                    question_cell.style = {
-                        fill: {
-                        type: 'pattern',
-                        pattern: 'solid',
-                        fgColor: { argb: 'FFFF00' } // Yellow background color
+                for (let j = 0; j < cells.length; j++) {
+                    const cell = cells[j];
+                    const cellValue = cell.innerText;
+                    const cellStyle = cell.className; // Get the class name for styling
+                    const excelCell = worksheet.getCell(i + 1, j + 1);
+                    excelCell.value = cellValue;
+                    
+                    if (cellValue === '已审核_有问题') {
+                        const question_cell = worksheet.getCell(i+1,1)
+                        const answer_cell = worksheet.getCell(i+1, 2)
+                        question_cell.style = {
+                            fill: {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FFFF00' } // Yellow background color
+                            }
                         }
-                    }
-                    answer_cell.style= {
-                        fill: {
-                        type: 'pattern',
-                        pattern: 'solid',
-                        fgColor: { argb: 'FFFF00' } // Yellow background color
+                        answer_cell.style= {
+                            fill: {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FFFF00' } // Yellow background color
+                            }
                         }
                     }
                 }
-            }
             }
         });
         
