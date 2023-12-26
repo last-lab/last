@@ -38,9 +38,9 @@ class TestLLMAPI(unittest.TestCase):
         print("tigerbot", generated_text)
         assert generated_text.startswith("北京")
 
-    def test_ruyigpt_api(self):
-        generated_text = asyncio.run(generation_test(prompt="中国的首都在哪里", model="ruyigpt"))
-        print("ruyigpt", generated_text)
+    def test_ruyichat_api(self):
+        generated_text = asyncio.run(generation_test(prompt="中国的首都在哪里", model="ruyichat"))
+        print("ruyichat", generated_text)
         assert generated_text is not None
 
     def test_midu_api(self):

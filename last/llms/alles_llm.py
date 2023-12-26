@@ -101,8 +101,8 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["WARRENQ_API_TOKEN"]
         elif self.model.lower().startswith("giantgpt"):
             api_key = os.environ["GIANTGPT_API_TOKEN"]
-        elif self.model.lower().startswith("ruyigpt"):
-            api_key = os.environ["RUYIGPT_API_TOKEN"]
+        elif self.model.lower().startswith("ruyichat"):
+            api_key = os.environ["RUYICHAT_API_TOKEN"]
         elif self.model.lower().startswith("midu"):
             api_key = os.environ["MIDU_API_TOKEN"]
         elif self.model.lower().startswith("yuewriter"):
@@ -165,7 +165,7 @@ class AllesChatLLM(BaseModel):
             model = WarrenQAPILLMModel(**params)
         elif self.model.lower() == "giantgpt":
             model = GiantgptAPILLMModel(**params)
-        elif self.model.lower().startswith("ruyigpt"):
+        elif self.model.lower().startswith("ruyichat"):
             model = RuyichatAPILLMModel(**params)
         elif self.model.lower().startswith("midu"):
             model = MiduAPILLMModel(**params)
