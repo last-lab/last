@@ -3,7 +3,6 @@
 """
 import asyncio
 import unittest
-from pathlib import Path
 
 from last.client.call_llm import generate
 
