@@ -114,7 +114,7 @@ class TestLLAPIAsync(unittest.IsolatedAsyncioTestCase):
             self.assertIsNotNone(result)
             self.assertIsInstance(result, str)
 
-    async def test_ruyi_api(self):
+    async def test_starbitech_api(self):
         semaphore = asyncio.Semaphore(self.qps)
         tasks = [
             generation_test_with_semaphore(semaphore, "Starbitech", item["content"])
