@@ -110,7 +110,7 @@ async def AI_eval(
         except Exception as e:
             # 模型拒绝回答时 评分设为 None
             critic = Message(role=MessageRole.Chat, content="None")
-            reason = Message(role=MessageRole.Chat, content="由于拒答或未执行自动评测等原因，该无法对该回答进行评分")
+            reason = Message(role=MessageRole.Chat, content="评测模型输出格式异常或未执行自动评测")
         new_qa_record = QARecord(sheet_name=sheet_name, question=question, answer=response, critic=critic, reason=reason)
         new_qa_records[ID()] = new_qa_record
     progress_bar.update(1)
