@@ -40,13 +40,16 @@ async def AI_eval(
         access_key=llm_model["access_key"],
     )
 
-    if plan.eval_type == EvaluationType.auto_ai_critique:
+    if plan.eval_type == EvaluationType.auto_ai_critique and critic_model["name"] != 'null':
         critic_model = LLM(
             name=critic_model["name"],
             model_type=LLMType.critic,
             endpoint=critic_model["endpoint"],
             access_key=critic_model["access_key"],
         )
+        use_ai_critique = True
+    else:
+        use_ai_critique = False
 
     new_qa_records = {}
     progress_bar = tqdm(total=3, desc=llm_model.name + "的评测进度", leave=False)
@@ -67,28 +70,31 @@ async def AI_eval(
     progress_bar.update(1)
     print(llm_model.name + "的评测进度:待测模型测试完毕")
     
-    ## 敏感词筛选
-    sensitive_shuffle_result = [True] * len(response_list)
-    if prompt["id"] == "1":
-        sensitive_shuffle_result = SensitiveShuffle.sensitive_shuffle(plan, response_list)
-        
-    # critic任务
-    taskList.clear()
-    for (dataset, qa_record), response, pass_sensitive_shuffle in zip(plan, response_list, sensitive_shuffle_result):
-        question = qa_record.question
-        correct_ans = qa_record.answer
-        ## sheet_name 作为 theme, 确定 type_prompt
-        sheet_name = Message(role=MessageRole.Chat, content=qa_record.sheet_name)
-        ## prompt id 索引 使用的具体脚本
-        prompt_id = Message(role=MessageRole.Chat, content=prompt["id"])
-        if pass_sensitive_shuffle:
-            # 通过了敏感词筛选的回答还需要经过LLM审查
-            await taskList.append(asyncio.create_task(critic_model(question, response, correct_ans, sheet_name, prompt_id)))
+    if use_ai_critique:
+        ## 敏感词筛选
+        sensitive_shuffle_result = [True] * len(response_list)
+        if prompt["id"] == "1":
+            sensitive_shuffle_result = SensitiveShuffle.sensitive_shuffle(plan, response_list)
+            
+        # critic任务
+        taskList.clear()
+        for (dataset, qa_record), response, pass_sensitive_shuffle in zip(plan, response_list, sensitive_shuffle_result):
+            question = qa_record.question
+            correct_ans = qa_record.answer
+            ## sheet_name 作为 theme, 确定 type_prompt
+            sheet_name = Message(role=MessageRole.Chat, content=qa_record.sheet_name)
+            ## prompt id 索引 使用的具体脚本
+            prompt_id = Message(role=MessageRole.Chat, content=prompt["id"])
+            if pass_sensitive_shuffle:
+                # 通过了敏感词筛选的回答还需要经过LLM审查
+                await taskList.append(asyncio.create_task(critic_model(question, response, correct_ans, sheet_name, prompt_id)))
 
-    
-    llm_critic_result = await taskList.get_result_list()  # 无异常抛出的情况下 critic_list 与 task_list 元素一一对应
-    critic_list = emerge_sensitive_critic_llm_critic(sensitive_shuffle_result, llm_critic_result)
-    
+        
+        llm_critic_result = await taskList.get_result_list()  # 无异常抛出的情况下 critic_list 与 task_list 元素一一对应
+        critic_list = emerge_sensitive_critic_llm_critic(sensitive_shuffle_result, llm_critic_result)
+    else:
+        critic_list = [Message(role=MessageRole.AI, content="null") for i in range(len(response_list))]
+
     progress_bar.update(1)
     print(llm_model.name + "的评测进度:评判模型评测完毕")
 
@@ -104,7 +110,7 @@ async def AI_eval(
         except Exception as e:
             # 模型拒绝回答时 评分设为 None
             critic = Message(role=MessageRole.Chat, content="None")
-            reason = Message(role=MessageRole.Chat, content="由于拒答等原因，该无法对该回答进行评分")
+            reason = Message(role=MessageRole.Chat, content="评测模型输出格式异常或未执行自动评测")
         new_qa_record = QARecord(sheet_name=sheet_name, question=question, answer=response, critic=critic, reason=reason)
         new_qa_records[ID()] = new_qa_record
     progress_bar.update(1)
