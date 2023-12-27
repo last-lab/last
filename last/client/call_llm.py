@@ -41,6 +41,7 @@ ALLES_CHAT_LLM = [
     "ruyichat",
     "midu",
     "yuewriter",
+    "squirrel",
 ]
 
 
