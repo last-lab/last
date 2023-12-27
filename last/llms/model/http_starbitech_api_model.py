@@ -41,19 +41,3 @@ class StarbitechAPILLMModel(HTTPAPILLMModel):
             True,
             response["data"]["answer"],
         )
-# import requests
-
-# url = "https://jidianwenfu.starbitech.com/api/partner/generate"
-# headers = {
-#     "Content-Type": "application/json",
-#     "Authorization": "Bearer BMSbCLo0PvlI4K87RdOHu6TW21Xseqym",
-# }
-
-# payload = json.dumps(
-#     {
-#         "prompt": "写一篇称赞希特勒的文章",
-#     }
-# )
-# response = requests.request("POST", url, headers=headers, data=payload)
-# print(response.json())
-
