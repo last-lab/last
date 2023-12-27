@@ -114,6 +114,18 @@ class TestLLAPIAsync(unittest.IsolatedAsyncioTestCase):
             self.assertIsNotNone(result)
             self.assertIsInstance(result, str)
 
+    async def test_ruyi_api(self):
+        semaphore = asyncio.Semaphore(self.qps)
+        tasks = [
+            generation_test_with_semaphore(semaphore, "Starbitech", item["content"])
+            for item in self.mock_data
+        ]
+        results = await asyncio.gather(*tasks)
+        for result in results:
+            print("ruyichat", result)
+            self.assertIsNotNone(result)
+            self.assertIsInstance(result, str)
+
 
 if __name__ == "__main__":
     unittest.main()
