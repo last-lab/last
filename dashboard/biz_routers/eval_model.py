@@ -107,7 +107,7 @@ async def client_execute(plan, record, dataset_info, AI_eval, kwargs_json):
         permissions=new_dataset.permissions,
         first_risk_id="1",
     )
-    await compute_acc(plan, record, result, llm_name)
+    # await compute_acc(plan, record, result, llm_name)
     await Record.filter(id=record.id).update(state=EvalStatus.finish)
 
 
@@ -147,7 +147,7 @@ async def extract_score(string):
 async def evaluation_create(request: Request, eval_info: EvalInfo):  # TODO 加一个按钮，可以跳转查看评测结果的数据集
     plan = await EvaluationPlan.get_or_none(id=eval_info.plan_id).values()
     llms = await ModelInfo.filter(Q(id__in=[int(x) for x in eval_info.llm_id.split(",")])).values()
-    critic = await ModelInfo.get_or_none(id=eval_info.critic_id).values()
+    critic = await ModelInfo.get_or_none(id=eval_info.critic_id).values() if eval_info.critic_id != '0' else {"name": 'null', "endpoint":'null', "access_key":'null'}
     record = await Record.create(
         eval_plan=plan["name"],
         plan_id=eval_info.plan_id,
