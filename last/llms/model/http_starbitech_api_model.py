@@ -1,25 +1,25 @@
 """
-   大智慧惠问 xiaohui API
+   星图比特 Starbitech API 
 """
 import json
 from .base_model import HTTPAPILLMModel
 
 
-class XiaohuiAPILLMModel(HTTPAPILLMModel):
+class StarbitechAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.url = "https://xiaohuiapi1.dzh.com.cn/xiaohui/answer"
+        self.url = "https://jidianwenfu.starbitech.com/api/partner/generate"
         self.api_key = api_key
         self.headers = {
             "Content-Type": "application/json",
+            "Authorization": "Bearer " + self.api_key,
         }
 
     async def generate(self, prompt, messages, *args, **kwargs):
         payload = {
-            "token": self.api_key,
-            "q": messages[-1]["content"],
-            **kwargs,
+            "prompt": messages[-1]["content"],
         }
+
         try:
             resp = await self.async_post(
                 self.url, headers=self.headers, data=json.dumps(payload)
@@ -31,12 +31,13 @@ class XiaohuiAPILLMModel(HTTPAPILLMModel):
         return resp
 
     def parse(self, response):
-        if 'status' not in response:
+        if "code" not in response:
             return (False, "System Error")
-        if "error" in response:
-            return (False, "API Error")
+
+        if response["code"] != 0:
+            return (False, response["data"])
 
         return (
             True,
-            response["data"],
+            response["data"]["answer"],
         )

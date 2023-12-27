@@ -43,6 +43,9 @@ ALLES_CHAT_LLM = [
     "midu",
     "yuewriter",
     "squirrel",
+    "xiaohui",
+    "bigsea",
+    "starbitech",
 ]
 
 

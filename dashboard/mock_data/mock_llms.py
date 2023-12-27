@@ -412,6 +412,53 @@ async def create_mock_llms():
     )
 
     await ModelInfo.create(
+        name="xiaohui",
+        endpoint="xiaohui",
+        access_key="None",
+        secret_key="None",
+        model_type="聊天机器人、自然语言处理助手",
+        version="未知",
+        base_model="未知",
+        parameter_volume="未知",
+        pretraining_info="未知",
+        finetuning_info="未知",
+        alignment_info="未知",
+        model_org="None",
+        auth_status=False,
+    )
+
+    await ModelInfo.create(
+        name="bigsea",
+        endpoint="bigsea",
+        access_key="None",
+        secret_key="None",
+        model_type="聊天机器人、自然语言处理助手",
+        version="未知",
+        base_model="未知",
+        parameter_volume="未知",
+        pretraining_info="未知",
+        finetuning_info="未知",
+        alignment_info="未知",
+        model_org="bigsea",
+        auth_status=False,
+    )
+
+    await ModelInfo.create(
+        name="starbitech",
+        endpoint="starbitech",
+        access_key="None",
+        secret_key="None",
+        model_type="聊天机器人、自然语言处理助手",
+        version="未知",
+        base_model="未知",
+        parameter_volume="未知",
+        pretraining_info="未知",
+        finetuning_info="未知",
+        alignment_info="未知",
+        model_org="starbitech",
+        auth_status=False,
+    )
+    await ModelInfo.create(
         name="midu",
         endpoint="midu",
         access_key="None",

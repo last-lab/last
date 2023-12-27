@@ -3,8 +3,17 @@
 """
 import re
 import json
+import random
+import string
 from .base_model import HTTPAPILLMModel
 
+def generate_random_string(length):
+    """
+        随机生成一个length的字符串
+    """
+    characters = string.ascii_letters + string.digits
+    random_string = ''.join(random.choice(characters) for _ in range(length))
+    return random_string
 
 class RuyichatAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
@@ -24,9 +33,10 @@ class RuyichatAPILLMModel(HTTPAPILLMModel):
         }
 
     async def generate(self, prompt, messages, *args, **kwargs):
+        
         payload = {
             "input": messages[-1]["content"],
-            "conversation_id": f"{self.uid}_{self.devid}_20231225",
+            "conversation_id": f"{self.uid}_{self.devid}_{generate_random_string(20)}",
             **kwargs,
         }
         try:

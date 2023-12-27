@@ -45,7 +45,7 @@ class SquirrelAPILLMModel(HTTPAPILLMModel):
         self.course_id = params["course_id"]
         self.question_id = params["question_id"]
         self.seretKey = params["seretKey"]
-        self.timestamp = int(time.time())
+        
         randArr = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
                 'h', 'i', 'j', 'k', 'l', 'm', 'n',
                 'o', 'p', 'q', 'i', 's', 't', 'u',
@@ -63,22 +63,26 @@ class SquirrelAPILLMModel(HTTPAPILLMModel):
             "Content-Type": "application/x-www-form-urlencoded",
         }
 
-    async def generate(self, prompt, messages, *args, **kwargs):
-
+    def add_sign(self, messages):
         secretMp = {
             "course_id": self.course_id,
             "question_id": self.question_id,
             "user_answer": messages[-1]["content"],
-            "timestamp": self.timestamp,
+            "timestamp": int(time.time()),
             "rand": self.rand,
             "app_id": self.app_id
         }
-        
+    
         sign = get_md5(secretMp, self.seretKey)
         secretMp["sign"] = sign
+        return secretMp
+
+
+    async def generate(self, prompt, messages, *args, **kwargs):
+
         try:
             resp = await self.async_post(
-                self.url, headers=self.headers, data=secretMp, _is_stream=True
+                self.url, headers=self.headers, data=self.add_sign(messages), _is_stream=True
             )
             
         except Exception as e:

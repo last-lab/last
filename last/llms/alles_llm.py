@@ -35,6 +35,9 @@ from .model.http_ruyichat_api_model import RuyichatAPILLMModel
 from .model.http_midu_api_model import MiduAPILLMModel
 from .model.http_yuewriter_api_model import YueWriterAPILLMModel
 from .model.http_squirrel_api_model import SquirrelAPILLMModel
+from .model.http_xiaohui_api_model import XiaohuiAPILLMModel
+from .model.http_bigsea_api_model import BigSeaAPILLMModel
+from .model.http_starbitech_api_model import StarbitechAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -110,7 +113,12 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["YUEWRITER_API_TOKEN"]
         elif self.model.lower().startswith("squirrel"):
             api_key = os.environ["SQUIRREL_API_TOKEN"]
-            
+        elif self.model.lower().startswith("xiaohui"):
+            api_key = os.environ["XIAOHUI_API_TOKEN"]
+        elif self.model.lower().startswith("bigsea"):
+            api_key = os.environ["BIGSEA_API_TOKEN"]
+        elif self.model.lower().startswith("starbitech"):
+            api_key = os.environ["STARBITECH_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -177,6 +185,12 @@ class AllesChatLLM(BaseModel):
            model = YueWriterAPILLMModel(**params)
         elif self.model.lower().startswith("squirrel"):
            model = SquirrelAPILLMModel(**params)
+        elif self.model.lower().startswith("xiaohui"):
+           model = XiaohuiAPILLMModel(**params)
+        elif self.model.lower().startswith("bigsea"):
+           model = BigSeaAPILLMModel(**params)
+        elif self.model.lower().startswith("starbitech"):
+            model = StarbitechAPILLMModel(**params)
         else:
             raise NotImplementedError()
 
