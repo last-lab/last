@@ -36,7 +36,7 @@ class WindAPILLMModel(HTTPAPILLMModel):
             return (False, "访问出错")
 
         if response["status"] != "0":
-            if response["status"] == "3":
+            if response["status"] == "3" or response["status"] == "1":
                 return (True, response['message'])
             return (False, response['message'])
         
