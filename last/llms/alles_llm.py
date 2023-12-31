@@ -38,6 +38,7 @@ from .model.http_squirrel_api_model import SquirrelAPILLMModel
 from .model.http_xiaohui_api_model import XiaohuiAPILLMModel
 from .model.http_bigsea_api_model import BigSeaAPILLMModel
 from .model.http_starbitech_api_model import StarbitechAPILLMModel
+from .model.http_wind_api_model import WindAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -119,6 +120,8 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["BIGSEA_API_TOKEN"]
         elif self.model.lower().startswith("starbitech"):
             api_key = os.environ["STARBITECH_API_TOKEN"]
+        elif self.model.lower().startswith("wind"):
+            api_key = os.environ["WIND_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -191,6 +194,8 @@ class AllesChatLLM(BaseModel):
            model = BigSeaAPILLMModel(**params)
         elif self.model.lower().startswith("starbitech"):
             model = StarbitechAPILLMModel(**params)
+        elif self.model.lower().startswith("wind"):
+            model = WindAPILLMModel(**params)
         else:
             raise NotImplementedError()
 

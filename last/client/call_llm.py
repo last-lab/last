@@ -46,6 +46,7 @@ ALLES_CHAT_LLM = [
     "xiaohui",
     "bigsea",
     "starbitech",
+    "wind",
 ]
 
 
