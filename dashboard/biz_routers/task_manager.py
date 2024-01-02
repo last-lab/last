@@ -353,8 +353,9 @@ async def create_model_task_callback(
     for index, (question, answer, model_label, model_reason, sheet_name) in enumerate(qa_list):
         try:
             model_label = str(int(model_label))
-        except:
-            model_label = model_label
+        except Exception as e:
+            model_label = str(model_label)
+            print(e)
         await AuditResult(
             task_id=task_id,
             status="未审核",
