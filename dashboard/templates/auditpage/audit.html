@@ -97,6 +97,9 @@
         const root = document.createElement('div');
         root.id = 'label-studio'
         document.getElementById('studio').append(root)
+        answer = replaceSpecialCharacters(answer)
+        question = replaceSpecialCharacters(question)
+        model_reason = replaceSpecialCharacters(model_reason)
         tagView = tag_view(question, answer, model_reason, risk_level, labeling_method)
         const interfaces = [
             "panel",
@@ -225,6 +228,16 @@
         return rsp.json();
     }
 
+    function replaceSpecialCharacters(text) {
+        const specialCharacters = {
+            '<': '&lt;',
+            '>': '&gt;',
+            '&': '&amp;',
+            // 在这里添加其他特殊字符和它们的对应实体编码
+        }
+        const replacedText = text.replace(/[<>&]/g, match => specialCharacters[match]);
+        return replacedText;
+    }
 
     function tag_view(question, answer, model_reason, risk_level, label_select){
         let extra_html

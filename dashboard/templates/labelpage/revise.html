@@ -78,17 +78,114 @@
         const audit_status = await getAuditStatus();
         console.log(result);
         if (config) {
-            answer = config.A;
-            question = config.Q;
+            let answer = config.A;
+            let question = config.Q;
             userID = config.user_id;
             text = question + "\n" + answer;
             // const labels = tags.map((tag) => {
             //     return `<Label value="${tag.value}" background="${tag.background}" />`
             // }).join('\n')
             // TODO answer现在假设只有一条，后面需要写一个js代码生成下面几段js代码
-            // 判断标注
-            // 判断标注
-            const single_dialogs =
+            answer = replaceSpecialCharacters(answer)
+            question = replaceSpecialCharacters(question)
+            tagView = tag_view(question, answer, 'None', risk_level, labeling_method)
+        }
+
+        if (data) {
+            annotations = data.annotations;
+            predictions = data.predictions;
+        }
+        const studio = document.querySelector('#label-studio')
+        if (studio) {
+            studio.remove()
+        }
+        const root = document.createElement('div');
+        root.id = 'label-studio'
+        document.getElementById('studio').append(root)
+        const labelStudio = new LabelStudio(root, {
+            config: tagView,
+            interfaces: interfaces,
+            user: {
+                pk: 1,
+                firstName: userID,
+                lastName: " "
+            },
+            task: {
+                // https://labelstud.io/guide/export#Label-Studio-JSON-format-of-annotated-tasks
+                annotations: [
+                    {
+                        result: JSON.parse(result.replace(/'/g, '"'))
+                    }
+                ],
+                predictions: predictions,
+                id: 1,
+                data: {
+                    text: text
+                }
+            }
+        });
+        labelStudio.on("labelStudioLoad", (LS) => {
+            // Perform an action when Label Studio is loaded
+            const c = LS.annotationStore.addAnnotation({
+                userGenerate: true
+            });
+            LS.annotationStore.selectAnnotation(c.id);
+            console.log("loading...")
+        });
+
+        if (!audit_status){
+            labelStudio.on("updateAnnotation", (LS, annotation) => {
+                // Retrieve an annotation in JSON format
+                $.ajax({
+                    url: '/admin/labelpage/labeling/{item}/update',
+                    method: 'post',
+                    data: JSON.stringify({
+                        "annotation": annotation.serializeAnnotation(),
+                        "question_id": question_id,
+                        "task_id": task_id,
+                        "labeling_method": "{{labels}}",
+                        "risk_level": risk_level,
+                    }),
+                    success: function (e) {
+                        history.back();
+                    },
+                    error: function (e) {
+                        console.log(e)
+                    }
+                })
+            });
+        }else{
+            console.log('hello');
+        }
+    }
+
+    function select(name) {
+        label_select = name
+        document.getElementById(name).checked = true
+        render_page()
+    }
+    // TODO 初始态，标注方法列表的第一个
+    select(labeling_method);
+
+    $("input:radio[name='btn-radio-basic']").change((e) =>{
+        select(e.target.id)
+    });
+
+
+    window.onload = function(){
+        render_page();
+    }
+
+
+    function tag_view(question, answer, model_reason, risk_level, label_select){
+        let extra_html
+        if (model_reason!='None'){
+            extra_html = `<p>${model_reason}</p>`
+        }
+        else{
+            extra_html = ``
+        }
+        const single_dialogs =
                 `<div style=\"max-width: 100%\">
                     <div style=\"clear: both\">
                         <div style=\"display: inline-block; background-color: #fff; border-radius: 12px 12px 12px 0; padding: 12px 18px; margin: 10px 0; max-width: 80%; color: rgba(18, 19, 22, 0.50)\">
@@ -102,6 +199,7 @@
                             <p>
                                 ${answer}
                             </p>
+                            ${extra_html}
                         </div>
                     </div>
                 </div>`;
@@ -122,6 +220,7 @@
                                 <p>
                                     ${answer}
                                 </p>
+                                ${extra_html}
                             </div>
                         </div>
                     </div>
@@ -144,6 +243,7 @@
                                 <p>
                                     ${answer}
                                 </p>
+                                ${extra_html}
                             </div>
                         </div>
                     </div>
@@ -164,6 +264,7 @@
                             <p>
                                 ${answer}
                             </p>
+                            ${extra_html}
                         </div>
                     </div>
                 </div>`;
@@ -183,6 +284,7 @@
                             <p>
                                 ${answer}
                             </p>
+                            ${extra_html}
                         </div>
                     </div>
                 </div>`;
@@ -293,7 +395,6 @@
                 </Choices>
             </View>
             `
-
 
             const risk_label_three =
                 `
@@ -633,91 +734,18 @@
             }else{
                 tagView = `<View>${label_list[label_selects.indexOf(label_select)]}</View>`
             }
-        }
-
-        if (data) {
-            annotations = data.annotations;
-            predictions = data.predictions;
-        }
-        const studio = document.querySelector('#label-studio')
-        if (studio) {
-            studio.remove()
-        }
-        const root = document.createElement('div');
-        root.id = 'label-studio'
-        document.getElementById('studio').append(root)
-        const labelStudio = new LabelStudio(root, {
-            config: tagView,
-            interfaces: interfaces,
-            user: {
-                pk: 1,
-                firstName: userID,
-                lastName: " "
-            },
-            task: {
-                // https://labelstud.io/guide/export#Label-Studio-JSON-format-of-annotated-tasks
-                annotations: [
-                    {
-                        result: JSON.parse(result.replace(/'/g, '"'))
-                    }
-                ],
-                predictions: predictions,
-                id: 1,
-                data: {
-                    text: text
-                }
-            }
-        });
-        labelStudio.on("labelStudioLoad", (LS) => {
-            // Perform an action when Label Studio is loaded
-            const c = LS.annotationStore.addAnnotation({
-                userGenerate: true
-            });
-            LS.annotationStore.selectAnnotation(c.id);
-            console.log("loading...")
-        });
-
-        if (!audit_status){
-            labelStudio.on("updateAnnotation", (LS, annotation) => {
-                // Retrieve an annotation in JSON format
-                $.ajax({
-                    url: '/admin/labelpage/labeling/{item}/update',
-                    method: 'post',
-                    data: JSON.stringify({
-                        "annotation": annotation.serializeAnnotation(),
-                        "question_id": question_id,
-                        "task_id": task_id,
-                        "labeling_method": "{{labels}}",
-                        "risk_level": risk_level,
-                    }),
-                    success: function (e) {
-                        history.back();
-                    },
-                    error: function (e) {
-                        console.log(e)
-                    }
-                })
-            });
-        }else{
-            console.log('hello');
-        }
+        return tagView
     }
 
-    function select(name) {
-        label_select = name
-        document.getElementById(name).checked = true
-        render_page()
-    }
-    // TODO 初始态，标注方法列表的第一个
-    select(labeling_method);
-
-    $("input:radio[name='btn-radio-basic']").change((e) =>{
-        select(e.target.id)
-    });
-
-
-    window.onload = function(){
-        render_page();
+    function replaceSpecialCharacters(text) {
+        const specialCharacters = {
+            '<': '&lt;',
+            '>': '&gt;',
+            '&': '&amp;',
+            // 在这里添加其他特殊字符和它们的对应实体编码
+        }
+        const replacedText = text.replace(/[<>&]/g, match => specialCharacters[match]);
+        return replacedText;
     }
 
     async function getLabelData() {

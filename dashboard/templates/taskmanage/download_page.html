@@ -3,44 +3,45 @@
 <!-- 提供一个标注结果显示，以及下载的按钮 -->
 <style>
     .table-responsive {
-  overflow: auto; /* 添加滚动条 */
+        overflow: auto;
+        /* 添加滚动条 */
     }
 
     .card-table {
         display: none
     }
 
-    .active{
+    .active {
         display: block
     }
 
     ul {
-    display: flex;
-    list-style-type: none;
+        display: flex;
+        list-style-type: none;
     }
 
-    .sheet-name{
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
+    .sheet-name {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
     }
 
-    .tab-active{
-        color:red
+    .tab-active {
+        color: red
     }
 
-    .yellow{
+    .yellow {
         background-color: yellow;
     }
 
     table {
-      width: 100%;
-      table-layout: auto;
+        width: 100%;
+        table-layout: auto;
     }
-  
+
     td {
-      word-wrap: break-word;
-      white-space: normal;
+        word-wrap: break-word;
+        white-space: normal;
     }
 </style>
 
@@ -75,22 +76,22 @@
     const sheetNameList = JSON.parse(jsonString)
     const downloadBtn = document.getElementById('download')
     const reportBtn = document.querySelector('#download_report')
-    const sheetPromise = sheetNameList.map((sheetName)=>{ return create_table(sheetName)})
-    Promise.all(sheetPromise).then( () => {
+    const sheetPromise = sheetNameList.map((sheetName) => { return create_table(sheetName) })
+    Promise.all(sheetPromise).then(() => {
         const tab_nav = document.querySelectorAll(".sheet-name")
-        for (let i =0; i<tab_nav.length; i++){
-            tab_nav[i].addEventListener('mouseenter', function(){
+        for (let i = 0; i < tab_nav.length; i++) {
+            tab_nav[i].addEventListener('mouseenter', function () {
                 // 鼠标移动，对应的table增加active class，拥有active的table删除active类
                 document.querySelector('.tab-active').classList.remove('tab-active')
                 tab_nav[i].classList.add('tab-active')
                 document.querySelector('.active').classList.remove('active')
-                document.querySelector(`.card-table:nth-child(${i+1})`).classList.add('active')
+                document.querySelector(`.card-table:nth-child(${i + 1})`).classList.add('active')
             })
         }
         // 给第一个card-table设置active属性
         document.querySelector(`.card-table:first-child`).classList.add('active')
         document.querySelector(`.sheet-name:first-child`).classList.add('tab-active')
-        }
+    }
     )
     // 状态标识
     downloadBtn.addEventListener('click', async () => {
@@ -100,7 +101,7 @@
         const path = filename + '.xlsx';
         // 生成工作簿
         const workbook = new ExcelJS.Workbook();
-        
+
         sheetNameList.forEach((sheetName) => {
             const dataTable = document.getElementById(sheetName);
             const worksheet = workbook.addWorksheet(sheetName);
@@ -109,46 +110,39 @@
             for (let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 cells = row.getElementsByTagName('td')
-                if (i==0){cells = row.getElementsByTagName('th')}
-                
+                if (i == 0) { cells = row.getElementsByTagName('th') }
+
                 for (let j = 0; j < cells.length; j++) {
                     const cell = cells[j];
                     const cellValue = cell.innerText;
                     const cellStyle = cell.className; // Get the class name for styling
                     const excelCell = worksheet.getCell(i + 1, j + 1);
                     excelCell.value = cellValue;
-                    
+
                     if (cellValue === '已审核_有问题') {
-                        const question_cell = worksheet.getCell(i+1,1)
-                        const answer_cell = worksheet.getCell(i+1, 2)
-                        question_cell.style = {
-                            fill: {
-                            type: 'pattern',
-                            pattern: 'solid',
-                            fgColor: { argb: 'FFFF00' } // Yellow background color
-                            }
-                        }
-                        answer_cell.style= {
-                            fill: {
-                            type: 'pattern',
-                            pattern: 'solid',
-                            fgColor: { argb: 'FFFF00' } // Yellow background color
+                        for (let k = 0; k < cells.length; k++) {
+                            worksheet.getCell(i + 1, k + 1).style = {
+                                fill: {
+                                    type: 'pattern',
+                                    pattern: 'solid',
+                                    fgColor: { argb: 'FFFF00' } // Yellow background color
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
-        });
-        
+            });
+
         // 用完整路径保存文件
-        workbook.xlsx.writeBuffer().then(function(buffer) {
+        workbook.xlsx.writeBuffer().then(function (buffer) {
             saveAs(new Blob([buffer], { type: 'application/octet-stream' }), path);
         });
     });
 
 
     // 创建一个新表
-    async function create_table(sheetName){
+    async function create_table(sheetName) {
         return new Promise((resolve, reject) => {
             const tab_nav = document.querySelector(".tab-nav ul")
             const li_label = document.createElement("li")
@@ -156,7 +150,7 @@
             li_label.textContent = sheetName
             tab_nav.appendChild(li_label)
 
-            var tableHtml = '<table class="table card-table table-vcenter text-nowrap datatable" id="' +sheetName + '">' +
+            var tableHtml = '<table class="table card-table table-vcenter text-nowrap datatable" id="' + sheetName + '">' +
                 '<thead>' +
                 '<tr>' +
                 '<th>问题</th>' +
@@ -171,9 +165,9 @@
                 '</tr>' +
                 '</thead>' +
                 '<tbody>'
-            
 
-            get_label_data(sheetName).then((data) =>{
+
+            get_label_data(sheetName).then((data) => {
                 for (var i = 0; i < data.length; i++) {
                     label_user_dict = data[i]['labeling_result']
                     audit_user_dict = data[i]['audit_result']
@@ -181,10 +175,10 @@
                     let risk_level
                     let audit_user
                     let audit_risk_level
-                    if (label_user_dict == null || label_user_dict == 'None'){
+                    if (label_user_dict == null || label_user_dict == 'None') {
                         label_user = null;
                         risk_level = null;
-                    }else{
+                    } else {
                         label_user = label_user_dict;
                         // 删除字符串中的单引号
                         var cleanedStr = label_user_dict.replace(/'/g, '"')
@@ -194,14 +188,14 @@
                         label_user = Object.keys(obj)[0];
                         risk_level = obj[label_user]['风险程度'];
                     }
-                    if (audit_user_dict == null){
+                    if (audit_user_dict == null) {
                         audit_user = null;
                         audit_risk_level = null;
-                        if(data[i].model_label!='None' && data[i].model_label != null){
+                        if (data[i].model_label != 'None' && data[i].model_label != null) {
                             audit_user = '自动审核'
                             audit_risk_level = data[i].model_label
                         }
-                    } else{
+                    } else {
                         audit_user = audit_user_dict
                         let cleanedStr = audit_user_dict.replace(/'/g, '"')
                         // 解析字符串为对象
@@ -221,16 +215,16 @@
                     }
 
                     tableHtml += '<tr>' +
-                    questionCell +
-                    answerCell +
-                    '<td>' + risk_level + '</td>' +
-                    '<td>' + label_user + '</td>' +
-                    '<td>' + audit_risk_level + '</td>' +
-                    '<td>' + audit_user + '</td>' +
-                    '<td>' + data[i].model_label + '</td>' +
-                    '<td>' + data[i].model_reason + '</td>' +
-                    '<td>' + status + '</td>' + 
-                    '</tr>';
+                        questionCell +
+                        answerCell +
+                        '<td>' + risk_level + '</td>' +
+                        '<td>' + label_user + '</td>' +
+                        '<td>' + audit_risk_level + '</td>' +
+                        '<td>' + audit_user + '</td>' +
+                        '<td>' + data[i].model_label + '</td>' +
+                        '<td>' + data[i].model_reason + '</td>' +
+                        '<td>' + status + '</td>' +
+                        '</tr>';
                 }
                 tableHtml += '</tbody>' +
                     '</table>';
@@ -247,10 +241,10 @@
 
 
 
-    async function get_label_data(sheet_name){
+    async function get_label_data(sheet_name) {
         const rsp = await fetch('/admin/taskmanage/get_label_result', {
             method: 'post',
-            body: JSON.stringify({"task_id": '{{task_id}}', "sheet_name": sheet_name}),
+            body: JSON.stringify({ "task_id": '{{task_id}}', "sheet_name": sheet_name }),
             headers: {
                 'Content-Type': 'application/json'
             }

@@ -301,7 +301,11 @@ async def get_config_from_db(request: Request, resource: str):
     }
 
     if "Model" in query_data["labeling_method"]:
-        query_data["model_label"] = risk_level_dict[data[0].model_label]
+        if data[0].model_label == "nan":
+            query_data["model_label"] = "None"
+        else:
+            query_data["model_label"] = risk_level_dict[data[0].model_label]
+
         query_data["model_reason"] = data[0].model_reason
 
     else:
@@ -336,7 +340,10 @@ async def get_label_reset(request: Request, resource: str):
     if "Model" in labeling_method:
         data = await AuditResult.filter(task_id=task_id, question_id=question_id)
         risk_level_dict = {"1": "高度敏感", "2": "中度敏感", "3": "低度敏感", "4": "中性词"}
-        model_label = risk_level_dict[data[0].model_label]
+        if data[0].model_label == "nan":
+            model_label = ""
+        else:
+            model_label = risk_level_dict[data[0].model_label]
         return (
             "[{'value': {'choices': ['"
             + model_label
