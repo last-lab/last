@@ -90,7 +90,148 @@
             // }).join('\n')
             // TODO answer现在假设只有一条，后面需要写一个js代码生成下面几段js代码
             // 判断标注
-            const single_dialogs =
+            answer = replaceSpecialCharacters(answer)
+            question = replaceSpecialCharacters(question)
+            tagView = tag_view(question, answer, 'None', risk_level, labeling_method)
+            if (data) {
+                annotations = data.annotations;
+                predictions = data.predictions;
+            }
+            const studio = document.querySelector('#label-studio')
+            if (studio) {
+                studio.remove()
+            }
+            const root = document.createElement('div');
+            root.id = 'label-studio'
+            document.getElementById('studio').append(root)
+            const labelStudio = new LabelStudio(root, {
+                config: tagView,
+                interfaces: interfaces,
+                user: {
+                    pk: 1,
+                    firstName: userID,
+                    lastName: ' ',
+                },
+                task: {
+                    annotations: annotations,
+                    predictions: predictions,
+                    id: 1,
+                    data: {
+                        text: text
+                    }
+                }
+            });
+
+            labelStudio.on("labelStudioLoad", (LS) => {
+                // Perform an action when Label Studio is loaded
+                const c = LS.annotationStore.addAnnotation({
+                    userGenerate: true
+                });
+                LS.annotationStore.selectAnnotation(c.id);
+                console.log("loading...")
+            });
+
+            labelStudio.on("submitAnnotation", (LS, annotation) => {
+                // Retrieve an annotation in JSON format
+                // 这个地方对三级标注进行判断
+                $.ajax({
+                    url: '/admin/labelpage/labeling/{item}/submit',
+                    method: 'post',
+                    data: JSON.stringify({
+                        "annotation": annotation.serializeAnnotation(),
+                        "question_id": question_id,
+                        "task_id": task_id,
+                        "labeling_method": urlParams.get('labeling_method'),
+                        "risk_level": risk_level,
+                        }),
+                    success: function (e) {
+                        // 如果成功，就对后端发送next请求？并且将当前的用户id发送回去
+                        // 访问一下后端的一个标注函数
+                        console.log(nextPageConfig);
+                        if (nextPageConfig.question_id == 'null'){
+                            const briefDataUrl = '/admin/labelpage/display/' + '{{task_pk_value}}';
+                            window.location.href = briefDataUrl;
+                        }else{
+                            const labelingUrl = '/admin/labelpage/labeling/' + nextPageConfig.task_id + '_' + nextPageConfig.question_id;
+                            // 在链接中添加参数
+                            const params = {
+                                question_id: nextPageConfig.question_id,
+                                task_id: nextPageConfig.task_id,
+                                labeling_method: urlParams.get('labeling_method'),
+                                task_pk_value: '{{task_pk_value}}',
+                                risk_level: nextPageConfig.risk_level,
+                                // 添加其他参数
+                            };
+                            const queryString = $.param(params);
+                            const urlWithParams = labelingUrl + '?' + queryString;
+                            window.location.href=urlWithParams;
+                        }
+                    },
+                    error: function (e) {
+                        history.back();
+                    }
+                })
+            })
+        })
+    }
+    function select(name) {
+        label_select = name
+        document.getElementById(name).checked = true
+        render_page()
+    }
+    // TODO 初始态，标注方法列表的第一个，其实目前就一种标注方法
+    select(labeling_method);
+
+    $("input:radio[name='btn-radio-basic']").change((e) =>{
+        console.log(e.target.id);
+        select(e.target.id)
+    });
+
+
+    window.onload = function(){
+        render_page();
+    }
+
+
+    async function getLabelData() {
+        const rsp = await fetch('/admin/labelpage/labeling/get_data', {
+            method: 'post',
+        })
+        return rsp.json();
+    }
+
+    async function getLabelConfig() {
+        const rsp = await fetch('/admin/labelpage/labeling/get_config', {
+            method: 'post',
+            body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        return rsp.json();
+
+    }
+
+    function replaceSpecialCharacters(text) {
+        const specialCharacters = {
+            '<': '&lt;',
+            '>': '&gt;',
+            '&': '&amp;',
+            // 在这里添加其他特殊字符和它们的对应实体编码
+        }
+        const replacedText = text.replace(/[<>&]/g, match => specialCharacters[match]);
+        return replacedText;
+    }
+
+    function tag_view(question, answer, model_reason, risk_level, label_select){
+        let extra_html
+        if (model_reason!='None'){
+            extra_html = `<p>${model_reason}</p>`
+        }
+        else{
+            extra_html = ``
+        }
+        const single_dialogs =
                 `<div style=\"max-width: 100%\">
                     <div style=\"clear: both\">
                         <div style=\"display: inline-block; background-color: #fff; border-radius: 12px 12px 12px 0; padding: 12px 18px; margin: 10px 0; max-width: 80%; color: rgba(18, 19, 22, 0.50)\">
@@ -104,6 +245,7 @@
                             <p>
                                 ${answer}
                             </p>
+                            ${extra_html}
                         </div>
                     </div>
                 </div>`;
@@ -124,6 +266,7 @@
                                 <p>
                                     ${answer}
                                 </p>
+                                ${extra_html}
                             </div>
                         </div>
                     </div>
@@ -146,6 +289,7 @@
                                 <p>
                                     ${answer}
                                 </p>
+                                ${extra_html}
                             </div>
                         </div>
                     </div>
@@ -166,6 +310,7 @@
                             <p>
                                 ${answer}
                             </p>
+                            ${extra_html}
                         </div>
                     </div>
                 </div>`;
@@ -185,6 +330,7 @@
                             <p>
                                 ${answer}
                             </p>
+                            ${extra_html}
                         </div>
                     </div>
                 </div>`;
@@ -295,7 +441,6 @@
                 </Choices>
             </View>
             `
-
 
             const risk_label_three =
                 `
@@ -623,8 +768,7 @@
             </View>
             `
             const label_list = [second_label, third_label, safe_label];
-            const label_selects = ['排序标注', '框选标注', '安全回答',]
-            console.log(risk_level)
+            const label_selects = ['排序标注', '框选标注', '安全回答',];
             if(risk_level != 'None'){
                 if (risk_level == '0级风险'){tagView = `<View>${risk_label_zero}</View>`}
                 if (risk_level == '一级风险'){tagView = `<View>${risk_label_one}</View>`}
@@ -636,124 +780,7 @@
             }else{
                 tagView = `<View>${label_list[label_selects.indexOf(label_select)]}</View>`
             }
-            console.log(tagView)
-            if (data) {
-                annotations = data.annotations;
-                predictions = data.predictions;
-            }
-            const studio = document.querySelector('#label-studio')
-            if (studio) {
-                studio.remove()
-            }
-            const root = document.createElement('div');
-            root.id = 'label-studio'
-            document.getElementById('studio').append(root)
-            const labelStudio = new LabelStudio(root, {
-                config: tagView,
-                interfaces: interfaces,
-                user: {
-                    pk: 1,
-                    firstName: userID,
-                    lastName: ' ',
-                },
-                task: {
-                    annotations: annotations,
-                    predictions: predictions,
-                    id: 1,
-                    data: {
-                        text: text
-                    }
-                }
-            });
-
-            labelStudio.on("labelStudioLoad", (LS) => {
-                // Perform an action when Label Studio is loaded
-                const c = LS.annotationStore.addAnnotation({
-                    userGenerate: true
-                });
-                LS.annotationStore.selectAnnotation(c.id);
-                console.log("loading...")
-            });
-
-            labelStudio.on("submitAnnotation", (LS, annotation) => {
-                // Retrieve an annotation in JSON format
-                // 这个地方对三级标注进行判断
-                $.ajax({
-                    url: '/admin/labelpage/labeling/{item}/submit',
-                    method: 'post',
-                    data: JSON.stringify({
-                        "annotation": annotation.serializeAnnotation(),
-                        "question_id": question_id,
-                        "task_id": task_id,
-                        "labeling_method": urlParams.get('labeling_method'),
-                        "risk_level": risk_level,
-                        }),
-                    success: function (e) {
-                        // 如果成功，就对后端发送next请求？并且将当前的用户id发送回去
-                        // 访问一下后端的一个标注函数
-                        console.log(nextPageConfig);
-                        if (nextPageConfig.question_id == 'null'){
-                            const briefDataUrl = '/admin/labelpage/display/' + '{{task_pk_value}}';
-                            window.location.href = briefDataUrl;
-                        }else{
-                            const labelingUrl = '/admin/labelpage/labeling/' + nextPageConfig.task_id + '_' + nextPageConfig.question_id;
-                            // 在链接中添加参数
-                            const params = {
-                                question_id: nextPageConfig.question_id,
-                                task_id: nextPageConfig.task_id,
-                                labeling_method: urlParams.get('labeling_method'),
-                                task_pk_value: '{{task_pk_value}}',
-                                risk_level: nextPageConfig.risk_level,
-                                // 添加其他参数
-                            };
-                            const queryString = $.param(params);
-                            const urlWithParams = labelingUrl + '?' + queryString;
-                            window.location.href=urlWithParams;
-                        }
-                    },
-                    error: function (e) {
-                        history.back();
-                    }
-                })
-            })
-        })
-    }
-    function select(name) {
-        label_select = name
-        document.getElementById(name).checked = true
-        render_page()
-    }
-    // TODO 初始态，标注方法列表的第一个，其实目前就一种标注方法
-    select(labeling_method);
-
-    $("input:radio[name='btn-radio-basic']").change((e) =>{
-        console.log(e.target.id);
-        select(e.target.id)
-    });
-
-
-    window.onload = function(){
-        render_page();
-    }
-
-
-    async function getLabelData() {
-        const rsp = await fetch('/admin/labelpage/labeling/get_data', {
-            method: 'post',
-        })
-        return rsp.json();
-    }
-
-    async function getLabelConfig() {
-        const rsp = await fetch('/admin/labelpage/labeling/get_config', {
-            method: 'post',
-            body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        return rsp.json();
-
+        return tagView
     }
 
 
