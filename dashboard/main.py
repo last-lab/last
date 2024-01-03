@@ -123,7 +123,7 @@ def create_app():
             default_layout=enums.Layout.layout,
         )
         await mock_data.create_mock_data()
-        await run_check_model_api_alives()
+        # await run_check_model_api_alives()x
         # await rearq_server.start_worker(with_timer=True)
 
     return app

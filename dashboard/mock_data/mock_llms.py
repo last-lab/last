@@ -396,8 +396,8 @@ async def create_mock_llms():
     )
 
     await ModelInfo.create(
-        name="ruyigpt",
-        endpoint="ruyigpt",
+        name="ruyichat",
+        endpoint="ruyichat",
         access_key="None",
         secret_key="None",
         model_type="聊天机器人、自然语言处理助手",

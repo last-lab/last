@@ -73,14 +73,14 @@
   <div class="modal-dialog" role="document" style="max-width: 100%">
     <div class="modal-content">
       <div class="modal-header" style="border-bottom: none">
-        <h5 class="modal-title">数据集内容</h5>
+        <h5 class="modal-title"> {{value.name}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 
       </div>
 
         <div class="modal-body">
           <div>
-        <button type="button" onclick="downloadFile({{ value.id }})" id=btn{{ value.id }} class="btn btn-primary">下载Excel</button>
+        <button type="button" onclick="downloadFile({{ value.id }}, '{{ value.name }}')" id=btn{{ value.id }} class="btn btn-primary">双击下载为Excel</button>
       </div>
 
             <div class="table-responsive">
@@ -124,7 +124,6 @@
   </div>
 </div>
 
-
 <script>
     function deleteData(id) {
         $.ajax({
@@ -144,16 +143,18 @@
         navigator.clipboard.writeText(copyText);
         alert('复制成功');
     }
-    function downloadFile(id) {
+    function downloadFile(id, valueName) {
     const downloadICON = document.getElementById("btn"+id);
     const dataTable = document.getElementById("tab"+id);
     //状态标识
     downloadICON.addEventListener('click', async () => {
         // 输入文件名
-        const filename = prompt('请输入文件名');
+        const filename = valueName; // 如何将这里的filename赋值为上面html里面的value.name?
+
         if (!filename) return; // 如果没有输入文件名，则退出
         // 等待下一个点击事件触发选择文件夹
         //选择文件夹
+
         // 拼接完整路径
         const path = filename + '.xlsx';
         // 生成工作表
