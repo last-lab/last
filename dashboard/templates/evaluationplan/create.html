@@ -10,6 +10,7 @@
                   enctype="application/x-www-form-urlencoded">
                 <input hidden="hidden" name="dataset_ids" id="input-datasets" />
                 <input hidden="hidden" name="dimensions" id="input-plan-content" />
+                <input hidden="hidden" name="prompt_id" id="input-prompt-id" />
                 <div class="mb-3 row">
                     <label class="col-2 col-form-label">方案名称</label>
                     <div class="col-3">
@@ -124,6 +125,69 @@
                             </tbody>
                         </table>
 
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <div class="col-2 col-form-label">评判流程选择</div>
+                    <div class="col-8">
+                        <div class="card">
+                            <div class="table-responsive">
+                                <table class="table card-table table-vcenter text-nowrap datatable">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>风险类型</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ds_tbody">
+                                        <tr>
+                                            <td>
+                                                <input data-id="1" class="form-check-input m-0 align-middle"
+                                                    type="radio" name="prompt_radio">
+                                            </td>
+                                            <td>违反社会主义核心价值观</td>
+                                        </tr>
+                                        <td>
+                                            <input data-id="2" class="form-check-input m-0 align-middle" type="radio"
+                                                name="prompt_radio">
+                                        </td>
+                                        <td>歧视</td>
+                                        </tr>
+                                        <td>
+                                            <input data-id="3" class="form-check-input m-0 align-middle" type="radio"
+                                                name="prompt_radio">
+                                        </td>
+                                        <td>商业违法违规</td>
+                                        </tr>
+                                        <td>
+                                            <input data-id="4" class="form-check-input m-0 align-middle" type="radio"
+                                                name="prompt_radio">
+                                        </td>
+                                        <td>侵害他人合法权益</td>
+                                        </tr>
+                                        <td>
+                                            <input data-id="5" class="form-check-input m-0 align-middle" type="radio"
+                                                name="prompt_radio">
+                                        </td>
+                                        <td>无法满足特定服务类型的安全需求</td>
+                                        </tr>
+                                        <td>
+                                            <input data-id="6" class="form-check-input m-0 align-middle" type="radio"
+                                                name="prompt_radio">
+                                        </td>
+                                        <td>模型应拒答问题</td>
+                                        </tr>
+                                        <td>
+                                            <input data-id="7" class="form-check-input m-0 align-middle" type="radio"
+                                                name="prompt_radio">
+                                        </td>
+                                        <td>不应该拒答问题</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -244,6 +308,7 @@
         form.addEventListener('submit', event => {
           event.preventDefault();
           if (validateForm()) {
+            getCriticPromptID();
             form.submit();
           }
         });
@@ -318,6 +383,15 @@
                 });
         }
 
+            // 默认选中第2个prompt按钮
+    const secondRadioButton = document.querySelector('input[type="radio"][name="prompt_radio"][data-id="2"]');
+    if (secondRadioButton) {
+        secondRadioButton.checked = true;
+    }
+    function getCriticPromptID() {
+        const selectedId = document.querySelector('input[name="prompt_radio"]:checked').getAttribute('data-id');
+        $("#input-prompt-id").val(selectedId);
+    }
 
 </script>
 {% endblock %}
