@@ -14,6 +14,7 @@ class EvaluationPlan(Model):
     )
     dimensions = fields.CharField(max_length=500)
     dataset_ids = fields.CharField(max_length=200)
+    prompt_id = fields.CharField(max_length=200)
     current_dataset_index = fields.CharField(max_length=200, null=True)
     current_dataset_iter = fields.CharField(max_length=200, null=True)
     uid = fields.CharField(max_length=200, null=True)

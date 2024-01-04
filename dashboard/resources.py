@@ -182,6 +182,7 @@ class DataManager(Dropdown):
                 ),
             ),
             Field(name="name", label="操作", display=ShowPlan()),
+            Field(name="prompt_id", label="评测流程"),
         ]
 
         async def get_actions(self, request: Request) -> List[Action]:
