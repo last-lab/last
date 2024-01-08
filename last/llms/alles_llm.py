@@ -1,6 +1,8 @@
 import os
 from typing import Any, List, Mapping, Optional, Dict
 from pydantic import BaseModel
+from langchain.chat_models import ChatOpenAI
+from langchain_core.pydantic_v1 import Field
 from .model.http_alles_api_model import (
     AllesMinimaxAPILLMModel,
     AllesChatGPTAPILLMModel,
@@ -39,7 +41,41 @@ from .model.http_xiaohui_api_model import XiaohuiAPILLMModel
 from .model.http_bigsea_api_model import BigSeaAPILLMModel
 from .model.http_starbitech_api_model import StarbitechAPILLMModel
 from .model.http_wind_api_model import WindAPILLMModel
+from .model.labrewardmodel_api_model import LabRewardModelAPILLMModel
 
+
+class RewardModel(ChatOpenAI):
+    model: str = None
+    
+    async def __call__(
+        self,
+        messages: Optional[List[dict]] = None,
+        **kwargs: Any,
+    ) -> str:
+        """
+            工厂方法
+        """
+        if self.model.startswith("lab_reward_model"):
+            api_key = os.environ["LAB_REWARD_MODEL_API_TOKEN"]
+
+        params = {
+            "api_key": api_key,
+        }
+        if self.model.lower() == "lab_reward_model":
+            model = LabRewardModelAPILLMModel(**params)
+        else:
+            raise NotImplementedError()
+
+        response = await model.generate(
+            messages=messages,
+            **{
+                **self.model_kwargs,
+                "temperature": self.temperature,
+                "max_tokens": self.max_tokens,
+                **kwargs,
+            },
+        )
+        return response
 
 class AllesChatLLM(BaseModel):
     model: str = None

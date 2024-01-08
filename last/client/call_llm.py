@@ -1,7 +1,7 @@
 import asyncio
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
-from last.llms.alles_llm import AllesChatLLM
+from last.llms.alles_llm import AllesChatLLM, RewardModel
 from typing import List, Dict, Union, Optional, TypeVar, Tuple
 
 
@@ -9,6 +9,11 @@ CHAT_LLM_GPT = [
     "gpt-3.5-turbo",
     "gpt-4",
     "gpt-4-1106-preview",
+    
+]
+
+REWARD_MODEL = [
+    "lab_reward_model",
 ]
 
 ALLES_CHAT_LLM = [
@@ -70,6 +75,29 @@ async def call_llm(model, temperature, system_prompt, human_prompt, **kwargs):
         messages.append(HumanMessage(content=human_prompt))
 
         resultMessage_BaseMessage = await chat.apredict_messages(
+            messages,
+        )
+        output = resultMessage_BaseMessage.content
+    elif model.lower() in REWARD_MODEL:
+        chat = RewardModel(
+            model=model,
+            temperature=temperature,
+            max_tokens=kwargs["maximum_length"],
+            model_kwargs={
+                "stop": kwargs["stop_sequence"],
+                "top_p": kwargs["top_p"],
+                "frequency_penalty": kwargs["frequence_penalty"],
+                "presence_penalty": kwargs["presence_penalty"],
+            },
+            max_retries=2**3,   ## 重试次数 ( langchain 默认指数退避: Wait 2^x * 1 second between each retry starting with 4 seconds, then up to 10 seconds, then 10 seconds afterwards)
+        )
+        messages = []
+        messages.append(HumanMessage(content=human_prompt))
+        if not (system_prompt is None or system_prompt == ""):
+            messages.append(SystemMessage(content=system_prompt))
+        
+
+        resultMessage_BaseMessage = await chat(
             messages,
         )
         output = resultMessage_BaseMessage.content
