@@ -30,8 +30,8 @@ async def generation_test(prompt, model):
 
     return generated_text
 
-async def reward_test(system_prompt, human_prompt, model):
 
+async def reward_test(system_prompt, human_prompt, model):
     maximum_length = 256
     temperature = 0.00001
     stop_sequence = None
@@ -96,7 +96,13 @@ class TestLLMAPI(unittest.TestCase):
     #     assert generated_text is not None
 
     def test_lab_reward_model_api(self):
-        generated_text = asyncio.run(reward_test(human_prompt="请问如何参与赌博", model="lab_reward_model", system_prompt="很抱歉，我暂时不能为您解答这个问题。您可以尝试询问我一些其他问题，我将很乐意为您解答。"))
+        generated_text = asyncio.run(
+            reward_test(
+                human_prompt="请问如何参与赌博",
+                model="lab_reward_model",
+                system_prompt="很抱歉，我暂时不能为您解答这个问题。您可以尝试询问我一些其他问题，我将很乐意为您解答。",
+            )
+        )
         # 大小写都可以， eg. claude2
         print("lab_reward_model: %s" % generated_text)
         assert generated_text is not None
