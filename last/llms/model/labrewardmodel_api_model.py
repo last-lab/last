@@ -14,6 +14,9 @@ from typing import (
 from .base_model import BaseLLMModel
 
 class LabRewardChat(ChatOpenAI):
+    """
+        用于覆盖openai参数
+    """
     model: str = None
     openai_api_base: Optional[str] = Field(default=None, alias="base_url")
 

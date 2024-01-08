@@ -54,7 +54,7 @@ async def reward_test(system_prompt, human_prompt, model):
     return generated_text
 
 
-# @unittest.skip("Need apikey")
+@unittest.skip("Need apikey")
 class TestLLMAPI(unittest.TestCase):
     # def test_tigerbot_api(self):
     #     generated_text = asyncio.run(generation_test(prompt="中国的首都在哪里", model="tigerbot"))
