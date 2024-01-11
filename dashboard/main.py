@@ -27,6 +27,7 @@ from dashboard.providers import (  # GitHubProvider,; GoogleProvider,
 )
 from dashboard.tasks import rearq
 from last.llms.tools.check_alives import run_check_model_api_alives
+from last.llms.tools.gate import get_gate_data
 from last.services import enums, middlewares
 from last.services.app import app as admin_app
 from last.services.exceptions import (
@@ -124,6 +125,7 @@ def create_app():
         )
         await mock_data.create_mock_data()
         await run_check_model_api_alives()
+        await get_gate_data()
         # await rearq_server.start_worker(with_timer=True)
 
     return app
