@@ -197,6 +197,7 @@ async def update_result_callback(request: Request, resource: str, pk: str):
     question_id = json_data["question_id"]
     task_id = json_data["task_id"]
     update_audit_result = json_data["auditResult"]
+    update_audit_flag = json_data["auditFlag"]
     # audit_flag = json_data["auditFlag"]
     audit_row = await AuditResult.filter(task_id=task_id, question_id=question_id)
     assert len(audit_row) == 1
@@ -209,6 +210,7 @@ async def update_result_callback(request: Request, resource: str, pk: str):
     # TODO, 多用户同时更新需要进行修改
     update_result = {user_id: update_audit_result}
     audit_row[0].audit_result = update_result
+    audit_row[0].status = "已审核_" + update_audit_flag
     await audit_row[0].save()
 
 
@@ -264,13 +266,14 @@ async def audit_next_callback(request: Request):
 
 @router.post("/{resource}/get_audit_result")
 async def get_audit_result(request: Request):
-    user_id = str(request.state.admin).split("#")[1]
+    # user_id = str(request.state.admin).split("#")[1]
     json_data = await request.json()
     task_id = json_data["task_id"]
     question_id = json_data["question_id"]
     audit_result_row = await AuditResult.filter(task_id=task_id, question_id=question_id)
-    audit_result = eval(audit_result_row[0].audit_result)
-    return audit_result[user_id]
+    status = audit_result_row[0].status
+    # audit_result = eval(audit_result_row[0].audit_result)
+    return status.split("_")[-1]
 
 
 @router.post("/{resource}/audit/get_config")
