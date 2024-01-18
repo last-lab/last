@@ -71,9 +71,13 @@
     const configPromise = getLabelConfig();
     const dataPromise = getLabelData();
     const labelResultPromise = getLabelResult();
+    const auditResultPromise = getAuditResult()
+
+
+    
 
     async function render_page () {
-        const [config, data, result] = await Promise.all([configPromise, dataPromise, labelResultPromise])
+        const [config, data, result, audit_result] = await Promise.all([configPromise, dataPromise, labelResultPromise, auditResultPromise])
         let answer = config.A
         let question = config.Q
         let model_label = config.model_label
@@ -153,7 +157,15 @@
             console.log("loading...")
         })
             
-        return "test"
+
+        let audit_flag_list = document.querySelectorAll('.audit_flag')
+        console.log(audit_flag_list)
+        console.log(audit_result)
+        for (let i =0; i<audit_flag_list.length; i++){
+            if (audit_flag_list[i].value == audit_result){
+                audit_flag_list[i].checked=true
+            }
+        }
         
     }
         
@@ -821,19 +833,19 @@
             <span>审核选项 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <div>
                 <label>
-                    <input type="radio" name="auditType" value="确认">
+                    <input type="radio" class="audit_flag" name="auditType" value="确认">
                     确认
                 </label>
             </div>
             <div>
                 <label>
-                    <input type="radio" name="auditType" value="有异议" id="problem">
+                    <input type="radio" class="audit_flag" name="auditType" value="有异议" id="problem">
                     有异议
                 </label>
             </div>
             <div>
                 <label>
-                    <input type="radio" name="auditType" value="有问题">
+                    <input type="radio" class="audit_flag" name="auditType" value="有问题">
                     此题存在问题，无法做答
                 </label>
             </div>
@@ -843,27 +855,46 @@
 
 <button class="button" type="submit" onclick="submitForm()">更新</button>
 <script>
-    getAuditResult().then((audit_result) =>{
-        console.log(audit_result);
-        if(audit_result == '确认'){
-            document.getElementById('confirm').checked=true;
-        }else{
-            document.getElementById('problem').checked=true;
-        }
-    });
-
 
     async function submitForm() {
         // 提交结果
         const radios = document.getElementsByName("auditType");
 
         const checkedRadio = [...radios].find(r => r.checked);
-        var auditResult = checkedRadio.value;
+        var auditFlag = checkedRadio.value;
+        const auditResult = {}
+        // 不知道为啥函数的调用没反应，这里将所有的选项给他放在一起
+        const label_studio_option = document.querySelectorAll(".ant-form-inline")
+        console.log(label_studio_option)
+        label_studio_option.forEach(function(sub_option, index){
+            for (let i=0; i<sub_option.length; i++){
+                // 这段逻辑比较复杂，如果是多选框，就要用列表放，如果是单选框就直接放
+                if(sub_option[i].type == 'radio'){
+                    if(sub_option[i].checked){
+                        auditResult[String(index)] = sub_option[i].value
+                    }
+                }
+                else{
+                    if (auditResult[String(index)] == undefined){
+                        auditResult[String(index)] = []
+                    }
+                    if (sub_option[i].checked){
+                        auditResult[String(index)].push(sub_option[i].name)
+                    }
+                }
+            }
+            if (auditResult[String(index)].length == 0){
+                delete(auditResult[String(index)])
+            }
+        })
+
         var formData = {
             auditResult: auditResult,
             question_id: question_id,
             task_id: task_id,
             risk_level: risk_level,
+            labeling_method: labeling_method,
+            auditFlag: auditFlag,
         }
         $.ajax({
             type: 'POST',
