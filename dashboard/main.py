@@ -26,7 +26,8 @@ from dashboard.providers import (  # GitHubProvider,; GoogleProvider,
     import_export_provider,
 )
 from dashboard.tasks import rearq
-from last.llms.tools.check_alives import run_check_model_api_alives
+
+# from last.llms.tools.check_alives import run_check_model_api_alives
 from last.services import enums, middlewares
 from last.services.app import app as admin_app
 from last.services.exceptions import (
