@@ -198,6 +198,9 @@ async def update_result_callback(request: Request, resource: str, pk: str):
     task_id = json_data["task_id"]
     update_audit_result = json_data["auditResult"]
     update_audit_flag = json_data["auditFlag"]
+    labeling_method = json_data["labeling_method"]
+    risk_level = json_data["risk_level"]
+    update_audit_result = convert_audit_data(labeling_method, update_audit_result, risk_level)
     # audit_flag = json_data["auditFlag"]
     audit_row = await AuditResult.filter(task_id=task_id, question_id=question_id)
     assert len(audit_row) == 1
