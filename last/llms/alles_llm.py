@@ -39,7 +39,46 @@ from .model.http_xiaohui_api_model import XiaohuiAPILLMModel
 from .model.http_bigsea_api_model import BigSeaAPILLMModel
 from .model.http_starbitech_api_model import StarbitechAPILLMModel
 from .model.http_wind_api_model import WindAPILLMModel
+from .model.labrewardmodel_api_model import LabRewardModelAPILLMModel
 
+
+class RewardModel(BaseModel):
+    model: str = None
+    
+    async def __call__(
+        self,
+        prompt: str,
+        messages: Optional[List[dict]] = None,
+        **kwargs: Any,
+    ) -> str:
+        """
+            工厂方法
+        """
+        if self.model.lower().startswith("labrewardmodel"):
+            api_key = os.environ["LAB_REWARD_MODEL_API_TOKEN"]
+
+        params = {
+            "api_key": api_key,
+        }
+        if self.model.lower() == "labrewardmodel":
+            model = LabRewardModelAPILLMModel(**params)
+        else:
+            raise NotImplementedError()
+
+        response = await model.generate(
+            messages=messages,
+        )
+        
+        return response
+
+    @property
+    def _identifying_params(self) -> Mapping[str, Any]:
+        """Get the identifying parameters."""
+        return {"model_name": self.model}
+
+    @property
+    def _llm_type(self) -> str:
+        return "custom"
 
 class AllesChatLLM(BaseModel):
     model: str = None

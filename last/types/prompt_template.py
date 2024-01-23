@@ -41,6 +41,8 @@ class PromptGenerator(object):
                     prompt = messages[0]["content"]
                 except Exception as e:
                     print("generate critic system prompt error: %s" % e)
+            elif model_name.lower() == "labrewardmodel":
+                return question.content
         else:
             pass
         return prompt
@@ -61,7 +63,7 @@ class PromptGenerator(object):
         # 先mock一下
         prompt = None
         if model_type is llm.LLMType.critic:
-            prompt = PromptGenerator.gen_critic_prompt(*msgs)
+            prompt = PromptGenerator.gen_critic_prompt(model_name, *msgs)
         else:
             prompt = msgs[0].content
         
@@ -69,7 +71,7 @@ class PromptGenerator(object):
         return system_prompt, prompt
     
     @staticmethod
-    def gen_critic_prompt(question: Message, response: Message, correct_ans: Message, sheet_name: Message, prompt_id: Message) -> str:
+    def gen_critic_prompt(model_name: str, question: Message, response: Message, correct_ans: Message, sheet_name: Message, prompt_id: Message) -> str:
         """critic prompt 当前通过外部脚本生成
 
         Args:
@@ -82,6 +84,8 @@ class PromptGenerator(object):
             str: critic model 的 prompt
         """
         prompt = None
+        if model_name.lower() == "labrewardmodel":
+            return str(response.content)
         try:
             prompt_id = prompt_id.content
             module_name = scripts[prompt_id]

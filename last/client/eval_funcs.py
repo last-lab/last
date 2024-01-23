@@ -39,7 +39,7 @@ async def AI_eval(
         endpoint=llm_model["endpoint"],
         access_key=llm_model["access_key"],
     )
-
+    critic_model_name = critic_model["name"]  # 这个地方有个变量类型转换!!!!所以先取出模型名字
     if plan.eval_type == EvaluationType.auto_ai_critique and critic_model["name"] != 'null':
         critic_model = LLM(
             name=critic_model["name"],
@@ -104,11 +104,12 @@ async def AI_eval(
         sheet_name = qa_record.sheet_name
         # 外部脚本处理评判结果
         try:
-            critic = extract(str(critic_msg))
+            critic = extract(str(critic_msg), critic_model_name)
             critic = Message(role=MessageRole.Chat, content=str(critic))
             reason = critic_msg
         except Exception as e:
             # 模型拒绝回答时 评分设为 None
+            print(e)
             critic = Message(role=MessageRole.Chat, content="None")
             reason = Message(role=MessageRole.Chat, content="评测模型输出格式异常或未执行自动评测")
         new_qa_record = QARecord(sheet_name=sheet_name, question=question, answer=response, critic=critic, reason=reason)
