@@ -36,6 +36,7 @@ async def audit_view(
         "risk_level": request.query_params["risk_level"],
         "model_resource": model_resource,
         "resources": resources,
+        "selected_list_string": request.query_params["selected_list_string"],
     }
     # 点击了标注之后，需要根据传回来的参数，主要是数据集的名称，标注方式
     # 载入数据，丢一个新的界面出去
@@ -51,12 +52,12 @@ async def audit_view(
         )
 
 
-@router.get("/{resource}/revise")
+@router.get("/{resource}/revise/{pk}")
 async def revise_label_resut(request: Request, resource):
     context = {
         "request": request,
         "resource": resource,
-        "labels": ast.literal_eval(request.query_params["audit_method"]),
+        "labels": ast.literal_eval(request.query_params["labeling_method"]),
     }
     try:
         return templates.TemplateResponse(
@@ -140,6 +141,7 @@ async def get_dataset_brief_from_db(request: Request, resource: str):
                         "task_id": task_id,
                         "labeling_method": label_result["labeling_method"],
                         "risk_level": label_result["risk_level"],
+                        "label_status": label_result["status"],
                     }
                 )
     return res_list
@@ -227,32 +229,31 @@ async def audit_next_callback(request: Request):
     label_method = eval(html.unescape(json_data["labeling_method"]))
     # filter_dict = eval(json_data["filter"]) # {"model_label": '4'} / None /
     risk_level = json_data["risk_level"]
+    search_index_list = [
+        int(element) - 1 for element in json_data["selected_list_string"].split(",")
+    ]
     # audit_item = await AuditResult.filter(task_id=task_id, **filter_dict, status="未审核")
     # 从labelpage这个表中，基于user_id, question_id, task_id找到对应的记录
     auditpage_task_row = await AuditPage.filter(task_id=task_id)
-    assert len(auditpage_task_row) == 1
     audit_user_item_list = eval(auditpage_task_row[0].audit_user)[user_id]
-    assert current_question_index in audit_user_item_list
-    # 获取current_question_index在assign_user_item_list中的索引
-    current_item_index = audit_user_item_list.index(current_question_index)
     audit_flag = eval(auditpage_task_row[0].audit_flag)
-    # 下一audit的question_id
-    search_index = (current_item_index + 1) % len(audit_user_item_list)
-    while True:
-        if audit_flag[user_id][search_index]:
-            # 如果下一个题已经被审核了，就往后查找
-            search_index = (search_index + 1) % len(audit_user_item_list)
-        else:
-            # 如果下一个题是false，则把这个题拿出去
-            next_flag = True
-            next_question_index = search_index
-            if next_question_index == current_item_index:
-                next_flag = False
-            break
+    # 获取current_question_index在assign_user_item_list中的索引
+    next_element = None
+    if len(search_index_list) == 1:
+        next_flag = False
+    else:
+        next_flag = False
+        for element in search_index_list:
+            if (element) != current_question_index:
+                search_item_index = audit_user_item_list.index(element)
+                if not audit_flag[user_id][search_item_index]:
+                    next_flag = True
+                    next_element = element
+                    break
 
     if next_flag:
         return {
-            "question_id": audit_user_item_list[next_question_index] + 1,
+            "question_id": next_element + 1,
             "task_id": task_id,
             "labeling_method": label_method,
             "risk_level": risk_level,
@@ -343,18 +344,21 @@ async def get_label_reset(request: Request, resource: str):
     data = await LabelResult.filter(task_id=task_id, question_id=question_id)
     raw_labeling_result = data[0].raw_labeling_result
     # 如果是使用model标注，则直接构造一个结果返回
-    if "Model" in labeling_method:
-        data = await AuditResult.filter(task_id=task_id, question_id=question_id)
-        risk_level_dict = {"1": "高度敏感", "2": "中度敏感", "3": "低度敏感", "4": "中性词"}
-        if data[0].model_label == "nan":
-            model_label = ""
-        else:
-            model_label = risk_level_dict[data[0].model_label]
-        return (
-            "[{'value': {'choices': ['"
-            + model_label
-            + "']}, 'id': 'ONWk5-qNZn', 'from_name': 'rating', 'to_name': 'risk_dialog', 'type': 'choices', 'origin': 'manual'}]"
-        )
+    if raw_labeling_result is not None:
+        return raw_labeling_result
+    else:
+        if "Model" in labeling_method:
+            data = await AuditResult.filter(task_id=task_id, question_id=question_id)
+            risk_level_dict = {"1": "高度敏感", "2": "中度敏感", "3": "低度敏感", "4": "中性词"}
+            if data[0].model_label == "nan":
+                model_label = ""
+            else:
+                model_label = risk_level_dict[data[0].model_label]
+            return (
+                "[{'value': {'choices': ['"
+                + model_label
+                + "']}, 'id': 'ONWk5-qNZn', 'from_name': 'rating', 'to_name': 'risk_dialog', 'type': 'choices', 'origin': 'manual'}]"
+            )
     return raw_labeling_result
 
 

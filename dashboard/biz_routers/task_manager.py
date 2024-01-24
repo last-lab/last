@@ -256,6 +256,7 @@ async def create_model_task_callback(
     file: UploadFile = File(...),
     fileName: str = Form(...),
     deadline: str = Form(...),
+    labelAssignments: str = Form(...),
     auditAssignments: str = Form(...),
 ):
     """_summary_
@@ -272,8 +273,22 @@ async def create_model_task_callback(
     """
     file_content = await file.read()
     audit_assignments = eval(auditAssignments)
+    label_assignments = eval(labelAssignments)
     sheet_name_list, qa_list = split_string_to_list(fileName, file_content)
     task_id = uuid4()
+
+    assign_dict = {user["labeler"]: user["taskCount"] for user in label_assignments}
+    (
+        item_assign_user_dict,
+        assign_user_item_dict,
+        assign_user_item_length,
+        assign_user_labeling_progress,
+    ) = distribute_labeling_task(len(qa_list), assign_dict)
+    labeling_flag = {
+        user: [False for _ in range(len(assign_user_item_dict[user]))]
+        for user in assign_user_item_dict
+    }
+
     audit_dict = {user["auditor"]: user["taskCount"] for user in audit_assignments}
     (
         item_audit_user_dict,
@@ -300,7 +315,7 @@ async def create_model_task_callback(
         dataset_uid=dataset_uid,
         create_time=current_time,
         end_time=deadline,
-        assign_user="None",
+        assign_user=label_assignments,
         audit_user=audit_assignments,
         risk_level="0级风险",
         sheet_name_list=sheet_name_list,
@@ -315,10 +330,10 @@ async def create_model_task_callback(
         dataset=fileName,
         dataset_uid=dataset_uid,
         end_time=deadline,
-        assign_user="None",
-        assign_length="None",
-        labeling_progress="None",
-        labeling_flag="None",
+        assign_user=assign_user_item_dict,
+        assign_length=assign_user_item_length,
+        labeling_progress=assign_user_labeling_progress,
+        labeling_flag=labeling_flag,
     ).save()
 
     # 创建一个task res表，将这个任务的结果存放起来
@@ -331,8 +346,8 @@ async def create_model_task_callback(
             question_id=index + 1,
             question=question,
             answer=answer,
-            status="标注完成",
-            assign_user=["None"],
+            status="未标注",
+            assign_user=item_assign_user_dict[index],
             risk_level="0级风险",
             sheet_name=sheet_name,
         ).save()

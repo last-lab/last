@@ -1,21 +1,14 @@
 {% extends layout %}
 {% block page_body %}
+<link href="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/css/main.css" rel="stylesheet">
+<script src="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/js/main.js"></script>
+
 <style>
-
-    .button {
-        width: 80px;
-        /* 设置按钮宽度为80px */
-        height: 40px;
-        padding: 10px;
-        font-size: 16px;
-    }
-
-
     .back-btn {
         padding: 10px 15px;
         border-radius: 4px;
         border: none;
-        background-color: #3498db;
+        background-color: gray;
         color: white;
         cursor: pointer;
         width: 80px;
@@ -25,13 +18,10 @@
         font-size: 16px;
         }
 
-    .back-btn:hover {
+.back-btn:hover {
     background-color: #2980b9;
     }
-
 </style>
-<link href="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/css/main.css" rel="stylesheet">
-<script src="https://unpkg.com/@heartexlabs/label-studio@1.4.0/build/static/js/main.js"></script>
 
 <body>
 <div class="btn-group" role="group" style="width: 100px">
@@ -40,7 +30,9 @@
         <label for={{ label }} type="button" class="btn">{{ label }}</label>
     {% endfor %}
 </div>
+
 <div id="studio"></div>
+
 <!-- TODO, 选择标注的labelstudio的前端怎么写需要调研一下 -->
 <script>
     function disabled_option(){
@@ -57,9 +49,7 @@
             label_studio_option[i].disabled = false
         }
     }
-
     const queryString = window.location.search;
-
     // 解析查询字符串中的参数
     const urlParams = new URLSearchParams(queryString);
 
@@ -68,165 +58,136 @@
     const task_id = urlParams.get('task_id');
     const risk_level = urlParams.get('risk_level');
     const labeling_method = urlParams.get('labeling_method').match(/'([^']+)'/)[1];
+    let tags = [];
+    let tagView = '';
+    let text = '';
+    let predictions = [];
+    let annotations = [];
+    const interfaces = [
+        "panel",
+        "submit",
+        "controls",
+        "instruction",
+        "infobar",
+        "topbar",
+        "side-column",
+        "annotations:menu",
+        "annotations:add-new",
+        "annotations:delete",
+        "annotations:current",
+        "annotations:tabs",
+        "annotations:history",
+        "annotations:view-all",
+        "predictions:menu",
+        "predictions:tabs",
+        "edit-history"
+    ]
+
+    // 标注方法选择
+    var label_select;
     const configPromise = getLabelConfig();
     const dataPromise = getLabelData();
-    const labelResultPromise = getLabelResult();
-
-    async function render_page () {
-        const [config, data, result] = await Promise.all([configPromise, dataPromise, labelResultPromise])
-        let answer = config.A
-        let question = config.Q
-        let model_label = config.model_label
-        let model_reason = config.model_reason
-        let text = question + "\n" + answer
-        let predictions
-        console.log(result)
-        if(model_reason != 'None'){
-            text += ("\n" + model_reason) 
-        }
-
-        let userID = config.user_id
-        if (data) {
-            predictions = data.predictions;
-        }
-        const studio = document.querySelector('#label-studio')
-        
-        if (studio) {
-            studio.remove()
-        }
-        const root = document.createElement('div');
-        root.id = 'label-studio'
-        document.getElementById('studio').append(root)
-        answer = replaceSpecialCharacters(answer)
-        question = replaceSpecialCharacters(question)
-        model_reason = replaceSpecialCharacters(model_reason)
-        tagView = tag_view(question, answer, model_reason, risk_level, labeling_method)
-        const interfaces = [
-            "panel",
-            "controls",
-            "side-column",
-            "instruction",
-            "infobar",
-            "topbar",
-            "annotations:menu",
-            "annotations:add-new",
-            "annotations:delete",
-            "annotations:current",
-            "annotations:tabs",
-            "annotations:history",
-            "annotations:view-all",
-            "predictions:menu",
-            "predictions:tabs",
-            "auto-annotation",
-            "edit-history"
-        ]
-        const labelStudio = new LabelStudio(root, {
-            config: tagView,
-            interfaces: interfaces,
-            user: {
-                pk: 1,
-                firstName: userID,
-                lastName: " "
-            },
-            task: {
-                // https://labelstud.io/guide/export#Label-Studio-JSON-format-of-annotated-tasks
-                annotations: [
-                    {
-                    result: JSON.parse(result.replace(/'/g, '"'))
-                    }
-                ],
-                predictions: predictions,
-                id: 1,
-                data: {
-                    text: text
-                }
+    const modelLabelResultPromise = getLabelResult()
+    function render_page () {
+        Promise.all([configPromise, dataPromise, modelLabelResultPromise]).then(res => {
+            let config
+            let data
+            let nextPageConifg
+            let modelLabelResult
+            [config, data, modelLabelResult] = res
+            answer = config.A;
+            question = config.Q;
+            text = question + "\n" + answer;
+            userID = config.user_id;
+            // const labels = tags.map((tag) => {
+            //     return `<Label value="${tag.value}" background="${tag.background}" />`
+            // }).join('\n')
+            // TODO answer现在假设只有一条，后面需要写一个js代码生成下面几段js代码
+            // 判断标注
+            answer = replaceSpecialCharacters(answer)
+            question = replaceSpecialCharacters(question)
+            tagView = tag_view(question, answer, 'None', risk_level, labeling_method)
+            if (data) {
+                annotations = data.annotations;
+                predictions = data.predictions;
             }
-        })
-            
-            
-        labelStudio.on("labelStudioLoad", (LS) => {
-            // Perform an action when Label Studio is loaded
-            const c = LS.annotationStore.addAnnotation({
-                userGenerate: true
+            const studio = document.querySelector('#label-studio')
+            if (studio) {
+                studio.remove()
+            }
+            const root = document.createElement('div');
+            root.id = 'label-studio'
+            document.getElementById('studio').append(root)
+            const labelStudio = new LabelStudio(root, {
+                config: tagView,
+                interfaces: interfaces,
+                user: {
+                    pk: 1,
+                    firstName: userID,
+                    lastName: ' ',
+                },
+                task: {
+                    annotations: [
+                        {
+                        result: JSON.parse(modelLabelResult.replace(/'/g, '"'))
+                        }
+                    ],
+                    predictions: predictions,
+                    id: 1,
+                    data: {
+                        text: text
+                    }
+                }
             });
-            LS.annotationStore.selectAnnotation(c.id);
-            console.log("loading...")
+
+            labelStudio.on("labelStudioLoad", (LS) => {
+                // Perform an action when Label Studio is loaded
+                const c = LS.annotationStore.addAnnotation({
+                    userGenerate: true
+                });
+                LS.annotationStore.selectAnnotation(c.id);
+                console.log("loading...")
+            });
+
+           
         })
-            
-        return "test"
-        
     }
-        
     function select(name) {
+        label_select = name
         document.getElementById(name).checked = true
+        render_page()
     }
-    // TODO 初始态，标注方法列表的第一个
-    select(labeling_method)
+    // TODO 初始态，标注方法列表的第一个，其实目前就一种标注方法
+    select(labeling_method);
 
     $("input:radio[name='btn-radio-basic']").change((e) =>{
+        console.log(e.target.id);
         select(e.target.id)
     });
 
 
-    render_page().then(e => {
-        console.log(e)
-        })
-    // 
+    window.onload = function(){
+        render_page();
+    }
+
 
     async function getLabelData() {
-        const rsp = await fetch('/admin/lauditpage/audit/get_data', {
+        const rsp = await fetch('/admin/labelpage/labeling/get_data', {
             method: 'post',
         })
         return rsp.json();
     }
 
     async function getLabelConfig() {
-        const rsp = await fetch('/admin/auditpage/audit/get_config', {
+        const rsp = await fetch('/admin/labelpage/labeling/get_config', {
             method: 'post',
-            body: JSON.stringify({
-                "task_id": task_id, 
-                "question_id": question_id,
-                "labeling_method": labeling_method
-            }),
+            body: JSON.stringify({"task_id": task_id, "question_id": question_id}),
             headers: {
                 'Content-Type': 'application/json'
             }
         })
         return rsp.json();
 
-    }
-
-    async function getLabelResult(){
-        const rsp = await fetch('/admin/auditpage/audit/get_label_result', {
-            method: 'post',
-            body: JSON.stringify({
-                "task_id": task_id, 
-                "question_id": question_id,
-                "labeling_method": labeling_method
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        return rsp.json();
-    }
-
-
-    async function getNextPageConfig(){
-        const rsp = await fetch('/admin/auditpage/audit/next',{
-            method: 'post',
-            body: JSON.stringify({
-                "current_question_index": question_id - 1,
-                "task_id": task_id,
-                "labeling_method": '{{labels}}',
-                "risk_level": risk_level,
-                "selected_list_string": '{{selected_list_string}}'
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-                }
-        })
-        return rsp.json();
     }
 
     function replaceSpecialCharacters(text) {
@@ -801,6 +762,69 @@
     }
 
 
+    async function getLabelResult(){
+        const rsp = await fetch('/admin/auditpage/audit/get_label_result', {
+            method: 'post',
+            body: JSON.stringify({
+                "task_id": task_id, 
+                "question_id": question_id,
+                "labeling_method": labeling_method
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        return rsp.json();
+    }
+
+    async function getNextPageConfig(){
+        const rsp = await fetch('/admin/labelpage/labeling/next',{
+            method: 'post',
+            body: JSON.stringify({
+                        "current_question_index": question_id - 1,
+                        "task_id": task_id,
+                        "labeling_method": '{{labels}}',
+                        "risk_level": risk_level,
+                    }),
+            headers: {
+                'Content-Type': 'application/json'
+                }
+        })
+        return rsp.json();
+    }
+
+    function judgeLegalLabeling(annotationList, riskLevel){
+        if (riskLevel != "三级风险"){
+            return true;
+        }else{
+            const risk_type_subrisk_dict = {
+                "领导人相关": 'risk_type_leader',
+                "敏感人物或组织": 'risk_type_person',
+                "政治事件": 'risk_type_policy',
+                "负面言论": 'risk_type_negative',
+                "舆情": 'risk_type_claim',
+                "其他": 'risk_type_other'
+            }
+            // 首先找出来这个标注的二级风险类型
+            for (var i = 0; i< annotationList.length; i++){
+                var riskFlag = annotationList[i].from_name;
+                if (riskFlag == 'risk_type'){
+                    riskType = annotationList[i].value.choices[0];
+                    subRiskName = risk_type_subrisk_dict[riskType];
+                    break;
+                }
+            }
+            // 从annotationList中找出二级风险，然后先判断三级风险中有没有其他二级风险项
+            for (var i = 0; i< annotationList.length; i++){
+                var risk_flag = annotationList[i].from_name;
+                if (risk_flag != 'risk_type' && risk_flag != 'risk_level' && risk_flag != subRiskName){
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
 </script>
 
 <div>
@@ -809,19 +833,19 @@
             <span>审核选项 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <div>
                 <label>
-                    <input type="radio" name="auditType" value="确认">
+                    <input type="radio" name="labelType" value="确认">
                     确认
                 </label>
             </div>
             <div>
                 <label>
-                    <input type="radio" name="auditType" value="有异议" id="problem">
+                    <input type="radio" name="labelType" value="有异议" id="problem">
                     有异议
                 </label>
             </div>
             <div>
                 <label>
-                    <input type="radio" name="auditType" value="有问题">
+                    <input type="radio" name="labelType" value="有问题">
                     此题存在问题，无法做答
                 </label>
             </div>
@@ -829,17 +853,17 @@
     </div>
 </div>
 
-<button class="button" type="submit" onclick="submitForm()">提交</button>
+<button class="back-btn" type="submit" onclick="submitForm()">提交</button>
 <script>
     async function submitForm() {
         // 提交结果
         const nextPageConfig = await getNextPageConfig();
         console.log(nextPageConfig);
-        const radios = document.getElementsByName("auditType");
+        const radios = document.getElementsByName("labelType");
 
         const checkedRadio = [...radios].find(r => r.checked);
-        let auditFlag = checkedRadio.value;
-        const auditResult = {}
+        let labelFlag = checkedRadio.value;
+        const labelResult = {}
         // 不知道为啥函数的调用没反应，这里将所有的选项给他放在一起
         const label_studio_option = document.querySelectorAll(".ant-form-inline")
         console.log(label_studio_option)
@@ -848,44 +872,45 @@
                 // 这段逻辑比较复杂，如果是多选框，就要用列表放，如果是单选框就直接放
                 if(sub_option[i].type == 'radio'){
                     if(sub_option[i].checked){
-                        auditResult[String(index)] = sub_option[i].value
+                        labelResult[String(index)] = sub_option[i].value
                     }
                 }
                 else{
-                    if (auditResult[String(index)] == undefined){
-                        auditResult[String(index)] = []
+                    if (labelResult[String(index)] == undefined){
+                        labelResult[String(index)] = []
                     }
                     if (sub_option[i].checked){
-                        auditResult[String(index)].push(sub_option[i].name)
+                        labelResult[String(index)].push(sub_option[i].name)
                     }
                 }
             }
-            if (auditResult[String(index)].length == 0){
-                delete(auditResult[String(index)])
+            if (labelResult[String(index)].length == 0){
+                delete(labelResult[String(index)])
             }
         })
+
         let formData = {
-            auditResult: auditResult,
+            labelResult: labelResult,
             question_id: question_id,
             task_id: task_id,
             risk_level: risk_level,
             labeling_method: labeling_method,
-            auditFlag: auditFlag,
+            labelFlag: labelFlag,
         }
         console.log(formData)
         $.ajax({
             type: 'POST',
-            url: '/admin/auditpage/audit/' + task_id + '_' + question_id + '/submit',
+            url: '/admin/labelpage/' + task_id + '_' + question_id + '/model_submit',
             data: JSON.stringify(formData),
             contentType: 'application/json',
             success: function(response){
                 console.log(nextPageConfig);
                 // 成功提交之后，根据有没有next往下进行标注
                 if (nextPageConfig.question_id == 'null'){
-                        const briefDataUrl = '/admin/auditpage/show_audit_data/' + '{{task_pk_value}}';
+                        const briefDataUrl = '/admin/labelpage/display/' + '{{task_pk_value}}';
                         window.location.href = briefDataUrl;
                     }else{
-                        const labelingUrl = '/admin/auditpage/audit/' + nextPageConfig.task_id + '_' + nextPageConfig.question_id;
+                        const labelingUrl = '/admin/labelpage/labeling/' + nextPageConfig.task_id + '_' + nextPageConfig.question_id;
                         // 在链接中添加参数
                         const params = {
                             question_id: nextPageConfig.question_id,
@@ -893,7 +918,6 @@
                             labeling_method: urlParams.get('labeling_method'),
                             task_pk_value: '{{task_pk_value}}',
                             risk_level: risk_level,
-                            selected_list_string: '{{selected_list_string}}'
                             // 添加其他参数
                         };
                         const queryString = $.param(params);
@@ -906,14 +930,21 @@
     }
 </script>
 
+
 <button id="back" class="back-btn">返回</button>
 <script>
-    const briefDataUrl =  '/admin/auditpage/show_audit_data/' + '{{task_pk_value}}';
+    // 修改按钮的位置
+    // let btn = document.querySelector(".lsf-button_look_primary")
+    // console.log(btn)
+    // btn.style.position = 'absolute'
+    // btn.style.top = "100px"
+    // btn.style.left= "200px"
+    // console.log(btn)
+    const briefDataUrl = '/admin/labelpage/display/' + '{{task_pk_value}}';
     const backBtn = document.getElementById('back');
     backBtn.addEventListener('click', () => {
         location.href = briefDataUrl;
     });
-
 
     window.onload = function(){
         console.log('============')
@@ -922,9 +953,7 @@
             document.querySelector('#problem').addEventListener('click', enabled_option)
         }, 1000)
     }
-    
-    
 </script>
-
 </body>
+
 {% endblock %}
