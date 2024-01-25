@@ -74,6 +74,7 @@ async def revise_label_resut(request: Request, resource):
         "request": request,
         "resource": resource,
         "labels": ast.literal_eval(request.query_params["labeling_method"]),
+        "task_pk_value": request.query_params["task_pk_value"],
     }
     if "Model" in request.query_params["labeling_method"]:
         try:
