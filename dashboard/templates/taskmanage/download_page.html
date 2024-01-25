@@ -72,6 +72,7 @@
 
 <script>
     const decodedString = '{{sheet_name_list}}'.replace(/&#39;/g, "'")
+    const downloadFileName = '{{dataset_name}}'
     const jsonString = decodedString.replace(/'/g, '"')
     const sheetNameList = JSON.parse(jsonString)
     const downloadBtn = document.getElementById('download')
@@ -95,10 +96,8 @@
     )
     // 状态标识
     downloadBtn.addEventListener('click', async () => {
-        // 输入文件名
-        const filename = prompt('请输入文件名');
         // 拼接完整路径
-        const path = filename + '.xlsx';
+        const path = downloadFileName
         // 生成工作簿
         const workbook = new ExcelJS.Workbook();
 

@@ -387,7 +387,7 @@ class ShowTaskLabelingProgress(Display):
         total_question = len(info_list)
         labeled_count = 0
         for info in info_list:
-            if info.status in ["已标注", "已审核"]:
+            if "已标注" in info.status or "已审核" in info.status:
                 labeled_count += 1
 
         if labeled_count == total_question:

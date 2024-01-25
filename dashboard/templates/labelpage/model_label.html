@@ -839,14 +839,14 @@
             </div>
             <div>
                 <label>
-                    <input type="radio" name="labelType" value="有异议" id="problem">
+                    <input type="radio" name="labelType" value="有异议" id="problem1">
                     有异议
                 </label>
             </div>
             <div>
                 <label>
-                    <input type="radio" name="labelType" value="有问题">
-                    此题存在问题，无法做答
+                    <input type="radio" name="labelType" value="有问题" id="problem2">
+                    此题存在疑问
                 </label>
             </div>
         </div>
@@ -950,7 +950,12 @@
         console.log('============')
         setTimeout(function() {
             disabled_option()
-            document.querySelector('#problem').addEventListener('click', enabled_option)
+            document.querySelector('#problem1').addEventListener('click', enabled_option)
+        }, 1000)
+
+        setTimeout(function() {
+            disabled_option()
+            document.querySelector('#problem2').addEventListener('click', enabled_option)
         }, 1000)
     }
 </script>
