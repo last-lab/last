@@ -187,9 +187,9 @@ async def submit_callback(request: Request, resource: str, pk: str):
     auditpage_row[0].audit_flag = audit_flag
     await auditpage_row[0].save()
     # 需要修改一下labelresult中的状态，将对应的question的状态变成已审核
-    label_result = await LabelResult.filter(task_id=task_id, question_id=question_id)
-    label_result[0].status = "已审核"
-    await label_result[0].save()
+    # label_result = await LabelResult.filter(task_id=task_id, question_id=question_id)
+    # label_result[0].status = "已审核"
+    # await label_result[0].save()
 
 
 @router.post("/{resource}/audit/{pk}/update")
