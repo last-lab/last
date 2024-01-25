@@ -466,7 +466,7 @@ async def get_label_result(request: Request):
     task_id = json_data["task_id"]
     sheet_name = json_data["sheet_name"]
     label_result = await LabelResult.filter(task_id=task_id, sheet_name=sheet_name).values(
-        "question", "answer", "labeling_result"
+        "question", "answer", "labeling_result", "status"
     )
 
     audit_result = await AuditResult.filter(task_id=task_id, sheet_name=sheet_name).values(
@@ -474,6 +474,8 @@ async def get_label_result(request: Request):
     )
     # 合并一下audit_reuslt 和 label_reuslt
     for label_result_, audit_result_ in zip(label_result, audit_result):
+        label_status = label_result_.pop("status")
+        label_result_["label_status"] = label_status
         label_result_.update(audit_result_)
     return label_result
 

@@ -156,6 +156,7 @@
                 '<th>答案</th>' +
                 '<th>标注结果</th>' +
                 '<th>标注者</th>' +
+                '<th>标注状态</th>' +
                 '<th>审核结果</th>' +
                 '<th>审核者</th>' +
                 '<th>模型评价</th>' +
@@ -212,12 +213,13 @@
                         questionCell = '<td style="background-color: yellow">' + data[i].question + '</td>';
                         answerCell = '<td style="background-color: yellow">' + data[i].answer + '</td>';
                     }
-
+                    
                     tableHtml += '<tr>' +
                         questionCell +
                         answerCell +
                         '<td>' + risk_level + '</td>' +
                         '<td>' + label_user + '</td>' +
+                        '<td>' + data[i].label_status + '</td>' +
                         '<td>' + audit_risk_level + '</td>' +
                         '<td>' + audit_user + '</td>' +
                         '<td>' + data[i].model_label + '</td>' +
