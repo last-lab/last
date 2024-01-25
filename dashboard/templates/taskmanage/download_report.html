@@ -127,8 +127,12 @@
                     if (audit_user_dict == null){
                         audit_user = null;
                         audit_risk_level = null;
-                        if(data[i].model_label!='None' && data[i].model_label != null ){
-                            audit_user = '自动审核'
+                        if(risk_level != null && risk_level != 'None'){
+                            audit_user = "人工标注结果"
+                            audit_risk_level = risk_level
+                        }else if(data[i].model_label!='None' && data[i].model_label != null && risk_level == null )
+                        {
+                            audit_user = '模型标注审核'
                             audit_risk_level = data[i].model_label
                         }
                     } else{
