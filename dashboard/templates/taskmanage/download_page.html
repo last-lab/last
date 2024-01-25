@@ -118,7 +118,7 @@
                     const excelCell = worksheet.getCell(i + 1, j + 1);
                     excelCell.value = cellValue;
 
-                    if (cellValue === '已审核_有问题') {
+                    if (cellValue === '已审核_有问题' || cellValue === '已标注_有问题') {
                         for (let k = 0; k < cells.length; k++) {
                             worksheet.getCell(i + 1, k + 1).style = {
                                 fill: {
@@ -159,9 +159,9 @@
                 '<th>标注状态</th>' +
                 '<th>审核结果</th>' +
                 '<th>审核者</th>' +
+                '<th>审核状态</th>' +
                 '<th>模型评价</th>' +
                 '<th>模型原因</th>' +
-                '<th>审核状态</th>' +
                 '</tr>' +
                 '</thead>' +
                 '<tbody>'
@@ -222,9 +222,9 @@
                         '<td>' + data[i].label_status + '</td>' +
                         '<td>' + audit_risk_level + '</td>' +
                         '<td>' + audit_user + '</td>' +
+                        '<td>' + status + '</td>' +
                         '<td>' + data[i].model_label + '</td>' +
                         '<td>' + data[i].model_reason + '</td>' +
-                        '<td>' + status + '</td>' +
                         '</tr>';
                 }
                 tableHtml += '</tbody>' +
