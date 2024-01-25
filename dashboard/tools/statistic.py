@@ -31,6 +31,10 @@ def statistic_dataset(dataset_path):
 def convert_labelstudio_result_to_string(labeling_method, labeling_result_list, risk_level):
     # TODO，目前就实现了当使用了判断标注的流程
     _labeling_method = eval(html.unescape(labeling_method))
+
+    if _labeling_method == ["Model"]:
+        refine_result = {"风险程度": risk_level_dict[labeling_result_list]}
+
     if _labeling_method == ["判断标注"]:
         # TODO，这个函数需要修改
         refine_result = labeling_result_list[0]["value"]["choices"][0]

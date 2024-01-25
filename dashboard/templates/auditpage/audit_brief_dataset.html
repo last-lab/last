@@ -53,13 +53,16 @@
                 // 创建表头
                 const thead = $('<thead></thead>');
                 const headerRow = $('<tr></tr>');
-                const headers = ['ID', '问题', '答案', '当前状态', '模型标注', '模型原因', '操作'];
+                const headers = ['ID', '问题', '答案', '人工标注', '当前状态', '模型标注', '模型原因', '操作'];
                 headers.forEach(function (header) {
                     if (header=='当前状态'){
                         headerRow.append(`<th>当前状态<select class="status"></select></th>`)
                     }else if(header == '模型标注'){
                         headerRow.append(`<th>模型标注<select class="label"></select></th>`)
-                    }else{
+                    }else if(header == '人工标注'){
+                        headerRow.append(`<th>人工标注<select class="human_label"></select></th>`)
+                    }
+                    else{
                         headerRow.append($('<th></th>').text(header))
                     }
                 })
@@ -80,43 +83,19 @@
                     const answerCell = $('<td></td>').text(item.answer);
                     row.append(answerCell);
 
+                    const labelStatusCell = $('<td></td>').text(item.label_status);
+                    row.append(labelStatusCell);
                     const statusCell = $('<td></td>').text(item.status);
                     row.append(statusCell);
 
                     row.append(`<td>${item.model_label}</td>`);
                     row.append(`<td>${item.model_reason}</td>`);
-
+                    window.labelingMethod = item.labeling_method
+                    window.riskLevel = item.risk_level
+                    window.taskId = item.task_id
                     const actionCell = $(`<td></td>`);
-                    const actionLink = $('<a></a>').text(item.action);
-                    // 添加条件判断来设置不同的跳转链接和参数
-                    // 分未审核，已审核两种
-                    if (item.action === '审核') {
-                        const auditUrl = '/admin/auditpage/audit/' + item.task_id + '_' + item.question_id;
-                        // 在链接中添加参数
-                        const params = {
-                            question_id: item.question_id,
-                            task_id: item.task_id,
-                            task_pk_value: '{{pk}}',
-                            risk_level: item.risk_level,
-                            labeling_method: item.labeling_method,
-                            // 添加其他参数
-                        };
-                        const queryString = $.param(params);
-                        actionLink.attr('href', auditUrl + '?' + queryString);
-                    } else {
-                        // 设置其他页面的跳转链接
-                        const auditUrl = '/admin/auditpage/revise/';
-                        // 链接中添加参数
-                        const params = {
-                            labeling_method: item.labeling_method,
-                            task_id: item.task_id,
-                            question_id: item.question_id,
-                            task_pk_value: '{{pk}}',
-                            risk_level: item.risk_level,
-                        };
-                        const queryString = $.param(params);
-                        actionLink.attr('href', auditUrl + '?' + queryString);
-                    }
+                    const actionLink = $('<a style="color: blue"></a>').text(item.action);
+                    
                     actionCell.append(actionLink);
                     row.append(actionCell);
                     tbody.append(row);
@@ -130,6 +109,7 @@
                     // pageLength: 450, // 默认每页显示的记录数
                     ordering: false
                 });
+                $('.item a').on('click', handleAuditClick);
                 resolve()
             },
             error: function (xhr, status, error) {
@@ -138,11 +118,54 @@
         });
     })
 
+    function handleAuditClick(event) {
+        // event.preventDefault();
+        const row = $(this).closest('.item')[0];
+        let row_action = row.cells[7].innerText
+        const questionId = row.cells[0].innerText;
+        if (row_action=='审核'){
+            const auditUrl = '/admin/auditpage/audit/' + taskId + '_' + questionId;
+            let selected_list = []
+            let table_row = document.querySelectorAll(".item")
+            for(let i =0; i<table_row.length; i++){
+                if(table_row[i].style.display != 'none'){
+                    selected_list.push(Number(table_row[i].dataset.id) + 1)
+                }
+            }
+            const params = {
+                question_id: questionId,
+                task_id: taskId,
+                task_pk_value: '{{pk}}',
+                risk_level: riskLevel,
+                labeling_method: labelingMethod,
+                selected_list_string: selected_list.join(',')
+                // 添加其他参数
+            }
+            const queryString = $.param(params);
+            const fullUrl = auditUrl + '?' + queryString;
+            window.location.href = fullUrl
+        }else {
+            // 设置其他页面的跳转链接
+            const auditUrl = '/admin/auditpage/revise/' + taskId + '_' + questionId;
+            // 链接中添加参数
+            const params = {
+                labeling_method: labelingMethod,
+                task_id: taskId,
+                question_id: questionId,
+                task_pk_value: '{{pk}}',
+                risk_level: riskLevel,
+            };
+            const queryString = $.param(params);
+            const fullUrl = auditUrl + '?' + queryString;
+            window.location.href = fullUrl
+        }
+    }
+
     function unique_model_label() {
         const data_table = document.querySelectorAll('.item')
         const distinct_label_dict = {}
         data_table.forEach(x => {
-            let model_label = x.cells[4].innerHTML
+            let model_label = x.cells[5].innerHTML
             if (!(model_label in distinct_label_dict)) {
                 distinct_label_dict[model_label] = [x.dataset.id]
             } else {
@@ -185,6 +208,8 @@
                                             <option value="已审核_有异议">已审核_有异议</option>
                                             <option value="已审核_有问题">已审核_有问题</option>
                                             <option value="未审核">未审核</option>`
+
+        
         status_select_button.addEventListener('change', (e) => {
             const selected_value = e.target.value
             if (selected_value === 'all') {
@@ -201,7 +226,34 @@
                 })
             }
         })
+
+        const label_select_button = document.querySelector('select.human_label')
+        label_select_button.innerHTML = `<option checked value="all">全部</option>
+                                            <option value="已标注_确认">已标注_确认</option>
+                                            <option value="已标注_有异议">已标注_有异议</option>
+                                            <option value="已标注_有问题">已标注_有问题</option>
+                                            <option value="未标注">未标注</option>`
+
+        
+                                            label_select_button.addEventListener('change', (e) => {
+            const selected_value = e.target.value
+            if (selected_value === 'all') {
+                data_table.forEach((x) => {
+                    x.style.display = 'table-row';
+                })
+            } else {
+                data_table.forEach((x) => {
+                    if (!(selected_value === x.cells[3].innerHTML)) {
+                        x.style.display = 'none'
+                    } else {
+                        x.style.display = 'table-row'
+                    }
+                })
+            }
+        })
     })
+
+
 
 </script>
 

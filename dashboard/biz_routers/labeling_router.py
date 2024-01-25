@@ -44,16 +44,28 @@ async def labeling_view(
     }
     # 点击了标注之后，需要根据传回来的参数，主要是数据集的名称，标注方式
     # 载入数据，丢一个新的界面出去
-    try:
-        return templates.TemplateResponse(
-            f"{resource}/label.html",
-            context=context,
-        )
-    except TemplateNotFound:
-        return templates.TemplateResponse(
-            "label.html",
-            context=context,
-        )
+    if "Model" in request.query_params["labeling_method"]:
+        try:
+            return templates.TemplateResponse(
+                f"{resource}/model_label.html",
+                context=context,
+            )
+        except TemplateNotFound:
+            return templates.TemplateResponse(
+                "model_label.html",
+                context=context,
+            )
+    else:
+        try:
+            return templates.TemplateResponse(
+                f"{resource}/label.html",
+                context=context,
+            )
+        except TemplateNotFound:
+            return templates.TemplateResponse(
+                "label.html",
+                context=context,
+            )
 
 
 @router.get("/{resource}/revise")
@@ -63,16 +75,28 @@ async def revise_label_resut(request: Request, resource):
         "resource": resource,
         "labels": ast.literal_eval(request.query_params["labeling_method"]),
     }
-    try:
-        return templates.TemplateResponse(
-            f"{resource}/revise.html",
-            context=context,
-        )
-    except TemplateNotFound:
-        return templates.TemplateResponse(
-            "revise.html",
-            context=context,
-        )
+    if "Model" in request.query_params["labeling_method"]:
+        try:
+            return templates.TemplateResponse(
+                f"{resource}/model_label_revise.html",
+                context=context,
+            )
+        except TemplateNotFound:
+            return templates.TemplateResponse(
+                "model_label_revise.html",
+                context=context,
+            )
+    else:
+        try:
+            return templates.TemplateResponse(
+                f"{resource}/revise.html",
+                context=context,
+            )
+        except TemplateNotFound:
+            return templates.TemplateResponse(
+                "revise.html",
+                context=context,
+            )
 
 
 @router.get("/{resource}/display/{pk}")
@@ -111,6 +135,18 @@ async def display(
             "brief_dataset.html",
             context=context,
         )
+
+
+@router.post("/{resource}/get_label_status")
+async def get_audit_result(request: Request):
+    # user_id = str(request.state.admin).split("#")[1]
+    json_data = await request.json()
+    task_id = json_data["task_id"]
+    question_id = json_data["question_id"]
+    label_result_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
+    status = label_result_row[0].status
+    # audit_result = eval(audit_result_row[0].audit_result)
+    return status.split("_")[-1]
 
 
 @router.post("/{resource}/get_dataset_brief_data")
@@ -241,6 +277,89 @@ async def submit_callback(request: Request, resource: str, pk: str):
     labeling_flag[user_id][label_item_index] = True
     labelpage_row[0].labeling_flag = labeling_flag
     await labelpage_row[0].save()
+
+
+@router.post("/{resource}/{pk}/model_submit")
+async def model_submit_callback(request: Request, resource: str, pk: str):
+    user_id = str(request.state.admin).split("#")[1]
+    json_data = await request.json()
+    # TODO，对返回回来的结果进行处理，塞进LabelResult数据库中即可
+    question_id = json_data["question_id"]
+    task_id = json_data["task_id"]
+    label_flag = json_data["labelFlag"]
+    annotation = (
+        "[{'value': {'choices': ['"
+        + json_data["labelResult"]["0"]
+        + "']}, 'id': 'ONWk5-qNZn', 'from_name': 'rating', 'to_name': 'risk_dialog', 'type': 'choices', 'origin': 'manual'}]"
+    )
+    # labeling_method = json_data["labeling_method"]
+    risk_level = json_data["risk_level"]
+    labeling_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
+    assert len(labeling_row) == 1
+    # 进行多人标注结果的合并
+    labeling_result = labeling_row[0].labeling_result
+    # 将labelstudio的标注结果进行提取操作
+    refine_labeling_result = convert_labelstudio_result_to_string(
+        labeling_row[0].labeling_method, json_data["labelResult"]["0"], risk_level
+    )
+    # 逻辑，如果当前user_id不在这个annotation中，就插入{'user_id': annotation}
+    if labeling_result is None:
+        new_labeling_result = {user_id: refine_labeling_result}
+    else:
+        # 将新的标注结果和已经有的标注结果合并起来
+        new_labeling_result = concat_labeling_result(
+            user_id, refine_labeling_result, labeling_result
+        )
+    labeling_row[0].labeling_result = new_labeling_result
+    labeling_row[0].status = "已标注_" + label_flag
+    # TODO，暂时摆烂了，一个task的每一个题目只会到一个人手上
+    labeling_row[0].raw_labeling_result = annotation
+    await labeling_row[0].save()
+    # 修改一下标注进展
+    labelpage_row = await LabelPage.filter(task_id=task_id)
+    assert len(labelpage_row) == 1
+    current_labeling_progress = eval(labelpage_row[0].labeling_progress)
+    current_labeling_progress[user_id] += 1
+    labelpage_row[0].labeling_progress = current_labeling_progress
+    # 修改一下labeling_flag
+    labeling_flag = eval(labelpage_row[0].labeling_flag)
+    assign_user = eval(labelpage_row[0].assign_user)[user_id]  # [2, 5]
+    label_item_index = assign_user.index(int(question_id) - 1)
+    labeling_flag[user_id][label_item_index] = True
+    labelpage_row[0].labeling_flag = labeling_flag
+    await labelpage_row[0].save()
+
+
+@router.post("/{resource}/labeling/{pk}/model_update")
+async def model_update_result_callback(request: Request, resource: str, pk: str):
+    user_id = str(request.state.admin).split("#")[1]
+    json_data = await request.json()
+    question_id = json_data["question_id"]
+    task_id = json_data["task_id"]
+    annotation = (
+        "[{'value': {'choices': ['"
+        + json_data["labelResult"]["0"]
+        + "']}, 'id': 'ONWk5-qNZn', 'from_name': 'rating', 'to_name': 'risk_dialog', 'type': 'choices', 'origin': 'manual'}]"
+    )
+    label_flag = json_data["labelFlag"]
+    # labeling_method = json_data["labeling_method"]
+    risk_level = json_data["risk_level"]
+    labeling_row = await LabelResult.filter(task_id=task_id, question_id=question_id)
+    assert len(labeling_row) == 1
+    # 进行多人标注结果的合并
+    labeling_result = labeling_row[0].labeling_result
+    # 将labelstudio的标注结果进行提取操作
+    refine_labeling_result = convert_labelstudio_result_to_string(
+        labeling_row[0].labeling_method, json_data["labelResult"]["0"], risk_level
+    )
+    # 逻辑，如果当前user_id不在这个annotation中，就插入{'user_id': annotation}
+    assert labeling_result is not None
+    # 更新已经有的结果
+    update_result = update_labeling_result(user_id, refine_labeling_result, labeling_result)
+    labeling_row[0].labeling_result = update_result
+    labeling_row[0].raw_labeling_result = annotation
+    labeling_row[0].status = "已标注_" + label_flag
+    await labeling_row[0].save()
 
 
 @router.post("/{resource}/labeling/{pk}/update")

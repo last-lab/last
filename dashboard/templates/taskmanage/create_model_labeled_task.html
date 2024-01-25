@@ -69,6 +69,22 @@
     </div>
 </div>
 
+<div class="form-table">
+    <div class="text">
+        <span>标注任务分配</span>
+    </div>
+    <table id="labelTable" <thead>
+        <tr>
+            <th>标注员</th>
+            <th>题目数量百分比（%）</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
 
 <div class="form-table">
     <div class="text">
@@ -86,6 +102,17 @@
         </tbody>
     </table>
 </div>
+
+<div>
+    <label for="labelUserName">标注员：</label>
+    <select id="labelUserName">
+        <option value="">请选择标注员</option>
+    </select>
+    <label for="quantity">题目数量百分比：</label>
+    <input type="number" id="labelQuantity" value="百分比">
+    <button onclick="addLabelRow()">添加</button>
+</div>
+
 <div>
     <label for="auditUserName">审核员：</label>
     <select id="auditUserName">
@@ -105,13 +132,19 @@
             var userList = await getUserList();
             //   var userList = ['标注员A', '标注员B', '标注员C'];
             // 这个是审核表
-            var dropdown = document.getElementById('auditUserName');
-            dropdown.innerHTML = '<option value="">请选择审核员</option>';
+            var dropdown_audit = document.getElementById('auditUserName');
+            dropdown_audit.innerHTML = '<option value="">请选择审核员</option>';
+            let dropdown_label = document.querySelector('#labelUserName')
+            dropdown_label.innerHTML = '<option value="">请选择标注员</option>';
             userList.forEach(function (user) {
-                var option = document.createElement('option');
-                option.value = user;
-                option.text = user;
-                dropdown.appendChild(option);
+                var audit_option = document.createElement('option');
+                audit_option.value = user;
+                audit_option.text = user;
+                let label_option = document.createElement('option')
+                label_option.value = user
+                label_option.text = user
+                dropdown_audit.appendChild(audit_option);
+                dropdown_label.appendChild(label_option)
             });
         }
 
@@ -132,6 +165,27 @@
                 // 清空输入框
                 document.getElementById('auditUserName').value = '';
                 document.getElementById('auditQuantity').value = '';
+            }
+        }
+
+
+        function addLabelRow() {
+            var table = document.getElementById('labelTable');
+            var username = document.getElementById('labelUserName').value;
+            var quantity = document.getElementById('labelQuantity').value;
+            if (username && quantity) {
+                var row = table.insertRow(-1);
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                var cell3 = row.insertCell(2);
+
+                cell1.innerHTML = username;
+                cell2.innerHTML = quantity;
+                cell3.innerHTML = '<button onclick="deleteRow(this)">删除</button>';
+
+                // 清空输入框
+                document.getElementById('labelUserName').value = '';
+                document.getElementById('labelQuantity').value = '';
             }
         }
 
@@ -165,17 +219,37 @@
                 var taskCount = cells[1].textContent;
                 auditAssignments.push({ auditor: auditor, taskCount: taskCount });
             }
+
+            let labelTable = document.querySelector('#labelTable')
+            let labelAssignments = []
+            for (let i = 1; i< labelTable.rows.length; i++){
+                let cells = labelTable.rows[i].cells
+                let labeler = cells[0].textContent
+                let taskCount = cells[1].textContent
+                labelAssignments.push({labeler: labeler, taskCount: taskCount})
+            }
             // 确保taskAssignments，auditAssignments中taskCount之和为100
             var auditTotal = 0;
             for (var assignment of auditAssignments) {
                 auditTotal += Number(assignment.taskCount);
             }
-                if (auditTotal != 100) {
-                    alert("审核分配之和必须为100");
-                } else {
+
+            let labelTotal = 0;
+            for (let labelassignment of labelAssignments){
+                labelTotal += Number(labelassignment.taskCount)
+            }
+            if (auditTotal != 100) {
+                alert("审核分配之和必须为100");
+                return
+            } 
+            if (labelTotal !=100){
+                alert("标注分配之和必须为100")
+                return
+            } else {
                     formData.append('fileName', fileName);
                     formData.append('deadline', deadline);
                     formData.append('file', file);
+                    formData.append('labelAssignments', JSON.stringify(labelAssignments));
                     formData.append('auditAssignments', JSON.stringify(auditAssignments));
                     // 调用回调函数，将数据传递给它进行处理
                     // 使用 $.ajax 发送数据到特定的 URL
