@@ -244,7 +244,7 @@ async def audit_next_callback(request: Request):
     else:
         next_flag = False
         for element in search_index_list:
-            if (element) != current_question_index:
+            if (element) != current_question_index and element in audit_user_item_list:
                 search_item_index = audit_user_item_list.index(element)
                 if not audit_flag[user_id][search_item_index]:
                     next_flag = True
