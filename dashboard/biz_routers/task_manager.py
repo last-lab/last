@@ -424,6 +424,7 @@ async def download_labeling_result(
         "model_resource": model_resource,
         "task_id": task_id,
         "sheet_name_list": sheet_name_list,
+        "dataset_name": task_row[0].dataset,
     }
     try:
         return templates.TemplateResponse(
