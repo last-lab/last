@@ -3,7 +3,7 @@
 # url = "https://kb.rockai.net/open/api/dialogue/v1/syncChat"
 # headers = {
 #     "Content-Type": "application/json",
-#    "Authorization": "Bearer bFzHxDKI6FNbrCtFqLEmBLfKMg3Qff9M_"
+#    "Authorization": "Bearer bFzHxDKI6FNbrCtFqLEmBLfKMg3Qff9M"
 # }
 # data = {
 #     "prompt": "你好",
