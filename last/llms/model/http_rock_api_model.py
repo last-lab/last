@@ -1,18 +1,3 @@
-# import requests
-
-# url = "https://kb.rockai.net/open/api/dialogue/v1/syncChat"
-# headers = {
-#     "Content-Type": "application/json",
-#    "Authorization": "Bearer bFzHxDKI6FNbrCtFqLEmBLfKMg3Qff9M"
-# }
-# data = {
-#     "prompt": "你好",
-#     "appId": 51
-# }
-# response = requests.post(url, headers=headers, json=data)
-# print(response.json())
-
-
 """
    RockAI API 
 """
