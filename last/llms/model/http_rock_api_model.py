@@ -34,5 +34,5 @@ class RockAIAPILLMModel(HTTPAPILLMModel):
         if "code" not in response:
             return (False, "System Error(回复与文档有差异)")
         if response["code"] != 200:
-            return (True, response["message"])
+            return (False, response["message"])
         return (True, response["data"]["reply"])
