@@ -91,7 +91,10 @@ async def AI_eval(
 
         
         llm_critic_result = await taskList.get_result_list()  # 无异常抛出的情况下 critic_list 与 task_list 元素一一对应
-        critic_list = emerge_sensitive_critic_llm_critic(sensitive_shuffle_result, llm_critic_result)
+        if critic_model.name == 'puan':
+            critic_list = llm_critic_result
+        else:
+            critic_list = emerge_sensitive_critic_llm_critic(sensitive_shuffle_result, llm_critic_result)
     else:
         critic_list = [Message(role=MessageRole.AI, content="null") for i in range(len(response_list))]
 
@@ -104,7 +107,10 @@ async def AI_eval(
         sheet_name = qa_record.sheet_name
         # 外部脚本处理评判结果
         try:
-            critic = extract(str(critic_msg))
+            if critic_model.name == 'puan':
+                critic = str(critic_msg)
+            else:
+                critic = extract(str(critic_msg))
             critic = Message(role=MessageRole.Chat, content=str(critic))
             reason = critic_msg
         except Exception as e:

@@ -18,6 +18,7 @@ class MinimaxAPILLMModel(HTTPAPILLMModel):
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
         }
+        self.qps = 1
 
     async def generate(self, prompt, messages, *args, **kwargs):
         

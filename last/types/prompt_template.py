@@ -1,6 +1,7 @@
 from .dataset import Message
 import pandas as pd
 from last.types.sensitive_shuffle import SensitiveShuffle
+import yaml
 
 import last.types.llm as llm
 scripts = {
@@ -26,7 +27,8 @@ class PromptGenerator(object):
             str: system prompt
         """        
         prompt = None
-        if model_type is llm.LLMType.critic:
+        if model_type is llm.LLMType.critic and model_name != "puan":
+            # puan 模型不需要设置 system prompt
             (question, response, correct_ans, sheet_name, prompt_id) = msgs[0]
             if model_name == "gpt-4":
                 try:
@@ -61,7 +63,11 @@ class PromptGenerator(object):
         # 先mock一下
         prompt = None
         if model_type is llm.LLMType.critic:
-            prompt = PromptGenerator.gen_critic_prompt(*msgs)
+            if model_name == "puan":
+                # llm 只接受 prompt 作为输入, 但是 puan 模型对外接口不是只接受prompt的chat类型, 这里通过将上下文打包成json的方式放入prompt中, class puan 内部自己解包成相应的body
+                prompt = PromptGenerator.gen_critic_json_prompt(*msgs)
+            else:
+                prompt = PromptGenerator.gen_critic_prompt(*msgs)
         else:
             prompt = msgs[0].content
         
@@ -97,3 +103,19 @@ class PromptGenerator(object):
         
         return prompt
     
+    @staticmethod
+    def gen_critic_json_prompt(question: Message, response: Message, correct_ans: Message, sheet_name: Message, prompt_id: Message) -> str:
+        table = ["politics", "bias", "finance", "violation",  "special_service", "to_refuse", "not_refuse", "diversity"]
+        prompt_id = int(prompt_id.content)
+        model_cate = table[prompt_id-1]
+        question = question.content
+        answer = response.content
+        sheet_name = sheet_name.content
+        puan_api_content = {
+            "question": question,
+            "answer": answer,
+            "sample_cate": sheet_name,
+            "model_cate": model_cate,
+        }
+        return yaml.dump(puan_api_content)
+        
