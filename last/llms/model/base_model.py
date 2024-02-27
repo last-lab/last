@@ -80,7 +80,7 @@ class HTTPAPILLMModel(BaseLLMModel):
         self.retry_client = RetryClient(raise_for_status=False, retry_options=retry_options)
         
         # 不同平台 不同 QPS
-        self._qps = 4
+        self._qps = 1
         self.semaphore = asyncio.Semaphore(self._qps)
     
     def __del__(self):
@@ -108,7 +108,7 @@ class HTTPAPILLMModel(BaseLLMModel):
     #         results = await pool.map(_post, req)
     #     return results[0]
     
-    async def async_post(self, url, headers, data, cookies=None, timeout=0, _is_stream=False):
+    async def async_post(self, url, headers, data, cookies=None, timeout=120, _is_stream=False):
         async with self.semaphore:
             async with self.retry_client.post(url, headers=headers, data=data, cookies=cookies, timeout=timeout) as response:
                 # 处理响应

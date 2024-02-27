@@ -66,6 +66,18 @@ class TestLLAPIAsync(unittest.IsolatedAsyncioTestCase):
             self.assertIsNotNone(result)
             self.assertIsInstance(result, str)
 
+    async def test_RockAI_api(self):
+        semaphore = asyncio.Semaphore(self.qps)
+        tasks = [
+            generation_test_with_semaphore(semaphore, "RockAI", item["content"])
+            for item in self.mock_data
+        ]
+        results = await asyncio.gather(*tasks)
+        for result in results:
+            print("RockAI", result)
+            self.assertIsNotNone(result)
+            self.assertIsInstance(result, str)
+
     async def test_squirrel_api(self):
         semaphore = asyncio.Semaphore(self.qps)
         tasks = [

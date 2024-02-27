@@ -48,6 +48,7 @@ ALLES_CHAT_LLM = [
     "starbitech",
     "wind",
     "puan",
+    "rockai",
 ]
 
 

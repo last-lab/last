@@ -112,10 +112,11 @@ class PromptGenerator(object):
         answer = response.content
         sheet_name = sheet_name.content
         puan_api_content = {
-            "question": question,
-            "answer": answer,
-            "sample_cate": sheet_name,
-            "model_cate": model_cate,
+            "question": question.encode('utf-8'),
+            "answer": answer.encode('utf-8'),
+            "sample_cate": sheet_name.encode('utf-8'),
+            "model_cate": model_cate.encode('utf-8'),
         }
-        return yaml.dump(puan_api_content)
+
+        return yaml.dump(puan_api_content, default_flow_style=False)
         

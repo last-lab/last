@@ -3595,4 +3595,4 @@ s3 = ["aiobotocore"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0"
-content-hash = "23a9c2e7c638f43959fbdad299b3b790c31b719c2e512994e477427da0789a17"
+content-hash = "02843c46b4202b337ae340ba5676527aaadd5907d2ba68695a0e6ab6f49f9d5a"

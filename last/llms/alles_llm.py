@@ -40,6 +40,7 @@ from .model.http_bigsea_api_model import BigSeaAPILLMModel
 from .model.http_starbitech_api_model import StarbitechAPILLMModel
 from .model.http_wind_api_model import WindAPILLMModel
 from .model.http_puan_api_model import PuanAPILLMModel
+from .model.http_rock_api_model import RockAIAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -126,6 +127,8 @@ class AllesChatLLM(BaseModel):
         elif self.model.lower().startswith("puan"):
             api_key = ""
             
+        elif self.model.lower().startswith("rockai"):
+            api_key = os.environ["ROCKAI_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -202,6 +205,8 @@ class AllesChatLLM(BaseModel):
             model = WindAPILLMModel(**params)
         elif self.model.lower().startswith("puan"):
             model = PuanAPILLMModel(**params)
+        elif self.model.lower().startswith("rockai"):
+            model = RockAIAPILLMModel(**params)
         else:
             raise NotImplementedError()
 
