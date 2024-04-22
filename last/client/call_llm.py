@@ -49,6 +49,11 @@ ALLES_CHAT_LLM = [
     "wind",
     "puan",
     "rockai",
+    "xiaodu",
+    "xiecheng",
+    "metaso",
+    "ferry",
+    "digivio",
 ]
 
 
