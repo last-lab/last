@@ -8,11 +8,12 @@ import yaml
 from loguru import logger
 import time
 import ast
+import os
 
 class PuanAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.url = "http://10.140.1.105:8000/"
+        self.url = os.environ["PUAN_URL"]
         self.api_key = api_key
         self.headers = {
             "Content-Type": "application/json",
