@@ -26,7 +26,7 @@ class TaskList():
         self.task_list = []
         self.result_list = []
         
-        self.task_batch_size = 4
+        self.task_batch_size = 3
         
         self.process_bar = tqdm(desc="query task", leave=False)
     
@@ -35,6 +35,7 @@ class TaskList():
         self.task_list.append(task)
         # 任务数量达到 阈值 触发任务处理行为
         if(len(self.task_list) > self.task_batch_size):
+            # asyncio.sleep(0.3)  # tpm trick
             await self.process_task()
 
     # 处理任务 更新 result_list

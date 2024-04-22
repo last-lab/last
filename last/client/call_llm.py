@@ -47,7 +47,13 @@ ALLES_CHAT_LLM = [
     "bigsea",
     "starbitech",
     "wind",
+    "puan",
     "rockai",
+    "xiaodu",
+    "xiecheng",
+    "metaso",
+    "ferry",
+    "digivio",
 ]
 
 

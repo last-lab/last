@@ -39,7 +39,13 @@ from .model.http_xiaohui_api_model import XiaohuiAPILLMModel
 from .model.http_bigsea_api_model import BigSeaAPILLMModel
 from .model.http_starbitech_api_model import StarbitechAPILLMModel
 from .model.http_wind_api_model import WindAPILLMModel
+from .model.http_puan_api_model import PuanAPILLMModel
 from .model.http_rock_api_model import RockAIAPILLMModel
+from .model.http_xiaodu_api_model import XiaoDuAPILLMModel
+from .model.http_xiecheng_api_model import XieChengAPILLMModel
+from .model.http_metaso_api_model import MetasoAPILLMModel
+from .model.http_ferry_api_model import FerryAPILLMModel
+from .model.http_digivio_api_model import DigivioAPILLMModel
 
 
 class AllesChatLLM(BaseModel):
@@ -123,8 +129,21 @@ class AllesChatLLM(BaseModel):
             api_key = os.environ["STARBITECH_API_TOKEN"]
         elif self.model.lower().startswith("wind"):
             api_key = os.environ["WIND_API_TOKEN"]
+        elif self.model.lower().startswith("puan"):
+            api_key = os.environ["PUAN_API_TOKEN"]
+            
         elif self.model.lower().startswith("rockai"):
             api_key = os.environ["ROCKAI_API_TOKEN"]
+        elif self.model.lower().startswith("xiaodu"):
+            api_key = os.environ["XIAODU_API_TOKEN"]
+        elif self.model.lower().startswith("xiecheng"):
+            api_key = os.environ["XIECHENG_API_TOKEN"]
+        elif self.model.lower().startswith("metaso"):
+            api_key = os.environ["METASO_API_TOKEN"]
+        elif self.model.lower().startswith("ferry"):
+            api_key = os.environ["FERRY_API_TOKEN"]
+        elif self.model.lower().startswith("digivio"):
+            api_key = os.environ["DIGIVIO_API_TOKEN"]
 
         params = {
             "api_key": api_key,
@@ -199,8 +218,20 @@ class AllesChatLLM(BaseModel):
             model = StarbitechAPILLMModel(**params)
         elif self.model.lower().startswith("wind"):
             model = WindAPILLMModel(**params)
+        elif self.model.lower().startswith("puan"):
+            model = PuanAPILLMModel(**params)
         elif self.model.lower().startswith("rockai"):
             model = RockAIAPILLMModel(**params)
+        elif self.model.lower().startswith("xiaodu"):
+            model = XiaoDuAPILLMModel(**params)
+        elif self.model.lower().startswith("xiecheng"):
+            model = XieChengAPILLMModel(**params)
+        elif self.model.lower().startswith("metaso"):
+            model = MetasoAPILLMModel(**params)
+        elif self.model.lower().startswith("ferry"):
+            model = FerryAPILLMModel(**params)
+        elif self.model.lower().startswith("digivio"):
+            model = DigivioAPILLMModel(**params)
         else:
             raise NotImplementedError()
 

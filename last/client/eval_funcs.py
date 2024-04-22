@@ -6,6 +6,8 @@ from last.types.task import Task
 from tqdm import tqdm
 import re
 import asyncio
+import time
+from loguru import logger
 
 from .task_list import TaskList
 
@@ -70,11 +72,12 @@ async def AI_eval(
     progress_bar.update(1)
     print(llm_model.name + "的评测进度:待测模型测试完毕")
     
+    begin_time = time.time()
     if use_ai_critique:
         ## 敏感词筛选
         sensitive_shuffle_result = [True] * len(response_list)
-        if prompt["id"] == "1":
-            sensitive_shuffle_result = SensitiveShuffle.sensitive_shuffle(plan, response_list)
+        # if prompt["id"] == "1":
+        #     sensitive_shuffle_result = SensitiveShuffle.sensitive_shuffle(plan, response_list)
             
         # critic任务
         taskList.clear()
@@ -91,10 +94,14 @@ async def AI_eval(
 
         
         llm_critic_result = await taskList.get_result_list()  # 无异常抛出的情况下 critic_list 与 task_list 元素一一对应
-        critic_list = emerge_sensitive_critic_llm_critic(sensitive_shuffle_result, llm_critic_result)
+        if critic_model.name == 'puan':
+            critic_list = llm_critic_result
+        else:
+            critic_list = emerge_sensitive_critic_llm_critic(sensitive_shuffle_result, llm_critic_result)
     else:
         critic_list = [Message(role=MessageRole.AI, content="null") for i in range(len(response_list))]
-
+    end_time = time.time()
+    logger.info("评判模型评测耗时: {elapsed_time}", elapsed_time=(end_time - begin_time) / 60.0)
     progress_bar.update(1)
     print(llm_model.name + "的评测进度:评判模型评测完毕")
 
@@ -104,7 +111,10 @@ async def AI_eval(
         sheet_name = qa_record.sheet_name
         # 外部脚本处理评判结果
         try:
-            critic = extract(str(critic_msg))
+            if critic_model.name == 'puan':
+                critic = str(critic_msg)
+            else:
+                critic = extract(str(critic_msg))
             critic = Message(role=MessageRole.Chat, content=str(critic))
             reason = critic_msg
         except Exception as e:
