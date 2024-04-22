@@ -130,7 +130,7 @@ class AllesChatLLM(BaseModel):
         elif self.model.lower().startswith("wind"):
             api_key = os.environ["WIND_API_TOKEN"]
         elif self.model.lower().startswith("puan"):
-            api_key = ""
+            api_key = os.environ["PUAN_API_TOKEN"]
             
         elif self.model.lower().startswith("rockai"):
             api_key = os.environ["ROCKAI_API_TOKEN"]
