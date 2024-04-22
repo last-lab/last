@@ -31,14 +31,6 @@ async def generation_test(prompt, model):
 
     return generated_text
 
-
-os.environ["XIAODU_API_TOKEN"] = "vfw79jmbes0cra35l2nhi7nyt8ldqf2xz169curo"
-os.environ["XIECHENG_API_TOKEN"] = "4TUeej93N1ySbV9hlXM4"
-os.environ["METASO_API_TOKEN"] = "38d793fc9588e28b"
-os.environ["FERRY_API_TOKEN"] = ""
-os.environ["DIGIVIO_API_TOKEN"] = "tB3G3jgR1qzzfMBx4hSzGJNmsmteOfyT"
-
-
 # @unittest.skip("Need apikey")
 class TestLLMAPI(unittest.TestCase):
     @unittest.skip("skip")
