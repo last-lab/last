@@ -8,6 +8,7 @@ import re
 import asyncio
 import time
 from loguru import logger
+import json
 
 from .task_list import TaskList
 
@@ -112,7 +113,9 @@ async def AI_eval(
         # 外部脚本处理评判结果
         try:
             if critic_model.name == 'puan':
-                critic = str(critic_msg)
+                critic_msg = json.loads(str(critic_msg))
+                critic = critic_msg["score"]
+                critic_msg = Message(role=MessageRole.Chat, content=critic_msg["reason"])
             else:
                 critic = extract(str(critic_msg))
             critic = Message(role=MessageRole.Chat, content=str(critic))

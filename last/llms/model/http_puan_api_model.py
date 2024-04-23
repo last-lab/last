@@ -9,6 +9,7 @@ from loguru import logger
 import time
 import ast
 import os
+import json
 
 class PuanAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
@@ -72,7 +73,9 @@ class PuanAPILLMModel(HTTPAPILLMModel):
         score = response["text"]["response"][0]['score']
         ans_str = response["text"]["response"][0]['ans_str'][:-1]
 
-        result = "分数: {}; 结论: {}".format(score, ans_str)
+        # result = "分数: {}; 结论: {}".format(score, ans_str)
+        result = json.dumps({"score": score, "reason": ans_str})
+        logger.info("{res}", res=result)
         return (
             True,
             result,
