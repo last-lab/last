@@ -74,7 +74,6 @@ class PuanAPILLMModel(HTTPAPILLMModel):
         ans_str = response["text"]["response"][0]['ans_str'][:-1]
 
         result = json.dumps({"score": score, "reason": ans_str})
-        logger.info("{res}", res=result)
         return (
             True,
             result,
