@@ -44,7 +44,6 @@ class BaseLLMModel(ABC):
                     f"\n[Error] {type(ex).__name__}: {ex}\n[Response] {response}\n"
                 )
                 errors.append(generated_text)
-                print(generated_text)
                 raise Exception(generated_text)
             finally:
                 trials += 1

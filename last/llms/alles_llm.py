@@ -73,14 +73,10 @@ class AllesChatLLM(BaseModel):
         messages: Optional[List[dict]] = None,
         **kwargs: Any,
     ) -> str:
-        import logging
-        logging.info(self.model)
         if self.model.startswith("alles"):
             api_key = os.environ["ALLES_API_TOKEN"]
         elif self.model.startswith("puyu 102B"):
-            logging.info("********************************")
             api_key = os.environ["PUYU_102B_API_TOKEN"]
-            logging.info(api_key)
         elif self.model.startswith("puyu 7B"):
             api_key = os.environ["PUYU_7B_API_TOKEN"]
         elif self.model.startswith("puyu"):
