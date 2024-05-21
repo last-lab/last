@@ -12,6 +12,8 @@ from .model.http_alles_api_model import (
     AllesBaiduTranslateAPILLMModel,
 )
 from .model.http_puyu_api_model import PuyuAPILLMModel
+from .model.http_puyu_102B_api_model import Puyu102BAPILLMModel
+from .model.http_puyu_7B_api_model import Puyu7BAPILLMModel
 from .model.http_tigerbot_api_model import TigerbotAPILLMModel
 from .model.http_mita_api_model import MitaAPILLMModel
 from .model.http_jieyue_api_model import JieyueAPILLMModel
@@ -71,8 +73,16 @@ class AllesChatLLM(BaseModel):
         messages: Optional[List[dict]] = None,
         **kwargs: Any,
     ) -> str:
+        import logging
+        logging.info(self.model)
         if self.model.startswith("alles"):
             api_key = os.environ["ALLES_API_TOKEN"]
+        elif self.model.startswith("puyu 102B"):
+            logging.info("********************************")
+            api_key = os.environ["PUYU_102B_API_TOKEN"]
+            logging.info(api_key)
+        elif self.model.startswith("puyu 7B"):
+            api_key = os.environ["PUYU_7B_API_TOKEN"]
         elif self.model.startswith("puyu"):
             api_key = os.environ["PUYU_API_TOKEN"]
         elif self.model.lower().startswith("tigerbot"):
@@ -164,6 +174,10 @@ class AllesChatLLM(BaseModel):
             model = AllesSparkAPILLMModel(**params)
         elif self.model.lower() == "puyu":
             model = PuyuAPILLMModel(**params)
+        elif self.model.lower() == "puyu 102b":
+            model = Puyu102BAPILLMModel(**params)
+        elif self.model.lower() == "puyu 7b":
+            model = Puyu7BAPILLMModel(**params)
         elif self.model.lower() == "tigerbot":
             model = TigerbotAPILLMModel(**params)
         elif self.model.lower() == "mita":

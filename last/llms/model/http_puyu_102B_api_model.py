@@ -5,10 +5,10 @@ from openai import OpenAI
 
 import logging
 
-class PuyuAPILLMModel(HTTPAPILLMModel):
+class Puyu102BAPILLMModel(HTTPAPILLMModel):
     def __init__(self, api_key, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.url = "https://internlm-chat.intern-ai.org.cn/puyu/api/v1/chat/completions"
+        self.url = "http://180.184.173.40:38778/v1/chat/completions"
         self.headers = {
             "Content-Type": "application/json",
             "Authorization": api_key,
@@ -18,21 +18,20 @@ class PuyuAPILLMModel(HTTPAPILLMModel):
         formatted_messages = [
             {
                 "role": item["role"],
-                "text": item["content"],
+                "content": item["content"],
             }
             for item in messages
         ]
-        
-        data = {
-            "model": "internlm2-for-game",  
-            "messages": formatted_messages, 
-            "temperature": 0.8,
-            "top_p": 0.9
+        payload = {
+            "model": "internlm2-chat", 
+            "messages": formatted_messages,
+            "max_tokens": 1024, "top_k": 40,
+            "temperature": 1.0, "top_p": 0.8, "repetition_penalty": 1.01,
         }
-
+        
         try:
             response = await self.async_post(
-                self.url, headers=self.headers, data=json.dumps(data)
+                self.url, headers=self.headers, data=json.dumps(payload)
             )
         except Exception as e:
             return e

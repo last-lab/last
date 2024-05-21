@@ -378,6 +378,20 @@ async def create_mock_llms():
         model_org="虎博科技",
         auth_status=True,
     )
+    
+    await ModelInfo.create(
+        name="puyu 102B",
+        endpoint="puyu 102B",
+        access_key="None",
+        secret_key="None",
+        model_type="聊天机器人、自然语言处理助手",
+        version="未知",
+        base_model="未知",
+        parameter_volume="未知",
+        pretraining_info="未知",
+        finetuning_info="未知",
+        alignment_info="未知",
+    )
 
     await ModelInfo.create(
         name="mita",
@@ -393,6 +407,20 @@ async def create_mock_llms():
         alignment_info="未知",
         model_org="mita",
         auth_status=True,
+    )
+    
+    await ModelInfo.create(
+        name="puyu 7B",
+        endpoint="puyu 7B",
+        access_key="None",
+        secret_key="None",
+        model_type="聊天机器人、自然语言处理助手",
+        version="未知",
+        base_model="未知",
+        parameter_volume="未知",
+        pretraining_info="未知",
+        finetuning_info="未知",
+        alignment_info="未知",
     )
 
     await ModelInfo.create(

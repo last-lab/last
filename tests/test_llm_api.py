@@ -6,6 +6,7 @@ import unittest
 
 from last.client.call_llm import generate
 
+import logging
 
 async def generation_test(prompt, model):
     system_prompt = None
@@ -15,7 +16,7 @@ async def generation_test(prompt, model):
     top_p = 0.9
     frequence_penalty = 0.0
     presence_penalty = 0.0
-
+    
     generated_text = await generate(
         prompt,
         model,
@@ -207,7 +208,27 @@ class TestLLMAPI(unittest.TestCase):
             # time.sleep(1)  # waiting for the release of resources
             print(model, generated_text)
             assert generated_text is not None
-
+            
+    @unittest.skip("skip")
+    def test_puyu_api(self):
+        generated_text = asyncio.run(generation_test(prompt="请介绍下你自己", model="puyu"))
+        # 大小写都可以， eg. wuya, WUYA
+        print(generated_text)
+        assert generated_text is not None
+    
+    @unittest.skip("skip")
+    def test_puyu_102B_api(self):
+        generated_text = asyncio.run(generation_test(prompt="请介绍下你自己", model="puyu 102B"))
+        # 大小写都可以， eg. wuya, WUYA
+        print(generated_text)
+        assert generated_text is not None
+    
+    @unittest.skip("skip")
+    def test_puyu_7B_api(self):
+        generated_text = asyncio.run(generation_test(prompt="请介绍下你自己", model="puyu 7B"))
+        # 大小写都可以， eg. wuya, WUYA
+        print(generated_text)
+        assert generated_text is not None
 
 if __name__ == "__main__":
     unittest.main()
