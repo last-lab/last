@@ -380,8 +380,8 @@ async def create_mock_llms():
     )
     
     await ModelInfo.create(
-        name="puyu 102B",
-        endpoint="puyu 102B",
+        name="puyu102B",
+        endpoint="puyu102B",
         access_key="None",
         secret_key="None",
         model_type="聊天机器人、自然语言处理助手",
@@ -410,8 +410,8 @@ async def create_mock_llms():
     )
     
     await ModelInfo.create(
-        name="puyu 7B",
-        endpoint="puyu 7B",
+        name="puyu7B",
+        endpoint="puyu7B",
         access_key="None",
         secret_key="None",
         model_type="聊天机器人、自然语言处理助手",

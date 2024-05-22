@@ -75,9 +75,9 @@ class AllesChatLLM(BaseModel):
     ) -> str:
         if self.model.startswith("alles"):
             api_key = os.environ["ALLES_API_TOKEN"]
-        elif self.model.startswith("puyu 102B"):
+        elif self.model.startswith("puyu102B"):
             api_key = os.environ["PUYU_102B_API_TOKEN"]
-        elif self.model.startswith("puyu 7B"):
+        elif self.model.startswith("puyu7B"):
             api_key = os.environ["PUYU_7B_API_TOKEN"]
         elif self.model.startswith("puyu"):
             api_key = os.environ["PUYU_API_TOKEN"]
@@ -170,9 +170,9 @@ class AllesChatLLM(BaseModel):
             model = AllesSparkAPILLMModel(**params)
         elif self.model.lower() == "puyu":
             model = PuyuAPILLMModel(**params)
-        elif self.model.lower() == "puyu 102b":
+        elif self.model.lower() == "puyu102b":
             model = Puyu102BAPILLMModel(**params)
-        elif self.model.lower() == "puyu 7b":
+        elif self.model.lower() == "puyu7b":
             model = Puyu7BAPILLMModel(**params)
         elif self.model.lower() == "tigerbot":
             model = TigerbotAPILLMModel(**params)

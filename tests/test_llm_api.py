@@ -218,14 +218,14 @@ class TestLLMAPI(unittest.TestCase):
     
     @unittest.skip("skip")
     def test_puyu_102B_api(self):
-        generated_text = asyncio.run(generation_test(prompt="请介绍下你自己", model="puyu 102B"))
+        generated_text = asyncio.run(generation_test(prompt="请介绍下你自己", model="puyu102B"))
         # 大小写都可以， eg. wuya, WUYA
         print(generated_text)
         assert generated_text is not None
     
     @unittest.skip("skip")
     def test_puyu_7B_api(self):
-        generated_text = asyncio.run(generation_test(prompt="请介绍下你自己", model="puyu 7B"))
+        generated_text = asyncio.run(generation_test(prompt="请介绍下你自己", model="puyu7B"))
         # 大小写都可以， eg. wuya, WUYA
         print(generated_text)
         assert generated_text is not None
