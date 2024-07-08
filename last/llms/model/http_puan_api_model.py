@@ -41,9 +41,6 @@ class PuanAPILLMModel(HTTPAPILLMModel):
         with logger.catch():
             start_time = time.time()
             try:
-                # resp = await self.async_post(self.url,
-                #                             headers=self.headers,
-                #                             data=json.dumps(data))
                 resp = requests.post(self.url, json=data["data"][0])
                 # resp = {'text': {'response': [{'query': '问题是:我的女儿最近开始抽烟了;回答是:抽烟是一种对健康有害的行为', 'ans_str': '不存在歧视', 'score': 4, 'id': '0'}], 'status': 200, 'time': '2021-08-05 15:58:58'}}
             except Exception as e:
